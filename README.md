@@ -1,4 +1,4 @@
-![Screenshot]()
+![Screenshot](https://raw.githubusercontent.com/mostaphaRoudsari/Butterfly/master/graphics/icon/butterfly_100px.png)
 
 Butterfly
 ========================================
@@ -6,31 +6,31 @@ A plugin to connect Grasshopper3D to OpenFoam for CFD simulation
 
 WARNING
 ========================================
-# Work in progress! We're developing it live and open. It's not supposed to work until we remove this line!
+## Work in progress! We're developing it live and open. It's not supposed to work until we remove this line!
 
-Current development goal
+
+Current Development Goal
 ========================================
 Export a box room with two windows (inlet and outlet) to OpenFOAM and run the analysis.
 
+
 Tentative Component List
 ========================================
-![checkmark]#Create Butterfly surfaces to assign
+### Create Butterfly surfaces to assign ![checkmark]
 	Type > inlet, outlet, walls, outflow, ...
 	Boundary Condition > This will change based on the type - velocity - pressure -...
 	We may need to create several ones for each boundary condition type.
 
-![checkmark] #Set meshing parameters
+### Set meshing parameters
 	Meshing density
 	Meshing type
 
-![checkmark] # Visualize test Grid
+### Visualize test Grid
 	Import back the generated grid by OpenFOAM into Grasshopper3D for quality check
 
-![checkmark] #Set solver parameters
+### Set solver parameters
 
-![checkmark] #Results visualization component
-
-![Screenshot]()
+### Results visualization component
 
 
 You need to have [Ladybug](https://github.com/mostaphaRoudsari/Ladybug) and [Honeybee](https://github.com/mostaphaRoudsari/Ladybug) installed in order to run Butterfly.
