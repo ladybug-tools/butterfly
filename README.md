@@ -2,7 +2,7 @@
 
 Butterfly
 ========================================
-A plugin to connect Grasshopper3D to OpenFoam for CFD simulation
+A plugin to connect Grasshopper3D to [OpenFoam](http://www.openfoam.org/) for CFD simulation
 
 WARNING
 ========================================
@@ -29,6 +29,8 @@ Tentative Component List
 	Import back the generated grid by OpenFOAM into Grasshopper3D for quality check
 
 ### Set solver parameters
+
+### Run CFD analysis
 
 ### Results visualization component
 
