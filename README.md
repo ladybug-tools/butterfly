@@ -16,7 +16,7 @@ Export a box room with two windows (inlet and outlet) to OpenFOAM and run the an
 
 Tentative Component List
 ========================================
-### Create Butterfly surfaces to assign ![checkmark]
+### Create Butterfly surfaces
 	Type > inlet, outlet, walls, outflow, ...
 	Boundary Condition > This will change based on the type - velocity - pressure -...
 	We may need to create several ones for each boundary condition type.
