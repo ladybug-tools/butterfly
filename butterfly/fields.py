@@ -46,7 +46,7 @@ class BoundaryField:
         self.name = str(name)
         self.__properties["type"] = str(bfType)
         # value is optional but very common
-        if value:
+        if value != None:
             self.__properties["value"] = str(value)
         for key, value in other.items():
             self.properties[str(key)] = str(str(value))
@@ -165,6 +165,17 @@ class Dimensions:
 
     def __init__(self, mass = 0, length = 0, time = 0, temperature = 0,
         quantity = 0, current = 0, luminousIntensity = 0):
+        self.__mass = int(mass)
+        self.__length = int(length)
+        self.__time = int(time)
+        self.__temperature = int(temperature)
+        self.__quantity = int(quantity)
+        self.__current = int(current)
+        self.__luminousIntensity = int(luminousIntensity)
+
+    def update(self, mass, length, time, temperature,
+        quantity, current, luminousIntensity):
+        """Update all values"""
         self.__mass = int(mass)
         self.__length = int(length)
         self.__time = int(time)
