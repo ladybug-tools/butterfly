@@ -1,0 +1,208 @@
+import Rhino as rc
+
+
+class STLMesh:
+    
+    def createMesh(self,brep, gridSize):
+        ## mesh breps
+        def makeMeshFromSrf(i, inputBrep):
+            
+            mesh[i] = rc.Geometry.Mesh.CreateFromBrep(inputBrep, meshParam)[0]
+            inputBrep.Dispose()
+                    
+            """
+            except:
+                print 'Error in converting Brep to Mesh...'
+                pass
+            """
+           
+        # prepare bulk list for each surface
+        mesh = [None] * brep.Count
+        
+        # set-up mesh parameters for each surface based on surface size
+        meshParam = rc.Geometry.MeshingParameters.Default
+        meshParam.MaximumEdgeLength = gridSize
+        meshParam.MinimumEdgeLength = gridSize
+        meshParam.GridAspectRatio = 1
+        
+        for i in range(len(mesh)): makeMeshFromSrf(i, brep[i])
+        
+        return mesh
+
+    def exportSTL(self,mainBldgs,gridSize,workingDir):
+        def calculateAngles(brepList, testVector = rc.Geometry.Vector3d.YAxis):
+            def getNormal(brep):
+                MP = rc.Geometry.AreaMassProperties.Compute(brep)
+                area = None
+                if MP:
+                    centerPt = MP.Centroid
+                    MP.Dispose()
+                    bool, centerPtU, centerPtV = brep.ClosestPoint(centerPt)
+                    if bool:
+                        normalVector = brep.Faces[0].NormalAt(centerPtU, centerPtV)
+                    else:
+                        normalVector = brep.Faces[0].NormalAt(0,0)
+
+                    return normalVector
+
+            angleCollection = []
+            
+            for brep in brepList:
+                
+                thisBrepAngles = []
+                
+                for brepFace in brep.Faces:
+                    
+                    try:
+                        
+                        angle = rc.Geometry.Vector3d.VectorAngle(getNormal(brepFace.DuplicateFace(False)), testVector, rc.Geometry.Plane.WorldXY)
+                    except:
+
+                        print getNormal(brepFace.DuplicateFace(False))
+                        print testVector
+                        
+                    try: 
+                    
+                        thisBrepAngles.append("%.0f"%math.degrees(angle))
+                    except: 
+                        
+                        thisBrepAngles.append('NaN')
+                angleCollection.append(thisBrepAngles)
+            
+            return angleCollection
+
+        def joinMesh(meshList):
+            joinedMesh = rc.Geometry.Mesh()
+            for m in meshList: joinedMesh.Append(m)
+            return joinedMesh
+
+        def writeSTLFile(filepath, fileName, meshList, northAngleList, type = 'bldg'):
+            
+            # Get co-ordinates of Meshes and write them to the stl file 
+            
+            def extractMeshPts(mesh):
+                """Iterates through each face of the mesh and extracts the coordinates and normal of that face"""
+                
+                coordinatesList = []
+                normals = []
+                mesh.FaceNormals.ComputeFaceNormals()
+                mesh.FaceNormals.UnitizeFaceNormals()
+
+                for face in range(mesh.Faces.Count):
+                    # get each mesh surface vertices
+                    if mesh.Faces.GetFaceVertices(face)[3] != mesh.Faces.GetFaceVertices(face)[4]:
+                        meshVertices = mesh.Faces.GetFaceVertices(face)[1:5]
+                    else:
+                        meshVertices = mesh.Faces.GetFaceVertices(face)[1:4]
+                    coordinatesList.append(list(meshVertices))
+                    normals.append(mesh.FaceNormals[face])
+                    
+                return coordinatesList, normals
+
+            stlFile = open(filepath + "\\" + fileName + '.stl', 'w')
+            
+            # mesh breps
+            for meshCount, mesh in enumerate(meshList):
+                
+                # coordinates for a single mesh (multiple faces)
+                meshCoorLists, normals = extractMeshPts(mesh)
+
+                for faceCount, coordinates in enumerate(meshCoorLists):
+                    
+                    # Write the header for the file e.g solid OBJECT
+                    # solid bldg'blsgNumber'@'angle2North'N'faceNum'_'cellNumber'
+                    solidStr = 'solid ' + type 
+
+                    stlFile.write(solidStr)
+                    if len(coordinates) == 4: verList = [coordinates[:3], [coordinates[0], coordinates[2], coordinates[3]]]
+                    else: verList = [coordinates]
+
+                    for coorList in verList:
+                        #   facet normal 0.400645 -0.916233 0.0
+                        stlFile.write('  facet normal ' + `normals[faceCount].X` + ' '+ `normals[faceCount].Y` + ' ' + `normals[faceCount].Z` + '\n')
+
+                        #    outer loop
+                        stlFile.write('  \touter loop\n')
+
+                        #   vertex 9.59792 -22.1636 4.20010
+                        #   vertex 7.65496 -23.0133 4.20010
+                        #   vertex 7.65496 -23.0133 2.10005
+                        for ver in coorList: stlFile.write('   \t   vertex ' + `ver.X` + ' ' + `ver.Y` + ' ' + `ver.Z` + '\n')
+                        for ver in coorList: solidStr += '   \t   vertex ' + `ver.X` + ' ' + `ver.Y` + ' ' + `ver.Z` + '\n'
+                        #   endloop
+                        stlFile.write('  \tendloop\n')
+
+                        #  endfacet
+                        stlFile.write('  endfacet\n')
+
+                    # endsolid patch1_1
+                    stlFile.write('end' + solidStr)
+            stlFile.close()
+        
+        
+        
+        # Now call writeSTLFile three times to write STL for 
+        # 1. Main building
+        # 2. Context buildings
+        # 3. Ground
+        
+        # TO DO adding message convert all incoming surfaces to ToBrep
+        # Convert all building surfaces to Breps.
+        
+        # mainBldgs is a Brep we need to get the Surfaces of this brep which may not necessarily be a Brep, therefore they are
+        # are referred to as geometry here.
+        
+        mainBldgsBrepSurfaces = [geometry.ToBrep() for geometry in mainBldgs.Surfaces]
+        
+        # Calculate the angel of the main building surfaces.
+        
+        srfsAngle2North = calculateAngles(mainBldgsBrepSurfaces)
+        
+        # Convert the BrepSurfaces to Meshes
+        bldgMesh = self.createMesh(mainBldgsBrepSurfaces, gridSize)
+        
+        # Now finally write stl file for main bldgs
+        
+        #writeSTLFile(filepath, fileName, meshList, northAngleList, type = 'bldg')
+        
+        writeSTLFile(workingDir + "/geo", "primary", bldgMesh, srfsAngle2North)
+        
+        STLFileAddress = workingDir + "\\" + "\\geo"+"\\primary"+".stl"
+        
+        return STLFileAddress 
+        """
+        # secondary
+        contextMesh = []
+        if len(self.contextBldgs)!=0 and self.contextBldgs[0]!= None:
+            contextMesh = self.createMesh(self.contextBldgs, 4 * self.gridSize)
+            srfsAngle2North = calculateAngles(self.contextBldgs)
+            writeSTLFile(workingDir + "/geo", "secondary", contextMesh, srfsAngle2North, 'contextBldg')
+
+        # ground
+        groundMesh = self.createMesh(self.punchedGround, self.gridSize * 200)
+        if len(self.shadedGround) != 0:
+            groundShdMesh = self.createMesh(self.shadedGround, self.gridSize)
+
+            groundMesh = groundMesh + groundShdMesh
+
+        # G angles for ground
+        # should be replaced with something meaningful later
+        srfsAngle2North = []
+        for count, groundFaces in enumerate(groundMesh):
+            srfsAngle2North.append([])
+            for face in groundFaces: srfsAngle2North[count].append('G')
+
+        writeSTLFile(workingDir + "/geo", "ground", groundMesh, srfsAngle2North, 'ground')
+        """
+        
+        #self.stlMesh = joinMesh(self.flattenList(bldgMesh)) + self.flattenList(contextMesh) + self.flattenList(groundMesh))
+
+if _write == True:
+    
+    a = STLMesh()
+    
+    STLFileAddress = a.exportSTL(_breps,_gridSize,_workingDir)
+    
+    readSTL = open(STLFileAddress, 'r')
+    
+    STL = ''.join(str(line) for line in readSTL)
