@@ -1,0 +1,500 @@
+areaAverage(T1A_Bedroom1) of magU = 1.046087
+
+faceSource T1A_Bedroom2 output:
+areaAverage(T1A_Bedroom2) of magU = 0.6361538
+
+faceSource T1A_Bedroom3 output:
+areaAverage(T1A_Bedroom3) of magU = 0.1741712
+
+faceSource T1A_LivingRoom output:
+areaAverage(T1A_LivingRoom) of magU = 0.4926177
+
+faceSource T1A_Corridor output:
+areaAverage(T1A_Corridor) of magU = 0.6699233
+
+faceSource T1A_AllExclCorridor output:
+areaAverage(T1A_AllExclCorridor) of magU = 0.6299411
+
+faceSource T1A_AllInclCorridor output:
+areaAverage(T1A_AllInclCorridor) of magU = 0.6392721
+
+faceSource T1B_Bedroom1 output:
+areaAverage(T1B_Bedroom1) of magU = 0.5352441
+
+faceSource T1B_Bedroom2 output:
+areaAverage(T1B_Bedroom2) of magU = 0.4150273
+
+faceSource T1B_LivingRoom output:
+areaAverage(T1B_LivingRoom) of magU = 0.2004354
+
+faceSource T1B_Corridor output:
+areaAverage(T1B_Corridor) of magU = 0.2381806
+
+faceSource T1B_AllExclCorridor output:
+areaAverage(T1B_AllExclCorridor) of magU = 0.3302202
+
+faceSource T1B_AllInclCorridor output:
+areaAverage(T1B_AllInclCorridor) of magU = 0.3190099
+
+faceSource T1C_Bedroom1 output:
+areaAverage(T1C_Bedroom1) of magU = 0.2804264
+
+faceSource T1C_LivingRoom output:
+areaAverage(T1C_LivingRoom) of magU = 0.1179695
+
+faceSource T1C_All output:
+areaAverage(T1C_All) of magU = 0.3482228
+
+faceSource T1D_Bedroom1 output:
+areaAverage(T1D_Bedroom1) of magU = 0.2804264
+
+faceSource T1D_LivingRoom output:
+areaAverage(T1D_LivingRoom) of magU = 0.1179695
+
+faceSource T1D_All output:
+areaAverage(T1D_All) of magU = 0.1719214
+
+faceSource T1E_Bedroom1 output:
+areaAverage(T1E_Bedroom1) of magU = 0.4139222
+
+faceSource T1E_Bedroom2 output:
+areaAverage(T1E_Bedroom2) of magU = 0.4587799
+
+faceSource T1E_LivingRoom output:
+areaAverage(T1E_LivingRoom) of magU = 0.3541222
+
+faceSource T1E_Corridor output:
+areaAverage(T1E_Corridor) of magU = 0.5858131
+
+faceSource T1E_AllExclCorridor output:
+areaAverage(T1E_AllExclCorridor) of magU = 0.3930722
+
+faceSource T1E_AllInclCorridor output:
+areaAverage(T1E_AllInclCorridor) of magU = 0.4165478
+
+faceSource T1F_Bedroom1 output:
+areaAverage(T1F_Bedroom1) of magU = 0.4083167
+
+faceSource T1F_Bedroom2 output:
+areaAverage(T1F_Bedroom2) of magU = 0.2716916
+
+faceSource T1F_Bedroom3 output:
+areaAverage(T1F_Bedroom3) of magU = 0.2496732
+
+faceSource T1F_Bedroom4 output:
+areaAverage(T1F_Bedroom3) of magU = 0.3145046
+
+faceSource T1F_LivingRoom output:
+areaAverage(T1F_LivingRoom) of magU = 0.5457949
+
+faceSource T1F_Corridor output:
+areaAverage(T1F_Corridor) of magU = 0.3818616
+
+faceSource T1F_AllExclCorridor output:
+areaAverage(T1F_AllExclCorridor) of magU = 0.3921808
+
+faceSource T1F_AllInclCorridor output:
+areaAverage(T1F_AllInclCorridor) of magU = 0.3897877
+
+faceSource T1G_Bedroom1 output:
+areaAverage(T1G_Bedroom1) of magU = 0.1607343
+
+faceSource T1G_LivingRoom output:
+areaAverage(T1G_LivingRoom) of magU = 0.1502548
+
+faceSource T1G_All output:
+areaAverage(T1G_All) of magU = 0.1542161
+
+faceSource T1H_Bedroom1 output:
+areaAverage(T1H_Bedroom1) of magU = 0.1400899
+
+faceSource T1H_Bedroom2 output:
+areaAverage(T1H_Bedroom2) of magU = 0.01946516
+
+faceSource T1H_LivingRoom output:
+areaAverage(T1H_LivingRoom) of magU = 0.1619262
+
+faceSource T1H_Corridor output:
+areaAverage(T1H_Corridor) of magU = 0.09847972
+
+faceSource T1H_AllExclCorridor output:
+areaAverage(T1H_AllExclCorridor) of magU = 0.1141983
+
+faceSource T1H_AllInclCorridor output:
+areaAverage(T1H_AllInclCorridor) of magU = 0.1117475
+
+faceSource T1I_Bedroom1 output:
+areaAverage(T1I_Bedroom1) of magU = 0.1699567
+
+faceSource T1I_Bedroom2 output:
+areaAverage(T1I_Bedroom2) of magU = 0.03541884
+
+faceSource T1I_LivingRoom output:
+areaAverage(T1I_LivingRoom) of magU = 0.2910252
+
+faceSource T1I_All output:
+areaAverage(T1I_All) of magU = 0.1998651
+
+faceSource T1J_Bedroom1 output:
+areaAverage(T1J_Bedroom1) of magU = 0.2076591
+
+faceSource T1J_Bedroom2 output:
+areaAverage(T1J_Bedroom2) of magU = 0.02436471
+
+faceSource T1J_LivingRoom output:
+areaAverage(T1J_LivingRoom) of magU = 0.1817073
+
+faceSource T1J_Corridor output:
+areaAverage(T1J_Corridor) of magU = 0.1016045
+
+faceSource T1J_AllExclCorridor output:
+areaAverage(T1J_AllExclCorridor) of magU = 0.1345614
+
+faceSource T1J_AllInclCorridor output:
+areaAverage(T1J_AllInclCorridor) of magU = 0.1317272
+
+faceSource T1K_Bedroom1 output:
+areaAverage(T1K_Bedroom1) of magU = 0.1705115
+
+faceSource T1K_Bedroom2 output:
+areaAverage(T1K_Bedroom2) of magU = 0.08579985
+
+faceSource T1K_LivingRoom output:
+areaAverage(T1K_LivingRoom) of magU = 0.2015155
+
+faceSource T1K_All output:
+areaAverage(T1K_All) of magU = 0.1661319
+
+faceSource T2A_Bedroom1 output:
+areaAverage(T2A_Bedroom1) of magU = 1.138208
+
+faceSource T2A_Bedroom2 output:
+areaAverage(T2A_Bedroom2) of magU = 0.7265947
+
+faceSource T2A_Bedroom3 output:
+areaAverage(T2A_Bedroom3) of magU = 0.3262809
+
+faceSource T2A_LivingRoom output:
+areaAverage(T2A_LivingRoom) of magU = 0.5066995
+
+faceSource T2A_Corridor output:
+areaAverage(T2A_Corridor) of magU = 0.7265799
+
+faceSource T2A_AllExclCorridor output:
+areaAverage(T2A_AllExclCorridor) of magU = 0.6182547
+
+faceSource T2A_AllInclCorridor output:
+areaAverage(T2A_AllInclCorridor) of magU = 0.6435354
+
+faceSource T2B_Bedroom1 output:
+areaAverage(T2B_Bedroom1) of magU = 0.2916571
+
+faceSource T2B_Bedroom2 output:
+areaAverage(T2B_Bedroom2) of magU = 0.1083236
+
+faceSource T2B_LivingRoom output:
+areaAverage(T2B_LivingRoom) of magU = 0.1336694
+
+faceSource T2B_Corridor output:
+areaAverage(T2B_Corridor) of magU = 0.456583
+
+faceSource T2B_AllExclCorridor output:
+areaAverage(T2B_AllExclCorridor) of magU = 0.166746
+
+faceSource T2B_AllInclCorridor output:
+areaAverage(T2B_AllInclCorridor) of magU = 0.2020478
+
+faceSource T2C_Bedroom1 output:
+areaAverage(T2C_Bedroom1) of magU = 0.1849489
+
+faceSource T2C_LivingRoom output:
+areaAverage(T2C_LivingRoom) of magU = 0.2207099
+
+faceSource T2C_All output:
+areaAverage(T2C_All) of magU = 0.2088337
+
+faceSource T2D_Bedroom1 output:
+areaAverage(T2D_Bedroom1) of magU = 0.1475306
+
+faceSource T2D_LivingRoom output:
+areaAverage(T2D_LivingRoom) of magU = 0.068776
+
+faceSource T2D_All output:
+areaAverage(T2D_All) of magU = 0.09493039
+
+faceSource T2E_Bedroom1 output:
+areaAverage(T2E_Bedroom1) of magU = 0.201421
+
+faceSource T2E_Bedroom2 output:
+areaAverage(T2E_Bedroom2) of magU = 0.2381296
+
+faceSource T2E_LivingRoom output:
+areaAverage(T2E_LivingRoom) of magU = 0.1258232
+
+faceSource T2E_Corridor output:
+areaAverage(T2E_Corridor) of magU = 0.2017827
+
+faceSource T2E_AllExclCorridor output:
+areaAverage(T2E_AllExclCorridor) of magU = 0.170162
+
+faceSource T2E_AllInclCorridor output:
+areaAverage(T2E_AllInclCorridor) of magU = 0.1740134
+
+faceSource T2F_Bedroom1 output:
+areaAverage(T2F_Bedroom1) of magU = 0.8437587
+
+faceSource T2F_Bedroom2 output:
+areaAverage(T2F_Bedroom2) of magU = 0.7834303
+
+faceSource T2F_Bedroom3 output:
+areaAverage(T2F_Bedroom3) of magU = 0.8029243
+
+faceSource T2F_Bedroom4 output:
+areaAverage(T2F_Bedroom3) of magU = 0.6720792
+
+faceSource T2F_LivingRoom output:
+areaAverage(T2F_LivingRoom) of magU = 1.505077
+
+faceSource T2F_Corridor output:
+areaAverage(T2F_Corridor) of magU = 0.8447567
+
+faceSource T2F_AllExclCorridor output:
+areaAverage(T2F_AllExclCorridor) of magU = 1.036567
+
+faceSource T2F_AllInclCorridor output:
+areaAverage(T2F_AllInclCorridor) of magU = 0.9920861
+
+faceSource T2G_Bedroom1 output:
+areaAverage(T2G_Bedroom1) of magU = 0.269056
+
+faceSource T2G_LivingRoom output:
+areaAverage(T2G_LivingRoom) of magU = 0.326715
+
+faceSource T2G_All output:
+areaAverage(T2G_All) of magU = 0.3049194
+
+faceSource T2H_Bedroom1 output:
+areaAverage(T2H_Bedroom1) of magU = 0.340547
+
+faceSource T2H_Bedroom2 output:
+areaAverage(T2H_Bedroom2) of magU = 0.04973421
+
+faceSource T2H_LivingRoom output:
+areaAverage(T2H_LivingRoom) of magU = 0.2371553
+
+faceSource T2H_Corridor output:
+areaAverage(T2H_Corridor) of magU = 0.1970473
+
+faceSource T2H_All output:
+areaAverage(T2H_All) of magU = 0.2104266
+
+faceSource T2I_Bedroom1 output:
+areaAverage(T2I_Bedroom1) of magU = 0.3473278
+
+faceSource T2I_Bedroom2 output:
+areaAverage(T2I_Bedroom2) of magU = 0.05448478
+
+faceSource T2I_LivingRoom output:
+areaAverage(T2I_LivingRoom) of magU = 0.3062391
+
+faceSource T2I_All output:
+areaAverage(T2I_All) of magU = 0.2560928
+
+faceSource T2J_Bedroom1 output:
+areaAverage(T2J_Bedroom1) of magU = 0.2266398
+
+faceSource T2J_Bedroom2 output:
+areaAverage(T2J_Bedroom2) of magU = 0.04561141
+
+faceSource T2J_LivingRoom output:
+areaAverage(T2J_LivingRoom) of magU = 0.1840795
+
+faceSource T2J_Corridor output:
+areaAverage(T2J_Corridor) of magU = 0.1893572
+
+faceSource T2J_AllExclCorridor output:
+areaAverage(T2J_AllExclCorridor) of magU = 0.147922
+
+faceSource T2J_AllInclCorridor output:
+areaAverage(T2J_AllInclCorridor) of magU = 0.1514852
+
+faceSource T2K_Bedroom1 output:
+areaAverage(T2K_Bedroom1) of magU = 0.3415509
+
+faceSource T2K_Bedroom2 output:
+areaAverage(T2K_Bedroom2) of magU = 0.07171426
+
+faceSource T2K_LivingRoom output:
+areaAverage(T2K_LivingRoom) of magU = 0.1766845
+
+faceSource T2K_All output:
+areaAverage(T2K_All) of magU = 0.192301
+
+faceSource T3A_Bedroom1 output:
+areaAverage(T3A_Bedroom1) of magU = 3.377879
+
+faceSource T3A_Bedroom2 output:
+areaAverage(T3A_Bedroom2) of magU = 0.7750414
+
+faceSource T3A_Bedroom3 output:
+areaAverage(T3A_Bedroom3) of magU = 0.2320598
+
+faceSource T3A_LivingRoom output:
+areaAverage(T3A_LivingRoom) of magU = 0.8528863
+
+faceSource T3A_Corridor output:
+areaAverage(T3A_Corridor) of magU = 0.9574316
+
+faceSource T3A_AllExclCorridor output:
+areaAverage(T3A_AllExclCorridor) of magU = 1.147303
+
+faceSource T3A_AllInclCorridor output:
+areaAverage(T3A_AllInclCorridor) of magU = 1.102991
+
+faceSource T3B_Bedroom1 output:
+areaAverage(T3B_Bedroom1) of magU = 0.5421152
+
+faceSource T3B_Bedroom2 output:
+areaAverage(T3B_Bedroom2) of magU = 0.7025277
+
+faceSource T3B_LivingRoom output:
+areaAverage(T3B_LivingRoom) of magU = 0.2772551
+
+faceSource T3B_Corridor output:
+areaAverage(T3B_Corridor) of magU = 0.3654026
+
+faceSource T3B_AllExclCorridor output:
+areaAverage(T3B_AllExclCorridor) of magU = 0.436768
+
+faceSource T3B_AllInclCorridor output:
+areaAverage(T3B_AllInclCorridor) of magU = 0.4280758
+
+faceSource T3C_Bedroom1 output:
+areaAverage(T3C_Bedroom1) of magU = 0.4154437
+
+faceSource T3C_LivingRoom output:
+areaAverage(T3C_LivingRoom) of magU = 0.5794171
+
+faceSource T3C_All output:
+areaAverage(T3C_All) of magU = 0.5249615
+
+faceSource T3D_Bedroom1 output:
+areaAverage(T3D_Bedroom1) of magU = 0.8689565
+
+faceSource T3D_LivingRoom output:
+areaAverage(T3D_LivingRoom) of magU = 0.3872432
+
+faceSource T3D_All output:
+areaAverage(T3D_All) of magU = 0.5472203
+
+faceSource T3E_Bedroom1 output:
+areaAverage(T3E_Bedroom1) of magU = 1.090433
+
+faceSource T3E_Bedroom2 output:
+areaAverage(T3E_Bedroom2) of magU = 1.192524
+
+faceSource T3E_LivingRoom output:
+areaAverage(T3E_LivingRoom) of magU = 0.8366451
+
+faceSource T3E_Corridor output:
+areaAverage(T3E_Corridor) of magU = 0.9277523
+
+faceSource T3E_AllExclCorridor output:
+areaAverage(T3E_AllExclCorridor) of magU = 0.980313
+
+faceSource T3E_AllInclCorridor output:
+areaAverage(T3E_AllInclCorridor) of magU = 0.9739112
+
+faceSource T3F_Bedroom1 output:
+areaAverage(T3F_Bedroom1) of magU = 1.719447
+
+faceSource T3F_Bedroom2 output:
+areaAverage(T3F_Bedroom2) of magU = 0.6441218
+
+faceSource T3F_Bedroom3 output:
+areaAverage(T3F_Bedroom3) of magU = 0.6425748
+
+faceSource T3F_Bedroom4 output:
+areaAverage(T3F_Bedroom3) of magU = 0.3354588
+
+faceSource T3F_LivingRoom output:
+areaAverage(T3F_LivingRoom) of magU = 0.7628055
+
+faceSource T3F_Corridor output:
+areaAverage(T3F_Corridor) of magU = 0.8619718
+
+faceSource T3F_AllExclCorridor output:
+areaAverage(T3F_AllExclCorridor) of magU = 0.8454335
+
+faceSource T3F_AllInclCorridor output:
+areaAverage(T3F_AllInclCorridor) of magU = 0.8492687
+
+faceSource T3G_Bedroom1 output:
+areaAverage(T3G_Bedroom1) of magU = 0.3240702
+
+faceSource T3G_LivingRoom output:
+areaAverage(T3G_LivingRoom) of magU = 0.2396643
+
+faceSource T3G_All output:
+areaAverage(T3G_All) of magU = 0.2715705
+
+faceSource T3H_Bedroom1 output:
+areaAverage(T3H_Bedroom1) of magU = 0.3256824
+
+faceSource T3H_Bedroom2 output:
+areaAverage(T3H_Bedroom2) of magU = 0.03296182
+
+faceSource T3H_LivingRoom output:
+areaAverage(T3H_LivingRoom) of magU = 0.3083288
+
+faceSource T3H_Corridor output:
+areaAverage(T3H_Corridor) of magU = 0.1356948
+
+faceSource T3H_AllExclCorridor output:
+areaAverage(T3H_AllExclCorridor) of magU = 0.2334457
+
+faceSource T3H_AllInclCorridor output:
+areaAverage(T3H_AllInclCorridor) of magU = 0.2182043
+
+faceSource T3I_Bedroom1 output:
+areaAverage(T3I_Bedroom1) of magU = 0.1062967
+
+faceSource T3I_Bedroom2 output:
+areaAverage(T3I_Bedroom2) of magU = 0.01241513
+
+faceSource T3I_LivingRoom output:
+areaAverage(T3I_LivingRoom) of magU = 0.3660912
+
+faceSource T3I_All output:
+areaAverage(T3I_All) of magU = 0.2171417
+
+faceSource T3J_Bedroom1 output:
+areaAverage(T3J_Bedroom1) of magU = 0.1807147
+
+faceSource T3J_Bedroom2 output:
+areaAverage(T3J_Bedroom2) of magU = 0.04366243
+
+faceSource T3J_LivingRoom output:
+areaAverage(T3J_LivingRoom) of magU = 0.1843973
+
+faceSource T3J_Corridor output:
+areaAverage(T3J_Corridor) of magU = 0.1617338
+
+faceSource T3J_AllExclCorridor output:
+areaAverage(T3J_AllExclCorridor) of magU = 0.1349551
+
+faceSource T3J_AllInclCorridor output:
+areaAverage(T3J_AllInclCorridor) of magU = 0.137258
+
+faceSource T3K_Bedroom1 output:
+areaAverage(T3K_Bedroom1) of magU = 0.2678373
+
+faceSource T3K_Bedroom2 output:
+areaAverage(T3K_Bedroom2) of magU = 0.1929175
+
+faceSource T3K_LivingRoom output:
+areaAverage(T3K_LivingRoom) of magU = 0.5605627
+
+faceSource T3K_All output:
+areaAverage(T3K_All) of magU = 0.4001253
+
