@@ -1,0 +1,59 @@
+Hello everyone,
+
+I'll try and say a few things about solving a case. I have also uploaded a number of files along with this document and will be referring to them as I go.
+
+As was discussed during our skype call what we are aiming in the beginning of this project is to alow the users to quickly and easily (read: non transparently) mesh and run their cases. In order for this to happen we need to streamline and automatize as much as possible the whole process of solver and scheme selection. Therefore, this document will focus on exactly that, the process right AFTER the meshing has finished.
+
+The first few options relate to the type of simulation the user wants to run or our program allows for. This is usually a choice between incompressible or compressible simulations and steady state or transient simulations. This document covers the incompressible, steady state simulations. While the options described below will be different for other types, the workflow and the code allowing it should be the same.
+
+Ok, after that is done, it is time for the next big three:
+
+1. Setting up boundary conditions (BCs) -> a.k.a. 0 folder
+
+This is the most crucial part of every CFD simulation as BCs define the physics of the whole model. A lot of mistakes can happen from choosing BCs that are not suitable for the model. This is also very frustrating for a new user. Thankfully, we can assist the users and ourselves by assigning default BCs for different types of cases as well as for different parts of the model. I have included two Ytables with my proposed default BCs for external and internal (with buoyancy solved assumming the Boussinesq approximation) cases. These are the most standard cases and are solved using the simpleFoam solver. Please go through this and let me know if there is any concern, or if you know of better BCs we can use. 
+
+2. Setting up the solution schemes -> /system/fvSchemes
+
+This next part is extremely important for the ability of our model to actually converge to a solution, and to not diverge and explode (smth that can happen often, especially in bad quality meshes). Thankfully, we can again simplify this process by using defaults values/files. These defaults are TIED to the quality of the mesh. Therefore, before we 'select' the appropriate template for the user, we need to run a checkMesh.
+
+The checkMesh command always creates a log of similar structure, which makes it easier for us to use as an input to some sort of code that will handle the selection of schemes. One such log I have included in the folder. The important attributes are:
+
+a) cells: this shows the number of total cells. There is a rule-of-thumb which we can use to print a notice to the user: 2-2.5million cells per 2GB of RAM. In this way the user can know how much more he/she can increase the quality of his/her mesh, or if the mesh is already unsolvable by his set-up.
+
+b) checking geometry: at this point checkMesh lets us know which checks have failed and by what margin. Notice the '***' next to the check failed in the attached log. '***' errors are critical, '**' are important, '*' errors less so. We can use this in two ways. First, to let the user know that his mesh has errors that he might consider solving (usually by increasing the quality of the mesh) if he wants a reliable solution. Secondly, we can use the results of the checkMesh to automatically select a set of numerical schemes out of a basket of available schemes. I have uploaded the standard suggestions for these different types of schemes. The options are tied to the mesh quality and specifically the non-orthogonality check which is the most important when it comes to numerical solution. In this way, we can run almost all different quality meshes reliably for our users (bear in mind that garbage in - garbage out is critical for OpenFoam, so take the 'reliably' lightly here).
+
+3. Setting up solver options -> /system/fvSolution
+
+In this stage we set up the settings of numerical solution for each parameter (e.g. accuracy, iterations, tolerance, etc.). These options have a huge impact on solution speed. Thankfully, we can again create some default templates for our users.
+
+Generally I only use one set of solvers and I only change the specific accuracy of solution within them (I would welcome any feedback on other solvers we can use, e.g. anyone tried GAMG on k/epsilon?). This means that the fvSolution file can always be the same (I uploaded my example) with only certain parameters changed:
+
+	a) Tolerance
+	b) Relevant tolerance (reTol settings)
+	c) nNonOrthogonalCorrectors
+	d) relaxationFactors
+
+The first two define the accuracy of solution in each time step. I usually change these in pressure (p), k, and epsilon solvers. I DO NOT recommend to change relTol in the velocity (U) solver. I recommend that our velocity tolerance to be 1e-08 and the relTol always set at 0.0.
+
+The third has to do with the quality of the mesh, as explained in (2). This one has the greatest impact on computational time, as it adds one more pressure iteration for each corrector. For a very high quality mesh this value should be set at 2 (I always allow for +1 corrector). For lower quality meshes it can be set higher (4 or even 5). We can link this the same way as the fvSchemes.
+
+The fourth is very important for convergence. Low relaxation factor means that the solution will not change a lot from iteration to iteration. Higher factors lead to faster solution convergence but can also lead to big explosions (esp. in bad quality meshes). I recommend we leave it at the default values for every mesh for now. I do, however, change the pressure factor to 0.5 during the 1st and 2nd phases of my workflow (see below).
+
+In the typical fvSolution file I uploaded I have two sets of values for all the above. The first set of values is the 'faster' settings (ones I use during 1st and 2nd phases), the second set of values, in blue, are the 'slower' and more accurate settings (which I use in the 3rd phase).
+
+4. As a last comment I would like to note here that it is good practice, in a simulation workflow, to allow for at least three different phases of solving the case: 
+
+I) During the first phase, one solves the laminar case (i.e. same exact case but without turbulence). This is done by selecting "tubulence off;" in the /constant/RASProperties file. Usually, one allows for this to run for a good number of iterations, typically hundreds (it runs considerably faster than the turbulent case). The solution achieved in this stage is then used in phase two.
+
+II) During the second phase, we simply turn turbulence "on" in the RASProperties file. We then let the solver run for as much as we want (i.e. number of iterations in controlDict) or until the limits set for accuracy are achieved. It should be noted here that in these first two phases we always use first order schemes and low accuracy solving settings (you can find these schemes in the '3 Phases' folder).
+
+III) During the third phase, we use the converged solution of the second phase with the addition of second-order schemes and stricter solution settings. At the end, it is this phase that will yield the accurate and dependable results for us.
+
+It would be really impressive if we could automate the above procedure. The changes from each phase to the other can already be done in OpenFoam without stopping the simulation. By setting the value "runModifiable yes;" in controlDict, you can change any value in any dictionary without restarting the simulation (as long as you didn't type smth wrong ofc). Unfortunately, atm this requires the user to manually go into the files, change the values, and save the file. It would be a nice feature, imo, if we can automate this by code (sounds easy enough but I'm not a coder). A nice way to offer this feature would be a component in which the user can input the number of iterations for each of these phases.
+
+That is all from me for now! Thanks for reading!
+
+Kind regards,
+Theodore.
+
+	

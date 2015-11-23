@@ -1,0 +1,74 @@
+/*--------------------------------*- C++ -*---------------------------------*\
+| =========                |                                                 |
+| \      /  F ield         | foam-extend: Open Source CFD                    |
+|  \    /   O peration     | Version:     3.1                                |
+|   \  /    A nd           | Web:         http://www.extend-project.de       |
+|    \/     M anipulation  |                                                 |
+\*--------------------------------------------------------------------------*/
+FoamFile 
+{
+version     2.0;
+format      ascii;
+class       dictionary;
+location    "system";
+object      fvSolution;
+}
+
+
+solvers
+{
+    p
+    {
+        solver           GAMG;
+        tolerance        1e-5; //for better accuracy during 3rd phase set to 1e-07
+        relTol           0.01; //for better accuracy during 3rd phase set to 1e-07 0.001
+        smoother         GaussSeidel;
+        nPreSweepsre     0;
+        nPostSweeps      2;
+        cacheAgglomeration on;
+        agglomerator     faceAreaPair;
+        nCellsInCoarsestLevel 1000;
+        mergeLevels      1;
+    };
+
+    U
+    {
+	type		 coupled;        
+	solver           PBiCCCG;
+        preconditioner   DILU;
+        tolerance        (1e-08 1e-08 1e-08);
+        relTol           (0.0 0.0 0.0);
+        minIter          3;
+    };
+
+    k
+    {
+        solver           smoothSolver;
+        smoother         GaussSeidel;
+        tolerance        1e-8;
+        relTol           0.1; //for better accuracy during 3rd phase set to 1e-07 0.01
+        nSweeps          1;
+    };
+
+    epsilon
+    {
+        solver           smoothSolver;
+        smoother         GaussSeidel;
+        tolerance        1e-8;
+        relTol           0.1; //for better accuracy during 3rd phase set to 1e-07 0.01
+        nSweeps          1;
+    };
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 2; //set to 4 for medium to bad meshes. I actually always have it set to 					4 at the 3rd phase
+}
+
+relaxationFactors
+{
+    p               0.5;	//could set to 0.3 at 3rd phase
+    U               0.7;
+    k               0.7;
+    epsilon         0.7;
+}

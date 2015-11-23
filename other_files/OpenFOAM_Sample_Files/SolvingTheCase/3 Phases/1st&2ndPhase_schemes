@@ -1,0 +1,11 @@
+//The part below is the only part of the fvSchemes file that is changed between the 2nd and 3d phase of the workflow, the rest depend on quality of the mesh. The settings below are first-order schemes which allow for a much faster computational time but lower accuracy.
+
+divSchemes	
+
+{
+   default none;
+    div(phi,U)          bounded Gauss upwind; 
+    div(phi,epsilon)    bounded Gauss upwind;
+    div(phi,k)          bounded Gauss upwind;
+    div((nuEff*dev(T(grad(U))))) Gauss linear;
+}
