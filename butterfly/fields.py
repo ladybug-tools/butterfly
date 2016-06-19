@@ -2,41 +2,41 @@
 class BoundaryField:
     """OpenFoam Boundary Field
 
-        Attributes:
-            name    : Name of boundary field as a string
-            bcType  : Type of boundary field (e.g fixedFluxPressure)
-            value   : Value as a string (e.g uniform (0 0 0), )
-            other   : A dictionary of other optional fields as key, values
+    Attributes:
+        name    : Name of boundary field as a string
+        bcType  : Type of boundary field (e.g fixedFluxPressure)
+        value   : Value as a string (e.g uniform (0 0 0), )
+        other   : A dictionary of other optional fields as key, values
 
-        Usage:
-            # create boundary field
-            floor_bof = BoundaryField(name = "floor",
-                bfType = "alphatJayatillekeWallFunction",
-                value = "uniform 0")
+    Usage:
+        # create boundary field
+        floor_bof = BoundaryField(name = "floor",
+            bfType = "alphatJayatillekeWallFunction",
+            value = "uniform 0")
 
-            # add a new field
-            floor_bof.add_properties(properties={"Prt" : "0.85"})
-            print "Property is added > " + str(bof.properties)
+        # add a new field
+        floor_bof.add_properties(properties={"Prt" : "0.85"})
+        print "Property is added > " + str(bof.properties)
 
-            # update the value for
-            floor_bof.update_properties(properties={"Prt" : "0.80", "notValid" : "0"})
-            print "Value is updated to 0.80 > " + str(bof.properties)
+        # update the value for
+        floor_bof.update_properties(properties={"Prt" : "0.80", "notValid" : "0"})
+        print "Value is updated to 0.80 > " + str(bof.properties)
 
-            # remove Prt
-            floor_bof.remove_property("Prt")
-            print "Prt is removed > " + str(bof.properties)
+        # remove Prt
+        floor_bof.remove_property("Prt")
+        print "Prt is removed > " + str(bof.properties)
 
-            # get OpenFoam string
-            print "This is how it will be in OpenFoam File >\n" + floor_bof.get_OFString()
+        # get OpenFoam string
+        print "This is how it will be in OpenFoam File >\n" + floor_bof.get_OFString()
 
-            # add another boundary field
-            fixedWalls_bof = BoundaryField(name = "fixedWalls",
-                bfType = "alphatJayatillekeWallFunction",
-                value = "uniform 0",
-                other = {"prt":"0.85"})
+        # add another boundary field
+        fixedWalls_bof = BoundaryField(name = "fixedWalls",
+            bfType = "alphatJayatillekeWallFunction",
+            value = "uniform 0",
+            other = {"prt":"0.85"})
 
-            # get full string
-            print BoundaryField.get_BoundaryFieldsOFString([floor_bof, fixedWalls_bof])
+        # get full string
+        print BoundaryField.get_BoundaryFieldsOFString([floor_bof, fixedWalls_bof])
     """
 
     #TODO: Value should be it's own object but I don't really know all the value
