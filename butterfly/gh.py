@@ -185,8 +185,16 @@ class Block(object):
         faces = sorted(geo.Faces, key=lambda f: self._cenPt(f).Z)
 
         return tuple((ver.Location.X, ver.Location.Y, ver.Location.Z) for verGroup in
-                    (faces[0].ToBrep().Vertices, faces[-1].ToBrep().Vertices)
+                    (self.shiftVertices(faces[0].ToBrep().Vertices),
+                     faces[-1].ToBrep().Vertices)
                      for ver in verGroup)
+
+    @staticmethod
+    def shiftVertices(vertices):
+        # shift vertices to match openfoam order
+        _ver = list(vertices)
+        _ver.reverse()
+        return _ver[-1:] + _ver[:-1]
 
     @staticmethod
     def _cenPt(f):
