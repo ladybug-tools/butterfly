@@ -16,17 +16,23 @@ class FoamFile(object):
         location: Folder name (0, constant or system)
         fileFormat: File format (ascii / binary) (default: ascii)
     """
+    __locations = ("0", "system", "constant", None)
 
     def __init__(self, name, cls, location=None, fileFormat="ascii",
                  defaultValues=None, values=None):
         """Init foam file."""
-        self.__version = str(Version.OFVer())
+        self.__version = str(Version().OFVer)
         self.format  = str(fileFormat) # ascii / binary
         self.cls  = str(cls) # dictionary or field
         self.name = str(name)
         self.location = location #location is optional
-        if self.location == "0" or self.location == "system":
+
+        if self.location in self.__locations:
             self.location = '"' + self.location + '"'
+        else:
+            raise ValueError('{} is not a valid OpenFOAM location: {}'.format(
+                self.location, self.__locations
+            ))
 
         # Initiate values
         if not values:
@@ -95,9 +101,9 @@ class FoamFile(object):
     def body(self):
         """Return body string."""
         # convert python dictionary to c++ dictionary
-        of = json.dumps(self.values, indent=4, separators=(";", "\t")) \
+        of = json.dumps(self.values, indent=4, separators=(";", "\t\t")) \
             .replace('"\n', ";\n").replace('"', '').replace('};', '}') \
-            .replace('\t{', '{')
+            .replace('\t\t{', '{')
 
         # remove first and last {} and prettify[!] the file
         l = (line[4:] if not line.endswith('{') else self._splitLine(line)
