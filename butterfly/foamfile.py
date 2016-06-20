@@ -1,7 +1,7 @@
 #Foam File Class
 from version import Version, Header
 import os
-
+import json
 
 class FoamFile(object):
     """FoamFile base class for OpenFOAM dictionaries.
@@ -49,25 +49,23 @@ class FoamFile(object):
         """
         self.__values.update(v)
 
-    def body(self):
-        """Return body string."""
-        return "\n".join(tuple("{}\t\t{};\n".format(key, value)
-                      for key, value in self.values.iteritems()
-                      ))
+    @property
+    def parameters(self):
+        return self.values.keys()
 
-    def toOpenFoam(self):
-        return "\n".join((self.header(), self.body()))
+    def getValueByParameter(self, parameter):
+        try:
+            return self.values[parameter]
+        except KeyError:
+            raise KeyError('{} is not available in {}.'.format(
+                parameter, self.__class__.__name__
+            ))
 
-    def save(self, projectFolder, subFolder=None):
-        subFolder = self.location.replace('"', '') if not subFolder else subFolder
-        with open(os.path.join(projectFolder, subFolder, self.name), "wb") as outf:
-            outf.write(self.toOpenFoam())
-
-    def __repr__(self):
-        return self.toOpenFoam()
+    def setValueByParameter(self, parameter, value):
+        self.values[parameter] = value
 
     def header(self):
-        """Return open foam style string"""
+        """Return open foam style string."""
         if self.location:
             return Header.header() + \
             "FoamFile\n{\n" \
@@ -87,3 +85,33 @@ class FoamFile(object):
             "\tclass\t\t%s;\n" \
             "\tobject\t\t%s;\n" \
             "}\n" % (self.__version, self.format, self.cls, self.name)
+
+    @staticmethod
+    def _splitLine(line):
+        """Split lines which ends with { to two lines."""
+        return line[4:-1] + "\n" + \
+               (len(line) - len(line.strip()) - 4) * ' ' + '{'
+
+    def body(self):
+        """Return body string."""
+        # convert python dictionary to c++ dictionary
+        of = json.dumps(self.values, indent=4, separators=(";", "\t")) \
+            .replace('"\n', ";\n").replace('"', '').replace('};', '}') \
+            .replace('\t{', '{')
+
+        # remove first and last {} and prettify[!] the file
+        l = (line[4:] if not line.endswith('{') else self._splitLine(line)
+             for line in of.split("\n")[1:-1])
+
+        return "\n\n".join(l)
+
+    def toOpenFoam(self):
+        return "\n".join((self.header(), self.body()))
+
+    def save(self, projectFolder, subFolder=None):
+        subFolder = self.location.replace('"', '') if not subFolder else subFolder
+        with open(os.path.join(projectFolder, subFolder, self.name), "wb") as outf:
+            outf.write(self.toOpenFoam())
+
+    def __repr__(self):
+        return self.toOpenFoam()
