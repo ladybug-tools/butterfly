@@ -6,6 +6,7 @@ try:
 except ImportError:
     pass
 
+from boundarycondition import BoundaryCondition
 
 
 class BFSurface(object):
@@ -17,8 +18,12 @@ class BFSurface(object):
         self.meshingParameters = meshingParameters
         self.name = name
         self.geometry = geometry
+
         # TODO: add check for boundary condition to be valid
-        self.boundaryCondition = boundaryCondition
+        if not boundaryCondition:
+            self.boundaryCondition = BoundaryCondition()
+        else:
+            self.boundaryCondition = boundaryCondition
 
     @property
     def geometry(self):
@@ -118,10 +123,9 @@ class BFSurface(object):
                              "in the vertices:\ninput: {}\n vertices: {}"
                              .format(self.borderVertices, vertices))
 
-
         return _body % (
                     self.name,
-                    self.boundaryCondition,
+                    self.boundaryCondition.type,
                     "\n".join(["            " + str(indices).replace(",", "")
                                for indices in renumberedIndices])
         )

@@ -1,9 +1,9 @@
 "k class."
-from foamfile import FoamFile
+from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict
 
 
-class K(FoamFile):
+class K(ZeroFolderFoamFile):
     """k class."""
 
     # set default valus for this class
@@ -14,9 +14,14 @@ class K(FoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        FoamFile.__init__(self, name='k', cls='volScalarField',
-                          location='0', defaultValues=self.__defaultValues,
-                          values=values)
+        ZeroFolderFoamFile.__init__(self, name='k', cls='volScalarField',
+                                    location='0',
+                                    defaultValues=self.__defaultValues,
+                                    values=values)
 
-# fv = K()
-# fv.save(r'C:\Users\Administrator\butterfly\innerflow_3')
+    @classmethod
+    def fromBFSurfaces(cls, BFSurfaces, values=None):
+        """Init class by BFSurfaces."""
+        _cls = cls(values)
+        _cls.setBoundaryField(BFSurfaces)
+        return _cls

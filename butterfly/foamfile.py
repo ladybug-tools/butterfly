@@ -1,5 +1,6 @@
 #Foam File Class
 from version import Version, Header
+from helper import getBoundaryField
 import os
 import json
 
@@ -16,7 +17,7 @@ class FoamFile(object):
         location: Folder name (0, constant or system)
         fileFormat: File format (ascii / binary) (default: ascii)
     """
-    __locations = ("0", "system", "constant", None)
+    __locations = ("0", "system", "constant")
 
     def __init__(self, name, cls, location=None, fileFormat="ascii",
                  defaultValues=None, values=None):
@@ -27,12 +28,15 @@ class FoamFile(object):
         self.name = str(name)
         self.location = location #location is optional
 
-        if self.location in self.__locations:
-            self.location = '"' + self.location + '"'
-        else:
-            raise ValueError('{} is not a valid OpenFOAM location: {}'.format(
-                self.location, self.__locations
-            ))
+        if self.location:
+            if self.location in self.__locations:
+                self.location = '"' + self.location + '"'
+            else:
+                    raise ValueError(
+                        '{} is not a valid OpenFOAM location: {}'.format(
+                        self.location, self.__locations
+                        )
+                    )
 
         # Initiate values
         if not values:
@@ -121,3 +125,16 @@ class FoamFile(object):
 
     def __repr__(self):
         return self.toOpenFoam()
+
+
+class ZeroFolderFoamFile(FoamFile):
+    """FoamFiles under 0 folder."""
+    def setBoundaryField(self, BFSurfaces):
+        """Get data for getBoundaryField as a dictionary.
+
+        Args:
+            BFSurfaces: List of Butterfly surfaces.
+        """
+        self.values['boundaryField'] = getBoundaryField(
+            BFSurfaces, self.__class__.__name__.lower()
+        )

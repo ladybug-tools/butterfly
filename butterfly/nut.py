@@ -1,9 +1,9 @@
 "nut class."
-from foamfile import FoamFile
+from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict
 
 
-class Nut(FoamFile):
+class Nut(ZeroFolderFoamFile):
     """Nut class."""
 
     # set default valus for this class
@@ -14,9 +14,14 @@ class Nut(FoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        FoamFile.__init__(self, name='nut', cls='volScalarField',
-                          location='0', defaultValues=self.__defaultValues,
-                          values=values)
+        ZeroFolderFoamFile.__init__(self, name='nut', cls='volScalarField',
+                                    location='0',
+                                    defaultValues=self.__defaultValues,
+                                    values=values)
 
-fv = Nut()
-fv.save(r'C:\Users\Administrator\butterfly\innerflow_3')
+    @classmethod
+    def fromBFSurfaces(cls, BFSurfaces, values=None):
+        """Init class by BFSurfaces."""
+        _cls = cls(values)
+        _cls.setBoundaryField(BFSurfaces)
+        return _cls

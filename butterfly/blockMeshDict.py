@@ -5,12 +5,26 @@ import os
 class BlockMeshDict(FoamFile):
 
     def __init__(self, scale, BFSurfaces, blocks):
-        FoamFile.__init__(self, name='blockMeshDict', cls='dictionary')
+        FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
+                          location='constant')
         self.scale = scale
         self.blocks = blocks
+        self.BFSurfaces = BFSurfaces
         # collect uniqe vertices from all BFSurfaces
         self.vertices = tuple(set(v for f in BFSurfaces for vgroup in f.borderVertices for v in vgroup))
-        self.BFSurfaces = BFSurfaces
+        self.center = self.__averageVerices()
+
+    def __averageVerices(self):
+        _x, _y, _z = 0 , 0, 0
+
+        for ver in self.vertices:
+            _x += ver[0]
+            _y += ver[1]
+            _z += ver[2]
+
+        return _x / len(self.vertices), \
+               _y / len(self.vertices), \
+               _z / len(self.vertices)
 
     def toOpenFoam(self):
         _hea = self.header()
@@ -43,6 +57,11 @@ class BlockMeshDict(FoamFile):
                     "\n"  # merge patch pair
                )
 
-    def save(self, folder):
-        with open(os.path.join(folder, "blockMeshDict"), "wb") as outf:
-            outf.write(self.toOpenFoam())
+    def save(self, projectFolder, subFolder="constant\\polyMesh"):
+        FoamFile.save(self, projectFolder, subFolder)
+
+    def ToString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "Butterfly::%s" % self.__class__.__name__

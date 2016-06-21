@@ -1,9 +1,8 @@
 "BlockMeshDict class."
-from foamfile import FoamFile
+from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict
 
-
-class U(FoamFile):
+class U(ZeroFolderFoamFile):
     """U (Speed) class."""
 
     # set default valus for this class
@@ -14,28 +13,14 @@ class U(FoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        FoamFile.__init__(self, name='U', cls='volVectorField',
-                          location='0', defaultValues=self.__defaultValues,
-                          values=values)
+        ZeroFolderFoamFile.__init__(self, name='U', cls='volVectorField',
+                                    location='0',
+                                    defaultValues=self.__defaultValues,
+                                    values=values)
 
-fv = U()
-fv.save(r'C:\Users\Administrator\butterfly\innerflow_3')
-
-# boundary field structure
-# boundaryField
-# {
-#     room
-#     {
-#         type            fixedValue;
-#         value           uniform (0 0 0);
-#     }
-#     west_window
-#     {
-#       type            fixedValue;
-#       value           uniform (2 0 0);
-#     }
-#     east_window
-#     {
-#       type        zeroGradient;
-#     }
-# }
+    @classmethod
+    def fromBFSurfaces(cls, BFSurfaces, values=None):
+        """Init class by BFSurfaces."""
+        _cls = cls(values)
+        _cls.setBoundaryField(BFSurfaces)
+        return _cls

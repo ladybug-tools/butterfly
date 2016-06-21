@@ -1,3 +1,3 @@
-__all__ = ["core", "fields", "foamfile", "solvers", "version", "gh"]
+__all__ = ["boundarycondition", "core", "fields", "foamfile", "gh", "version"]
 
-import core, fields, foamfile, solvers, version, gh
+import boundarycondition, core, fields, foamfile, gh, version

@@ -1,4 +1,4 @@
-"BlockMeshDict class."
+"Finite Volume Solution class."
 from foamfile import FoamFile
 from collections import OrderedDict
 
@@ -46,7 +46,10 @@ class FvSolution(FoamFile):
         'nSweeps': '1'
     }
 
-    __defaultValues['SIMPLE'] = {}
+    __defaultValues['SIMPLE'] = {
+        'nNonOrthogonalCorrectors': '2'
+    }
+
     __defaultValues['relaxationFactors'] = OrderedDict()
     __defaultValues['relaxationFactors']['p'] = '0.3'
     __defaultValues['relaxationFactors']['U'] = '0.7'
@@ -58,7 +61,3 @@ class FvSolution(FoamFile):
         FoamFile.__init__(self, name='fvSolution', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
-
-
-fv = FvSolution()
-fv.save(r'C:\Users\Administrator\butterfly\innerflow_3')

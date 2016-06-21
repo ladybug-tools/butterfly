@@ -1,10 +1,13 @@
 "snappyHexMeshDict class."
 from foamfile import FoamFile
 from collections import OrderedDict
+from helper import getSnappyHexMeshGeometryFeild, \
+    getSnappyHexMeshRefinementSurfaces
+
 
 # TODO: Move default values into a separate file.
 # TODO: Add specific methods to access most common values
-class snappyHexMeshDict(FoamFile):
+class SnappyHexMeshDict(FoamFile):
     """Control dict class."""
 
     # set default valus for this class
@@ -27,7 +30,7 @@ class snappyHexMeshDict(FoamFile):
     __defaultValues['castellatedMeshControls']['refinementSurfaces'] = {}
     __defaultValues['castellatedMeshControls']['resolveFeatureAngle'] = 30
     __defaultValues['castellatedMeshControls']['refinementRegions'] = {}
-    __defaultValues['castellatedMeshControls']['locationInMesh'] = '(5 5 1)'
+    __defaultValues['castellatedMeshControls']['locationInMesh'] = '(0 0 0)'
     __defaultValues['castellatedMeshControls']['allowFreeStandingZoneFaces'] ='false'
 
     # snap controls
@@ -85,29 +88,54 @@ class snappyHexMeshDict(FoamFile):
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
 
-# s = snappyHexMeshDict()
-# s.save(r'C:\Users\Administrator\butterfly\innerflow_3')
+    @classmethod
+    def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
+                       locationInMesh, meshingType='triSurfaceMesh',
+                       values=None):
+        _cls = cls(values)
+        _cls.locationInMesh = locationInMesh
+        _cls.setGeometry(projectName, BFSurfaces, meshingType)
+        _cls.setRefinementSurfaces(projectName, BFSurfaces, globalRefinementLevel)
+        return _cls
+
+    @property
+    def locationInMesh(self):
+        """A tuple for the location of the volume the should be meshed."""
+        return self.values['castellatedMeshControls']['locationInMesh']
+
+    @locationInMesh.setter
+    def locationInMesh(self, point):
+        if not point:
+            point = (0, 0, 0)
+
+        try:
+            self.values['castellatedMeshControls']['locationInMesh'] = \
+                str(tuple(eval(point))).replace(',', "")
+        except:
+            self.values['castellatedMeshControls']['locationInMesh'] = \
+                str(tuple(point)).replace(',', "")
+
+    def setGeometry(self, projectName, BFSurfaces,
+                         meshingType='triSurfaceMesh'):
+        """Set geometry from BFSurfaces."""
+        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+                                                  meshingType)
+        self.values['geometry'] = _geoField
+
+    def setRefinementSurfaces(self, projectName, BFSurfaces, globalLevels):
+        """Set refinement values for surfaces.
+
+        Args:
+            projectName: Name of OpenFOAM case.
+            BFSurfaces: List of Butterfly surfaces.
+            globalLevels: Default Min, max level of surface mesh refinement.
+        """
+        _ref = getSnappyHexMeshRefinementSurfaces(projectName,
+                                                  BFSurfaces, globalLevels)
+
+        self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 
 
-# Structure for 'geometry' input
-# {'projectName.stl': {'type': 'triSurfaceMesh',
-#                      'name': 'projectName',
-#                      'regions': {
-#                                     'region_name': {'name': 'region_name'}
-#                                 }
-#
-#                     }
-# }
-
-# structure for refinementSurfaces
-# innerflow
-# {
-#     level (0 0),  // global region value
-#     regions
-#     {
-#         east_window
-#         {
-#             level (4 4),
-#         }
-#     }
-# }
+# s = SnappyHexMeshDict()
+# s.locationInMesh = (0, 10, 0)
+# s.save(r'C:\Users\Administrator\butterfly\innerflow_4')
