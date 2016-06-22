@@ -21,7 +21,7 @@ class BoundaryCondition(object):
         """Init bounday condition."""
         self.type = bcType
         self.temperature = temperature
-        self.refLevels = (0, 0) if not refLevels else refLevels
+        self.refLevels = (0, 0) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
         self.u = ZeroGradient() if not u else u
         self.p = ZeroGradient() if not p else p
@@ -41,6 +41,24 @@ class BoundaryCondition(object):
         """Bounday condition representatoin."""
         return "{}: {}; refLevels {}".format(self.__class__.__name__,
                                              self.type, self.refLevels)
+
+
+class BoundingBoxBoundaryCondition(BoundaryCondition):
+    """Bounding box boundary condition for bounding box surface.
+
+    It returns a boundary condition of ZeroGradient for all the inputs.
+    """
+    def __init__(self, refLevels=None):
+        """Init bounday condition."""
+        u = ZeroGradient()
+        p = ZeroGradient()
+        k = ZeroGradient()
+        epsilon = ZeroGradient()
+        nut = ZeroGradient()
+        refLevels = None
+        temperature = None
+        BoundaryCondition.__init__(self, 'wall', refLevels, temperature, u, p,
+                                   k, epsilon, nut)
 
 
 class WallBoundaryCondition(BoundaryCondition):

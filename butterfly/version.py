@@ -6,8 +6,11 @@ class Version(object):
 
     @property
     def OFVer(self):
-        return "2.4.0"
+        return "2.4"
 
+    @property
+    def OFFullVer(self):
+        return "2.4.0"
 
 class Header(object):
     """Input files header
@@ -16,7 +19,7 @@ class Header(object):
     """
 
     @staticmethod
-    def header(OpenFOAMVersion= Version().OFVer, ButterflyVersion=Version().BFVer):
+    def header(OpenFOAMVersion= Version().OFFullVer, ButterflyVersion=Version().BFVer):
 
         header = "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
                  "| =========                 |                                                 |\n"  + \

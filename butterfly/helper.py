@@ -12,14 +12,16 @@ def mkdir(directory, overwrite = True):
     return directory
 
 
-def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces, stlFile = None, meshingType = 'triSurfaceMesh'):
+def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+                                  meshingType='triSurfaceMesh',
+                                  stlFile=None):
     """Get data for Geometry as a dictionary.
 
     Args:
         projectName: Name of OpenFOAM case.
         BFSurfaces: List of Butterfly surfaces.
-        stlFile: Name of .stl file if it is different from projectName.stl
         meshingType: Meshing type. (Default: triSurfaceMesh)
+        stlFile: Name of .stl file if it is different from projectName.stl
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
@@ -36,7 +38,7 @@ def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces, stlFile = None, meshi
     return _geo
 
 
-def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels = None):
+def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=None):
     """Get data for MeshRefinementSurfaces as a dictionary.
 
     Args:
@@ -74,6 +76,6 @@ def getBoundaryField(BFSurfaces, field = 'u'):
     for bfsrf in BFSurfaces:
         if bfsrf.name not in _bou:
             _bc = getattr(bfsrf.boundaryCondition, field)
-            _bou[bfsrf.name] = _bc.valueDict 
+            _bou[bfsrf.name] = _bc.valueDict
 
     return _bou

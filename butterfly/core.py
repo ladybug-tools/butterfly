@@ -47,11 +47,11 @@ class Case(object):
         self.transportProperties = TransportProperties()
 
         # 0 floder
-        self.u = U.fromBFSurfaces(BFSurfaces)
-        self.p = P.fromBFSurfaces(BFSurfaces)
-        self.k = K.fromBFSurfaces(BFSurfaces)
-        self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces)
-        self.nut = Nut.fromBFSurfaces(BFSurfaces)
+        self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+        self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+        self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+        self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+        self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
 
         # system folder
         self.fvSchemes = FvSchemes()

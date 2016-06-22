@@ -8,6 +8,7 @@ class TransportProperties(FoamFile):
 
     # set default valus for this class
     __defaultValues = OrderedDict()
+    __defaultValues['transportModel'] = 'Newtonian'
     __defaultValues['nu'] = 'nu [0 2 -1 0 0 0 0] 1e-05'
     __defaultValues['beta'] = 'beta [0 0 0 -1 0 0 0] 3e-03'
     __defaultValues['TRef'] = 'TRef [0 0 0 1 0 0 0] 300'
@@ -20,6 +21,3 @@ class TransportProperties(FoamFile):
         FoamFile.__init__(self, name='transportProperties', cls='dictionary',
                           location='constant', defaultValues=self.__defaultValues,
                           values=values)
-
-# fv = TransportProperties()
-# fv.save(r'C:\Users\Administrator\butterfly\innerflow_3')

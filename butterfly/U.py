@@ -7,8 +7,8 @@ class U(ZeroFolderFoamFile):
 
     # set default valus for this class
     __defaultValues = OrderedDict()
-    __defaultValues['dimensions'] = 'nu [0 2 -1 0 0 0 0] 1e-05'
-    __defaultValues['internalField'] = 'beta [0 0 0 -1 0 0 0] 3e-03'
+    __defaultValues['dimensions'] = '[0 1 -1 0 0 0 0]'
+    __defaultValues['internalField'] = 'uniform (0 0 0)'
     __defaultValues['boundaryField'] = {}
 
     def __init__(self, values=None):
