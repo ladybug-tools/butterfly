@@ -6,7 +6,7 @@ class BlockMeshDict(FoamFile):
 
     def __init__(self, scale, BFSurfaces, blocks):
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
-                          location='constant')
+                          location='system')
         self.scale = scale
         self.blocks = blocks
         self.BFSurfaces = BFSurfaces
@@ -56,9 +56,6 @@ class BlockMeshDict(FoamFile):
                               for srf in self.BFSurfaces),
                     "\n"  # merge patch pair
                )
-
-    def save(self, projectFolder, subFolder="constant\\polyMesh"):
-        FoamFile.save(self, projectFolder, subFolder)
 
     def ToString(self):
         return self.__repr__()

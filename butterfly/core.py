@@ -1,10 +1,12 @@
 """Butterfly core library."""
 import os
+from version import Version
 from helper import mkdir
 # constant folder objects
+from turbulenceProperties import TurbulenceProperties
 from RASProperties import RASProperties
 from transportProperties import TransportProperties
-from blockMeshDict import BlockMeshDict
+
 # 0 folder objects
 from U import U
 from k import K
@@ -12,6 +14,7 @@ from p import P
 from nut import Nut
 from epsilon import Epsilon
 # system folder objects
+from blockMeshDict import BlockMeshDict
 from controlDict import ControlDict
 from snappyHexMeshDict import SnappyHexMeshDict
 from fvSchemes import FvSchemes
@@ -32,6 +35,7 @@ class Case(object):
                  isSnappyHexMesh=False):
         """Init project."""
         self.username = os.getenv("USERNAME")
+        self.version = float(Version.OFVer)
         self.projectName = projectName
         self.BFSurfaces = BFSurfaces
         # meshing - constant
@@ -43,7 +47,10 @@ class Case(object):
             projectName, BFSurfaces, globalRefinementLevel, locationInMesh)
 
         # constant folder
-        self.RASProperties = RASProperties()
+        if self.version < 3:
+            self.RASProperties = RASProperties()
+        else:
+            self.turbulenceProperties = TurbulenceProperties()
         self.transportProperties = TransportProperties()
 
         # 0 floder
@@ -135,9 +142,6 @@ class Case(object):
         if not self._isInit:
             raise CaseFoldersNotCreatedError()
 
-        # write blockMeshDict to polyMesh
-        self.blockMeshDict.save(self.projectDir)
-
         # write stl files to triSurface
         # for surface in self
         if self.isSnappyHexMesh:
@@ -149,7 +153,13 @@ class Case(object):
                       'wb') as outf:
                 outf.write("\n\n".join(_stl))
 
-        self.RASProperties.save(self.projectDir)
+        if self.version < 3:
+            # write blockMeshDict to polyMesh
+            self.blockMeshDict.save(self.projectDir, 'constant\\polyMesh')
+            self.RASProperties.save(self.projectDir)
+        else:
+            self.turbulenceProperties.save(self.projectDir)
+
         self.transportProperties.save(self.projectDir)
 
     def populateZeroContents(self):
@@ -167,6 +177,10 @@ class Case(object):
         """Write system folder files."""
         if not self._isInit:
             raise CaseFoldersNotCreatedError()
+
+        if not self.version < 3:
+            # for version +3 blockMeshDict is moved under system
+            self.blockMeshDict.save(self.projectDir)
 
         self.snappyHexMeshDict.save(self.projectDir)
         self.controlDict.save(self.projectDir)

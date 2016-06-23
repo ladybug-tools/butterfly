@@ -1,4 +1,5 @@
 "BlockMeshDict class."
+from version import Version
 from foamfile import FoamFile
 from collections import OrderedDict
 
@@ -14,9 +15,14 @@ class FvSchemes(FoamFile):
        'default': 'none',
        'div(phi,U)': 'bounded Gauss linearUpwindV grad(U)',
        'div(phi,epsilon)': 'bounded Gauss linearUpwind grad(epsilon)',
-       'div(phi,k)': 'bounded Gauss linearUpwind grad(k)',
-       'div((nuEff*dev(T(grad(U)))))': 'Gauss linear'
+       'div(phi,k)': 'bounded Gauss linearUpwind grad(k)'
         }
+
+    if float(Version.OFVer) < 3:
+        __defaultValues['divSchemes']['div((nuEff*dev(T(grad(U)))))'] = 'Gauss linear'
+    else:
+        __defaultValues['divSchemes']['div((nuEff*dev2(T(grad(U)))))'] = 'Gauss linear'
+
     __defaultValues['laplacianSchemes'] = {'default': 'Gauss linear limited corrected 0.333'}
     __defaultValues['interpolationSchemes'] = {'default': 'linear'}
     __defaultValues['snGradSchemes'] = {'default': 'limited corrected 0.333'}
@@ -27,7 +33,3 @@ class FvSchemes(FoamFile):
         FoamFile.__init__(self, name='fvSchemes', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
-
-
-# fv = FvSchemes()
-# fv.save(r'C:\Users\Administrator\butterfly\innerflow_3')
