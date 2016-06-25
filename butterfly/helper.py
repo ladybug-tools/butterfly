@@ -1,8 +1,9 @@
 #Embedded file name: C:\Users\Administrator\Dropbox\ladybug\Butterfly\butterfly\helper.py
 import os
 from collections import OrderedDict
+from subprocess import Popen, PIPE, STDOUT, call
 
-def mkdir(directory, overwrite = True):
+def mkdir(directory, overwrite=True):
     if not os.path.isdir(directory):
         try:
             os.mkdir(directory)
@@ -11,6 +12,25 @@ def mkdir(directory, overwrite = True):
 
     return directory
 
+
+def wfile(fullPath, content):
+    """write string content to a file."""
+    try:
+        with open(fullPath, 'wb') as outf:
+            outf.write(content)
+
+    except Exception as e:
+        raise ValueError('Failed to create %s:\n%s' % (directory, e))
+
+    return fullPath
+
+
+def runbatchfile(filepath):
+    """run an executable .bat file."""
+    p = Popen(filepath, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+
+    stdout, stderr = p.communicate(input='\n')
+    print stdout
 
 def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
                                   meshingType='triSurfaceMesh',
@@ -79,3 +99,6 @@ def getBoundaryField(BFSurfaces, field = 'u'):
             _bou[bfsrf.name] = _bc.valueDict
 
     return _bou
+
+fp = r"C:\Users\Administrator\butterfly\study_room\bash\study_room.bat"
+runfile(fp)
