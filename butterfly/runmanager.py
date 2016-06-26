@@ -85,7 +85,7 @@ class RunManager(object):
 
         return _base.format(*self.shellinit)
 
-    def command(self, cmds, includeHeadr=False):
+    def command(self, cmds, includeHeader=False, log=True):
         """
         Get command line for OpenFOAM commands.
         Args:
@@ -102,10 +102,15 @@ class RunManager(object):
 
         _base = 'docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
 
+        if log:
+            _baseCmd = '{0} | tee /home/ofuser/workingDir/butterfly/{1}/etc/{0}.log'
+            _cmds = (_baseCmd.format(cmd, self.projectName) for cmd in cmds)
+        else:
+            _cmds = cmds
 
-        _cmd = _base.format(self.containerId, self.projectName, '; '.join(cmds))
+        _cmd = _base.format(self.containerId, self.projectName, '; '.join(_cmds))
 
-        if includeHeadr:
+        if includeHeader:
             return self.header() + "\n" + _cmd
         else:
             return _cmd

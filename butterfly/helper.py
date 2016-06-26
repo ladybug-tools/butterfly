@@ -1,5 +1,7 @@
 #Embedded file name: C:\Users\Administrator\Dropbox\ladybug\Butterfly\butterfly\helper.py
+from __future__ import print_function
 import os
+import sys
 from collections import OrderedDict
 from subprocess import Popen, PIPE, STDOUT, call
 
@@ -25,12 +27,21 @@ def wfile(fullPath, content):
     return fullPath
 
 
-def runbatchfile(filepath):
+def runbatchfile(filepath, printLog=True):
     """run an executable .bat file."""
-    p = Popen(filepath, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+    if not os.path.isfile(filepath):
+        raise ValueError('Cannot find %s' % filepath)
 
-    stdout, stderr = p.communicate(input='\n')
-    print stdout
+    sys.stdout.flush()
+    p = Popen(filepath, shell=False, stdin=PIPE)
+    p.communicate(input='\n')
+    if printLog:
+        try:
+            logfile = ".".join(filepath.split(".")[:-1]) + ".log"
+            with open(logfile, 'rb') as log:
+                print(' '.join(log.readlines()))
+        except Exception as e:
+            print('Failed to read {}:\n{}'.format(logfile, e))
 
 def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
                                   meshingType='triSurfaceMesh',
@@ -99,6 +110,3 @@ def getBoundaryField(BFSurfaces, field = 'u'):
             _bou[bfsrf.name] = _bc.valueDict
 
     return _bou
-
-fp = r"C:\Users\Administrator\butterfly\study_room\bash\study_room.bat"
-runfile(fp)

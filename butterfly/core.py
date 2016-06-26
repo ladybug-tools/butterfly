@@ -1,6 +1,7 @@
 """Butterfly core library."""
 import os
 from distutils.dir_util import copy_tree
+from gh import loadOFMeshToRhino, loadOFPointsToRhino, loadOFVectorsToRhino
 from version import Version
 from helper import mkdir, wfile, runbatchfile
 # constant folder objects
@@ -83,6 +84,32 @@ class Case(object):
         raise NotImplementedError("Not implemented yet!")
         _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
         return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
+
+    def loadMesh(self):
+        """Return OpenFOAM mesh as a Rhino mesh."""
+        return loadOFMeshToRhino(os.path.join(self.constantDir, "polyMesh"))
+
+    def loadPoints(self):
+        """Return OpenFOAM mesh as a Rhino mesh."""
+        return loadOFPointsToRhino(os.path.join(self.constantDir, "polyMesh"))
+
+    def loadVelocity(self, timestep=None):
+        """Return OpenFOAM mesh as a Rhino mesh."""
+        # find results folders
+        _folders = self.__getResultsSubfolders()
+
+        # if there is no timestep pick the last one
+        _folder = _folders[-1]
+
+        if timestep:
+            try:
+                # pick the one based on timestep
+                _folder = _folders[timestep + 1]
+            except IndexError:
+                pass
+
+        return loadOFVectorsToRhino(os.path.join(self.projectDir, str(_folder)),
+                                    variable='U')
 
     def createCaseFolders(self, workingDir=None):
         """Create project folders and subfolders.
@@ -197,40 +224,61 @@ class Case(object):
         self.fvSchemes.save(self.projectDir)
         self.fvSolution.save(self.projectDir)
 
+    # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #
-    def meshBlock(self, run=True):
+    def blockMesh(self, run=True, log=True):
         """Run meshBlock command for this case."""
         self.__writeAndRunCommands('blockMesh', ('blockMesh',), run)
 
-    def snappyHexMesh(self, run=True):
+    def snappyHexMesh(self, run=True, log=True):
         """Run snappyHexMesh command for this case."""
         self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',), run)
 
-    def meshCombo(self, run=True):
+    def meshCombo(self, run=True, log=True):
         """Run meshBlock and snappyHexMesh."""
         self.__writeAndRunCommands('meshCombo',
                                    ('meshBlock', 'snappyHexMesh'),
                                    run)
 
-    def simpleFoam(self, run=True):
+    def simpleFoam(self, run=True, log=True):
         """Run simpleFoam command for this case."""
         self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run)
 
-    def __writeAndRunCommands(self, name, commands, run=True):
+    # ************************* OpenFOAM Commands ************************* #
+    # *************************        END        ************************* #
+
+    def __writeAndRunCommands(self, name, commands, run=True, log=True):
         """Write batch files for commands and run them."""
-        _batchString = self.runmanager.command(self.projectDir,
-                                               commands,
-                                               includeHeader=True)
+        _batchString = self.runmanager.command(commands,
+                                               includeHeader=True,
+                                               log=log)
         _fpath = os.path.join(self.etcDir, '%s.bat' % name)
         wfile(_fpath, _batchString)
-        if run:
-            runbatchfile(_fpath)
 
-    def __getNumericalSubfolders(self):
+        if run:
+            runbatchfile(_fpath, printLog=log)
+
+    def __getSnappyHexMeshSubfolders(self):
         """Return sorted list of numerical folders."""
-        _f = [int(name) for name in os.listdir(self.workingDir)
+        _f = [int(name) for name in os.listdir(self.projectDir)
               if (name.isdigit() and
-                  os.path.isdir(os.path.join(self.workingDir, name)))]
+                  os.path.isdir(os.path.join(self.projectDir,
+                                             name, 'polyMesh'))
+                  )
+             ]
+
+        _f.sort()
+
+        return tuple(str(f) for f in _f)
+
+    def __getResultsSubfolders(self):
+        """Return sorted list of numerical folders."""
+        _f = [int(name) for name in os.listdir(self.projectDir)
+              if (name.isdigit() and
+                  os.path.isdir(os.path.join(self.projectDir, name)) and
+                  not os.path.isdir(os.path.join(self.projectDir, name, 'polyMesh'))
+                  )
+             ]
 
         _f.sort()
 
@@ -239,12 +287,12 @@ class Case(object):
     def copySnappyHexMesh(self, folderNumber=None):
         """Copy the results of snappyHexMesh to constant/polyMesh."""
         # pick the last numerical folder
-        _folders = self.__getNumericalSubfolders()
+        _folders = self.__getSnappyHexMeshSubfolders()
         if len(_folders) < 2:
             # it is only o folder
             return
 
-        _s = os.path.join(self.workingDir, _folders[-1], 'polyMesh')
+        _s = os.path.join(self.projectDir, _folders[-1], 'polyMesh')
         _t = os.path.join(self.constantDir, "polyMesh")
 
         # copy files to constant/polyMesh
@@ -254,17 +302,17 @@ class Case(object):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa."""
         # find list of folders in project and collect the numbers
         if self._isSnappyHexMeshFoldersRenamed:
-            _folders = (name for name in os.listdir(self.workingDir)
+            _folders = (name for name in os.listdir(self.projectDir)
                   if (name.endswith('.org') and
-                      os.path.isdir(os.path.join(self.workingDir, name))))
+                      os.path.isdir(os.path.join(self.projectDir, name, 'polyMesh'))))
 
             for f in _folders:
-                os.rename(os.path.join(self.workingDir, f),
-                          os.path.join(self.workingDir, f.replace('.org', '')))
+                os.rename(os.path.join(self.projectDir, f),
+                          os.path.join(self.projectDir, f.replace('.org', '')))
 
             self._isSnappyHexMeshFoldersRenamed = False
         else:
-            _folders = self.__getNumericalSubfolders()
+            _folders = self.__getSnappyHexMeshSubfolders()
             if len(_folders) < 2:
                 # it is only o folder
                 return
@@ -273,8 +321,8 @@ class Case(object):
             for f in _folders:
                 if f == '0':
                     continue
-                os.rename(os.path.join(self.workingDir, f),
-                          os.path.join(self.workingDir, '%s.org' % f))
+                os.rename(os.path.join(self.projectDir, f),
+                          os.path.join(self.projectDir, '%s.org' % f))
 
             self._isSnappyHexMeshFoldersRenamed = True
 
@@ -288,7 +336,7 @@ class Case(object):
                   if (name.endswith('.org') and
                       os.path.isdir(os.path.join(self.workingDir, name))))
         else:
-            _folders = self.__getNumericalSubfolders()[1:]
+            _folders = self.__getSnappyHexMeshSubfolders()[1:]
 
         for f in _folders:
             try:
@@ -297,3 +345,9 @@ class Case(object):
                 print "Failed to remove %s." % f
 
         self._isSnappyHexMeshFoldersRenamed = False
+
+    def ToString(self):
+        return self.__repr__()
+
+    def __repr__(self):
+        return "OpenFOAM CASE: %s" % self.projectName
