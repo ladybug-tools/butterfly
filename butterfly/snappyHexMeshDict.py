@@ -21,26 +21,26 @@ class SnappyHexMeshDict(FoamFile):
 
     # castellatedMeshControls
     __defaultValues['castellatedMeshControls'] = OrderedDict()
-    __defaultValues['castellatedMeshControls']['maxLocalCells'] = '50000'
-    __defaultValues['castellatedMeshControls']['maxGlobalCells'] = '200000'
+    __defaultValues['castellatedMeshControls']['maxLocalCells'] = '100000'
+    __defaultValues['castellatedMeshControls']['maxGlobalCells'] = '2000000'
     __defaultValues['castellatedMeshControls']['minRefinementCells'] = '10'
     __defaultValues['castellatedMeshControls']['maxLoadUnbalance'] = '0.10'
-    __defaultValues['castellatedMeshControls']['nCellsBetweenLevels'] = '1'
+    __defaultValues['castellatedMeshControls']['nCellsBetweenLevels'] = '3'
     __defaultValues['castellatedMeshControls']['features'] = '()'
     __defaultValues['castellatedMeshControls']['refinementSurfaces'] = {}
     __defaultValues['castellatedMeshControls']['resolveFeatureAngle'] = '30'
     __defaultValues['castellatedMeshControls']['refinementRegions'] = {}
     __defaultValues['castellatedMeshControls']['locationInMesh'] = '(0 0 0)'
-    __defaultValues['castellatedMeshControls']['allowFreeStandingZoneFaces'] ='false'
+    __defaultValues['castellatedMeshControls']['allowFreeStandingZoneFaces'] ='true'
 
     # snap controls
     __defaultValues['snapControls'] = OrderedDict()
     __defaultValues['snapControls']['nSmoothPatch'] = '3'
-    __defaultValues['snapControls']['tolerance'] = '1'
-    __defaultValues['snapControls']['nSolveIter'] = '300'
+    __defaultValues['snapControls']['tolerance'] = '2'
+    __defaultValues['snapControls']['nSolveIter'] = '30'
     __defaultValues['snapControls']['nRelaxIter'] = '5'
-    __defaultValues['snapControls']['implicitFeatureSnap'] = 'true'
-    __defaultValues['snapControls']['multiRegionFeatureSnap'] = 'true'
+    __defaultValues['snapControls']['implicitFeatureSnap'] = 'false'
+    __defaultValues['snapControls']['multiRegionFeatureSnap'] = 'false'
 
     # layer control
     __defaultValues['addLayersControls'] = OrderedDict()
@@ -51,13 +51,13 @@ class SnappyHexMeshDict(FoamFile):
     __defaultValues['addLayersControls']['minThickness'] = '0.2'
     __defaultValues['addLayersControls']['nGrow'] = '0'
     __defaultValues['addLayersControls']['featureAngle'] = '60'
-    __defaultValues['addLayersControls']['nRelaxIter'] = '5'
+    __defaultValues['addLayersControls']['nRelaxIter'] = '3'
     __defaultValues['addLayersControls']['nSmoothSurfaceNormals'] = '1'
     __defaultValues['addLayersControls']['nSmoothThickness'] = '10'
     __defaultValues['addLayersControls']['nSmoothNormals'] = '3'
     __defaultValues['addLayersControls']['maxFaceThicknessRatio'] = '0.5'
     __defaultValues['addLayersControls']['maxThicknessToMedialRatio'] = '0.3'
-    __defaultValues['addLayersControls']['minMedianAxisAngle'] = '130'
+    __defaultValues['addLayersControls']['minMedianAxisAngle'] = '90'
     __defaultValues['addLayersControls']['nBufferCellsNoExtrude'] = '0'
     __defaultValues['addLayersControls']['nLayerIter'] = '50'
     __defaultValues['addLayersControls']['nRelaxedIter'] = '20'
