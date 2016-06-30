@@ -21,7 +21,7 @@ class SnappyHexMeshDict(FoamFile):
 
     # castellatedMeshControls
     __defaultValues['castellatedMeshControls'] = OrderedDict()
-    __defaultValues['castellatedMeshControls']['maxLocalCells'] = '100000'
+    __defaultValues['castellatedMeshControls']['maxLocalCells'] = '1000000'
     __defaultValues['castellatedMeshControls']['maxGlobalCells'] = '2000000'
     __defaultValues['castellatedMeshControls']['minRefinementCells'] = '10'
     __defaultValues['castellatedMeshControls']['maxLoadUnbalance'] = '0.10'
@@ -39,8 +39,8 @@ class SnappyHexMeshDict(FoamFile):
     __defaultValues['snapControls']['tolerance'] = '2'
     __defaultValues['snapControls']['nSolveIter'] = '30'
     __defaultValues['snapControls']['nRelaxIter'] = '5'
-    __defaultValues['snapControls']['implicitFeatureSnap'] = 'false'
-    __defaultValues['snapControls']['multiRegionFeatureSnap'] = 'false'
+    __defaultValues['snapControls']['implicitFeatureSnap'] = 'true'
+    __defaultValues['snapControls']['multiRegionFeatureSnap'] = 'true'
 
     # layer control
     __defaultValues['addLayersControls'] = OrderedDict()
@@ -115,6 +115,42 @@ class SnappyHexMeshDict(FoamFile):
             self.values['castellatedMeshControls']['locationInMesh'] = \
                 str(tuple(point)).replace(',', "")
 
+    @property
+    def castellatedMesh(self):
+        """Set if castellatedMesh should be ran."""
+        return self.values['castellatedMesh']
+
+    @castellatedMesh.setter
+    def castellatedMesh(self, value=True):
+        self.values['castellatedMesh'] = str(value).lower()
+
+    @property
+    def snap(self):
+        """Set if snap should be ran."""
+        return self.values['snap']
+
+    @snap.setter
+    def snap(self, value=True):
+        self.values['snap'] = str(value).lower()
+
+    @property
+    def addLayers(self):
+        """Set if addLayers should be ran."""
+        return self.values['addLayers']
+
+    @addLayers.setter
+    def addLayers(self, value=True):
+        self.values['addLayers'] = str(value).lower()
+
+    @property
+    def maxGlobalCells(self):
+        """Set if addLayers should be ran."""
+        return self.values['castellatedMeshControls']['maxGlobalCells']
+
+    @maxGlobalCells.setter
+    def maxGlobalCells(self, value=2000000):
+        self.values['castellatedMeshControls']['maxGlobalCells'] = str(int(value))
+
     def setGeometry(self, projectName, BFSurfaces,
                          meshingType='triSurfaceMesh'):
         """Set geometry from BFSurfaces."""
@@ -134,8 +170,3 @@ class SnappyHexMeshDict(FoamFile):
                                                   BFSurfaces, globalLevels)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
-
-
-# s = SnappyHexMeshDict()
-# s.locationInMesh = (0, 10, 0)
-# s.save(r'C:\Users\Administrator\butterfly\innerflow_4')

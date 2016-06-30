@@ -123,6 +123,10 @@ class FoamFile(object):
         with open(os.path.join(projectFolder, subFolder, self.name), "wb") as outf:
             outf.write(self.toOpenFoam())
 
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
     def __repr__(self):
         return self.toOpenFoam()
 
