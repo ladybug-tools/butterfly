@@ -34,7 +34,7 @@ solvers
     U
     {
 		type			 coupled;
-        solver           PBiCCG;
+        solver           PBiCCCG;
 		preconditioner   DILU;
         tolerance        (1e-6 1e-6 1e-6); // high quality (1e-8 1e-8 1e-8)
         relTol           (0.1 0.1 0.1);    // high quality (0 0 0)

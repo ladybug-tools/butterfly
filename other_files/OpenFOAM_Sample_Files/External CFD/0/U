@@ -15,7 +15,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#include        "include/initialConditions"
+#include        "initialConditions"
 
 dimensions      [0 1 -1 0 0 0 0];
 
@@ -23,8 +23,6 @@ internalField   uniform $flowVelocity;
 
 boundaryField
 {
-
-	#include "include/ABLConditions"
 
     outlet
     {
@@ -36,28 +34,38 @@ boundaryField
     inlet
     {
         type            atmBoundaryLayerInletVelocity;
-        Uref            $Uref;
-        Href            $Href;
-        n               $windDirection;
-        z               $zDirection;
-        z0              $z0;
-        value           $internalField;
-        zGround         $zGround;
+		#include		"ABLConditions"
     }
 
-    Building
+	walls
     {
-        type            fixedValue;
+		type            fixedValue;     //version 4 > type	noSlip;
         value           uniform (0 0 0);
     }
 
     ground
     {
-        type            fixedValue;
+      type            fixedValue;
 	  value    	  uniform (0 0 0);
     }
+	
+	top
+	{
+        type            calculated;
+        value           uniform 0;
+	}
+	
+	rightSide
+	{
+        type            calculated;
+        value           uniform 0;
+	}
 
-    #include "include/sideAndTopPatches"
+	leftSide
+	{
+        type            calculated;
+        value           uniform 0;
+	}
 }
 
 

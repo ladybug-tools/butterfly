@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  dev                                   |
+|  \\    /   O peration     | Version:  2.4.0                                 |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -9,54 +9,39 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      p;
+    class       dictionary;
+    object      controlDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#include        "initialConditions"
+application     simpleFoam;
 
-dimensions      [0 2 -2 0 0 0 0];
+startFrom       latestTime;
 
-internalField   uniform $pressure;
+startTime       0;
 
-boundaryField
-{
-    inlet
-    {
-        type            zeroGradient;
-    }
+stopAt          endTime;
 
-    outlet
-    {
-        type            fixedValue;
-		value    		uniform $pressure;
-    }
+endTime         1000;
 
-	walls
-    {
-        type            zeroGradient;
-    }
+deltaT          1;
 
-    ground
-    {
-        type            zeroGradient;
-    }
-	
-	top
-	{
-		type		slip;
-	}
-	
-	rightSide
-	{
-		type		slip;
-	}
+writeControl    timeStep;
 
-	leftSide
-	{
-		type		slip;
-	}
-}
+writeInterval   50;
+
+purgeWrite      0;
+
+writeFormat     ascii;
+
+writePrecision  7;
+
+writeCompression uncompressed;
+
+timeFormat      general;
+
+timePrecision   6;
+
+runTimeModifiable yes;
 
 // ************************************************************************* //

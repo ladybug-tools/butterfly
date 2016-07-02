@@ -9,16 +9,17 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volScalarField;
-    object      k;
+    class       volVectorField;
+    location    "0";
+    object      U;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #include        "initialConditions"
 
-dimensions      [0 2 -2 0 0 0 0];
+dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform $turbulentKE;
+internalField   uniform $flowVelocity;
 
 boundaryField
 {
@@ -26,42 +27,42 @@ boundaryField
     outlet
     {
         type            inletOutlet;
-        inletValue      uniform $turbulentKE;
+        inletValue      uniform (0 0 0);
         value           $internalField;
     }
 
     inlet
     {
-        type            atmBoundaryLayerInletK;
-		#include        "ABLConditions"		
+        type            atmBoundaryLayerInletVelocity;
+		#include		"ABLConditions"
     }
 
-    walls
+	walls
     {
-        type            kqRWallFunction;
-        value           $internalField;
+		type            fixedValue;     //version 4 > type	noSlip;
+        value           uniform (0 0 0);
     }
 
     ground
     {
-        type            zeroGradient;
+      type            fixedValue;
+	  value    	  uniform (0 0 0);
     }
 	
 	top
 	{
-		type		slip;
+        type            slip;
 	}
 	
 	rightSide
 	{
-		type		slip;
+        type            slip;
 	}
 
 	leftSide
 	{
-		type		slip;
+            type            slip;
 	}
-
 }
 
 

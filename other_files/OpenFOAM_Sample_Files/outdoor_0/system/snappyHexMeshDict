@@ -100,7 +100,7 @@ castellatedMeshControls
 
     refinementSurfaces
     {
-        Building 	//here we refine our surfaces. This can be 					//a whole stl or a region inside the stl, 					//by calling the name of our solid. For now 				//we go for the first choice
+        walls 	//here we refine our surfaces. This can be 					//a whole stl or a region inside the stl, 					//by calling the name of our solid. For now 				//we go for the first choice
         {
             // Surface-wise min and max refinement level
             level (2 2);
