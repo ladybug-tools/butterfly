@@ -9,6 +9,7 @@ class P(ZeroFolderFoamFile):
     # set default valus for this class
     __defaultValues = OrderedDict()
     __defaultValues['dimensions'] = '[0 2 -2 0 0 0 0]'
+    __defaultValues['#include'] = None
     __defaultValues['internalField'] = 'uniform 0'
     __defaultValues['boundaryField'] = {}
 

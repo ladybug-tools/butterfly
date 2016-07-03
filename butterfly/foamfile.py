@@ -3,6 +3,8 @@ from version import Version, Header
 from helper import getBoundaryField
 import os
 import json
+from collections import OrderedDict
+
 
 class FoamFile(object):
     """FoamFile base class for OpenFOAM dictionaries.
@@ -104,8 +106,14 @@ class FoamFile(object):
 
     def body(self):
         """Return body string."""
+        # remove None values
+        _values = OrderedDict()
+        for key, value in self.values.iteritems():
+            if value:
+                _values[key] = value
+
         # convert python dictionary to c++ dictionary
-        of = json.dumps(self.values, indent=4, separators=(";", "\t\t")) \
+        of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
             .replace('"\n', ";\n").replace('"', '').replace('};', '}') \
             .replace('\t\t{', '{')
 

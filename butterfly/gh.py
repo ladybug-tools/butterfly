@@ -26,6 +26,11 @@ class BFSurface(object):
             self.boundaryCondition = boundaryCondition
 
     @property
+    def isBFSurface(self):
+        """Return True for Butterfly surfaces."""
+        return True
+
+    @property
     def geometry(self):
         """Mesh geometry of the surface."""
         return self.__geometry
@@ -180,11 +185,22 @@ class Block(object):
         geometry: A closed brep that represents block boundary.
     """
     def __init__(self, geometry, nDiv, grading):
-        self.vertices = self.calculateVertices(geometry)
+        self.vertices = self.__calculateVertices(geometry)
         self.nDiv = tuple(int(v) for v in nDiv)
         self.grading = tuple(grading)
 
-    def calculateVertices(self, geo):
+    @property
+    def minZ(self):
+        """Return minimum Z value of vertices in this block."""
+        _minZ = float('inf')
+
+        for ver in self.vertices:
+            if ver < _minZ:
+                _minZ = ver
+
+        return _minZ
+
+    def __calculateVertices(self, geo):
         # sort faces based on Z value
         faces = sorted(geo.Faces, key=lambda f: self._cenPt(f).Z)
 
@@ -195,13 +211,14 @@ class Block(object):
 
     @staticmethod
     def shiftVertices(vertices):
-        # shift vertices to match openfoam order
+        """Shift vertices to match openfoam order."""
         _ver = list(vertices)
         _ver.reverse()
         return _ver[-1:] + _ver[:-1]
 
     @staticmethod
     def _cenPt(f):
+        """Calculate center point for a grasshopper face."""
         return f.PointAt((f.Domain(0).Min + f.Domain(0).Max)/2,
                         (f.Domain(1).Min + f.Domain(1).Max)/2)
 
@@ -228,9 +245,11 @@ class Block(object):
 
 
     def ToString(self):
+        """Overwrite .NET ToString method."""
         return self.__repr__()
 
     def __repr__(self):
+        """OpenFOAM boundary."""
         return "Boundary: {} simpleGrading {}".format(str(self.nDiv).replace(",", ""),
                                                       str(self.grading).replace(",", ""))
 

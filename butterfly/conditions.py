@@ -27,6 +27,16 @@ class ABLConditions(Condition):
         """Init class from BFTunnel."""
         return cls(values=BFWindTunnel.ABLConditionsDict)
 
+    @property
+    def flowDir(self):
+        """Get flow dir as tuple (x, y, z)."""
+        return eval(self.values['flowDir'])
+
+    @property
+    def flowSpeed(self):
+        """Get flow speed as a float."""
+        return float(self.values['Uref'])
+
 
 class InitialConditions(Condition):
     """Initial conditions."""
@@ -114,9 +124,3 @@ class InitialConditions(Condition):
     def k(self, value):
         self.__k = float(value)
         self.calculateKEpsilon()
-
-
-
-ic = InitialConditions(Uref=10)
-
-print ic

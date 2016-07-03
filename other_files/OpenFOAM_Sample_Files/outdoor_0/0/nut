@@ -21,7 +21,6 @@ internalField   uniform 0;
 
 boundaryField
 {
-    #include "ABLConditions"
 
     inlet
     {
