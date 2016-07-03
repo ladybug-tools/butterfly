@@ -132,7 +132,12 @@ class FoamFile(object):
 
 
 class ZeroFolderFoamFile(FoamFile):
-    """FoamFiles under 0 folder."""
+    """FoamFiles under 0 folder.
+
+    The main difference between ZeroFolderFoamFile and FoamFile is that
+    ZeroFolderFoamFile has a method to set boundary fields based on input
+    geometry (e.g. Butterfly objects)
+    """
     def setBoundaryField(self, BFSurfaces):
         """Get data for getBoundaryField as a dictionary.
 
@@ -142,3 +147,14 @@ class ZeroFolderFoamFile(FoamFile):
         self.values['boundaryField'] = getBoundaryField(
             BFSurfaces, self.__class__.__name__.lower()
         )
+
+class Condition(FoamFile):
+    """OpenFOAM conditions object.
+
+    Use this class to create conditions such as initialConditions and ABLConditions.
+    Conditions don't have OpenFOAM header. It's only values.
+    """
+
+    def header(self):
+        """Return conditions header."""
+        return Header.header()
