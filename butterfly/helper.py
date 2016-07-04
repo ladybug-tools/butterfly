@@ -1,4 +1,4 @@
-#Embedded file name: C:\Users\Administrator\Dropbox\ladybug\Butterfly\butterfly\helper.py
+"""Collection of useful methods."""
 from __future__ import print_function
 import os
 import sys

@@ -1,7 +1,7 @@
 """Butterfly wind tunnel."""
 from blockMeshDict import BlockMeshDict
 from z0 import Z0
-from core import Case
+from core import OpemFOAMCase
 
 
 class WindTunnel(object):
@@ -17,19 +17,20 @@ class WindTunnel(object):
         testGeomtries: A list of geometries as butterfly surfaces that are located
             within bounding box boundary.
         block: A butterfly Block for windtunnel bounding box.
-        landscape: An integer between 0-7 to calculate z0 (roughness).
-                0: '0.0002'  # sea
-                1: '0.005'   # smooth
-                2: '0.03'    # open
-                3: '0.10'    # roughlyOpen
-                4: '0.25'    # rough
-                5: '0.5'     # veryRough
-                6: '1.0'     # closed
-                7: '2.0'     # chaotic
+        roughness: z0 (roughness) value.
+                '0.0002'  # sea
+                '0.005'   # smooth
+                '0.03'    # open
+                '0.10'    # roughlyOpen
+                '0.25'    # rough
+                '0.5'     # veryRough
+                '1.0'     # closed
+                '2.0'     # chaotic
     """
-    def __init__(inlet, outlet, sides, top, ground, testGeomtries,
-                 block, landscape):
+    def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
+                 block, roughness, globalRefLevel):
         """Init wind tunnel."""
+        self.name = str(name)
         self.inlet = self.__checkIfBFSurface(inlet)
         self.outlet = self.__checkIfBFSurface(outlet)
         self.sides = tuple(side for side in sides if self.__checkIfBFSurface(side))
@@ -37,12 +38,8 @@ class WindTunnel(object):
         self.ground = self.__checkIfBFSurface(ground)
         self.testGeomtries = tuple(geo for geo in testGeomtries
                                    if self.__checkIfBFSurface(geo))
-
-        self.block = block
-        try:
-            self.z0 = Z0()[landscape]
-        except Exception as e:
-            raise ValueError('Invalid input for landscape.\n{}'.format(landscape))
+        self.z0 = roughness
+        self.globalRefLevel = globalRefLevel
 
     @property
     def boundingSurfaces(self):
@@ -52,19 +49,19 @@ class WindTunnel(object):
 
     def __checkIfBFSurface(self, input):
         if hasattr(input, 'isBFSurface'):
-            return True
+            return input
         else:
             raise ValueError('{} is not a Butterfly surface.'.format(input))
 
     @property
     def flowDir(self):
         """Get flow direction for this wind tunnel as a tuple (x, y, z)."""
-        return self.inlet.flowDir
+        return self.inlet.boundaryCondition.u.flowDir
 
     @property
     def flowSpeed(self):
         """Get flow speed for this wind tunnel."""
-        return self.inlet.Uref
+        return self.inlet.boundaryCondition.u.Uref
 
     @property
     def zGround(self):
@@ -86,9 +83,18 @@ class WindTunnel(object):
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
 
-    def toCase(self):
+    def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""
-        pass
+        return OpemFOAMCase.fromWindTunnel(self)
+
+    def ToString(self):
+        """Overwrite ToString .NET method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Wind tunnel."""
+        return "WindTunnel :: dir {} :: {} m/s".format(self.flowDir,
+                                                             self.flowSpeed)
 
 
 class TunnelParameters(object):
@@ -102,12 +108,15 @@ class TunnelParameters(object):
         side: Multiplier value for side extension (default: 3).
         leeward: Multiplier value for leeward extension (default: 3).
     """
-    def __init__(self, windward=3, top=3, side=2, leeward=15):
+    def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
+                 gradXYZ=None):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
+        self.nDivXYZ = (20, 5, 10) if not nDivXYZ else tuple(nDivXYZ)
+        self.gradXYZ = (1, 1, 1) if not gradXYZ else tuple(gradXYZ)
 
     def __checkInput(self, input):
         """Check input values."""

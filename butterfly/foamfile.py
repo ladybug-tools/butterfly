@@ -112,10 +112,10 @@ class FoamFile(object):
             if value:
                 _values[key] = value
 
-        # convert python dictionary to c++ dictionary
+        # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
-            .replace('"\n', ";\n").replace('"', '').replace('};', '}') \
-            .replace('\t\t{', '{')
+            .replace('\\"', "*").replace('"\n', ";\n").replace('"', '') \
+            .replace('};', '}').replace('\t\t{', '{').replace('*', '"')
 
         # remove first and last {} and prettify[!] the file
         l = (line[4:] if not line.endswith('{') else self._splitLine(line)

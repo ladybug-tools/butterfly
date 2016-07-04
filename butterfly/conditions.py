@@ -23,9 +23,9 @@ class ABLConditions(Condition):
                            values=values)
 
     @classmethod
-    def fromWindTunnel(cls, BFWindTunnel):
-        """Init class from BFTunnel."""
-        return cls(values=BFWindTunnel.ABLConditionsDict)
+    def fromWindTunnel(cls, windTunnel):
+        """Init class from wind tunnel."""
+        return cls(values=windTunnel.ABLConditionsDict)
 
     @property
     def flowDir(self):

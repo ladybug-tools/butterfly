@@ -1,7 +1,6 @@
 """Butterfly core library."""
 import os
 from distutils.dir_util import copy_tree
-from gh import loadOFMeshToRhino, loadOFPointsToRhino, loadOFVectorsToRhino
 from version import Version
 from helper import mkdir, wfile, runbatchfile
 # constant folder objects
@@ -31,8 +30,9 @@ class CaseFoldersNotCreatedError(Exception):
         Exception.__init__(self, self._msg)
 
 
-class Case(object):
+class OpemFOAMCase(object):
     """Butterfly case."""
+
     def __init__(self, projectName, BFSurfaces, blockMeshDict,
                  globalRefinementLevel=None, locationInMesh=None,
                  isSnappyHexMesh=False):
@@ -74,6 +74,21 @@ class Case(object):
         self._isInit = False
         self._isSnappyHexMeshFoldersRenamed = False
 
+    @classmethod
+    def fromWindTunnel(cls, windTunnel):
+        """Create case from wind tunnel."""
+        _blockMeshDict = windTunnel.blockMeshDict
+        _locationInMesh = _blockMeshDict.center
+
+        _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
+                    globalRefinementLevel=windTunnel.globalRefLevel,
+                    locationInMesh=_locationInMesh,
+                    isSnappyHexMesh=True)
+
+        # edit files in 0 folder
+        _case.k.updateValues({'#include': '"initialConditions"',
+                             'internalField': 'uniform $turbulentKE'})
+        return _case
 
     @classmethod
     def fromBlocks(cls, BFSurfaces, blocks, scale):
@@ -81,35 +96,21 @@ class Case(object):
 
         This case will only be meshed using blockMesh
         """
-        raise NotImplementedError("Not implemented yet!")
+        raise NotImplementedError("Let us know if you in real need for this method!")
         _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
         return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
-        return loadOFMeshToRhino(os.path.join(self.constantDir, "polyMesh"))
+        raise NotImplementedError()
 
     def loadPoints(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
-        return loadOFPointsToRhino(os.path.join(self.constantDir, "polyMesh"))
+        raise NotImplementedError()
 
     def loadVelocity(self, timestep=None):
         """Return OpenFOAM mesh as a Rhino mesh."""
-        # find results folders
-        _folders = self.__getResultsSubfolders()
-
-        # if there is no timestep pick the last one
-        _folder = _folders[-1]
-
-        if timestep:
-            try:
-                # pick the one based on timestep
-                _folder = _folders[timestep + 1]
-            except IndexError:
-                pass
-
-        return loadOFVectorsToRhino(os.path.join(self.projectDir, str(_folder)),
-                                    variable='U')
+        raise NotImplementedError()
 
     def createCaseFolders(self, workingDir=None):
         """Create project folders and subfolders.
@@ -345,6 +346,14 @@ class Case(object):
                 print "Failed to remove %s." % f
 
         self._isSnappyHexMeshFoldersRenamed = False
+
+    def removeResultFolders(self):
+        pass
+
+    def purge(self, removePolyMeshFolder=True, removeSnappyHexMeshFolders=True,
+              removeResultFolders=False):
+        """Purge case folder."""
+        pass
 
     def ToString(self):
         return self.__repr__()

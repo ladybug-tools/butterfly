@@ -62,6 +62,6 @@ class Z0(object):
         """Overwrite .NET ToString method."""
         return self.__repr__()
 
-    de __repr__(self):
+    def __repr__(self):
         """Roughness library."""
         return 'Z0 (Roughness) dict.'
