@@ -1,3 +1,10 @@
-__all__ = ["boundarycondition", "core", "fields", "foamfile", "version"]
+__all__ = ['blockMeshDict', 'boundarycondition', 'conditions', 'controlDict',
+           'core', 'epsilon', 'fields', 'foamfile', 'fvSchemes', 'fvSolution',
+           'helper', 'k', 'nut', 'p', 'RASProperties', 'runmanager',
+           'snappyHexMeshDict', 'transportProperties', 'turbulenceProperties',
+           'U', 'version', 'windtunnel']
 
-import boundarycondition, core, fields, foamfile, version
+import blockMeshDict, boundarycondition, conditions, controlDict, core, \
+    epsilon, fields, foamfile, fvSchemes, fvSolution, helper, k, nut, p, \
+    RASProperties, runmanager, snappyHexMeshDict, transportProperties, \
+    turbulenceProperties, U, version, windtunnel
