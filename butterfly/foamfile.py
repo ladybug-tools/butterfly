@@ -114,8 +114,8 @@ class FoamFile(object):
 
         # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
-            .replace('\\"', "*").replace('"\n', ";\n").replace('"', '') \
-            .replace('};', '}').replace('\t\t{', '{').replace('*', '"')
+            .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
+            .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
 
         # remove first and last {} and prettify[!] the file
         l = (line[4:] if not line.endswith('{') else self._splitLine(line)
@@ -144,8 +144,16 @@ class ZeroFolderFoamFile(FoamFile):
 
     The main difference between ZeroFolderFoamFile and FoamFile is that
     ZeroFolderFoamFile has a method to set boundary fields based on input
-    geometry (e.g. Butterfly objects)
+    geometry (e.g. Butterfly objects).
     """
+
+    @classmethod
+    def fromBFSurfaces(cls, BFSurfaces, values=None):
+        """Init class by BFSurfaces."""
+        _cls = cls(values)
+        _cls.setBoundaryField(BFSurfaces)
+        return _cls
+
     def setBoundaryField(self, BFSurfaces):
         """Get data for getBoundaryField as a dictionary.
 
@@ -155,6 +163,7 @@ class ZeroFolderFoamFile(FoamFile):
         self.values['boundaryField'] = getBoundaryField(
             BFSurfaces, self.__class__.__name__.lower()
         )
+
 
 class Condition(FoamFile):
     """OpenFOAM conditions object.

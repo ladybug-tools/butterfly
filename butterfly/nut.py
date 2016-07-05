@@ -19,10 +19,3 @@ class Nut(ZeroFolderFoamFile):
                                     location='0',
                                     defaultValues=self.__defaultValues,
                                     values=values)
-
-    @classmethod
-    def fromBFSurfaces(cls, BFSurfaces, values=None):
-        """Init class by BFSurfaces."""
-        _cls = cls(values)
-        _cls.setBoundaryField(BFSurfaces)
-        return _cls

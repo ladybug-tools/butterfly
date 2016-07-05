@@ -26,7 +26,7 @@ class Block(object):
 
         for ver in self.vertices:
             if ver[2] < _minZ:
-                _minZ = ver
+                _minZ = ver[2]
 
         return _minZ
 

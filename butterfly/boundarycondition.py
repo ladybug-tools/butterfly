@@ -60,8 +60,9 @@ class BoundingBoxBoundaryCondition(BoundaryCondition):
         nut = ZeroGradient()
         refLevels = None
         temperature = None
-        BoundaryCondition.__init__(self, 'wall', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        super(BoundingBoxBoundaryCondition, self).__init__(
+            'wall', refLevels, temperature, u, p, k, epsilon, nut
+        )
 
 
 class IndoorWallBoundaryCondition(BoundaryCondition):
@@ -146,8 +147,9 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
         epsilon = ZeroGradient() if not epsilon else epsilon
         nut = Calculated()
 
-        BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        super(FixedOutletBoundaryCondition, self).__init__(
+            'patch', refLevels, temperature, u, p, k, epsilon, nut
+        )
 
     def __repr__(self):
         """Bounday condition representatoin."""
@@ -173,14 +175,15 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
         """Init bounday condition."""
         u = FixedValue('(0 0 0)') if not u else u
         p = ZeroGradient() if not p else p
-        k = KqRWallFunction('$internalField') if not k else k
-        epsilon = EpsilonWallFunction('$internalField') \
+        k = KqRWallFunction('$internalField', isUnifrom=False) if not k else k
+        epsilon = EpsilonWallFunction('$internalField', isUnifrom=False) \
             if not epsilon else epsilon
         nut = NutkWallFunction('0.0') \
             if not nut else nut
 
-        BoundaryCondition.__init__(self, 'wall', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        super(WindTunnelWallBoundaryCondition, self).__init__(
+            'wall', refLevels, temperature, u, p, k, epsilon, nut
+        )
 
 
 class WindTunnelGroundBoundaryCondition(BoundaryCondition):
@@ -206,8 +209,9 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
         nut = NutkAtmRoughWallFunction.fromABLConditions(ablConditions,
                                                          'uniform 0')
 
-        BoundaryCondition.__init__(self, 'wall', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        super(WindTunnelGroundBoundaryCondition, self).__init__(
+            'wall', refLevels, temperature, u, p, k, epsilon, nut
+        )
 
 
 class WindTunnelInletBoundaryCondition(BoundaryCondition):
@@ -230,10 +234,10 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
         k = AtmBoundaryLayerInletK.fromABLConditions(ablConditions)
         epsilon = AtmBoundaryLayerInletEpsilon.fromABLConditions(ablConditions)
         p = ZeroGradient() if not p else p
-        nut = Calculated(0) if not nut else nut
+        nut = Calculated('0') if not nut else nut
 
-        BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        super(WindTunnelInletBoundaryCondition, self).__init__(
+            'patch', refLevels, temperature, u, p, k, epsilon, nut)
 
     def __repr__(self):
         """Bounday condition representatoin."""
@@ -264,10 +268,11 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
             if not k else k
         epsilon = InletOutlet('uniform $turbulentEpsilon', '$internalField') \
             if not epsilon else epsilon
-        nut = Calculated(0) if not nut else nut
+        nut = Calculated('0') if not nut else nut
 
-        BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        super(WindTunnelOutletBoundaryCondition, self).__init__(
+            'patch', refLevels, temperature, u, p, k, epsilon, nut
+        )
 
     def __repr__(self):
         """Bounday condition representatoin."""
@@ -296,10 +301,11 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
         p = Slip() if not p else p
         k = Slip() if not k else k
         epsilon = Slip() if not epsilon else epsilon
-        nut = Calculated(0)
+        nut = Calculated('0')
 
-        BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        super(WindTunnelTopAndSidesBoundaryCondition, self).__init__(
+            'patch', refLevels, temperature, u, p, k, epsilon, nut
+        )
 
     def __repr__(self):
         """Bounday condition representatoin."""
@@ -310,6 +316,7 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
 if __name__ == '__main__':
     from conditions import ABLConditions
     abc = ABLConditions()
+    print WindTunnelWallBoundaryCondition()
     print WindTunnelInletBoundaryCondition(abc)
     print
     print WindTunnelGroundBoundaryCondition(abc)

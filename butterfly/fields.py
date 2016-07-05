@@ -135,7 +135,7 @@ class AtmBoundary(OpenFOAMValue):
     def valueDict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
-
+        _d['type'] = self.type
         if not self.fromValues:
             _d['#include'] = '"{}"'.format(self.ABLConditions.__class__.__name__)
             if self.value:

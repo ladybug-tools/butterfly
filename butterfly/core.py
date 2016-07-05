@@ -14,6 +14,7 @@ from k import K
 from p import P
 from nut import Nut
 from epsilon import Epsilon
+from conditions import ABLConditions, InitialConditions
 # system folder objects
 from blockMeshDict import BlockMeshDict
 from controlDict import ControlDict
@@ -35,7 +36,8 @@ class OpemFOAMCase(object):
 
     def __init__(self, projectName, BFSurfaces, blockMeshDict,
                  globalRefinementLevel=None, locationInMesh=None,
-                 isSnappyHexMesh=False):
+                 isSnappyHexMesh=False, isABLConditionsIncluded=False,
+                 isInitialConditionsIncluded=False):
         """Init project."""
         self.username = os.getenv("USERNAME")
         self.version = float(Version.OFVer)
@@ -71,8 +73,16 @@ class OpemFOAMCase(object):
 
         self.controlDict = ControlDict()
 
+        # if any of these files are included they should be written to 0 floder
+        if not isABLConditionsIncluded:
+            self.ABLConditions = None
+
+        if not isInitialConditionsIncluded:
+            self.initialConditions = None
+
         self._isInit = False
         self._isSnappyHexMeshFoldersRenamed = False
+
 
     @classmethod
     def fromWindTunnel(cls, windTunnel):
@@ -82,12 +92,25 @@ class OpemFOAMCase(object):
 
         _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
                     globalRefinementLevel=windTunnel.globalRefLevel,
-                    locationInMesh=_locationInMesh,
-                    isSnappyHexMesh=True)
+                    locationInMesh=_locationInMesh, isSnappyHexMesh=True,
+                    isABLConditionsIncluded=True,
+                    isInitialConditionsIncluded=True)
+
+        InitialConditions()
+        _case.initialConditions = InitialConditions(
+            Uref=windTunnel.flowSpeed, z0=windTunnel.z0)
+
+        _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
 
         # edit files in 0 folder
+        _case.u.updateValues({'#include': '"initialConditions"',
+                             'internalField': 'uniform $flowVelocity'})
+        _case.p.updateValues({'#include': '"initialConditions"',
+                             'internalField': 'uniform $pressure'})
         _case.k.updateValues({'#include': '"initialConditions"',
                              'internalField': 'uniform $turbulentKE'})
+        _case.epsilon.updateValues({'#include': '"initialConditions"',
+                                    'internalField': 'uniform $turbulentEpsilon'})
         return _case
 
     @classmethod
@@ -99,6 +122,41 @@ class OpemFOAMCase(object):
         raise NotImplementedError("Let us know if you in real need for this method!")
         _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
         return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
+
+    @property
+    def isInitialConditionsIncluded(self):
+        return self.__isInitialConditionsIncluded
+
+    @property
+    def initialConditions(self):
+        return self.__initialConditions
+
+    @initialConditions.setter
+    def initialConditions(self, value):
+        if not value:
+            self.__initialConditions = None
+            self.__isInitialConditionsIncluded = False
+        else:
+            self.__initialConditions = value
+            self.__isInitialConditionsIncluded = True
+
+    @property
+    def isABLConditionsIncluded(self):
+        return self.__isABLConditionsIncluded
+
+    @property
+    def ABLConditions(self):
+        return self.__ABLConditions
+
+    @ABLConditions.setter
+    def ABLConditions(self, value):
+        if not value:
+            self.__ABLConditions = None
+            self.__isABLConditionsIncluded = False
+        else:
+            self.__ABLConditions = value
+            self.__isABLConditionsIncluded = True
+
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
@@ -205,6 +263,10 @@ class OpemFOAMCase(object):
         if not self._isInit:
             raise CaseFoldersNotCreatedError()
 
+        if self.isInitialConditionsIncluded:
+            self.initialConditions.save(self.projectDir)
+        if self.isABLConditionsIncluded:
+            self.ABLConditions.save(self.projectDir)
         self.u.save(self.projectDir)
         self.p.save(self.projectDir)
         self.k.save(self.projectDir)
@@ -259,7 +321,7 @@ class OpemFOAMCase(object):
         if run:
             runbatchfile(_fpath, printLog=log)
 
-    def __getSnappyHexMeshSubfolders(self):
+    def getSnappyHexMeshSubfolders(self):
         """Return sorted list of numerical folders."""
         _f = [int(name) for name in os.listdir(self.projectDir)
               if (name.isdigit() and
@@ -272,7 +334,7 @@ class OpemFOAMCase(object):
 
         return tuple(str(f) for f in _f)
 
-    def __getResultsSubfolders(self):
+    def getResultsSubfolders(self):
         """Return sorted list of numerical folders."""
         _f = [int(name) for name in os.listdir(self.projectDir)
               if (name.isdigit() and
@@ -288,7 +350,7 @@ class OpemFOAMCase(object):
     def copySnappyHexMesh(self, folderNumber=None):
         """Copy the results of snappyHexMesh to constant/polyMesh."""
         # pick the last numerical folder
-        _folders = self.__getSnappyHexMeshSubfolders()
+        _folders = self.getSnappyHexMeshSubfolders()
         if len(_folders) < 2:
             # it is only o folder
             return
@@ -313,7 +375,7 @@ class OpemFOAMCase(object):
 
             self._isSnappyHexMeshFoldersRenamed = False
         else:
-            _folders = self.__getSnappyHexMeshSubfolders()
+            _folders = self.getSnappyHexMeshSubfolders()
             if len(_folders) < 2:
                 # it is only o folder
                 return
@@ -337,7 +399,7 @@ class OpemFOAMCase(object):
                   if (name.endswith('.org') and
                       os.path.isdir(os.path.join(self.workingDir, name))))
         else:
-            _folders = self.__getSnappyHexMeshSubfolders()[1:]
+            _folders = self.getSnappyHexMeshSubfolders()[1:]
 
         for f in _folders:
             try:

@@ -11,7 +11,8 @@ from .bfsurface import BFSurface
 from .core import Case
 
 from ..windtunnel import TunnelParameters, WindTunnel
-from ..boundarycondition import WindTunnelGroundBoundaryCondition, \
+from ..boundarycondition import BoundaryCondition, \
+    WindTunnelGroundBoundaryCondition, \
     WindTunnelInletBoundaryCondition, WindTunnelOutletBoundaryCondition, \
     WindTunnelTopAndSidesBoundaryCondition, WindTunnelWallBoundaryCondition
 from ..z0 import Z0
@@ -46,6 +47,12 @@ class GHWindTunnel(WindTunnel):
         """Init grasshopper wind tunnel."""
         self.name = name
 
+        # update boundary condition of wall surfaces
+        for bfSurface in BFSurfaces:
+            bfSurface.boundaryCondition = WindTunnelWallBoundaryCondition(
+                bfSurface.boundaryCondition.refLevels
+                )
+
         self.BFSurfaces = BFSurfaces
 
         try:
@@ -74,9 +81,10 @@ class GHWindTunnel(WindTunnel):
         inlet, outlet, rightSide, leftSide, top, ground = self.boundingSurfaces
 
         # init openFoam windTunnel
-        WindTunnel.__init__(self, self.name, inlet, outlet, (rightSide, leftSide),
-                            top, ground, self.BFSurfaces, block, self.z0,
-                            globalRefLevel)
+        super(GHWindTunnel, self).__init__(
+            self.name, inlet, outlet, (rightSide, leftSide), top, ground,
+            self.BFSurfaces, block, self.z0, globalRefLevel
+        )
 
     @property
     def ghBoundingSurfaces(self):

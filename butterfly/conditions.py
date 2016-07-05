@@ -18,9 +18,10 @@ class ABLConditions(Condition):
 
     def __init__(self, values=None):
         """Init class."""
-        Condition.__init__(self, name='ABLConditions', cls='dictionary',
-                           location='0', defaultValues=self.__defaultValues,
-                           values=values)
+        super(ABLConditions, self).__init__(
+            name='ABLConditions', cls='dictionary', location='0',
+            defaultValues=self.__defaultValues, values=values
+        )
 
     @classmethod
     def fromWindTunnel(cls, windTunnel):
@@ -50,19 +51,31 @@ class InitialConditions(Condition):
     __defaultValues['#inputMode'] = 'merge'
 
     def __init__(self, values=None, Uref=0, Zref=10, z0=1, Cm=0.09, k=0.41):
-        """Init class."""
-        self.__Uref = Uref
-        self.__Zref = Zref
-        self.__z0 = z0
+        """Init class.
+
+        Args:
+            Uref: Reference wind velocity in m/s.
+            Zref: Reference height for wind velocity. Normally 10 m.
+            z0: Roughness (default: 1).
+        """
+        self.__Uref = float(Uref)
+        self.__Zref = float(Zref)
+        self.__z0 = float(z0)
         self.__Cm = Cm
         self.__k = k
         self.calculateKEpsilon(init=True)
-        Condition.__init__(self, name='initialConditions', cls='dictionary',
-                           location='0', defaultValues=self.__defaultValues,
-                           values=values)
+        super(InitialConditions, self).__init__(
+            name='initialConditions', cls='dictionary', location='0',
+            defaultValues=self.__defaultValues, values=values
+        )
 
     def calculateKEpsilon(self, init=False):
-        """Calculate turbulentKE and turbulentEpsilon."""
+        """Calculate turbulentKE and turbulentEpsilon.
+
+        Args:
+            init: True if the method is called when the class is initiated
+                (default: False).
+        """
         _Uabl = self.Uref * self.k / math.log((self.Zref + self.z0) / self.z0)
         epsilon = _Uabl ** 3 / self.k * (self.Zref + self.z0)
         k = _Uabl ** 2 / math.sqrt(self.Cm)

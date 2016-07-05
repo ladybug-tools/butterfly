@@ -19,7 +19,7 @@ class Case(OpemFOAMCase):
     def loadVelocity(self, timestep=None):
         """Return OpenFOAM mesh as a Rhino mesh."""
         # find results folders
-        _folders = self.__getResultsSubfolders()
+        _folders = self.getResultsSubfolders()
 
         # if there is no timestep pick the last one
         _folder = _folders[-1]
