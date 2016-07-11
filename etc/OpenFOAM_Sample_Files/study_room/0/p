@@ -33,9 +33,7 @@ boundaryField
     west_window
     {
 
-        type		fixedValue;
-
-        value		uniform 0;
+        type        zeroGradient;
 
     }
 
@@ -49,7 +47,9 @@ boundaryField
     east_window
     {
 
-        type		zeroGradient;
+        type        fixedValue;
+
+        value       uniform 0;
 
     }
 
