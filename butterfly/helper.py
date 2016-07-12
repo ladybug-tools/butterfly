@@ -41,7 +41,7 @@ def runbatchfile(filepath, printLog=True):
     _err = None
     sys.stdout.flush()
     p = Popen(filepath, shell=False, stdin=PIPE)
-    p.communicate(input='\n')
+    p.communicate(input='y\n')
 
     if printLog:
         try:

@@ -4,7 +4,7 @@ from helper import getBoundaryField
 import os
 import json
 from collections import OrderedDict
-
+from copy import deepcopy
 
 class FoamFile(object):
     """FoamFile base class for OpenFOAM dictionaries.
@@ -45,7 +45,7 @@ class FoamFile(object):
             values = {}
         if not defaultValues:
             defaultValues = {}
-        self.__values = defaultValues
+        self.__values = deepcopy(defaultValues)
         self.updateValues(values)
 
     @property
