@@ -28,20 +28,41 @@ def wfile(fullPath, content):
 
 
 def runbatchfile(filepath, printLog=True):
-    """run an executable .bat file."""
+    """run an executable .bat file.
+
+    returns:
+        A tuple as (success, err). success is a boolen. err is None in case of
+        success otherwise the error message as a string.
+    """
     if not os.path.isfile(filepath):
         raise ValueError('Cannot find %s' % filepath)
 
+    _success = True
+    _err = None
     sys.stdout.flush()
     p = Popen(filepath, shell=False, stdin=PIPE)
     p.communicate(input='\n')
+
     if printLog:
         try:
             logfile = ".".join(filepath.split(".")[:-1]) + ".log"
+            errfile = ".".join(filepath.split(".")[:-1]) + ".err"
+
             with open(logfile, 'rb') as log:
-                print(' '.join(log.readlines()))
+                _lines = ' '.join(log.readlines())
+                print(_lines)
+
+            with open(errfile, 'rb') as log:
+                _err = ' '.join(log.readlines())
+                if len(_err) > 0:
+                    _success = False
+                    print(_err)
+
         except Exception as e:
-            print('Failed to read {}:\n{}'.format(logfile, e))
+            print('Failed to read {} and {}:\n{}'.format(logfile, errfile, e))
+
+    return _success, _err
+
 
 def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
                                   meshingType='triSurfaceMesh',

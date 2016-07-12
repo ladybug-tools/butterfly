@@ -1,6 +1,8 @@
 """Butterfly core library."""
 import os
+from shutil import rmtree
 from distutils.dir_util import copy_tree
+
 from version import Version
 from helper import mkdir, wfile, runbatchfile
 # constant folder objects
@@ -160,14 +162,17 @@ class OpemFOAMCase(object):
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
+        # This is a abstract property which should be implemented in subclasses
         raise NotImplementedError()
 
     def loadPoints(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
+        # This is a abstract property which should be implemented in subclasses
         raise NotImplementedError()
 
     def loadVelocity(self, timestep=None):
         """Return OpenFOAM mesh as a Rhino mesh."""
+        # This is a abstract property which should be implemented in subclasses
         raise NotImplementedError()
 
     def createCaseFolders(self, workingDir=None):
@@ -193,7 +198,7 @@ class OpemFOAMCase(object):
             outf.close()
 
         self._isInit = True
-        print "Folders are created at: %s" % os.path.normpath(self.projectDir)
+        print "OpenFOAM Case is successfully exported to: %s" % os.path.normpath(self.projectDir)
 
     def __createCaseFolder(self, projectName, workingDir=None):
         """Create root folder for butterfly projects."""
@@ -289,29 +294,66 @@ class OpemFOAMCase(object):
 
     # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #
-    def blockMesh(self, run=True, log=True):
-        """Run meshBlock command for this case."""
-        self.__writeAndRunCommands('blockMesh', ('blockMesh',), run)
+    def blockMesh(self, run=True, log=True, removeContent=True):
+        """Run meshBlock command for this case.
+
+        Args:
+            removeContent: Remove current content of the folder except for
+                blockMeshDict
+
+        Returns:
+            A tuple as (success, err). success is a boolen. err is None in case
+            of success otherwise the error message as a string.
+        """
+        if removeContent:
+            self.removePolyMeshContent()
+
+        return self.__writeAndRunCommands('blockMesh', ('blockMesh',), run, log)
 
     def snappyHexMesh(self, run=True, log=True):
         """Run snappyHexMesh command for this case."""
-        self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',), run)
+        return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
+                                          run, log)
 
     def meshCombo(self, run=True, log=True):
-        """Run meshBlock and snappyHexMesh."""
-        self.__writeAndRunCommands('meshCombo',
-                                   ('meshBlock', 'snappyHexMesh'),
-                                   run)
+        """Run meshBlock and snappyHexMesh.
+
+        Returns:
+            A tuple as (success, err). success is a boolen. err is None in case
+            of success otherwise the error message as a string.
+        """
+        return self.__writeAndRunCommands('meshCombo',
+                                          ('blockMesh', 'snappyHexMesh'),
+                                          run, log)
+
+    def checkMesh(self, run=True, log=True):
+        """Run simpleFoam command for this case.
+
+        Returns:
+            A tuple as (success, err). success is a boolen. err is None in case
+            of success otherwise the error message as a string.
+        """
+        return self.__writeAndRunCommands('checkMesh', ('checkMesh',), run, log)
 
     def simpleFoam(self, run=True, log=True):
-        """Run simpleFoam command for this case."""
-        self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run)
+        """Run simpleFoam command for this case.
+
+        Returns:
+            A tuple as (success, err). success is a boolen. err is None in case
+            of success otherwise the error message as a string.
+        """
+        return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run, log)
 
     # ************************* OpenFOAM Commands ************************* #
     # *************************        END        ************************* #
 
     def __writeAndRunCommands(self, name, commands, run=True, log=True):
-        """Write batch files for commands and run them."""
+        """Write batch files for commands and run them.
+
+        Returns:
+            A tuple as (success, err). success is a boolen. err is None in case
+            of success otherwise the error message as a string.
+        """
         _batchString = self.runmanager.command(commands,
                                                includeHeader=True,
                                                log=log)
@@ -319,9 +361,9 @@ class OpemFOAMCase(object):
         wfile(_fpath, _batchString)
 
         if run:
-            runbatchfile(_fpath, printLog=log)
+            return runbatchfile(_fpath, printLog=log)
 
-    def getSnappyHexMeshSubfolders(self):
+    def getSnappyHexMeshFolders(self):
         """Return sorted list of numerical folders."""
         _f = [int(name) for name in os.listdir(self.projectDir)
               if (name.isdigit() and
@@ -334,10 +376,10 @@ class OpemFOAMCase(object):
 
         return tuple(str(f) for f in _f)
 
-    def getResultsSubfolders(self):
+    def getResultFolders(self):
         """Return sorted list of numerical folders."""
         _f = [int(name) for name in os.listdir(self.projectDir)
-              if (name.isdigit() and
+              if (name != '0' and name.isdigit() and
                   os.path.isdir(os.path.join(self.projectDir, name)) and
                   not os.path.isdir(os.path.join(self.projectDir, name, 'polyMesh'))
                   )
@@ -350,12 +392,15 @@ class OpemFOAMCase(object):
     def copySnappyHexMesh(self, folderNumber=None):
         """Copy the results of snappyHexMesh to constant/polyMesh."""
         # pick the last numerical folder
-        _folders = self.getSnappyHexMeshSubfolders()
-        if len(_folders) < 2:
-            # it is only o folder
-            return
+        if folderNumber:
+            _s = os.path.join(self.projectDir, str(folderNumber), 'polyMesh')
+            assert os.path.isdir(_s), "Can't find {}.".format(_s)
+        else:
+            _folders = self.getSnappyHexMeshFolders()
+            if not _folders:
+                return
+            _s = os.path.join(self.projectDir, _folders[-1], 'polyMesh')
 
-        _s = os.path.join(self.projectDir, _folders[-1], 'polyMesh')
         _t = os.path.join(self.constantDir, "polyMesh")
 
         # copy files to constant/polyMesh
@@ -375,15 +420,10 @@ class OpemFOAMCase(object):
 
             self._isSnappyHexMeshFoldersRenamed = False
         else:
-            _folders = self.getSnappyHexMeshSubfolders()
-            if len(_folders) < 2:
-                # it is only o folder
-                return
+            _folders = self.getSnappyHexMeshFolders()
 
             # rename them starting from 1
             for f in _folders:
-                if f == '0':
-                    continue
                 os.rename(os.path.join(self.projectDir, f),
                           os.path.join(self.projectDir, '%s.org' % f))
 
@@ -399,26 +439,41 @@ class OpemFOAMCase(object):
                   if (name.endswith('.org') and
                       os.path.isdir(os.path.join(self.workingDir, name))))
         else:
-            _folders = self.getSnappyHexMeshSubfolders()[1:]
+            _folders = self.getSnappyHexMeshFolders()
 
         for f in _folders:
-            try:
-                os.remove(f)
-            except:
-                print "Failed to remove %s." % f
+            rmtree(os.path.join(self.projectDir, f))
 
         self._isSnappyHexMeshFoldersRenamed = False
 
     def removeResultFolders(self):
-        pass
+        """Remove results folder."""
+        _folders = self.getResultFolders()
+        for _f in _folders:
+            rmtree(os.path.join(self.projectDir, _f))
 
-    def purge(self, removePolyMeshFolder=True, removeSnappyHexMeshFolders=True,
+    def removePolyMeshContent(self):
+        """Remove results folder."""
+        folder = os.path.join(self.constantDir, 'polyMesh')
+        for _f in os.listdir(folder):
+            if _f != 'blockMeshDict':
+                os.remove(os.path.join(folder, _f))
+
+    def purge(self, removePolyMeshContent=True,
+              removeSnappyHexMeshFolders=True,
               removeResultFolders=False):
         """Purge case folder."""
-        pass
+        if removePolyMeshContent:
+            self.removePolyMeshContent()
+        if removeSnappyHexMeshFolders:
+            self.removeSnappyHexMeshFolders()
+        if removeResultFolders:
+            self.removeResultFolders()
 
     def ToString(self):
+        """Overwrite .NET ToString method."""
         return self.__repr__()
 
     def __repr__(self):
+        """OpenFOAM CASE."""
         return "OpenFOAM CASE: %s" % self.projectName

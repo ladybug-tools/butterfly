@@ -85,25 +85,40 @@ class RunManager(object):
 
         return _base.format(*self.shellinit)
 
-    def command(self, cmds, includeHeader=False, log=True):
+    def command(self, cmds, includeHeader=False, log=True, startOpenFOAM=False):
         """
         Get command line for OpenFOAM commands.
         Args:
             cmds: A sequence of commnads.
+            includeHeader:
+            log:
+            startOpenFOAM: Execute OpenFOAM in case it's not already running.
         """
         _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+
         _msg = "Failed to find container id. Do you have the OpenFOAM container running?\n" + \
             "You can initiate OpenFOAM container by running start_OF.bat:\n" + \
             _fp
 
         if not self.containerId:
             self.containerId = self.getContainerId()
-        assert self.containerId, _msg
+
+        try:
+            assert self.containerId, _msg
+        except AssertionError:
+            # this can be tricky since it takes some time for the batch file to
+            # turn on the
+            if startOpenFOAM:
+                self.startOpenFoam()
+                self.containerId = self.getContainerId()
+        finally:
+            assert self.containerId, _msg
 
         _base = 'docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
 
         if log:
-            _baseCmd = '{0} | tee /home/ofuser/workingDir/butterfly/{1}/etc/{0}.log'
+            _baseCmd = '{0} > >(tee etc/{0}.log) 2> >(tee etc/{0}.err >&2)'
+
             _cmds = (_baseCmd.format(cmd, self.projectName) for cmd in cmds)
         else:
             _cmds = cmds

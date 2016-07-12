@@ -10,7 +10,7 @@ class Epsilon(ZeroFolderFoamFile):
     __defaultValues = OrderedDict()
     __defaultValues['dimensions'] = '[0 2 -3 0 0 0 0]'
     __defaultValues['#include'] = None
-    __defaultValues['internalField'] = None
+    __defaultValues['internalField'] = 'uniform 0.01'
     __defaultValues['boundaryField'] = {}
 
     def __init__(self, values=None):

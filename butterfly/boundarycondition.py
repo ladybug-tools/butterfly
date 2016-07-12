@@ -110,7 +110,7 @@ class FixedInletBoundaryCondition(BoundaryCondition):
         """Init bounday condition."""
         # set default values for an inlet
         u = FixedValue('(0 0 0)') if not u else u
-        p = FixedValue('0') if not p else p
+        p = ZeroGradient() if not p else p
         k = FixedValue('0.1') if not k else k
         epsilon = FixedValue('0.01') if not epsilon else epsilon
         nut = Calculated()
@@ -142,7 +142,7 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
         """Init bounday condition."""
         # set default values for an inlet
         u = ZeroGradient() if not u else u
-        p = ZeroGradient() if not p else p
+        p = FixedValue('0') if not p else p
         k = ZeroGradient() if not k else k
         epsilon = ZeroGradient() if not epsilon else epsilon
         nut = Calculated()
