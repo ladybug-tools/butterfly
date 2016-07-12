@@ -33,3 +33,136 @@ class FvSchemes(FoamFile):
         FoamFile.__init__(self, name='fvSchemes', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
+
+    @classmethod
+    def fromAverageOrthogonality(cls, averageOrthogonality=45):
+        """Init fvSchemes based on mesh orthogonality.
+
+        Check pp. 45-50 of this document:
+        http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
+        """
+        return cls(values=cls.getValuesFromAverageOrthogonality(
+            averageOrthogonality))
+
+    #TODO: Add changes OpenFOAM version check for dev values.
+    @staticmethod
+    def getValuesFromAverageOrthogonality(averageOrthogonality=45):
+        if averageOrthogonality > 80:
+            _values = {
+                'gradSchemes': {
+                    'default': 'faceLimited leastSquares 1.0',
+                    'grad(U)': 'faceLimited leastSquares 1.0'
+                },
+
+                'divSchemes': {
+                    'div(phi,U)': 'Gauss linearUpwind grad(U)',
+                    'div(phi,omega)': 'Gauss upwind',
+                    'div(phi,k)': 'Gauss upwind',
+                    'div((nuEff*dev2(T(grad(U)))))': 'Gauss linear',
+                    'div(phi,epsilon)': 'Gauss linearUpwind grad(epsilon)'
+                },
+
+                'laplacianSchemes': {
+                    'default': 'Gauss linear limited 0.333'
+                },
+
+                'snGradSchemes': {
+                    'default': 'limited 0.333'
+                }
+            }
+        elif 70 <= averageOrthogonality <= 80:
+            _values = {
+                'gradSchemes': {
+                    'default': 'cellLimited leastSquares 1.0',
+                    'grad(U)': 'cellLimited leastSquares 1.0'
+                },
+
+                'divSchemes': {
+                    'div(phi,U)': 'Gauss linearUpwind grad(U)',
+                    'div(phi,omega)': 'Gauss upwind',
+                    'div(phi,k)': 'Gauss upwind',
+                    'div((nuEff*dev2(T(grad(U)))))': 'Gauss linear',
+                    'div(phi,epsilon)': 'Gauss linearUpwind grad(epsilon)'
+                },
+
+                'laplacianSchemes': {
+                    'default': 'Gauss linear limited 0.5'
+                },
+
+                'snGradSchemes': {
+                    'default': 'limited 0.5'
+                }
+            }
+
+        elif 60 <= averageOrthogonality < 70:
+            _values = {
+                'gradSchemes': {
+                    'default': 'cellMDLimited Gauss linear 0.5',
+                    'grad(U)': 'cellMDLimited Gauss linear 0.5'
+                },
+
+                'divSchemes': {
+                    'div(phi,U)': 'Gauss linearUpwind grad(U)',
+                    'div(phi,omega)': 'Gauss linearUpwind default',
+                    'div(phi,k)': 'Gauss linearUpwind default',
+                    'div((nuEff*dev2(T(grad(U)))))': 'Gauss linear',
+                    'div(phi,epsilon)': 'Gauss linearUpwind grad(epsilon)'
+                },
+
+                'laplacianSchemes': {
+                    'default': 'Gauss linear limited 0.777'
+                },
+
+                'snGradSchemes': {
+                    'default': 'limited 0.777'
+                }
+            }
+        elif 40 <= averageOrthogonality < 60:
+            _values = {
+                'gradSchemes': {
+                    'default': 'cellMDLimited Gauss linear 0.5',
+                    'grad(U)': 'cellMDLimited Gauss linear 0.5'
+                },
+
+                'divSchemes': {
+                    'div(phi,U)': 'Gauss linearUpwind grad(U)',
+                    'div(phi,omega)': 'Gauss linearUpwind default',
+                    'div(phi,k)': 'Gauss linearUpwind default',
+                    'div((nuEff*dev2(T(grad(U)))))': 'Gauss linear',
+                    'div(phi,epsilon)': 'Gauss linearUpwind grad(epsilon)'
+                },
+
+                'laplacianSchemes': {
+                    'default': 'Gauss linear limited 1.0'
+                },
+
+                'snGradSchemes': {
+                    'default': 'limited 1.0'
+                }
+            }
+        else:
+            # smaller than 40
+            _values = {
+                'gradSchemes': {
+                    'default': 'cellMDLimited Gauss linear 0.5',
+                    'grad(U)': 'cellMDLimited Gauss linear 0.5'
+                },
+
+                'divSchemes': {
+                    'div(phi,U)': 'Gauss linearUpwind grad(U)',
+                    'div(phi,omega)': 'Gauss linearUpwind default',
+                    'div(phi,k)': 'Gauss linearUpwind default',
+                    'div((nuEff*dev2(T(grad(U)))))': 'Gauss linear',
+                    'div(phi,epsilon)': 'Gauss linearUpwind grad(epsilon)'
+                },
+
+                'laplacianSchemes': {
+                    'default': 'Gauss linear limited 1.0'
+                },
+
+                'snGradSchemes': {
+                    'default': 'limited 1.0'
+                }
+            }
+
+        return _values

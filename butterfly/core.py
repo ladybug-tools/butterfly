@@ -470,6 +470,40 @@ class OpemFOAMCase(object):
         if removeResultFolders:
             self.removeResultFolders()
 
+    # *************************** Post Process **************************** #
+    def calculateMeshOrthogonality(self, useCurrntCheckMeshLog=False):
+        """Max and average mesh orthogonality.
+
+        If average values is more than 80, try to generate a better mesh.
+        You can use this values to set discretization schemes.
+        try case.setFvSchemes(averageOrthogonality)
+        """
+        if not useCurrntCheckMeshLog:
+            success, err = self.checkMesh()
+            assert success, err
+
+        f = os.path.join(self.projectDir, 'etc/checkMesh.log')
+        assert os.path.isfile(f), 'Failed to find {}.'.format(f)
+
+        with open(f, 'rb') as inf:
+            results = ''.join(inf.readlines())
+
+            maximum, average = results \
+                .split('Mesh non-orthogonality Max:')[-1] \
+                .split('average:')[:2]
+
+            average = average.split('\n')[0]
+
+        return float(maximum), float(average)
+
+    def setFvSchemesfromAverageOrthogonality(self, averageOrthogonality):
+        """Set fvSchemes based on mesh orthogonality.
+
+        Check pp. 45-50 of this document:
+        http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
+        """
+        self.fvSchemes = FvSchemes.fromAverageOrthogonality(averageOrthogonality)
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
