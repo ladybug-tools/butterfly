@@ -64,7 +64,7 @@ class RunManager(object):
         finally:
             return _id
 
-    def startOpenFoam(self):
+    def startOpenFOAM(self):
         """Start OpenFOAM for Windows image from batch file."""
         fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
         subprocess.Popen(fp, shell=True)
@@ -109,7 +109,7 @@ class RunManager(object):
             # this can be tricky since it takes some time for the batch file to
             # turn on the
             if startOpenFOAM:
-                self.startOpenFoam()
+                self.startOpenFOAM()
                 self.containerId = self.getContainerId()
         finally:
             assert self.containerId, _msg

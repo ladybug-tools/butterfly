@@ -26,7 +26,7 @@ class BlockMeshDict(FoamFile):
                _y / len(self.vertices), \
                _z / len(self.vertices)
 
-    def toOpenFoam(self):
+    def toOpenFOAM(self):
         _hea = self.header()
         _body = "\nconvertToMeters 1;\n" \
                 "\n" \

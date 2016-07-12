@@ -123,20 +123,20 @@ class FoamFile(object):
 
         return "\n\n".join(l)
 
-    def toOpenFoam(self):
+    def toOpenFOAM(self):
         return "\n".join((self.header(), self.body()))
 
     def save(self, projectFolder, subFolder=None):
         subFolder = self.location.replace('"', '') if not subFolder else subFolder
         with open(os.path.join(projectFolder, subFolder, self.name), "wb") as outf:
-            outf.write(self.toOpenFoam())
+            outf.write(self.toOpenFOAM())
 
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
 
     def __repr__(self):
-        return self.toOpenFoam()
+        return self.toOpenFOAM()
 
 
 class ZeroFolderFoamFile(FoamFile):

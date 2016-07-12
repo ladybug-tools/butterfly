@@ -80,7 +80,7 @@ class GHWindTunnel(WindTunnel):
         # create butterfly surfaces
         inlet, outlet, rightSide, leftSide, top, ground = self.boundingSurfaces
 
-        # init openFoam windTunnel
+        # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
             self.BFSurfaces, block, self.z0, globalRefLevel
