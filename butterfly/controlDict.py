@@ -7,6 +7,7 @@ class ControlDict(FoamFile):
 
     # set default valus for this class
     __defaultValues = OrderedDict()
+    __defaultValues['#include'] = None
     __defaultValues['application'] = 'simpleFoam'
     __defaultValues['startFrom'] = 'latestTime'
     __defaultValues['startTime'] = '0'
@@ -28,6 +29,10 @@ class ControlDict(FoamFile):
         FoamFile.__init__(self, name='controlDict', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
+
+    def include(self, fileName):
+        "Add include to controlDict."
+        self.values['#include'] = '"{}"'.format(fileName.replace('"', ''))
 
     @property
     def application(self):

@@ -64,6 +64,50 @@ def runbatchfile(filepath, printLog=True):
     return _success, _err
 
 
+def readLastLine(filepath, blockSize=1024):
+    """
+    Read the last line of a file.
+    Modified from: http://www.manugarg.com/2007/04/tailing-in-python.html
+
+    Args:
+        filepath: path to file
+        blockSize:  data is read in chunks of this size (optional, default=1024)
+
+    Raises:
+        IOError if file cannot be processed.
+    """
+    # rU is to open it with Universal newline support
+    f = open(filepath, 'rU')
+    offset = blockSize
+    try:
+        f.seek(0, 2)
+        file_size = f.tell()
+        while True:
+            if file_size < offset:
+                offset = file_size
+
+            f.seek(-1 * offset, 2)
+            read_str = f.read(offset)
+
+            # Remove newline at the end
+            if read_str[offset - 1] == '\n':
+                read_str = read_str[0:-1]
+
+            lines = read_str.split('\n')
+
+            if len(lines) > 1:  # Got a line
+                return lines[len(lines) - 1]
+
+            if offset == file_size:   # Reached the beginning
+                return read_str
+
+            offset += blockSize
+    except Exception as e:
+        raise Exception(str(e))
+    finally:
+        f.close()
+
+
 def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
                                   meshingType='triSurfaceMesh',
                                   stlFile=None):

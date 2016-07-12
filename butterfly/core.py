@@ -4,7 +4,7 @@ from shutil import rmtree
 from distutils.dir_util import copy_tree
 
 from version import Version
-from helper import mkdir, wfile, runbatchfile
+from helper import mkdir, wfile, runbatchfile, readLastLine
 # constant folder objects
 from turbulenceProperties import TurbulenceProperties
 from RASProperties import RASProperties
@@ -17,12 +17,15 @@ from p import P
 from nut import Nut
 from epsilon import Epsilon
 from conditions import ABLConditions, InitialConditions
+
 # system folder objects
 from blockMeshDict import BlockMeshDict
 from controlDict import ControlDict
 from snappyHexMeshDict import SnappyHexMeshDict
 from fvSchemes import FvSchemes
 from fvSolution import FvSolution
+from functions import Probes
+
 from runmanager import RunManager
 
 
@@ -74,6 +77,7 @@ class OpemFOAMCase(object):
         self.fvSolution = FvSolution()
 
         self.controlDict = ControlDict()
+        self.probes = None
 
         # if any of these files are included they should be written to 0 floder
         if not isABLConditionsIncluded:
@@ -159,6 +163,50 @@ class OpemFOAMCase(object):
             self.__ABLConditions = value
             self.__isABLConditionsIncluded = True
 
+    @property
+    def probes(self):
+        """Get and set Probes."""
+        return self.__probes
+
+    @probes.setter
+    def probes(self, inp):
+        if not inp:
+            self.__probes = inp
+        else:
+            assert hasattr(inp, 'probeLocations'), \
+                "Expected Probes not {}".format(type(inp))
+
+            self.__probes = inp
+            # include probes in controlDict
+            self.controlDict.include(self.probes.filename)
+
+    def loadProbes(self, field):
+        """Return OpenFOAM probes results for a field."""
+        if not self.probes:
+            return []
+
+        if field not in self.probes.fields:
+            raise ValueError("Can't find {} in {}.".format(field,
+                                                           self.probes.fields))
+
+        # load the last line in the file
+        _f = os.path.join(self.projectDir, 'postProcessing',
+                          self.probes.filename, '0', field)
+
+        assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
+
+        _res = readLastLine(_f).split()[1:]
+
+        # convert values to tuple or number
+        _rawres = readLastLine(_f).split('      ')[2:]
+        if _rawres[1].find('(') > -1:
+            # it's a vector
+            _res = (tuple(eval(r.strip().replace(' ', ',')) for r in _rawres if r))
+        else:
+            # it's a number
+            _res = (tuple(float(r) for r in _rawres))
+
+        return _res
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""

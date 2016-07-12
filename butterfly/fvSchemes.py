@@ -144,8 +144,8 @@ class FvSchemes(FoamFile):
             # smaller than 40
             _values = {
                 'gradSchemes': {
-                    'default': 'cellMDLimited Gauss linear 0.5',
-                    'grad(U)': 'cellMDLimited Gauss linear 0.5'
+                    'default': 'cellMDLimited Gauss linear 0.333',
+                    'grad(U)': 'cellMDLimited Gauss linear 0.333'
                 },
 
                 'divSchemes': {
@@ -157,11 +157,11 @@ class FvSchemes(FoamFile):
                 },
 
                 'laplacianSchemes': {
-                    'default': 'Gauss linear limited 1.0'
+                    'default': 'Gauss linear orthogonal'
                 },
 
                 'snGradSchemes': {
-                    'default': 'limited 1.0'
+                    'default': 'orthogonal'
                 }
             }
 
