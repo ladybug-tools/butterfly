@@ -105,8 +105,8 @@ class TunnelParameters(object):
     Args:
         windward: Multiplier value for windward extension (default: 3).
         top: Multiplier value for top extension (default: 3).
-        side: Multiplier value for side extension (default: 3).
-        leeward: Multiplier value for leeward extension (default: 3).
+        side: Multiplier value for side extension (default: 2).
+        leeward: Multiplier value for leeward extension (default: 15).
     """
 
     def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
