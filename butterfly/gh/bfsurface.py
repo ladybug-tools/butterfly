@@ -12,8 +12,18 @@ from ..boundarycondition import BoundaryCondition
 # TODO: Write BFSurface with no Grasshopper dependencies.
 # it will have name, vertices, normals,...
 class BFSurface(object):
-    def __init__(self, name, geometry, boundaryCondition=None,
+    """Butterfly surface.
+
+    Args:
+        name:
+        geometry:
+        boundaryCondition:
+        meshingParameters: Grasshopper meshingParameters.
+    """
+
+    def __init__(self, name, geometry, boundaryType=None,
                  meshingParameters=None):
+        """Init Butterfly surface in Grasshopper."""
         if not meshingParameters:
             meshingParameters = rc.Geometry.MeshingParameters.Default
 
@@ -22,10 +32,10 @@ class BFSurface(object):
         self.geometry = geometry
 
         # TODO: add check for boundary condition to be valid
-        if not boundaryCondition:
+        if not boundaryType:
             self.boundaryCondition = BoundaryCondition()
         else:
-            self.boundaryCondition = boundaryCondition
+            self.boundaryCondition = boundaryType
 
     @property
     def isBFSurface(self):
@@ -33,19 +43,21 @@ class BFSurface(object):
         return True
 
     @property
-    def geometry(self):
-        """Mesh geometry of the surface."""
-        return self.__geometry
-
-    @property
     def borderVertices(self):
         """Return a list of lists for (x, y, z) vertices."""
         return self.__borderVertices
 
+    @property
+    def geometry(self):
+        """Mesh geometry of the surface."""
+        return self.__geometry
+
     @geometry.setter
     def geometry(self, geo):
-        """
-        geo is a list of geometries
+        """Geometry.
+
+        Args:
+            geo: A list of geometries
         """
         _geo = rc.Geometry.Mesh()
 
@@ -78,11 +90,13 @@ class BFSurface(object):
 
     @staticmethod
     def getBorderVertices(face):
+        """Get border vertices."""
         srf = face.DuplicateFace(doc.ModelAbsoluteTolerance)
         edgesJoined = rc.Geometry.Curve.JoinCurves(srf.DuplicateEdgeCurves(True))
         return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
 
     def triangulateMesh(self, mesh):
+        """Triangulate Rhino Mesh."""
         triMesh = rc.Geometry.Mesh()
 
         for i in xrange(mesh.Vertices.Count):
@@ -119,25 +133,26 @@ class BFSurface(object):
                 "   }\n"
 
         if not self.borderVertices:
-            raise TypeError("This Butterfly surface is created from meshes " \
+            raise TypeError("This Butterfly surface is created from meshes "
                             "and can't be expoerted as blockMeshDict.")
 
         try:
             renumberedIndices = (tuple(vertices.index(v) for v in verGroup)
                                  for verGroup in self.borderVertices)
         except:
-            raise ValueError("Can't find the vertex " \
+            raise ValueError("Can't find the vertex "
                              "in the vertices:\ninput: {}\n vertices: {}"
                              .format(self.borderVertices, vertices))
 
         return _body % (
-                    self.name,
-                    self.boundaryCondition.type,
-                    "\n".join(["            " + str(indices).replace(",", "")
-                               for indices in renumberedIndices])
+            self.name,
+            self.boundaryCondition.type,
+            "\n".join(["            " + str(indices).replace(",", "")
+                       for indices in renumberedIndices])
         )
 
     def toStlString(self):
+        """Get STL definition for this surface as a string."""
         _hea = "solid {}".format(self.name)
         _tale = "endsolid {}".format(self.name)
         _body = "   facet normal {0} {1} {2}\n" \
@@ -164,9 +179,8 @@ class BFSurface(object):
         ) for count, faceInd in enumerate(self.faceIndices))
 
         return "{}\n{}\n{}".format(
-                _hea,
-                "\n".join(_bodyCollector),
-                _tale)
+            _hea, "\n".join(_bodyCollector), _tale
+        )
 
     def writeToStl(self, folder):
         """Save BFFace to a stl file. File name will be self.name."""
@@ -174,7 +188,9 @@ class BFSurface(object):
             outf.write(self.toStlString())
 
     def ToString(self):
+        """Overwrite .NET ToString method."""
         return self.__repr__()
 
     def __repr__(self):
+        """Butterfly surface representation."""
         return "BFSurface:{}".format(self.name)

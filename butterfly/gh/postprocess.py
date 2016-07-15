@@ -2,14 +2,12 @@
 import os
 try:
     import Rhino as rc
-    from scriptcontext import doc
 except ImportError:
     pass
 
 
 def loadOFMeshToRhino(polyMeshFolder):
     """Convert OpenFOAM mesh to a Rhino Mesh."""
-
     def splitLine(l, t=float):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
 
@@ -33,29 +31,30 @@ def loadOFMeshToRhino(polyMeshFolder):
             line = ptFile.readline()
             nPoints = int(line[0])
             pts = tuple(
-                       rc.Geometry.Point3d(*pt)
-                       for pt in eval(line[1:].replace(" ", ", "))
-                       )
+                rc.Geometry.Point3d(*pt)
+                for pt in eval(line[1:].replace(" ", ", "))
+            )
         except:
-            #snappyHexMesh
+            # snappyHexMesh
             line = ptFile.readline()
             nPoints = int(line)
             ptFile.readline()
             pts = tuple(
-                       rc.Geometry.Point3d(*splitLine(ptFile.readline()))
-                       for pt in xrange(nPoints)
-                )
+                rc.Geometry.Point3d(*splitLine(ptFile.readline()))
+                for pt in xrange(nPoints)
+            )
 
     # read faces
     with open(ff, 'rb') as faceFile:
-       for l in xrange(18):
-           faceFile.readline()
+        for l in xrange(18):
+            faceFile.readline()
 
-       nFaces = int(faceFile.readline())
-       faceFile.readline()
-       faces = tuple((splitLine(faceFile.readline(), t=int))
-                   for pt in xrange(nFaces)
-            )
+        nFaces = int(faceFile.readline())
+        faceFile.readline()
+        faces = tuple(
+            (splitLine(faceFile.readline(), t=int))
+            for pt in xrange(nFaces)
+        )
 
     # create the mesh
     mesh = rc.Geometry.Mesh()
@@ -105,18 +104,18 @@ def loadOFPointsToRhino(polyMeshFolder):
             line = ptFile.readline()
             nPoints = int(line[0])
             pts = tuple(
-                       rc.Geometry.Point3d(*pt)
-                       for pt in eval(line[1:].replace(" ", ", "))
-                       )
+                rc.Geometry.Point3d(*pt)
+                for pt in eval(line[1:].replace(" ", ", "))
+            )
         except:
-            #snappyHexMesh
+            # snappyHexMesh
             line = ptFile.readline()
             nPoints = int(line)
             ptFile.readline()
             pts = tuple(
-                       rc.Geometry.Point3d(*splitLine(ptFile.readline()))
-                       for pt in xrange(nPoints)
-                )
+                rc.Geometry.Point3d(*splitLine(ptFile.readline()))
+                for pt in xrange(nPoints)
+            )
 
     return pts
 
@@ -139,7 +138,7 @@ def loadOFVectorsToRhino(resultsFolder, variable='U'):
         nVectors = int(line)
         ptFile.readline()
         vectors = tuple(
-                   rc.Geometry.Vector3d(*splitLine(ptFile.readline()))
-                   for pt in xrange(nVectors)
-            )
+            rc.Geometry.Vector3d(*splitLine(ptFile.readline()))
+            for pt in xrange(nVectors)
+        )
     return vectors

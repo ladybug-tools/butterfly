@@ -1,10 +1,4 @@
 """BF Surface for Grasshopper."""
-import os
-try:
-    import Rhino as rc
-    from scriptcontext import doc
-except ImportError:
-    pass
 
 
 # TODO: Write Block class with no Grasshopper dependencies
@@ -14,7 +8,9 @@ class Block(object):
     Args:
         geometry: A closed brep that represents block boundary.
     """
+
     def __init__(self, geometry, nDiv, grading):
+        """Init Block class."""
         self.vertices = self.__calculateVertices(geometry)
         self.nDiv = tuple(int(v) for v in nDiv)
         self.grading = tuple(grading)
@@ -34,8 +30,9 @@ class Block(object):
         # sort faces based on Z value
         faces = sorted(geo.Faces, key=lambda f: self._cenPt(f).Z)
 
-        return tuple((ver.Location.X, ver.Location.Y, ver.Location.Z) for verGroup in
-                    (self.shiftVertices(faces[0].ToBrep().Vertices),
+        return tuple((ver.Location.X, ver.Location.Y, ver.Location.Z)
+                     for verGroup in
+                     (self.shiftVertices(faces[0].ToBrep().Vertices),
                      faces[-1].ToBrep().Vertices)
                      for ver in verGroup)
 
@@ -49,8 +46,8 @@ class Block(object):
     @staticmethod
     def _cenPt(f):
         """Calculate center point for a grasshopper face."""
-        return f.PointAt((f.Domain(0).Min + f.Domain(0).Max)/2,
-                        (f.Domain(1).Min + f.Domain(1).Max)/2)
+        return f.PointAt((f.Domain(0).Min + f.Domain(0).Max) / 2,
+                         (f.Domain(1).Min + f.Domain(1).Max) / 2)
 
     def blockMeshDict(self, vertices):
         """Get blockMeshDict string.
@@ -64,15 +61,13 @@ class Block(object):
         try:
             indices = tuple(vertices.index(v) for v in self.vertices)
         except ValueError:
-            raise ValueError("Can't find the vertex " \
+            raise ValueError("Can't find the vertex "
                              "in the vertices:\ninput: {}\n vertices: {}"
                              .format(self.vertices, vertices))
-
 
         return _body.format(str(indices).replace(",", ""),
                             str(self.nDiv).replace(",", ""),
                             str(self.grading).replace(",", ""))
-
 
     def ToString(self):
         """Overwrite .NET ToString method."""

@@ -1,8 +1,6 @@
 # All Grasshopper functions and classes should be in this file
-import os
 try:
     import Rhino as rc
-    from scriptcontext import doc
 except ImportError:
     pass
 
@@ -11,8 +9,7 @@ from .bfsurface import BFSurface
 from .core import Case
 
 from ..windtunnel import TunnelParameters, WindTunnel
-from ..boundarycondition import BoundaryCondition, \
-    WindTunnelGroundBoundaryCondition, \
+from ..boundarycondition import WindTunnelGroundBoundaryCondition, \
     WindTunnelInletBoundaryCondition, WindTunnelOutletBoundaryCondition, \
     WindTunnelTopAndSidesBoundaryCondition, WindTunnelWallBoundaryCondition
 from ..z0 import Z0
@@ -51,14 +48,16 @@ class GHWindTunnel(WindTunnel):
         for bfSurface in BFSurfaces:
             bfSurface.boundaryCondition = WindTunnelWallBoundaryCondition(
                 bfSurface.boundaryCondition.refLevels
-                )
+            )
 
         self.BFSurfaces = BFSurfaces
 
         try:
             self.z0 = Z0()[landscape]
         except Exception as e:
-            raise ValueError('Invalid input for landscape.\n{}'.format(landscape))
+            raise ValueError('Invalid input for landscape:{}\n{}'.format(
+                landscape, e)
+            )
 
         self.windSpeed = float(windSpeed)
 
@@ -90,7 +89,7 @@ class GHWindTunnel(WindTunnel):
     def ghBoundingSurfaces(self):
         """Return Grasshopper surfaces of wind tunnel in a named tuple."""
         wtSrfs = namedtuple('WindTunnelSurfaces',
-                          'rightSide outlet leftSide inlet ground top')
+                            'rightSide outlet leftSide inlet ground top')
 
         _srfs = self.boundingbox.Surfaces
 
@@ -104,7 +103,7 @@ class GHWindTunnel(WindTunnel):
     def block(self):
         """Create block for this windTunnel."""
         # create block
-        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ, \
+        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ,
                      self.tunnelParameters.gradXYZ)
 
     @property
@@ -165,13 +164,13 @@ class GHWindTunnel(WindTunnel):
                                      self.windDirection.Z)
         # calculate YAxis
         yAxis = rc.Geometry.Vector3d(xAxis)
-        yAxis.Rotate(PI/2, rc.Geometry.Vector3d.ZAxis)
+        yAxis.Rotate(PI / 2, rc.Geometry.Vector3d.ZAxis)
         return rc.Geometry.Plane(rc.Geometry.Point3d.Origin, xAxis, yAxis)
 
     def __getDimension(self, min, max, axis):
         """Calculate dimensions of each axis of a boundingbox."""
         perpPlane = rc.Geometry.Plane(self.plane)
-        perpPlane.Rotate(PI/2, axis)
+        perpPlane.Rotate(PI / 2, axis)
 
         maxN = perpPlane.ClosestPoint(max)
         maxN.Z = 0
@@ -219,7 +218,6 @@ class GHWindTunnel(WindTunnel):
 
     def __scaleBoundingBox(self):
         """Scale original bounding box to create wind tunnel."""
-
         vp = rc.Geometry.VolumeMassProperties.Compute(self.boundingbox)
 
         cenPt = (vp.Centroid.X, vp.Centroid.Y, 0)
@@ -228,10 +226,10 @@ class GHWindTunnel(WindTunnel):
         self.plane.Origin = rc.Geometry.Point3d(*cenPt)
 
         xScale = (self.tunnelParameters.windward + self.tunnelParameters.leeward) \
-                 * (self.dimensions[2] / self.dimensions[0]) + 1
+            * (self.dimensions[2] / self.dimensions[0]) + 1
 
-        yScale = (2 * self.tunnelParameters.side
-                  * (self.dimensions[2] / self.dimensions[1])) + 1
+        yScale = (2 * self.tunnelParameters.side * (self.dimensions[2] /
+                                                    self.dimensions[1])) + 1
 
         zScale = self.tunnelParameters.top + 1
 
@@ -239,10 +237,10 @@ class GHWindTunnel(WindTunnel):
 
         self.boundingbox.Transform(_scale)
 
-        moveVector = ((self.tunnelParameters.leeward + self.tunnelParameters.windward)
-                      / 2 - self.tunnelParameters.windward) \
-                      * self.plane.XAxis \
-                      * self.dimensions[2]
+        moveVector = ((self.tunnelParameters.leeward +
+                       self.tunnelParameters.windward) /
+                      2 - self.tunnelParameters.windward) * self.plane.XAxis * \
+            self.dimensions[2]
 
         self.boundingbox.Transform(rc.Geometry.Transform.Translation(moveVector.X,
                                                                      moveVector.Y,
