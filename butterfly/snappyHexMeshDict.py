@@ -123,6 +123,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @castellatedMesh.setter
     def castellatedMesh(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['castellatedMesh'] = str(value).lower()
 
     @property
@@ -132,6 +134,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @snap.setter
     def snap(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['snap'] = str(value).lower()
 
     @property
@@ -141,6 +145,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @addLayers.setter
     def addLayers(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['addLayers'] = str(value).lower()
 
     @property
