@@ -1,4 +1,4 @@
-"ABL Conditions and initialConditions class."
+"""ABL Conditions and initialConditions class."""
 from foamfile import Condition
 from collections import OrderedDict
 import math
@@ -120,7 +120,10 @@ class InitialConditions(Condition):
 
     @property
     def Cm(self):
-        """Cm (default: 0.09)."""
+        """Cm.
+
+        default: 0.09
+        """
         return self.__Cm
 
     @Cm.setter
@@ -130,7 +133,10 @@ class InitialConditions(Condition):
 
     @property
     def k(self):
-        """k (default: 0.41)."""
+        """k.
+
+        default: 0.41
+        """
         return self.__k
 
     @k.setter

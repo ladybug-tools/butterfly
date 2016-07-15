@@ -3,6 +3,7 @@
 
 class Z0(object):
     """Typical roughness values based on landscape."""
+
     __roughnessDict = {
         0: '0.0002', 'sea': '0.0002',
         1: '0.005', 'smooth': '0.005',

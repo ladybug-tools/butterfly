@@ -1,4 +1,4 @@
-"k class."
+"""k class."""
 from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict
 

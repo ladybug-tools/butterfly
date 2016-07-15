@@ -1,4 +1,4 @@
-"Finite Volume Solution class."
+"""Finite Volume Solution class."""
 from foamfile import FoamFile
 from collections import OrderedDict
 
@@ -55,7 +55,6 @@ class FvSolution(FoamFile):
         'epsilon': '1e-5'
     }
 
-
     __defaultValues['relaxationFactors'] = OrderedDict()
     __defaultValues['relaxationFactors']['p'] = '0.3'
     __defaultValues['relaxationFactors']['U'] = '0.7'
@@ -103,9 +102,11 @@ class ResidualControl(object):
         epsilon: Residual control valeus for epsilon (default: 1e-5)
         other: Key values as dictionary for other paramaters (e.g. {'g': 1e-5})
     """
+
     __slots__ = ('p', 'U', 'k', 'epsilon', 'other')
 
     def __init__(self, p=1e-5, U=1e-5, k=1e-5, epsilon=1e-5, other=None):
+        """Init ResidualControl class."""
         self.p = str(p) if p else 1e-5
         self.U = str(U) if U else 1e-5
         self.k = str(k) if k else 1e-5
@@ -113,9 +114,11 @@ class ResidualControl(object):
         self.other = other if other else None
 
     def ToString(self):
+        """Overwrite .NET ToString method."""
         return self.__repr__()
 
     def __repr__(self):
+        """Representation."""
         return "ResidualControl\n" \
             "{\n\tp     %s;\n\tU     %s;\t\nk     %s;\n\tepsilon     %s;\n" \
             "}" % (self.p, self.U, self.k, self.epsilon)

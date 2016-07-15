@@ -1,7 +1,6 @@
-"A cllection of OpenFOAM functions."
+"""A cllection of OpenFOAM functions such as Probes."""
 from foamfile import Condition
 from collections import OrderedDict
-import math
 
 
 class Probes(Condition):
@@ -37,12 +36,12 @@ class Probes(Condition):
 
     @property
     def filename(self):
-        """Probes filename."""
+        """Get Probes filename."""
         return self.values['functions']['probes']['name']
 
     @filename.setter
     def filename(self, n):
-        """Probes filename."""
+        """Set Probes filename."""
         if not n:
             return
 

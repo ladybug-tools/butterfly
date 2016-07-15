@@ -1,6 +1,5 @@
 """Butterfly wind tunnel."""
 from blockMeshDict import BlockMeshDict
-from z0 import Z0
 from core import OpemFOAMCase
 
 
@@ -27,6 +26,7 @@ class WindTunnel(object):
                 '1.0'     # closed
                 '2.0'     # chaotic
     """
+
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
                  block, roughness, globalRefLevel):
         """Init wind tunnel."""
@@ -94,7 +94,7 @@ class WindTunnel(object):
     def __repr__(self):
         """Wind tunnel."""
         return "WindTunnel :: dir {} :: {} m/s".format(self.flowDir,
-                                                             self.flowSpeed)
+                                                       self.flowSpeed)
 
 
 class TunnelParameters(object):
@@ -108,6 +108,7 @@ class TunnelParameters(object):
         side: Multiplier value for side extension (default: 3).
         leeward: Multiplier value for leeward extension (default: 3).
     """
+
     def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
                  gradXYZ=None):
         """Init wind tunnel parameters."""
@@ -129,8 +130,10 @@ class TunnelParameters(object):
             return _inp
 
     def ToString(self):
+        """Overwrite .NET ToString method."""
         return self.__repr__()
 
     def __repr__(self):
+        """Class representation."""
         return 'WW: %.1fX; T: %.1fX; S: %.1fX; LW: %.1fX;' % (
-                self.windward, self.top, self.side, self.leeward)
+            self.windward, self.top, self.side, self.leeward)

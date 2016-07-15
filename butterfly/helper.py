@@ -3,9 +3,16 @@ from __future__ import print_function
 import os
 import sys
 from collections import OrderedDict
-from subprocess import Popen, PIPE, STDOUT, call
+from subprocess import Popen, PIPE
+
 
 def mkdir(directory, overwrite=True):
+    """Make a directory.
+
+    Args:
+        directory: directory as a string.
+        overwrite: A boolean to overwrite the folder if already exists.
+    """
     if not os.path.isdir(directory):
         try:
             os.mkdir(directory)
@@ -22,7 +29,7 @@ def wfile(fullPath, content):
             outf.write(content)
 
     except Exception as e:
-        raise ValueError('Failed to create %s:\n%s' % (directory, e))
+        raise ValueError('Failed to create %s:\n%s' % (fullPath, e))
 
     return fullPath
 
@@ -67,8 +74,8 @@ def runbatchfile(filepath, printLog=True):
 def readLastLine(filepath, blockSize=1024):
     """
     Read the last line of a file.
-    Modified from: http://www.manugarg.com/2007/04/tailing-in-python.html
 
+    Modified from: http://www.manugarg.com/2007/04/tailing-in-python.html
     Args:
         filepath: path to file
         blockSize:  data is read in chunks of this size (optional, default=1024)
@@ -158,7 +165,7 @@ def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=Non
     return _ref
 
 
-def getBoundaryField(BFSurfaces, field = 'u'):
+def getBoundaryField(BFSurfaces, field='u'):
     """Get data for boundaryField as a dictionary.
 
     Args:

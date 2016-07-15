@@ -1,4 +1,4 @@
-"snappyHexMeshDict class."
+"""snappyHexMeshDict class."""
 from foamfile import FoamFile
 from collections import OrderedDict
 from helper import getSnappyHexMeshGeometryFeild, \
@@ -31,7 +31,7 @@ class SnappyHexMeshDict(FoamFile):
     __defaultValues['castellatedMeshControls']['resolveFeatureAngle'] = '30'
     __defaultValues['castellatedMeshControls']['refinementRegions'] = {}
     __defaultValues['castellatedMeshControls']['locationInMesh'] = '(0 0 0)'
-    __defaultValues['castellatedMeshControls']['allowFreeStandingZoneFaces'] ='true'
+    __defaultValues['castellatedMeshControls']['allowFreeStandingZoneFaces'] = 'true'
 
     # snap controls
     __defaultValues['snapControls'] = OrderedDict()
@@ -92,6 +92,7 @@ class SnappyHexMeshDict(FoamFile):
     def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
                        locationInMesh, meshingType='triSurfaceMesh',
                        values=None):
+        """Create snappyHexMeshDict from HBSurfaces."""
         _cls = cls(values)
         _cls.locationInMesh = locationInMesh
         _cls.setGeometry(projectName, BFSurfaces, meshingType)
@@ -151,8 +152,7 @@ class SnappyHexMeshDict(FoamFile):
     def maxGlobalCells(self, value=2000000):
         self.values['castellatedMeshControls']['maxGlobalCells'] = str(int(value))
 
-    def setGeometry(self, projectName, BFSurfaces,
-                         meshingType='triSurfaceMesh'):
+    def setGeometry(self, projectName, BFSurfaces, meshingType='triSurfaceMesh'):
         """Set geometry from BFSurfaces."""
         _geoField = getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
                                                   meshingType)

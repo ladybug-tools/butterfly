@@ -19,6 +19,7 @@ class BoundaryCondition(object):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, bcType='patch', refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
@@ -51,6 +52,7 @@ class BoundingBoxBoundaryCondition(BoundaryCondition):
 
     It returns a boundary condition of ZeroGradient for all the inputs.
     """
+
     def __init__(self, refLevels=None):
         """Init bounday condition."""
         u = ZeroGradient()
@@ -78,6 +80,7 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
@@ -105,6 +108,7 @@ class FixedInletBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
@@ -137,6 +141,7 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
@@ -170,6 +175,7 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
@@ -199,6 +205,7 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, ablConditions, refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None):
         """Init bounday condition."""
@@ -226,6 +233,7 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, ablConditions, refLevels=None, temperature=None, p=None,
                  nut=None):
         """Init bounday condition."""
@@ -258,6 +266,7 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
@@ -293,6 +302,7 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
+
     def __init__(self, refLevels=None, temperature=None,
                  u=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""

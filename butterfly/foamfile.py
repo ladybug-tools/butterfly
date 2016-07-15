@@ -1,10 +1,11 @@
-#Foam File Class
+"""Foam File Class."""
 from version import Version, Header
 from helper import getBoundaryField
 import os
 import json
 from collections import OrderedDict
 from copy import deepcopy
+
 
 class FoamFile(object):
     """FoamFile base class for OpenFOAM dictionaries.
@@ -19,16 +20,17 @@ class FoamFile(object):
         location: Folder name (0, constant or system)
         fileFormat: File format (ascii / binary) (default: ascii)
     """
+
     __locations = ("0", "system", "constant")
 
     def __init__(self, name, cls, location=None, fileFormat="ascii",
                  defaultValues=None, values=None):
         """Init foam file."""
         self.__version = str(Version().OFVer)
-        self.format  = str(fileFormat) # ascii / binary
-        self.cls  = str(cls) # dictionary or field
+        self.format = str(fileFormat)  # ascii / binary
+        self.cls = str(cls)  # dictionary or field
         self.name = str(name)
-        self.location = location #location is optional
+        self.location = location  # location is optional
 
         if self.location:
             if self.location in self.__locations:
@@ -36,7 +38,7 @@ class FoamFile(object):
             else:
                     raise ValueError(
                         '{} is not a valid OpenFOAM location: {}'.format(
-                        self.location, self.__locations
+                            self.location, self.__locations
                         )
                     )
 
@@ -63,9 +65,15 @@ class FoamFile(object):
 
     @property
     def parameters(self):
+        """Get list of parameters."""
         return self.values.keys()
 
     def getValueByParameter(self, parameter):
+        """Get values for a given parameter by parameter name.
+
+        Args:
+            parameter: Name of a parameter as a string.
+        """
         try:
             return self.values[parameter]
         except KeyError:
@@ -74,35 +82,40 @@ class FoamFile(object):
             ))
 
     def setValueByParameter(self, parameter, value):
+        """Set value for a parameter.
+
+        Args:
+            parameter: Name of a parameter as a string.
+            value: Parameter value as a string.
+        """
         self.values[parameter] = value
 
     def header(self):
         """Return open foam style string."""
         if self.location:
             return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tlocation\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.location,
+                "FoamFile\n{\n" \
+                "\tversion\t\t%s;\n" \
+                "\tformat\t\t%s;\n" \
+                "\tclass\t\t%s;\n" \
+                "\tlocation\t%s;\n" \
+                "\tobject\t\t%s;\n" \
+                "}\n" % (self.__version, self.format, self.cls, self.location,
                          self.name)
-
         else:
             return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.name)
+                "FoamFile\n{\n" \
+                "\tversion\t\t%s;\n" \
+                "\tformat\t\t%s;\n" \
+                "\tclass\t\t%s;\n" \
+                "\tobject\t\t%s;\n" \
+                "}\n" % (self.__version, self.format, self.cls, self.name)
 
     @staticmethod
     def _splitLine(line):
         """Split lines which ends with { to two lines."""
         return line[4:-1] + "\n" + \
-               (len(line) - len(line.strip()) - 4) * ' ' + '{'
+            (len(line) - len(line.strip()) - 4) * ' ' + '{'
 
     def body(self):
         """Return body string."""
@@ -124,11 +137,20 @@ class FoamFile(object):
         return "\n\n".join(l)
 
     def toOpenFOAM(self):
+        """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
 
     def save(self, projectFolder, subFolder=None):
+        """Save to file.
+
+        Args:
+            projectFolder: Path to project folder as a string.
+            subFolder: Optional input for subFolder (default: self.location).
+        """
         subFolder = self.location.replace('"', '') if not subFolder else subFolder
-        with open(os.path.join(projectFolder, subFolder, self.name), "wb") as outf:
+
+        with open(os.path.join(projectFolder,
+                               subFolder, self.name), "wb") as outf:
             outf.write(self.toOpenFOAM())
 
     def ToString(self):
@@ -136,6 +158,7 @@ class FoamFile(object):
         return self.__repr__()
 
     def __repr__(self):
+        """Class representation."""
         return self.toOpenFOAM()
 
 

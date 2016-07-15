@@ -4,9 +4,11 @@ from collections import OrderedDict
 
 class OpenFOAMValue(object):
     """OpenFOAM field values base class."""
+
     def __init__(self):
+        """Init class."""
         self.type = self.__class__.__name__[:1].lower() + \
-                    self.__class__.__name__[1:]
+            self.__class__.__name__[1:]
 
     @property
     def valueDict(self):
@@ -18,22 +20,33 @@ class OpenFOAMValue(object):
         return self.__repr__()
 
     def __repr__(self):
+        """Representation."""
         return "\n".join(("{}        {};").format(key, value)
                          for key, value in self.valueDict.iteritems())
 
 
 class ZeroGradient(OpenFOAMValue):
+    """ZeroGradient boundary condition."""
+
     pass
 
 
 class Slip(OpenFOAMValue):
+    """Slip boundary condition."""
+
     pass
 
 
 class Calculated(OpenFOAMValue):
-    """OpenFOAM calculated value."""
+    """OpenFOAM calculated value.
+
+    Args:
+        value: value.
+        isUnifrom: A boolean that indicates if the values is uniform.
+    """
 
     def __init__(self, value=None, isUnifrom=True):
+        """Init Calculated class."""
         OpenFOAMValue.__init__(self)
         if value:
             self.value = 'uniform {}'.format(str(value)) if isUnifrom else str(value)
@@ -61,6 +74,7 @@ class InletOutlet(OpenFOAMValue):
     """
 
     def __init__(self, inletValue, value):
+        """Init class."""
         OpenFOAMValue.__init__(self)
         self.inletValue = inletValue
         self.value = value
@@ -83,6 +97,7 @@ class OutletInlet(OpenFOAMValue):
     """
 
     def __init__(self, outletValue, value):
+        """Init class."""
         OpenFOAMValue.__init__(self)
         self.outletValue = outletValue
         self.value = value
@@ -98,10 +113,22 @@ class OutletInlet(OpenFOAMValue):
 
 
 class AtmBoundary(OpenFOAMValue):
-    """OpenFOAM AtmBoundaryLayerInletVelocity."""
-    def __init__(self, Uref, Zref, z0, flowDir, zDir ='(0 0 1)', zGround=0,
+    """OpenFOAM AtmBoundaryLayerInletVelocity.
+
+    Attributes:
+        Uref: Flow velocity as a float number.
+        Zref: Reference z value for flow velocity as a float number.
+        z0: Roughness (e.g. uniform 1).
+        flowDir: Velocity vector as a tuple.
+        zDir: Z direction (default:(0 0 1)).
+        zGround: Min z value of the bounding box (default: 0).
+        fromValues: True.
+    """
+
+    def __init__(self, Uref, Zref, z0, flowDir, zDir='(0 0 1)', zGround=0,
                  fromValues=True):
-        """Create from values.
+        """
+        Create from values.
 
         Args:
             Uref: Flow velocity as a float number.
@@ -125,7 +152,7 @@ class AtmBoundary(OpenFOAMValue):
         """Init class from a condition file."""
         _cls = cls(ablConditions.values['Uref'], ablConditions.values['Zref'],
                    ablConditions.values['z0'], ablConditions.values['flowDir'],
-                   ablConditions.values['zDir'],ablConditions.values['zGround'],
+                   ablConditions.values['zDir'], ablConditions.values['zGround'],
                    fromValues=False)
         _cls.value = value
         _cls.ABLConditions = ablConditions
@@ -153,24 +180,39 @@ class AtmBoundary(OpenFOAMValue):
 
 
 class AtmBoundaryLayerInletVelocity(AtmBoundary):
+    """AtmBoundaryLayerInletVelocity."""
+
     pass
 
 
 class AtmBoundaryLayerInletK(AtmBoundary):
+    """AtmBoundaryLayerInletK."""
+
     pass
 
 
 class AtmBoundaryLayerInletEpsilon(AtmBoundary):
+    """AtmBoundaryLayerInletEpsilon."""
+
     pass
 
 
 class NutkAtmRoughWallFunction(AtmBoundary):
+    """NutkAtmRoughWallFunction."""
+
     pass
 
 
 class FixedValue(OpenFOAMValue):
-    """OpenFOAM fixed value."""
+    """OpenFOAM fixed value.
+
+    Args:
+        value: value.
+        isUnifrom: A boolean that indicates if the values is uniform.
+    """
+
     def __init__(self, value, isUnifrom=True):
+        """Init the class."""
         OpenFOAMValue.__init__(self)
         self.value = 'uniform {}'.format(str(value)) if isUnifrom else str(value)
 
@@ -184,14 +226,20 @@ class FixedValue(OpenFOAMValue):
 
 
 class PressureInletOutletVelocity(FixedValue):
+    """PressureInletOutletVelocity."""
+
     pass
 
 
 class WallFunction(FixedValue):
+    """WallFunction."""
+
     pass
 
 
 class KqRWallFunction(WallFunction):
+    """KqRWallFunction."""
+
     pass
 
 
@@ -204,8 +252,10 @@ class EpsilonWallFunction(WallFunction):
         kappa: (default: None)
         E: (default: None)
     """
+
     # default values in OpenFOAM Cmu=0.09, kappa=0.41, E=9.8
     def __init__(self, value, Cmu=None, kappa=None, E=None, isUnifrom=True):
+        """Init EpsilonWallFunction."""
         WallFunction.__init__(self, value, isUnifrom)
         self.cmu = Cmu
         self.kappa = kappa
@@ -228,4 +278,6 @@ class EpsilonWallFunction(WallFunction):
 
 
 class NutkWallFunction(EpsilonWallFunction):
+    """NutkWallFunction."""
+
     pass

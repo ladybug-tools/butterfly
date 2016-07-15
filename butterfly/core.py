@@ -24,15 +24,18 @@ from controlDict import ControlDict
 from snappyHexMeshDict import SnappyHexMeshDict
 from fvSchemes import FvSchemes
 from fvSolution import FvSolution
-from functions import Probes
 
 from runmanager import RunManager
 
 
 class CaseFoldersNotCreatedError(Exception):
+    """Exception."""
+
     _msg = 'You need to creat folders before generating the contents.\n' + \
            'Use `createCaseFolders` method to creat the project and try again.'
+
     def __init__(self):
+        """Init Exception."""
         Exception.__init__(self, self._msg)
 
 
@@ -89,7 +92,6 @@ class OpemFOAMCase(object):
         self._isInit = False
         self._isSnappyHexMeshFoldersRenamed = False
 
-
     @classmethod
     def fromWindTunnel(cls, windTunnel):
         """Create case from wind tunnel."""
@@ -131,10 +133,12 @@ class OpemFOAMCase(object):
 
     @property
     def isInitialConditionsIncluded(self):
+        """Check if initialConditions file is included in this case."""
         return self.__isInitialConditionsIncluded
 
     @property
     def initialConditions(self):
+        """Get initialConditions."""
         return self.__initialConditions
 
     @initialConditions.setter
@@ -148,10 +152,12 @@ class OpemFOAMCase(object):
 
     @property
     def isABLConditionsIncluded(self):
+        """Check if ABLConditions file is included in this case."""
         return self.__isABLConditionsIncluded
 
     @property
     def ABLConditions(self):
+        """Get ABLConditions."""
         return self.__ABLConditions
 
     @ABLConditions.setter
@@ -417,8 +423,7 @@ class OpemFOAMCase(object):
               if (name.isdigit() and
                   os.path.isdir(os.path.join(self.projectDir,
                                              name, 'polyMesh'))
-                  )
-             ]
+                  )]
 
         _f.sort()
 
@@ -430,8 +435,7 @@ class OpemFOAMCase(object):
               if (name != '0' and name.isdigit() and
                   os.path.isdir(os.path.join(self.projectDir, name)) and
                   not os.path.isdir(os.path.join(self.projectDir, name, 'polyMesh'))
-                  )
-             ]
+                  )]
 
         _f.sort()
 
@@ -459,8 +463,8 @@ class OpemFOAMCase(object):
         # find list of folders in project and collect the numbers
         if self._isSnappyHexMeshFoldersRenamed:
             _folders = (name for name in os.listdir(self.projectDir)
-                  if (name.endswith('.org') and
-                      os.path.isdir(os.path.join(self.projectDir, name, 'polyMesh'))))
+                        if (name.endswith('.org') and
+                        os.path.isdir(os.path.join(self.projectDir, name, 'polyMesh'))))
 
             for f in _folders:
                 os.rename(os.path.join(self.projectDir, f),
@@ -484,8 +488,8 @@ class OpemFOAMCase(object):
         """
         if self._isSnappyHexMeshFoldersRenamed:
             _folders = (name for name in os.listdir(self.workingDir)
-                  if (name.endswith('.org') and
-                      os.path.isdir(os.path.join(self.workingDir, name))))
+                        if (name.endswith('.org') and
+                            os.path.isdir(os.path.join(self.workingDir, name))))
         else:
             _folders = self.getSnappyHexMeshFolders()
 

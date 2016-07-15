@@ -1,4 +1,4 @@
-"BlockMeshDict class."
+"""Finite Volume Schemes class."""
 from version import Version
 from foamfile import FoamFile
 from collections import OrderedDict
@@ -12,11 +12,11 @@ class FvSchemes(FoamFile):
     __defaultValues['ddtSchemes'] = {'default': 'steadyState'}
     __defaultValues['gradSchemes'] = {'default': 'cellLimited leastSquares 1'}
     __defaultValues['divSchemes'] = {
-       'default': 'none',
-       'div(phi,U)': 'bounded Gauss linearUpwindV grad(U)',
-       'div(phi,epsilon)': 'bounded Gauss linearUpwind grad(epsilon)',
-       'div(phi,k)': 'bounded Gauss linearUpwind grad(k)'
-        }
+        'default': 'none',
+        'div(phi,U)': 'bounded Gauss linearUpwindV grad(U)',
+        'div(phi,epsilon)': 'bounded Gauss linearUpwind grad(epsilon)',
+        'div(phi,k)': 'bounded Gauss linearUpwind grad(k)'
+    }
 
     if float(Version.OFVer) < 3:
         __defaultValues['divSchemes']['div((nuEff*dev(T(grad(U)))))'] = 'Gauss linear'
@@ -35,18 +35,19 @@ class FvSchemes(FoamFile):
                           values=values)
 
     @classmethod
-    def fromAverageOrthogonality(cls, averageOrthogonality=45):
+    def fromMeshOrthogonality(cls, averageOrthogonality=45):
         """Init fvSchemes based on mesh orthogonality.
 
         Check pp. 45-50 of this document:
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
         """
-        return cls(values=cls.getValuesFromAverageOrthogonality(
+        return cls(values=cls.getValuesFromMeshOrthogonality(
             averageOrthogonality))
 
-    #TODO: Add changes OpenFOAM version check for dev values.
+    # TODO: Add changes OpenFOAM version check for dev values.
     @staticmethod
-    def getValuesFromAverageOrthogonality(averageOrthogonality=45):
+    def getValuesFromMeshOrthogonality(averageOrthogonality=45):
+        """Get scheme values from orthogonality."""
         if averageOrthogonality > 80:
             _values = {
                 'gradSchemes': {

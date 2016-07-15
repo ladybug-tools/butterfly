@@ -1,22 +1,27 @@
 """Versions and header."""
 
+
 class Version(object):
     """Version class."""
+
     BFVer = "0.0.1"
     OFVer = "3.0"
     OFFullVer = "v3.0+"
 
+
 class Header(object):
-    """Input files header
+    """
+    Input files header.
+
     Usage:
         Header.header()
     """
 
     @staticmethod
-    def header(OpenFOAMVersion= Version.OFFullVer, ButterflyVersion=Version.BFVer):
-
+    def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
+        """Retuen OpenFOAM file header."""
         header = "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
-                 "| =========                 |                                                 |\n"  + \
+                 "| =========                 |                                                 |\n" + \
                  "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
                  "|  \\\\    /   O peration     | Version:  {}                                 |\n" + \
                  "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \

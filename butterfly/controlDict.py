@@ -1,6 +1,7 @@
-"BlockMeshDict class."
+"""BlockMeshDict class."""
 from foamfile import FoamFile
 from collections import OrderedDict
+
 
 class ControlDict(FoamFile):
     """Control dict class."""
@@ -31,12 +32,15 @@ class ControlDict(FoamFile):
                           values=values)
 
     def include(self, fileName):
-        "Add include to controlDict."
+        """Add include to controlDict."""
         self.values['#include'] = '"{}"'.format(fileName.replace('"', ''))
 
     @property
     def application(self):
-        """Set solver application (default: simpleFoam)."""
+        """Set solver application.
+
+        (default: simpleFoam)
+        """
         return self.values['application']
 
     @application.setter

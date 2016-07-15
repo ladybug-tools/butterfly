@@ -1,4 +1,4 @@
-"BlockMeshDict class."
+"""p class."""
 from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict
 

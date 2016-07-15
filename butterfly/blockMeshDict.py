@@ -1,10 +1,12 @@
-"BlockMeshDict class."
+"""BlockMeshDict class."""
 from foamfile import FoamFile
-import os
+
 
 class BlockMeshDict(FoamFile):
+    """BlockMeshDict."""
 
     def __init__(self, scale, BFSurfaces, blocks):
+        """Init BlockMeshDict."""
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
                           location='system')
         self.scale = scale
@@ -15,7 +17,7 @@ class BlockMeshDict(FoamFile):
         self.center = self.__averageVerices()
 
     def __averageVerices(self):
-        _x, _y, _z = 0 , 0, 0
+        _x, _y, _z = 0, 0, 0
 
         for ver in self.vertices:
             _x += ver[0]
@@ -23,10 +25,11 @@ class BlockMeshDict(FoamFile):
             _z += ver[2]
 
         return _x / len(self.vertices), \
-               _y / len(self.vertices), \
-               _z / len(self.vertices)
+            _y / len(self.vertices), \
+            _z / len(self.vertices)
 
     def toOpenFOAM(self):
+        """Return OpenFOAM representation as a string."""
         _hea = self.header()
         _body = "\nconvertToMeters 1;\n" \
                 "\n" \
@@ -46,19 +49,20 @@ class BlockMeshDict(FoamFile):
                 "(%s);\n"
 
         return _hea + \
-               _body % (
-                    "\n".join(tuple(str(ver).replace(",", "")
-                              for ver in self.vertices)),
-                    "\n".join(block.blockMeshDict(self.vertices)
-                              for block in self.blocks), #blocks
-                    "\n",  # edges
-                    "\n".join(srf.blockMeshDict(self.vertices)
-                              for srf in self.BFSurfaces),
-                    "\n"  # merge patch pair
-               )
+            _body % (
+                "\n".join(tuple(str(ver).replace(",", "")
+                          for ver in self.vertices)),
+                "\n".join(block.blockMeshDict(self.vertices)
+                          for block in self.blocks),  # blocks
+                "\n",  # edges
+                "\n".join(srf.blockMeshDict(self.vertices)
+                          for srf in self.BFSurfaces),
+                "\n")  # merge patch pair
 
     def ToString(self):
+        """Overwrite .NET ToString method."""
         return self.__repr__()
 
     def __repr__(self):
+        """BlockMeshDict representation."""
         return "Butterfly::%s" % self.__class__.__name__

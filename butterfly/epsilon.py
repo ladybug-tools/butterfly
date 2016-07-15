@@ -1,4 +1,4 @@
-"epsilon class."
+"""epsilon class."""
 from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict
 

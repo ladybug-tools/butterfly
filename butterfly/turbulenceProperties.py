@@ -15,8 +15,8 @@ class TurbulenceProperties(FoamFile):
     __defaultValues['simulationType'] = 'RAS'
     __defaultValues['RAS'] = {
         'RASModel': 'kEpsilon',
-        'turbulence' : 'on',
-        'printCoeffs' : 'on'
+        'turbulence': 'on',
+        'printCoeffs': 'on'
     }
 
     def __init__(self, values=None):

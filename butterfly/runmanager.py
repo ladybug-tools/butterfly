@@ -1,13 +1,14 @@
 import os
 from subprocess import PIPE, Popen
-import sys
 
 
 class RunManager(object):
-    """butterfly RunManager class.
+    """
+    Butterfly RunManager class.
 
     Use this class to create files that are needed to run a case.
     """
+
     shellinit = None
     containerId = None
 
@@ -25,10 +26,11 @@ class RunManager(object):
         os.environ['PATH'] += ';%s' % r'C:\Program Files\Boot2Docker for Windows'
         process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
                         stderr=PIPE)
+
         return tuple(line.replace('$Env:', 'set ')
-                    .replace(' = ', '=')
-                    .replace('"', '').strip()
-                    for line in process.stdout)
+                     .replace(' = ', '=')
+                     .replace('"', '').strip()
+                     for line in process.stdout)
 
     def getContainerId(self, name='of_plus_300'):
         """Get OpenFOAM's container id."""
@@ -67,7 +69,7 @@ class RunManager(object):
     def startOpenFOAM(self):
         """Start OpenFOAM for Windows image from batch file."""
         fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
-        subprocess.Popen(fp, shell=True)
+        Popen(fp, shell=True)
 
     def header(self):
         """Get header for batch files."""
@@ -88,6 +90,7 @@ class RunManager(object):
     def command(self, cmds, includeHeader=False, log=True, startOpenFOAM=False):
         """
         Get command line for OpenFOAM commands.
+
         Args:
             cmds: A sequence of commnads.
             includeHeader:
