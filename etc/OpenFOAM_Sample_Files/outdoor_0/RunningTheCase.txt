@@ -1,9 +1,0 @@
-In order to run the case use the following chain of commands (for now we avoid decomposing the case and renaming 0 folder):
-
-
-1. blockMesh    	//will read the blockMeshDict and create the blockMesh around the geometry.
-2. snappyHexMesh 	//Will read the snappyHexMeshDict and snap the building geometry in the blockMesh.
-3. simpleFoam		//Will run the solver (currently saving every 50 iterations, ctrl-C stops the simulation 			manually).
-4. paraFoam		//Post process and view results.
-
-That's it!
