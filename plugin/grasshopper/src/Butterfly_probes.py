@@ -19,14 +19,24 @@ Create Butterfly probes
 
 ghenv.Component.Name = "Butterfly_probes"
 ghenv.Component.NickName = "probes"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
-#import butterfly
-#reload(butterfly)
-#reload(butterfly.functions)
-from butterfly.functions import Probes
+
+try:
+    #import butterfly
+    #reload(butterfly)
+    #reload(butterfly.functions)
+    from butterfly.functions import Probes
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
 if _pts:
     probes = Probes()

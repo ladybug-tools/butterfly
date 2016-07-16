@@ -20,18 +20,27 @@ Create an inlet boundary with uniform velocity value.
 
 ghenv.Component.Name = "Butterfly_Inlet Boundary"
 ghenv.Component.NickName = "inlet"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-from butterfly import boundarycondition as bc
-from butterfly.fields import FixedValue
-
-#import butterfly
-#reload(butterfly)
-#reload(butterfly.boundarycondition)
-#reload(butterfly.fields)
+try:
+    from butterfly import boundarycondition as bc
+    from butterfly.fields import FixedValue
+    
+    #import butterfly
+    #reload(butterfly)
+    #reload(butterfly.boundarycondition)
+    #reload(butterfly.fields)
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
 if _velocityVec:
     _velocityVec = FixedValue(str(tuple(_velocityVec)).replace(',', '')) \

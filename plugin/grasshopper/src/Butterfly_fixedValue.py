@@ -19,12 +19,21 @@ fixedValue boundary condition.
 
 ghenv.Component.Name = "Butterfly_fixedValue"
 ghenv.Component.NickName = "fixedValue"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "02::BoundaryCondition"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-from butterfly.fields import FixedValue
+try:
+    from butterfly.fields import FixedValue
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
 if _value:
     fixedValue = FixedValue(_value)

@@ -20,17 +20,27 @@ Create an outlet boundary with uniform pressure value.
 
 ghenv.Component.Name = "Butterfly_Outlet Boundary"
 ghenv.Component.NickName = "outlet"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-import butterfly
-from butterfly import boundarycondition as bc
-from butterfly.fields import FixedValue
+try:
+    import butterfly
+    from butterfly import boundarycondition as bc
+    from butterfly.fields import FixedValue
+    
+    #reload(butterfly)
+    #reload(butterfly.boundarycondition)
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
-#reload(butterfly)
-#reload(butterfly.boundarycondition)
 _pressure_ = FixedValue(_pressure_) if _pressure_ else None
 outletBoundary = bc.FixedOutletBoundaryCondition(refLevels=_refLevels_,
                                                  p=_pressure_)

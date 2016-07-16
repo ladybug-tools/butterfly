@@ -20,16 +20,25 @@ Set residual control convergance values
 
 ghenv.Component.Name = "Butterfly_residualControl"
 ghenv.Component.NickName = "residualControl"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-#import butterfly
-#reload(butterfly)
-#reload(butterfly.foamfile)
-#reload(butterfly.fvSolution)
-from butterfly.fvSolution import ResidualControl
+try:
+    #import butterfly
+    #reload(butterfly)
+    #reload(butterfly.foamfile)
+    #reload(butterfly.fvSolution)
+    from butterfly.fvSolution import ResidualControl
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
 rc = ResidualControl()
 

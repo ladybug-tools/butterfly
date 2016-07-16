@@ -25,13 +25,21 @@ Wind tunnel parameters.
 
 ghenv.Component.Name = "Butterfly_Wind Tunnel Parameters"
 ghenv.Component.NickName = "WindTunnelPar"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
-
-from butterfly.windtunnel import TunnelParameters
+try:
+    from butterfly.windtunnel import TunnelParameters
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
 tunnelPar = TunnelParameters(_windwardX_, _topX_, _sidesX_, _leewardX_,
                              _nDivXYZ_, _gradXYZ_)
