@@ -22,7 +22,7 @@ C:\Users\%USERNAME%\AppData\Roaming\McNeel\Rhinoceros\5.0\scripts\butterfly
 
 ghenv.Component.Name = "Butterfly"
 ghenv.Component.NickName = "BF::BF"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -32,6 +32,7 @@ import System
 import sys
 import zipfile
 import shutil
+from Grasshopper.Folders import UserObjectFolders
 
 
 def installButterfly(update):
@@ -50,7 +51,7 @@ def installButterfly(update):
         shutil.rmtree(libFolder)
     
     # download the zip file
-    print "Downloading the source code..."
+    print "Downloading the github repository to {}".format(targetDirectory)
     zipFile = os.path.join(targetDirectory, os.path.basename(url))
 
     try:
@@ -71,8 +72,22 @@ def installButterfly(update):
     zf.close()
     
     bfFolder = os.path.join(targetDirectory, r"butterfly-master\butterfly")
+    print 'Copying butterfly source code to {}'.format(libFolder)
     shutil.copytree(bfFolder, libFolder)
     
+    uofolder = UserObjectFolders[0]
+    bfUserObjectsFolder = os.path.join(targetDirectory, r"butterfly-master\plugin\grasshopper\userObjects")
+    print 'Copying butterfly userobjects to {}.'.format(uofolder)
+    
+    # remove all the butterfly userobjects
+    for f in os.listdir(uofolder):
+        if f.startswith("Butterfly"):
+            os.remove(os.path.join(uofolder, f))
+            
+    for f in os.listdir(bfUserObjectsFolder):
+        shutil.copyfile(os.path.join(bfUserObjectsFolder, f),
+                        os.path.join(uofolder, f))
+
     # try to clean up
     try:
         shutil.rmtree(os.path.join(targetDirectory, 'butterfly-master'))
@@ -92,6 +107,11 @@ elif os.path.isdir(butterflyFolder_) and butterflyFolder_ not in sys.path:
 try:
     import butterfly
     print "Imported butterfly from {}\nswoosh swoosh...".format(butterfly.__file__)
-    reload(butterfly)
 except ImportError as e:
     raise Exception("Failed to import butterfly:\n{}".format(e))
+
+# push butterfly component to back
+ghenv.Component.OnPingDocument().SelectAll()
+ghenv.Component.Attributes.Selected = False
+ghenv.Component.OnPingDocument().BringSelectionToTop()
+ghenv.Component.OnPingDocument().DeselectAll()
