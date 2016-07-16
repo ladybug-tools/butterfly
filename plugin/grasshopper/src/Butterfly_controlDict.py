@@ -12,8 +12,7 @@ Set parameters for runDict
     Args:
         _startTime_: Start timestep (default: 0)
         _endTime_: End timestep (default: 1000)
-        _writeInterval_: Number of intervals between writing the results
-            (default: 100)
+        _writeInterval_: Number of intervals between writing the results (default: 100)
         _writeCompression_: Set to True if you want the results to be compressed
             before being written to your machine (default: False).
     Returns:

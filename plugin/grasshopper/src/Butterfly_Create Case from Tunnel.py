@@ -84,5 +84,7 @@ if _run and _name and _BFSurfaces and _windSpeed:
     try:
         geo, case = main()
     except TypeError:
+        print "reloading butterfly! If the component complained about importing functions" \
+            " simply re-run the component. This bug will be fixed in the next releases."
         reload_package(butterfly)
         geo, case = main()

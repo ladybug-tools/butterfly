@@ -30,6 +30,7 @@ ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
+
 from butterfly.gh.core import Case
 #import butterfly
 #reload(butterfly.core)
