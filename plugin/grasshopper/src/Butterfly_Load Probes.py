@@ -16,19 +16,23 @@ Load results for a field in probes.
         _field: Probes' filed as a string (e.g. p, U).
         
     Returns:
+        skippedPoints: List of points that are skipped during the solution.
         values: List of values for the last timestep.
 """
 
 ghenv.Component.Name = "Butterfly_Load Probes"
 ghenv.Component.NickName = "loadProbes"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "05::PostProcess"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 
-from Rhino.Geometry import Vector3d
+from Rhino.Geometry import Point3d, Vector3d
+
 if _case and _field:
+    skippedPoints = tuple(Point3d(*p) for p in _case.loadSkippedProbes())
+    
     rawValues = _case.loadProbes(_field)
     try:
         values = tuple(Vector3d(*v) for v in rawValues)

@@ -182,3 +182,17 @@ def getBoundaryField(BFSurfaces, field='u'):
             _bou[bfsrf.name] = _bc.valueDict
 
     return _bou
+
+
+def loadSkippedProbes(logFile):
+    """Return list of skipped points as tuples."""
+    assert os.path.isfile(logFile), "Can't find {}.".format(logFile)
+    _pts = []
+    with open(logFile, 'rb') as inf:
+        line = inf.readline()
+        while not line.startswith('Time = '):
+            if line.startswith('    Did not find location'):
+                _pts.append(tuple(float(i) for i in line.split("(")[1].split(")")[0].split()))
+            line = inf.readline()
+
+    return _pts

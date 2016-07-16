@@ -4,7 +4,7 @@ from shutil import rmtree
 from distutils.dir_util import copy_tree
 
 from version import Version
-from helper import mkdir, wfile, runbatchfile, readLastLine
+from helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes
 # constant folder objects
 from turbulenceProperties import TurbulenceProperties
 from RASProperties import RASProperties
@@ -204,7 +204,9 @@ class OpemFOAMCase(object):
         _res = readLastLine(_f).split()[1:]
 
         # convert values to tuple or number
-        _rawres = readLastLine(_f).split('      ')[2:]
+        _rawres = tuple(d.strip() for d in readLastLine(_f).split('  ')
+                        if d.strip())[1:]
+
         if _rawres[1].find('(') > -1:
             # it's a vector
             _res = (tuple(eval(r.strip().replace(' ', ',')) for r in _rawres if r))
@@ -213,6 +215,10 @@ class OpemFOAMCase(object):
             _res = (tuple(float(r) for r in _rawres))
 
         return _res
+
+    def loadSkippedProbes(self):
+        """Get list of probes that are skipped in calculation."""
+        return loadSkippedProbes(os.path.join(self.projectDir, 'etc', 'simpleFoam.log'))
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
@@ -456,7 +462,10 @@ class OpemFOAMCase(object):
         _t = os.path.join(self.constantDir, "polyMesh")
 
         # copy files to constant/polyMesh
-        copy_tree(_s, _t)
+        try:
+            copy_tree(_s, _t)
+        except Exception as e:
+            print "Failed to copy snappyHexMesh folder: {}".format(e)
 
     def renameSnappyHexMeshFolders(self):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa."""
@@ -476,8 +485,11 @@ class OpemFOAMCase(object):
 
             # rename them starting from 1
             for f in _folders:
-                os.rename(os.path.join(self.projectDir, f),
-                          os.path.join(self.projectDir, '%s.org' % f))
+                try:
+                    os.rename(os.path.join(self.projectDir, f),
+                              os.path.join(self.projectDir, '%s.org' % f))
+                except Exception as e:
+                    raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
 
             self._isSnappyHexMeshFoldersRenamed = True
 
@@ -509,7 +521,11 @@ class OpemFOAMCase(object):
         folder = os.path.join(self.constantDir, 'polyMesh')
         for _f in os.listdir(folder):
             if _f != 'blockMeshDict':
-                os.remove(os.path.join(folder, _f))
+                _fp = os.path.join(folder, _f)
+                if os.path.isfile(_fp):
+                    os.remove(_fp)
+                elif os.path.isdir(_fp):
+                    rmtree(_fp)
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
@@ -548,13 +564,13 @@ class OpemFOAMCase(object):
 
         return float(maximum), float(average)
 
-    def setFvSchemesfromAverageOrthogonality(self, averageOrthogonality):
+    def setFvSchemesfromMeshOrthogonality(self, meshOrthogonality):
         """Set fvSchemes based on mesh orthogonality.
 
         Check pp. 45-50 of this document:
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
         """
-        self.fvSchemes = FvSchemes.fromAverageOrthogonality(averageOrthogonality)
+        self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
