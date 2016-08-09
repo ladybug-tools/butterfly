@@ -4,9 +4,10 @@
 class Version(object):
     """Version class."""
 
-    BFVer = "0.0.1"
+    BFVer = "0.0.2"
     OFVer = "3.0"
-    OFFullVer = "v3.0+"
+    OFFullVer = "v1606+"
+    isUsingDockerMachine = True  # useful to run OpenFOAM container
 
 
 class Header(object):

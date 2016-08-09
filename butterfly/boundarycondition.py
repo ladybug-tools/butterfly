@@ -117,7 +117,7 @@ class FixedInletBoundaryCondition(BoundaryCondition):
         p = ZeroGradient() if not p else p
         k = FixedValue('0.1') if not k else k
         epsilon = FixedValue('0.01') if not epsilon else epsilon
-        nut = Calculated()
+        nut = Calculated('0')
 
         BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
                                    k, epsilon, nut)
@@ -150,7 +150,7 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
         p = FixedValue('0') if not p else p
         k = ZeroGradient() if not k else k
         epsilon = ZeroGradient() if not epsilon else epsilon
-        nut = Calculated()
+        nut = Calculated('0')
 
         super(FixedOutletBoundaryCondition, self).__init__(
             'patch', refLevels, temperature, u, p, k, epsilon, nut

@@ -1,3 +1,5 @@
+from version import Version
+
 import os
 from subprocess import PIPE, Popen
 
@@ -20,21 +22,42 @@ class RunManager(object):
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
         self.projectName = projectName
 
+        self.isUsingDockerMachine = True \
+            if hasattr(Version, 'isUsingDockerMachine') and Version.isUsingDockerMachine \
+            else False
+
+        self.dockerPath = r'C:\Program Files\Docker Toolbox' \
+            if self.isUsingDockerMachine \
+            else r'C:\Program Files\Boot2Docker for Windows'
+
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
         os.environ['PATH'] += ';%s' % r'C:\Program Files (x86)\Git\bin'
-        os.environ['PATH'] += ';%s' % r'C:\Program Files\Boot2Docker for Windows'
-        process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
-                        stderr=PIPE)
+        os.environ['PATH'] += ';%s' % self.dockerPath
+
+        if self.isUsingDockerMachine:
+            # version 1606 and higher
+            process = Popen('docker-machine env', shell=True, stdout=PIPE,
+                            stderr=PIPE)
+        else:
+            # older versions are using boot2docker
+            process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
+                            stderr=PIPE)
+
+        if tuple(process.stderr):
+            print 'ERROR!'
+            for line in process.stderr:
+                print line
+            return
 
         return tuple(line.replace('$Env:', 'set ')
                      .replace(' = ', '=')
                      .replace('"', '').strip()
-                     for line in process.stdout)
+                     for line in process.stdout
+                     if not line.startswith('REM'))
 
-    def getContainerId(self, name='of_plus_300'):
+    def getContainerId(self):
         """Get OpenFOAM's container id."""
-        # It seems to always be the same number: 63915d16038d
         _id = None
         if not self.shellinit:
             self.shellinit = self.getShellinit()
@@ -57,7 +80,7 @@ class RunManager(object):
             if line.find('docker ps') > 0:
                 # find container
                 _id = next(line.split()[0] for line in p.stdout
-                           if line.split()[-1] == name)
+                           if line.split()[-1].startswith('of_plus'))
 
         try:
             os.remove(_batchFile)
@@ -68,7 +91,12 @@ class RunManager(object):
 
     def startOpenFOAM(self):
         """Start OpenFOAM for Windows image from batch file."""
-        fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        if Version.OFFullVer == 'v3.0+':
+            fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        else:
+            fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+                "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
+
         Popen(fp, shell=True)
 
     def header(self):
@@ -77,15 +105,15 @@ class RunManager(object):
             self.shellinit = self.getShellinit()
 
         _base = '@echo off\n' \
-                'cd "C:\Program Files\Boot2Docker for Windows"\n' \
+                'cd {}\n' \
                 'echo Setting up the environment to connect to docker...\n' \
                 'echo .\n' \
-                '{}\n{}\n{}\n' \
+                '{}\n' \
                 'echo Done!\n' \
                 'echo Running OpenFOAM commands...\n' \
                 'echo .'
 
-        return _base.format(*self.shellinit)
+        return _base.format(self.dockerPath, '\n'.join(self.shellinit))
 
     def command(self, cmds, includeHeader=False, log=True, startOpenFOAM=False):
         """
@@ -93,11 +121,15 @@ class RunManager(object):
 
         Args:
             cmds: A sequence of commnads.
-            includeHeader:
-            log:
+            includeHeader: Include header lines to set up the environment.
+            log: Write the results to log files.
             startOpenFOAM: Execute OpenFOAM in case it's not already running.
         """
-        _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        if Version.OFFullVer == 'v3.0+':
+            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        else:
+            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+                "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
 
         _msg = "Failed to find container id. Do you have the OpenFOAM container running?\n" + \
             "You can initiate OpenFOAM container by running start_OF.bat:\n" + \

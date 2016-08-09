@@ -22,7 +22,7 @@ C:\Users\%USERNAME%\AppData\Roaming\McNeel\Rhinoceros\5.0\scripts\butterfly
 
 ghenv.Component.Name = "Butterfly"
 ghenv.Component.NickName = "BF::BF"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nAUG_09_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -106,7 +106,9 @@ elif os.path.isdir(butterflyFolder_) and butterflyFolder_ not in sys.path:
 
 try:
     import butterfly
-    print "Imported butterfly from {}\nswoosh swoosh...".format(butterfly.__file__)
+    from butterfly.version import Version
+    print "Imported butterfly from {}\nCurrent version: {}\nswoosh swoosh...".format(butterfly.__file__, Version.BFVer)
+    
 except ImportError as e:
     raise Exception("Failed to import butterfly:\n{}".format(e))
 
