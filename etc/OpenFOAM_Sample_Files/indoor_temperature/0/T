@@ -1,0 +1,67 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  3.0.x                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 300;
+
+boundaryField
+{
+
+    boundingbox
+    {
+
+        type		zeroGradient;
+
+    }
+
+    west_window
+    {
+
+        type		fixedValue;
+
+        value		uniform 291.15;
+
+    }
+
+    room
+    {
+
+        type		fixedValue;
+        value		uniform 300;
+
+		// type		fixedGradient;
+        // value		uniform 5; // Radiation / U-Value of construction
+		
+		// type	externalWallHeatFluxTemperature
+		// kappa fluidThermo
+		// q [heatFlux W/m2]
+		// Ta [Ambient Temperature]
+		// h [Heat Transfer Coefficent]
+		// thicknessLayers	(.5, .1, .2)
+		// kappaLayers	() // U-value for each layer
+		// kappaNames	none
+    }
+
+    east_window
+    {
+
+		type		zeroGradient;
+
+    }
+
+}
+// ************************************************************************* //

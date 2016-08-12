@@ -48,7 +48,7 @@ class RunManager(object):
             print 'ERROR!'
             for line in process.stderr:
                 print line
-            return
+            # return
 
         return tuple(line.replace('$Env:', 'set ')
                      .replace(' = ', '=')
