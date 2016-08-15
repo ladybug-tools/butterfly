@@ -186,18 +186,16 @@ class OpemFOAMCase(object):
             # include probes in controlDict
             self.controlDict.include(self.probes.filename)
 
-    def loadProbes(self, field):
-        """Return OpenFOAM probes results for a field."""
-        if not self.probes:
-            return []
+    @staticmethod
+    def loadProbesFromProjectPath(projectPath, field, probesFolder='probes'):
+        """Return OpenFOAM probes results for a field.
 
-        if field not in self.probes.fields:
-            raise ValueError("Can't find {} in {}.".format(field,
-                                                           self.probes.fields))
-
+        Args:
+            projectPath: Path to project root folder.
+            field: Probes field (e.g. U, p, T).
+        """
         # load the last line in the file
-        _f = os.path.join(self.projectDir, 'postProcessing',
-                          self.probes.filename, '0', field)
+        _f = os.path.join(projectPath, 'postProcessing', probesFolder, '0', field)
 
         assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
 
@@ -215,6 +213,18 @@ class OpemFOAMCase(object):
             _res = (tuple(float(r) for r in _rawres))
 
         return _res
+
+    def loadProbes(self, field):
+        """Return OpenFOAM probes results for a field."""
+        if not self.probes:
+            return []
+
+        if field not in self.probes.fields:
+            raise ValueError("Can't find {} in {}.".format(field,
+                                                           self.probes.fields))
+
+        self.loadProbesFromProjectName(self.projectDir, self.probes.filename,
+                                       self.probes.filename)
 
     def loadSkippedProbes(self):
         """Get list of probes that are skipped in calculation."""
