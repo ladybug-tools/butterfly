@@ -77,12 +77,12 @@ class InitialConditions(Condition):
                 (default: False).
         """
         _Uabl = self.Uref * self.k / math.log((self.Zref + self.z0) / self.z0)
-        epsilon = _Uabl ** 3 / self.k * (self.Zref + self.z0)
+        epsilon = _Uabl ** 3 / (self.k * (self.Zref + self.z0))
         k = _Uabl ** 2 / math.sqrt(self.Cm)
 
         if init:
-            self.__defaultValues['turbulentKE'] = '%.3f' % k
-            self.__defaultValues['turbulentEpsilon'] = '%.3f' % epsilon
+            self.__defaultValues['turbulentKE'] = '%.5f' % k
+            self.__defaultValues['turbulentEpsilon'] = '%.5f' % epsilon
         else:
             self.values['turbulentKE'] = str(k)
             self.values['turbulentEpsilon'] = str(epsilon)

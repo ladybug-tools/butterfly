@@ -25,10 +25,11 @@ class WindTunnel(object):
                 '0.5'     # veryRough
                 '1.0'     # closed
                 '2.0'     # chaotic
+        Zref: Reference height for wind velocity in meters (default: 10).
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globalRefLevel):
+                 block, roughness, globalRefLevel, Zref=None):
         """Init wind tunnel."""
         self.name = str(name)
         self.inlet = self.__checkIfBFSurface(inlet)
@@ -40,6 +41,8 @@ class WindTunnel(object):
                                    if self.__checkIfBFSurface(geo))
         self.z0 = roughness
         self.globalRefLevel = globalRefLevel
+
+        self.Zref = float(Zref) if Zref else 10
 
     @property
     def boundingSurfaces(self):

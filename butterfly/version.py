@@ -1,4 +1,5 @@
 """Versions and header."""
+from datetime import datetime
 
 
 class Version(object):
@@ -8,6 +9,7 @@ class Version(object):
     OFVer = "3.0"
     OFFullVer = "v1606+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
+    lastUpdated = datetime(year=2016, month=8, day=18, hour=12, minute=34)
 
 
 class Header(object):

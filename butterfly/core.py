@@ -104,9 +104,8 @@ class OpemFOAMCase(object):
                     isABLConditionsIncluded=True,
                     isInitialConditionsIncluded=True)
 
-        InitialConditions()
         _case.initialConditions = InitialConditions(
-            Uref=windTunnel.flowSpeed, z0=windTunnel.z0)
+            Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
 
         _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
 
@@ -128,6 +127,7 @@ class OpemFOAMCase(object):
         This case will only be meshed using blockMesh
         """
         raise NotImplementedError("Let us know if you in real need for this method!")
+
         _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
         return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
 

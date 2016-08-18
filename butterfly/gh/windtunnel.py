@@ -24,23 +24,25 @@ class GHWindTunnel(WindTunnel):
 
     Args:
         BFSurfaces: List of butterfly surfaces that will be inside the tunnel.
-        windSpeed: Wind speed in m/s.
+        windSpeed: Wind speed in m/s at Zref.
         windDirection: Wind direction as Vector3D.
         tunnelParameters: Butterfly tunnel parameters.
         landscape: An integer between 0-7 to calculate z0 (roughness).
-            0: '0.0002'  # sea
-            1: '0.005'   # smooth
-            2: '0.03'    # open
-            3: '0.10'    # roughlyOpen
-            4: '0.25'    # rough
-            5: '0.5'     # veryRough
-            6: '1.0'     # closed
-            7: '2.0'     # chaotic
+            0 > '0.0002'  # sea
+            1 > '0.005'   # smooth
+            2 > '0.03'    # open
+            3 > '0.10'    # roughlyOpen
+            4 > '0.25'    # rough
+            5 > '0.5'     # veryRough
+            6 > '1.0'     # closed
+            7 > '2.0'     # chaotic
         globalRefLevel: A tuple of (min, max) values for global refinment.
+        Zref: Reference height for wind velocity in meters (default: 10).
     """
 
     def __init__(self, name, BFSurfaces, windSpeed, windDirection=None,
-                 tunnelParameters=None, landscape=1, globalRefLevel=None):
+                 tunnelParameters=None, landscape=1, globalRefLevel=None,
+                 Zref=None):
         """Init grasshopper wind tunnel."""
         self.name = name
 
@@ -60,6 +62,8 @@ class GHWindTunnel(WindTunnel):
             )
 
         self.windSpeed = float(windSpeed)
+
+        self.Zref = float(Zref) if Zref else 10
 
         self.windDirection = rc.Geometry.Vector3d.YAxis if not windDirection \
             else rc.Geometry.Vector3d(windDirection)
@@ -82,7 +86,7 @@ class GHWindTunnel(WindTunnel):
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFSurfaces, block, self.z0, globalRefLevel
+            self.BFSurfaces, block, self.z0, globalRefLevel, self.Zref
         )
 
     @property
@@ -144,6 +148,7 @@ class GHWindTunnel(WindTunnel):
         """Get ABLCondition for this wind tunnel as a dictionary."""
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(self.windSpeed)
+        _ABLCDict['Zref'] = str(self.Zref)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
         _ABLCDict['flowDir'] = '({} {} {})'.format(self.windDirection.X,
                                                    self.windDirection.Y,
