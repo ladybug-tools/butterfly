@@ -364,7 +364,7 @@ class OpemFOAMCase(object):
 
     # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #
-    def blockMesh(self, run=True, log=True, removeContent=True):
+    def blockMesh(self, args=None, run=True, log=True, removeContent=True):
         """Run meshBlock command for this case.
 
         Args:
@@ -378,14 +378,15 @@ class OpemFOAMCase(object):
         if removeContent:
             self.removePolyMeshContent()
 
-        return self.__writeAndRunCommands('blockMesh', ('blockMesh',), run, log)
-
-    def snappyHexMesh(self, run=True, log=True):
-        """Run snappyHexMesh command for this case."""
-        return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
+        return self.__writeAndRunCommands('blockMesh', ('blockMesh',), args,
                                           run, log)
 
-    def meshCombo(self, run=True, log=True):
+    def snappyHexMesh(self, args=None, run=True, log=True):
+        """Run snappyHexMesh command for this case."""
+        return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
+                                          args, run, log)
+
+    def meshCombo(self, args=None, run=True, log=True):
         """Run meshBlock and snappyHexMesh.
 
         Returns:
@@ -394,37 +395,39 @@ class OpemFOAMCase(object):
         """
         return self.__writeAndRunCommands('meshCombo',
                                           ('blockMesh', 'snappyHexMesh'),
-                                          run, log)
+                                          args, run, log)
 
-    def checkMesh(self, run=True, log=True):
+    def checkMesh(self, args=None, run=True, log=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('checkMesh', ('checkMesh',), run, log)
+        return self.__writeAndRunCommands('checkMesh', ('checkMesh',),
+                                          args, run, log)
 
-    def simpleFoam(self, run=True, log=True):
+    def simpleFoam(self, args=None, run=True, log=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run, log)
+        return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',),
+                                          args, run, log)
 
     # ************************* OpenFOAM Commands ************************* #
     # *************************        END        ************************* #
 
-    def __writeAndRunCommands(self, name, commands, run=True, log=True):
+    def __writeAndRunCommands(self, name, commands, args=None, run=True, log=True):
         """Write batch files for commands and run them.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        _batchString = self.runmanager.command(commands,
+        _batchString = self.runmanager.command(commands, args,
                                                includeHeader=True,
                                                log=log)
         _fpath = os.path.join(self.etcDir, '%s.bat' % name)
@@ -557,7 +560,7 @@ class OpemFOAMCase(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            success, err = self.checkMesh()
+            success, err = self.checkMesh(args=('latestTime',))
             assert success, err
 
         f = os.path.join(self.projectDir, 'etc/checkMesh.log')

@@ -115,12 +115,14 @@ class RunManager(object):
 
         return _base.format(self.dockerPath, '\n'.join(self.shellinit))
 
-    def command(self, cmds, includeHeader=False, log=True, startOpenFOAM=False):
+    def command(self, cmds, args=None, includeHeader=False, log=True,
+                startOpenFOAM=False):
         """
         Get command line for OpenFOAM commands.
 
         Args:
             cmds: A sequence of commnads.
+            args: List of arguments for command. e.g. ('c', 'latestTime')
             includeHeader: Include header lines to set up the environment.
             log: Write the results to log files.
             startOpenFOAM: Execute OpenFOAM in case it's not already running.
@@ -151,12 +153,14 @@ class RunManager(object):
 
         _base = 'docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
 
-        if log:
-            _baseCmd = '{0} > >(tee etc/{0}.log) 2> >(tee etc/{0}.err >&2)'
+        arguments = '' if not args else '-{}'.format(' -'.join(args))
 
-            _cmds = (_baseCmd.format(cmd, self.projectName) for cmd in cmds)
+        if log:
+            _baseCmd = '{0} {1} > >(tee etc/{0}.log) 2> >(tee etc/{0}.err >&2)'
+
+            _cmds = (_baseCmd.format(cmd, arguments) for cmd in cmds)
         else:
-            _cmds = cmds
+            _cmds = ('{} {} '.format(cmd, arguments) for cmd in cmds)
 
         _cmd = _base.format(self.containerId, self.projectName, '; '.join(_cmds))
 
