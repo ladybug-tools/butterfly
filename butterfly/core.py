@@ -202,7 +202,7 @@ class OpemFOAMCase(object):
         _res = readLastLine(_f).split()[1:]
 
         # convert values to tuple or number
-        _rawres = tuple(d.strip() for d in readLastLine(_f).split('  ')
+        _rawres = tuple(d.strip() for d in readLastLine(_f).split()
                         if d.strip())[1:]
 
         if _rawres[1].find('(') > -1:
