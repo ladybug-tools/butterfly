@@ -205,12 +205,16 @@ class OpemFOAMCase(object):
         _rawres = tuple(d.strip() for d in readLastLine(_f).split()
                         if d.strip())[1:]
 
-        if _rawres[1].find('(') > -1:
-            # it's a vector
-            _res = (tuple(eval(r.strip().replace(' ', ',')) for r in _rawres if r))
-        else:
+        try:
             # it's a number
-            _res = (tuple(float(r) for r in _rawres))
+            _res = tuple(float(r) for r in _rawres)
+        except ValueError:
+            try:
+                # it's a vector
+                _res = tuple(eval(','.join(_rawres[3 * i: 3 * (i + 1)]))
+                             for i in range(int(len(_rawres) / 3)))
+            except Exception as e:
+                raise Exception('\nFailed to load probes:\n{}'.format(e))
 
         return _res
 
