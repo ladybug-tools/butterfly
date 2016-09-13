@@ -5,11 +5,11 @@ from foamfile import FoamFile
 class BlockMeshDict(FoamFile):
     """BlockMeshDict."""
 
-    def __init__(self, scale, BFSurfaces, blocks):
+    def __init__(self, convertToMeters, BFSurfaces, blocks):
         """Init BlockMeshDict."""
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
                           location='system')
-        self.scale = scale
+        self.convertToMeters = convertToMeters
         self.blocks = blocks
         self.BFSurfaces = BFSurfaces
         # collect uniqe vertices from all BFSurfaces
@@ -31,7 +31,7 @@ class BlockMeshDict(FoamFile):
     def toOpenFOAM(self):
         """Return OpenFOAM representation as a string."""
         _hea = self.header()
-        _body = "\nconvertToMeters 1;\n" \
+        _body = "\nconvertToMeters %.4f;\n" \
                 "\n" \
                 "vertices\n" \
                 "(\n%s\n);\n" \
@@ -50,6 +50,7 @@ class BlockMeshDict(FoamFile):
 
         return _hea + \
             _body % (
+                self.convertToMeters,
                 "\n".join(tuple(str(ver).replace(",", "")
                           for ver in self.vertices)),
                 "\n".join(block.blockMeshDict(self.vertices)

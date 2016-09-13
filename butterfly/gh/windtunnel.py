@@ -7,7 +7,7 @@ except ImportError:
 from .block import Block
 from .bfsurface import BFSurface
 from .core import Case
-
+from .unitconversion import convertDocumentUnitsToMeters
 from ..windtunnel import TunnelParameters, WindTunnel
 from ..boundarycondition import WindTunnelGroundBoundaryCondition, \
     WindTunnelInletBoundaryCondition, WindTunnelOutletBoundaryCondition, \
@@ -86,7 +86,8 @@ class GHWindTunnel(WindTunnel):
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFSurfaces, block, self.z0, globalRefLevel, self.Zref
+            self.BFSurfaces, block, self.z0, globalRefLevel, self.Zref,
+            convertDocumentUnitsToMeters()
         )
 
     @property

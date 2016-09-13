@@ -22,7 +22,7 @@ Read more about snappyHexMeshDict here:
 
 ghenv.Component.Name = "Butterfly_blockMeshDict"
 ghenv.Component.NickName = "blockMeshDict"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.01\nSEP_13_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -31,6 +31,7 @@ try:
     # import butterfly
     from butterfly.gh.bfsurface import BFSurface
     from butterfly.gh.block import Block
+    from butterfly.gh.unitconversion import convertDocumentUnitsToMeters
     from butterfly.blockMeshDict import BlockMeshDict
     from butterfly.boundarycondition import BoundingBoxBoundaryCondition
 except ImportError as e:
@@ -47,4 +48,4 @@ if _bbox:
     block = Block(_bbox, _nDivXYZ_, _gradXYZ_)
     bc = BoundingBoxBoundaryCondition()
     BBBFSurface = BFSurface('boundingbox', [_bbox], bc)
-    blockMeshDict = BlockMeshDict(1, [BBBFSurface], [block])
+    blockMeshDict = BlockMeshDict(convertDocumentUnitsToMeters(), [BBBFSurface], [block])

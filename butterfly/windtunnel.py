@@ -29,7 +29,7 @@ class WindTunnel(object):
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globalRefLevel, Zref=None):
+                 block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
         self.inlet = self.__checkIfBFSurface(inlet)
@@ -43,6 +43,7 @@ class WindTunnel(object):
         self.globalRefLevel = globalRefLevel
 
         self.Zref = float(Zref) if Zref else 10
+        self.convertToMeters = convertToMeters
 
     @property
     def boundingSurfaces(self):
@@ -74,7 +75,8 @@ class WindTunnel(object):
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        return BlockMeshDict(1, self.boundingSurfaces, [self.block])
+        return BlockMeshDict(self.convertToMeters, self.boundingSurfaces,
+                             [self.block])
 
     @property
     def ABLConditionsDict(self):
