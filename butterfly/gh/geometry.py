@@ -1,46 +1,35 @@
-"""BF Surface for Grasshopper."""
-import os
+"""Base class for geometry."""
 try:
     import Rhino as rc
     from scriptcontext import doc
 except ImportError:
     pass
 
-from ..boundarycondition import BoundaryCondition
+from ..geometry import BFGeometry
 
 
-# TODO: Write BFSurface with no Grasshopper dependencies.
-# it will have name, vertices, normals,...
-class BFSurface(object):
-    """Butterfly surface.
+class GHBFGeometry(BFGeometry):
+    """Base geometry class for Butterfly.
 
-    Args:
-        name:
-        geometry:
-        boundaryCondition:
-        meshingParameters: Grasshopper meshingParameters.
+    Attributes:
+        name: Name as a string (A-Z a-z 0-9).
+        geometries: A list of Grasshopper meshes or Breps. All input geometries
+            will be converted as a joined mesh.
+        boundaryCondition: Boundary condition for this geometry
+        meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
+            In case geometry is Mesh this input won't be used.
     """
 
-    def __init__(self, name, geometry, boundaryType=None,
+    def __init__(self, name, geometries, boundaryCondition=None,
                  meshingParameters=None):
         """Init Butterfly surface in Grasshopper."""
         if not meshingParameters:
             meshingParameters = rc.Geometry.MeshingParameters.Default
 
         self.meshingParameters = meshingParameters
-        self.name = name
-        self.geometry = geometry
-
-        # TODO: add check for boundary condition to be valid
-        if not boundaryType:
-            self.boundaryCondition = BoundaryCondition()
-        else:
-            self.boundaryCondition = boundaryType
-
-    @property
-    def isBFSurface(self):
-        """Return True for Butterfly surfaces."""
-        return True
+        self.geometry = geometries
+        BFGeometry.__init__(self, name, self.meshVertices, self.meshFaceIndices,
+                            self.faceNormals, boundaryCondition)
 
     @property
     def borderVertices(self):
@@ -85,7 +74,7 @@ class BFSurface(object):
                           for f in g.Faces)
                 )
             elif isinstance(g, rc.Geometry.Mesh):
-                print "One of the input geometries are mesh."
+                print "One of the input geometries is mesh."
                 print "You can only use snappyHexMesh with this geometry."
 
     @staticmethod
@@ -110,10 +99,11 @@ class BFSurface(object):
         # collect mesh faces, normals and indices
         triMesh.FaceNormals.ComputeFaceNormals()
         triMesh.FaceNormals.UnitizeFaceNormals()
-        self.normals = tuple((n.X, n.Y, n.Z) for n in triMesh.FaceNormals)
-        self.vertices = tuple((v.X, v.Y, v.Z) for v in triMesh.Vertices)
+
+        self.faceNormals = tuple((n.X, n.Y, n.Z) for n in triMesh.FaceNormals)
+        self.meshVertices = tuple((v.X, v.Y, v.Z) for v in triMesh.Vertices)
         # indices
-        self.faceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
+        self.meshFaceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
         return triMesh
 
     def blockMeshDict(self, vertices):
@@ -121,7 +111,6 @@ class BFSurface(object):
 
         Args:
             vertices: list of vertices for all the geometries in the case.
-                This method should be moved under the case class.
         """
         _body = "   %s\n" \
                 "   {\n" \
@@ -150,47 +139,3 @@ class BFSurface(object):
             "\n".join(["            " + str(indices).replace(",", "")
                        for indices in renumberedIndices])
         )
-
-    def toStlString(self):
-        """Get STL definition for this surface as a string."""
-        _hea = "solid {}".format(self.name)
-        _tale = "endsolid {}".format(self.name)
-        _body = "   facet normal {0} {1} {2}\n" \
-                "     outer loop\n" \
-                "       vertex {3} {4} {5}\n" \
-                "       vertex {6} {7} {8}\n" \
-                "       vertex {9} {10} {11}\n" \
-                "     endloop\n" \
-                "   endfacet"
-
-        _bodyCollector = tuple(_body.format(
-            self.normals[count][0],
-            self.normals[count][1],
-            self.normals[count][2],
-            self.vertices[faceInd[0]][0],
-            self.vertices[faceInd[0]][1],
-            self.vertices[faceInd[0]][2],
-            self.vertices[faceInd[1]][0],
-            self.vertices[faceInd[1]][1],
-            self.vertices[faceInd[1]][2],
-            self.vertices[faceInd[2]][0],
-            self.vertices[faceInd[2]][1],
-            self.vertices[faceInd[2]][2]
-        ) for count, faceInd in enumerate(self.faceIndices))
-
-        return "{}\n{}\n{}".format(
-            _hea, "\n".join(_bodyCollector), _tale
-        )
-
-    def writeToStl(self, folder):
-        """Save BFFace to a stl file. File name will be self.name."""
-        with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-            outf.write(self.toStlString())
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """Butterfly surface representation."""
-        return "BFSurface:{}".format(self.name)

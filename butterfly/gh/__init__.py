@@ -1,3 +1,3 @@
-__all__ = ['bfsurface', 'block', 'core', 'postprocess', 'windtunnel']
+__all__ = ['block', 'core', 'geometry', 'postprocess', 'windtunnel']
 
-import bfsurface, block, core, postprocess, windtunnel
+import block, core, geometry, postprocess, windtunnel

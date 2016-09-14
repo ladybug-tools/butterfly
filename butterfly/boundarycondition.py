@@ -33,6 +33,10 @@ class BoundaryCondition(object):
         self.epsilon = ZeroGradient() if not epsilon else epsilon
         self.nut = ZeroGradient() if not nut else nut
 
+    def isBoundaryCondition(self):
+        """Return True for boundary conditions."""
+        return True
+
     def duplicate(self):
         """Duplicate Boundary Condition."""
         return deepcopy(self)

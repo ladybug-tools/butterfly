@@ -23,13 +23,15 @@ Create Butterfly surface.
 
 ghenv.Component.Name = "Butterfly_Create Butterfly Surface"
 ghenv.Component.NickName = "createBFSurface"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.01\nSEP_14_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
+from butterfly.gh.geometry import GHBFGeometry
+
 try:
-    from butterfly.gh.bfsurface import BFSurface
+    from butterfly.gh.geometry import GHBFGeometry
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -40,4 +42,4 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _geo and _name:
-    BFSrf = BFSurface(_name, _geo, _boundary_, _meshSet_)
+    BFSrf = GHBFGeometry(_name, _geo, _boundary_, _meshSet_)

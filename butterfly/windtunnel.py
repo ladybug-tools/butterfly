@@ -52,10 +52,10 @@ class WindTunnel(object):
                (self.top, self.ground)
 
     def __checkIfBFSurface(self, input):
-        if hasattr(input, 'isBFSurface'):
+        if hasattr(input, 'isBFGeometry'):
             return input
         else:
-            raise ValueError('{} is not a Butterfly surface.'.format(input))
+            raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
     @property
     def flowDir(self):

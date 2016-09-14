@@ -190,7 +190,7 @@ def loadSkippedProbes(logFile):
     _pts = []
     with open(logFile, 'rb') as inf:
         line = inf.readline()
-        while not line.startswith('Time = '):
+        while line and not line.startswith('Time = '):
             if line.startswith('    Did not find location'):
                 _pts.append(tuple(float(i) for i in line.split("(")[1].split(")")[0].split()))
             line = inf.readline()

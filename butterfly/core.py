@@ -198,7 +198,6 @@ class OpemFOAMCase(object):
         _f = os.path.join(projectPath, 'postProcessing', probesFolder, '0', field)
 
         assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
-
         _res = readLastLine(_f).split()[1:]
 
         # convert values to tuple or number
@@ -227,8 +226,8 @@ class OpemFOAMCase(object):
             raise ValueError("Can't find {} in {}.".format(field,
                                                            self.probes.fields))
 
-        self.loadProbesFromProjectName(self.projectDir, self.probes.filename,
-                                       self.probes.filename)
+        self.loadProbesFromProjectPath(
+            self.projectDir, field, self.probes.filename)
 
     def loadSkippedProbes(self):
         """Get list of probes that are skipped in calculation."""
