@@ -5,15 +5,22 @@ from foamfile import FoamFile
 class BlockMeshDict(FoamFile):
     """BlockMeshDict."""
 
-    def __init__(self, convertToMeters, BFSurfaces, blocks):
+    def __init__(self, convertToMeters, BFBlockGeometries, blocks):
         """Init BlockMeshDict."""
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
                           location='system')
         self.convertToMeters = convertToMeters
         self.blocks = blocks
-        self.BFSurfaces = BFSurfaces
-        # collect uniqe vertices from all BFSurfaces
-        self.vertices = tuple(set(v for f in BFSurfaces for vgroup in f.borderVertices for v in vgroup))
+        self.BFBlockGeometries = BFBlockGeometries
+        try:
+            # collect uniqe vertices from all BFSurfaces
+            self.vertices = tuple(set(v for f in self.BFBlockGeometries
+                                      for vgroup in f.borderVertices
+                                      for v in vgroup))
+        except AttributeError as e:
+            raise TypeError('At least one of the input geometries is not a '
+                            'Butterfly block geometry:\n{}'.format(e))
+
         self.center = self.__averageVerices()
 
     def __averageVerices(self):
@@ -53,11 +60,11 @@ class BlockMeshDict(FoamFile):
                 self.convertToMeters,
                 "\n".join(tuple(str(ver).replace(",", "")
                           for ver in self.vertices)),
-                "\n".join(block.blockMeshDict(self.vertices)
+                "\n".join(block.toBlockMeshDict(self.vertices)
                           for block in self.blocks),  # blocks
                 "\n",  # edges
-                "\n".join(srf.blockMeshDict(self.vertices)
-                          for srf in self.BFSurfaces),
+                "\n".join(srf.toBlockMeshDict(self.vertices)
+                          for srf in self.BFBlockGeometries),
                 "\n")  # merge patch pair
 
     def ToString(self):

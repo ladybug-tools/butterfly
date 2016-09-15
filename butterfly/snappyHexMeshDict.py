@@ -162,7 +162,7 @@ class SnappyHexMeshDict(FoamFile):
         """Set geometry from BFSurfaces."""
         _geoField = getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
                                                   meshingType)
-        self.values['geometry'] = _geoField
+        self.values['geometry'].update(_geoField)
 
     def setRefinementSurfaces(self, projectName, BFSurfaces, globalLevels):
         """Set refinement values for surfaces.
@@ -176,3 +176,28 @@ class SnappyHexMeshDict(FoamFile):
                                                   BFSurfaces, globalLevels)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
+
+    def addStlGeometry(self, fileName):
+        """Add stl geometry to snappyHexMeshDict.
+
+        Args:
+            fileName: Stl file name. This file should be located under
+                /constant/triSurface.
+        """
+        stl = {'{}.stl'.format(fileName): {'type': 'triSurfaceMesh',
+                                           'name': fileName}}
+
+        self.values['geometry'].update(stl)
+
+    def addRefinementRegion(self, refinementRegion=None):
+        """Add refinement region to snappyHexMeshDict."""
+        # assert hasattr(refinementRegion, 'isRefinementRegion'), \
+        #     '{} is not a refinement region.'.format(refinementRegion)
+
+        # add geometry to stl
+        self.addStlGeometry(refinementRegion.name)
+
+        rg = {refinementRegion.name:
+              refinementRegion.refinementMode.toOpenFOAMDict()}
+
+        self.values['castellatedMeshControls']['refinementRegions'].update(rg)

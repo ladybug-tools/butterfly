@@ -44,8 +44,7 @@ class OpemFOAMCase(object):
 
     def __init__(self, projectName, BFSurfaces, blockMeshDict,
                  globalRefinementLevel=None, locationInMesh=None,
-                 isSnappyHexMesh=False, isABLConditionsIncluded=False,
-                 isInitialConditionsIncluded=False):
+                 isSnappyHexMesh=False):
         """Init project."""
         self.username = os.getenv("USERNAME")
         self.version = float(Version.OFVer)
@@ -61,6 +60,9 @@ class OpemFOAMCase(object):
         self.snappyHexMeshDict = SnappyHexMeshDict.fromBFSurfaces(
             projectName, BFSurfaces, globalRefinementLevel, locationInMesh)
 
+        # place holder for refinment regions
+        self.__refinementRegions = []
+
         # constant folder
         if self.version < 3:
             self.RASProperties = RASProperties()
@@ -69,11 +71,12 @@ class OpemFOAMCase(object):
         self.transportProperties = TransportProperties()
 
         # 0 floder
-        self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+        self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
+        self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
+        self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
+        self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces +
+                                              blockMeshDict.BFBlockGeometries)
+        self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
 
         # system folder
         self.fvSchemes = FvSchemes()
@@ -83,11 +86,8 @@ class OpemFOAMCase(object):
         self.probes = None
 
         # if any of these files are included they should be written to 0 floder
-        if not isABLConditionsIncluded:
-            self.ABLConditions = None
-
-        if not isInitialConditionsIncluded:
-            self.initialConditions = None
+        self.ABLConditions = None
+        self.initialConditions = None
 
         self._isInit = False
         self._isSnappyHexMeshFoldersRenamed = False
@@ -101,8 +101,7 @@ class OpemFOAMCase(object):
         _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
                     globalRefinementLevel=windTunnel.globalRefLevel,
                     locationInMesh=_locationInMesh, isSnappyHexMesh=True,
-                    isABLConditionsIncluded=True,
-                    isInitialConditionsIncluded=True)
+                    )
 
         _case.initialConditions = InitialConditions(
             Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
@@ -118,6 +117,11 @@ class OpemFOAMCase(object):
                              'internalField': 'uniform $turbulentKE'})
         _case.epsilon.updateValues({'#include': '"initialConditions"',
                                     'internalField': 'uniform $turbulentEpsilon'})
+
+        if windTunnel.refinementRegions:
+            for region in windTunnel.refinementRegions:
+                _case.addRefinementRegion(region)
+
         return _case
 
     @classmethod
@@ -168,6 +172,11 @@ class OpemFOAMCase(object):
         else:
             self.__ABLConditions = value
             self.__isABLConditionsIncluded = True
+
+    @property
+    def refinementRegions(self):
+        """Get refinement regions."""
+        return self.__refinementRegions
 
     @property
     def probes(self):
@@ -248,6 +257,14 @@ class OpemFOAMCase(object):
         # This is a abstract property which should be implemented in subclasses
         raise NotImplementedError()
 
+    def addRefinementRegion(self, refinementRegion):
+        """Add refinement regions to this case."""
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
+
+        self.__refinementRegions.append(refinementRegion)
+        self.snappyHexMeshDict.addRefinementRegion(refinementRegion)
+
     def createCaseFolders(self, workingDir=None):
         """Create project folders and subfolders.
 
@@ -326,6 +343,14 @@ class OpemFOAMCase(object):
                                    "triSurface\\%s.stl" % self.projectName),
                       'wb') as outf:
                 outf.write("\n\n".join(_stl))
+
+        if self.refinementRegions:
+            for region in self.refinementRegions:
+                with open(
+                    os.path.join(self.constantDir,
+                                 "triSurface\\%s.stl" % region.name), 'wb') as outf:
+
+                    outf.write(region.toStlString())
 
         if self.version < 3:
             # write blockMeshDict to polyMesh

@@ -28,8 +28,6 @@ ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
-from butterfly.gh.geometry import GHBFGeometry
-
 try:
     from butterfly.gh.geometry import GHBFGeometry
 except ImportError as e:

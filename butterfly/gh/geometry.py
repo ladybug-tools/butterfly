@@ -1,4 +1,4 @@
-"""Base class for geometry."""
+"""BF Grasshopper geometry library."""
 try:
     import Rhino as rc
     from scriptcontext import doc
@@ -8,33 +8,23 @@ except ImportError:
 from ..geometry import BFGeometry
 
 
-class GHBFGeometry(BFGeometry):
-    """Base geometry class for Butterfly.
+class GHMesh(object):
+    """Base mesh class for Butterf Grasshopper.
 
     Attributes:
-        name: Name as a string (A-Z a-z 0-9).
         geometries: A list of Grasshopper meshes or Breps. All input geometries
             will be converted as a joined mesh.
-        boundaryCondition: Boundary condition for this geometry
         meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
             In case geometry is Mesh this input won't be used.
     """
 
-    def __init__(self, name, geometries, boundaryCondition=None,
-                 meshingParameters=None):
+    def __init__(self, geometries, meshingParameters=None):
         """Init Butterfly surface in Grasshopper."""
         if not meshingParameters:
             meshingParameters = rc.Geometry.MeshingParameters.Default
 
-        self.meshingParameters = meshingParameters
+        self.__meshingParameters = meshingParameters
         self.geometry = geometries
-        BFGeometry.__init__(self, name, self.meshVertices, self.meshFaceIndices,
-                            self.faceNormals, boundaryCondition)
-
-    @property
-    def borderVertices(self):
-        """Return a list of lists for (x, y, z) vertices."""
-        return self.__borderVertices
 
     @property
     def geometry(self):
@@ -54,7 +44,7 @@ class GHBFGeometry(BFGeometry):
         # this is useful for creating stl files
         for g in geo:
             if isinstance(g, rc.Geometry.Brep):
-                for m in rc.Geometry.Mesh.CreateFromBrep(g, self.meshingParameters):
+                for m in rc.Geometry.Mesh.CreateFromBrep(g, self.__meshingParameters):
                     _geo.Append(m)
             elif isinstance(g, rc.Geometry.Mesh):
                 _geo.Append(g)
@@ -62,29 +52,9 @@ class GHBFGeometry(BFGeometry):
                 raise ValueError("Input geometry should be Mesh or Brep not {}"
                                  .format(type(g)))
 
-        self.__geometry = self.triangulateMesh(_geo)
+        self.__geometry = self.__triangulateMesh(_geo)
 
-        # now get clean vertices for faces which is useful to create the case
-        # by blocks
-        self.__borderVertices = []
-        for g in geo:
-            if isinstance(g, rc.Geometry.Brep):
-                self.__borderVertices.extend(
-                    tuple(tuple((v.X, v.Y, v.Z) for v in self.getBorderVertices(f))
-                          for f in g.Faces)
-                )
-            elif isinstance(g, rc.Geometry.Mesh):
-                print "One of the input geometries is mesh."
-                print "You can only use snappyHexMesh with this geometry."
-
-    @staticmethod
-    def getBorderVertices(face):
-        """Get border vertices."""
-        srf = face.DuplicateFace(doc.ModelAbsoluteTolerance)
-        edgesJoined = rc.Geometry.Curve.JoinCurves(srf.DuplicateEdgeCurves(True))
-        return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
-
-    def triangulateMesh(self, mesh):
+    def __triangulateMesh(self, mesh):
         """Triangulate Rhino Mesh."""
         triMesh = rc.Geometry.Mesh()
 
@@ -100,14 +70,96 @@ class GHBFGeometry(BFGeometry):
         triMesh.FaceNormals.ComputeFaceNormals()
         triMesh.FaceNormals.UnitizeFaceNormals()
 
-        self.faceNormals = tuple((n.X, n.Y, n.Z) for n in triMesh.FaceNormals)
-        self.meshVertices = tuple((v.X, v.Y, v.Z) for v in triMesh.Vertices)
+        self.normals = tuple((n.X, n.Y, n.Z) for n in triMesh.FaceNormals)
+        self.vertices = tuple((v.X, v.Y, v.Z) for v in triMesh.Vertices)
         # indices
-        self.meshFaceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
+        self.faceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
         return triMesh
 
-    def blockMeshDict(self, vertices):
-        """Get blockMeshDict string.
+
+class GHBFGeometry(BFGeometry):
+    """Base geometry class for Butterfly.
+
+    Attributes:
+        name: Name as a string (A-Z a-z 0-9).
+        geometries: A list of Grasshopper meshes or Breps. All input geometries
+            will be converted as a joined mesh.
+        boundaryCondition: Boundary condition for this geometry
+        meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
+            In case geometry is Mesh this input won't be used.
+    """
+
+    def __init__(self, name, geometries, boundaryCondition=None,
+                 meshingParameters=None):
+        """Init Butterfly geometry in Grasshopper."""
+        # convert input geometries to a butterfly GHMesh.
+        _mesh = GHMesh(geometries, meshingParameters)
+
+        self.__geometry = _mesh.geometry
+
+        BFGeometry.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
+                            _mesh.normals, boundaryCondition)
+
+    @property
+    def geometry(self):
+        """Mesh geometry of the surface."""
+        return self.__geometry
+
+
+class GHBFBlockGeometry(GHBFGeometry):
+    """Butterfly block geometry.
+
+    Use this geometry to create geometries for blockMeshDict.
+
+    Attributes:
+        name: Name as a string (A-Z a-z 0-9 _).
+        vertices: A flatten list of (x, y, z) for vertices.
+        faceIndices: A flatten list of (a, b, c) for indices for each face.
+        normals: A flatten list of (x, y, z) for face normals.
+        boundaryCondition: Boundary condition for this geometry.
+        borderVertices: List of lists of (x, y, z) values for each quad face of
+            the geometry.
+    """
+
+    def __init__(self, name, geometries, boundaryCondition=None,
+                 meshingParameters=None):
+        """Init Butterfly block geometry in Grasshopper."""
+        GHBFGeometry.__init__(self, name, geometries, boundaryCondition,
+                              meshingParameters)
+
+        self.__calculateBlockBorderVertices(geometries)
+
+    @property
+    def isBFBlockGeometry(self):
+        """Return True for Butterfly block geometries."""
+        return True
+
+    @property
+    def borderVertices(self):
+        """Return list of border vertices."""
+        return self.__borderVertices
+
+    def __calculateBlockBorderVertices(self, geo):
+        """Get list of border vertices."""
+        self.__borderVertices = []
+        for g in geo:
+            if not isinstance(g, rc.Geometry.Brep):
+                raise TypeError('{} is not a Brep.'.format(g))
+
+            self.__borderVertices.extend(
+                tuple(tuple((v.X, v.Y, v.Z) for v in self.__getFaceBorderVertices(f))
+                      for f in g.Faces)
+            )
+
+    @staticmethod
+    def __getFaceBorderVertices(face):
+        """Get border vertices."""
+        srf = face.DuplicateFace(doc.ModelAbsoluteTolerance)
+        edgesJoined = rc.Geometry.Curve.JoinCurves(srf.DuplicateEdgeCurves(True))
+        return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
+
+    def toBlockMeshDict(self, vertices):
+        """Get blockMeshDict string for this geometry.
 
         Args:
             vertices: list of vertices for all the geometries in the case.

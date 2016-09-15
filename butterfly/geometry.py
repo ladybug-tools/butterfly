@@ -1,4 +1,4 @@
-"""BF geometry library for Grasshopper."""
+"""BF geometry library."""
 import os
 from boundarycondition import BoundaryCondition
 
@@ -150,10 +150,38 @@ class BFGeometry(_BFMesh):
         self.__bc = bc
 
 
-class RefinementRegion(_BFMesh):
-    """Butterfly refinement region."""
+class BFBlockGeometry(BFGeometry):
+    """Butterfly block geometry.
 
-    pass
+    Use this geometry to create geometries for blockMeshDict.
+
+    Attributes:
+        name: Name as a string (A-Z a-z 0-9 _).
+        vertices: A flatten list of (x, y, z) for vertices.
+        faceIndices: A flatten list of (a, b, c) for indices for each face.
+        normals: A flatten list of (x, y, z) for face normals.
+        boundaryCondition: Boundary condition for this geometry.
+        borderVertices: List of lists of (x, y, z) values for each quad face of
+            the geometry.
+    """
+
+    def __init__(self, name, vertices, faceIndices, normals, borderVertices,
+                 boundaryCondition=None):
+        """Create Block Geometry."""
+        BFGeometry.__init__(self, name, vertices, faceIndices, normals,
+                            boundaryCondition)
+        self.__borderVertices = borderVertices
+
+    @property
+    def isBFBlockGeometry(self):
+        """Return True for Butterfly block geometries."""
+        return True
+
+    @property
+    def borderVertices(self):
+        """Return list of border vertices."""
+        return self.__borderVertices
+
 
 if __name__ == '__main__':
     vertices = ((0, 0, 0), (10, 0, 0), (10, 10, 0), (0, 10, 0))

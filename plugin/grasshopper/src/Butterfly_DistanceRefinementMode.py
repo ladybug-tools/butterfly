@@ -7,29 +7,28 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Load results for a field in probes.
+Inside/Ouside region refinement.
 
 -
 
     Args:
-        _name: Butterfly project name.
-        _field: Probes' filed as a string (e.g. p, U).
+        _levels_0: (d, l) values for level where d is distance of region and 
+            l is level of refinement. 'levels' specifies per distance to the
+            surface the wanted refinement level.
         
     Returns:
-        skippedPoints: List of points that are skipped during the solution.
-        values: List of values for the last timestep.
+        distanceRefMode: Refinement mode.
 """
 
-ghenv.Component.Name = "Butterfly_Load Probes From Project"
-ghenv.Component.NickName = "loadProbesFromProject"
+ghenv.Component.Name = "Butterfly_DistanceRefinementMode"
+ghenv.Component.NickName = "distRefMode"
 ghenv.Component.Message = 'VER 0.0.01\nSEP_15_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "05::PostProcess"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
-
+ghenv.Component.SubCategory = "03::Refinement"
+ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    from butterfly.gh.core import Case
+    from butterfly.refinementRegion import Distance
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -39,15 +38,7 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-from Rhino.Geometry import Point3d, Vector3d
-import os
+_level = [tuple(i) for i in [_levels_0, _levels_1] if i]
 
-
-if _name and _field:
-    projectPath = 'c:/users/{}/butterfly/{}'.format(os.getenv("USERNAME"), _name)
-    
-    rawValues = Case.loadProbesFromProjectPath(projectPath, _field)
-    try:
-        values = tuple(Vector3d(*v) for v in rawValues)
-    except:
-        values = rawValues
+if _level:
+    distanceRefMode = Distance(_level)

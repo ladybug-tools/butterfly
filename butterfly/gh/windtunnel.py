@@ -5,7 +5,7 @@ except ImportError:
     pass
 
 from .block import Block
-from .geometry import GHBFGeometry
+from .geometry import GHBFBlockGeometry
 from .core import Case
 from .unitconversion import convertDocumentUnitsToMeters
 from ..windtunnel import TunnelParameters, WindTunnel
@@ -121,25 +121,28 @@ class GHWindTunnel(WindTunnel):
         ablConditions = ABLConditions.fromWindTunnel(self)
 
         # create BF surfaces for each wind tunnel surface
-        inlet = GHBFGeometry('inlet', (self.ghBoundingSurfaces.inlet.ToBrep(),),
-                             WindTunnelInletBoundaryCondition(ablConditions))
+        inlet = GHBFBlockGeometry('inlet',
+                                  (self.ghBoundingSurfaces.inlet.ToBrep(),),
+                                  WindTunnelInletBoundaryCondition(ablConditions))
 
-        outlet = GHBFGeometry('outlet', (self.ghBoundingSurfaces.outlet.ToBrep(),),
-                              WindTunnelOutletBoundaryCondition())
+        outlet = GHBFBlockGeometry('outlet',
+                                   (self.ghBoundingSurfaces.outlet.ToBrep(),),
+                                   WindTunnelOutletBoundaryCondition())
 
-        rightSide = GHBFGeometry('rightSide',
-                                 (self.ghBoundingSurfaces.rightSide.ToBrep(),),
-                                 WindTunnelTopAndSidesBoundaryCondition())
+        rightSide = GHBFBlockGeometry('rightSide',
+                                      (self.ghBoundingSurfaces.rightSide.ToBrep(),),
+                                      WindTunnelTopAndSidesBoundaryCondition())
 
-        leftSide = GHBFGeometry('lefttSide',
-                                (self.ghBoundingSurfaces.leftSide.ToBrep(),),
+        leftSide = GHBFBlockGeometry('lefttSide',
+                                     (self.ghBoundingSurfaces.leftSide.ToBrep(),),
+                                     WindTunnelTopAndSidesBoundaryCondition())
+
+        top = GHBFBlockGeometry('top', (self.ghBoundingSurfaces.top.ToBrep(),),
                                 WindTunnelTopAndSidesBoundaryCondition())
 
-        top = GHBFGeometry('top', (self.ghBoundingSurfaces.top.ToBrep(),),
-                           WindTunnelTopAndSidesBoundaryCondition())
-
-        ground = GHBFGeometry('ground', (self.ghBoundingSurfaces.ground.ToBrep(),),
-                              WindTunnelGroundBoundaryCondition(ablConditions))
+        ground = GHBFBlockGeometry('ground',
+                                   (self.ghBoundingSurfaces.ground.ToBrep(),),
+                                   WindTunnelGroundBoundaryCondition(ablConditions))
 
         # return the new windTunnel
         return inlet, outlet, rightSide, leftSide, top, ground

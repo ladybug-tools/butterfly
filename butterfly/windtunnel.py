@@ -45,6 +45,9 @@ class WindTunnel(object):
         self.Zref = float(Zref) if Zref else 10
         self.convertToMeters = convertToMeters
 
+        # place holder for refinment regions
+        self.__refinementRegions = []
+
     @property
     def boundingSurfaces(self):
         """Return bounding surfaces of wind tunnel."""
@@ -56,6 +59,11 @@ class WindTunnel(object):
             return input
         else:
             raise ValueError('{} is not a Butterfly geometry.'.format(input))
+
+    @property
+    def refinementRegions(self):
+        """Get refinement regions."""
+        return self.__refinementRegions
 
     @property
     def flowDir(self):
@@ -87,6 +95,13 @@ class WindTunnel(object):
         _ABLCDict['flowDir'] = '({} {} {})'.format(*self.flowDir)
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
+
+    def addRefinementRegion(self, refinementRegion):
+        """Add refinement regions to this case."""
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
+
+        self.__refinementRegions.append(refinementRegion)
 
     def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""

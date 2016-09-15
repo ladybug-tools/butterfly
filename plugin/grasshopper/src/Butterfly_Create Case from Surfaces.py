@@ -16,7 +16,7 @@ Create an OpenFOAM Case from surfaces.
         _BFSurfaces: List of butterfly surfaces for this case.
         _blockMeshDict: A Butterfly BlockMeshDict.
         _globalRefLevel_: A tuple of (min, max) values for global refinment.
-        _tunnelPar_: Butterfly tunnel parameters.
+        refRegions_: A list of refinement regions.
         _run: Create case from inputs.
     Returns:
         readMe!: Reports, errors, warnings, etc.
@@ -26,7 +26,7 @@ Create an OpenFOAM Case from surfaces.
 
 ghenv.Component.Name = "Butterfly_Create Case from Surfaces"
 ghenv.Component.NickName = "createCaseFromSurfaces"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.01\nSEP_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -50,6 +50,9 @@ if _run and _name and _BFSurfaces and _blockMeshDict:
     # create OpenFoam Case
     case = Case(_name, _BFSurfaces, _blockMeshDict, _globalRefLevel_,
                 _blockMeshDict.center, isSnappyHexMesh=True)
+    
+    for reg in refRegions_:
+        case.addRefinementRegion(reg)
     
     case.createCaseFolders()
     case.populateContents()

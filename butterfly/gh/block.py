@@ -49,7 +49,7 @@ class Block(object):
         return f.PointAt((f.Domain(0).Min + f.Domain(0).Max) / 2,
                          (f.Domain(1).Min + f.Domain(1).Max) / 2)
 
-    def blockMeshDict(self, vertices):
+    def toBlockMeshDict(self, vertices):
         """Get blockMeshDict string.
 
         Args:
@@ -75,5 +75,5 @@ class Block(object):
 
     def __repr__(self):
         """OpenFOAM boundary."""
-        return "Boundary: {} simpleGrading {}".format(str(self.nDiv).replace(",", ""),
-                                                      str(self.grading).replace(",", ""))
+        return "Boundary: {} simpleGrading {}".format(
+            str(self.nDiv).replace(",", ""), str(self.grading).replace(",", ""))
