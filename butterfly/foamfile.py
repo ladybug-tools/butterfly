@@ -136,6 +136,14 @@ class FoamFile(object):
 
         return "\n\n".join(l)
 
+    @staticmethod
+    def convertBoolValue(v=True):
+        """Convert Boolean values to on/off string."""
+        if bool(v):
+            return 'on'
+        else:
+            return 'off'
+
     def toOpenFOAM(self):
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
