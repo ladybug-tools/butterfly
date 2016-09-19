@@ -2,7 +2,7 @@
 from __future__ import print_function
 import os
 import sys
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from subprocess import Popen, PIPE
 
 
@@ -34,41 +34,52 @@ def wfile(fullPath, content):
     return fullPath
 
 
-def runbatchfile(filepath, printLog=True):
+def runbatchfile(filepath, printLog=True, wait=True):
     """run an executable .bat file.
 
+    args:
+        printLog: Boolean switch to print log file to terminal once the analysis
+            is over. It will only work if wait is also set to True (default: True).
+        wait: Wait for analysis to finish (default: True).
+
     returns:
-        A tuple as (success, err). success is a boolen. err is None in case of
-        success otherwise the error message as a string.
+        A tuple as (success, err, process).
+            success is a boolen.
+            err is None in case of success otherwise the error message as a string.
+            process is Popen process.
     """
     if not os.path.isfile(filepath):
         raise ValueError('Cannot find %s' % filepath)
 
     _success = True
     _err = None
+    Log = namedtuple('Report', 'success err process')
+
     sys.stdout.flush()
     p = Popen(filepath, shell=False, stdin=PIPE)
-    p.communicate(input='y\n')
 
-    if printLog:
-        try:
-            logfile = ".".join(filepath.split(".")[:-1]) + ".log"
-            errfile = ".".join(filepath.split(".")[:-1]) + ".err"
+    if wait:
+        p.communicate(input='Y\n')
 
-            with open(logfile, 'rb') as log:
-                _lines = ' '.join(log.readlines())
-                print(_lines)
+        if printLog:
+            try:
+                logfile = ".".join(filepath.split(".")[:-1]) + ".log"
+                errfile = ".".join(filepath.split(".")[:-1]) + ".err"
 
-            with open(errfile, 'rb') as log:
-                _err = ' '.join(log.readlines())
-                if len(_err) > 0:
-                    _success = False
-                    print(_err)
+                with open(logfile, 'rb') as log:
+                    _lines = ' '.join(log.readlines())
+                    print(_lines)
 
-        except Exception as e:
-            print('Failed to read {} and {}:\n{}'.format(logfile, errfile, e))
+                with open(errfile, 'rb') as log:
+                    _err = ' '.join(log.readlines())
+                    if len(_err) > 0:
+                        _success = False
+                        print(_err)
 
-    return _success, _err
+            except Exception as e:
+                print('Failed to read {} and {}:\n{}'.format(logfile, errfile, e))
+
+    return Log(success=_success, err=_err, process=p)
 
 
 def readLastLine(filepath, blockSize=1024):

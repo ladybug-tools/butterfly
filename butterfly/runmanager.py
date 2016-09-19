@@ -1,3 +1,9 @@
+"""Runmanager for butterfly.
+
+Run manager is only useful for running OpenFOAM for Windows which runs in a
+docker container. For linux systems simply use .bash files or libraries such as
+pyFOAM.
+"""
 from version import Version
 
 import os

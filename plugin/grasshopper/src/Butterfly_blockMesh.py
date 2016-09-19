@@ -22,7 +22,7 @@ blockMesh
 
 ghenv.Component.Name = "Butterfly_blockMesh"
 ghenv.Component.NickName = "blockMesh"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nSEP_18_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -32,7 +32,7 @@ if _case and _run:
     if _purge_:
         _case.removeSnappyHexMeshFolders()
     # run blockMesh
-    success, err = _case.blockMesh(removeContent=True)
+    success, err, p = _case.blockMesh(removeContent=True)
     if success:
         case = _case
     else:

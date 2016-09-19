@@ -203,8 +203,17 @@ class OpemFOAMCase(object):
             projectPath: Path to project root folder.
             field: Probes field (e.g. U, p, T).
         """
+        # find probes folder
+        _basepath = os.path.join(projectPath, 'postProcessing', probesFolder)
+
+        folders = [int(f) for f in os.listdir(_basepath)
+                   if (os.path.isdir(os.path.join(_basepath, f)) and
+                       f.isdigit())]
+
+        folders.sort()
+
         # load the last line in the file
-        _f = os.path.join(projectPath, 'postProcessing', probesFolder, '0', field)
+        _f = os.path.join(_basepath, str(folders[-1]), field)
 
         assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
         _res = readLastLine(_f).split()[1:]
@@ -392,7 +401,8 @@ class OpemFOAMCase(object):
 
     # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #
-    def blockMesh(self, args=None, run=True, log=True, removeContent=True):
+    def blockMesh(self, args=None, run=True, log=True, wait=True,
+                  removeContent=True):
         """Run meshBlock command for this case.
 
         Args:
@@ -407,14 +417,14 @@ class OpemFOAMCase(object):
             self.removePolyMeshContent()
 
         return self.__writeAndRunCommands('blockMesh', ('blockMesh',), args,
-                                          run, log)
+                                          run, log, wait)
 
-    def snappyHexMesh(self, args=None, run=True, log=True):
+    def snappyHexMesh(self, args=None, run=True, log=True, wait=True):
         """Run snappyHexMesh command for this case."""
         return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
-                                          args, run, log)
+                                          args, run, log, wait)
 
-    def meshCombo(self, args=None, run=True, log=True):
+    def meshCombo(self, args=None, run=True, log=True, wait=True):
         """Run meshBlock and snappyHexMesh.
 
         Returns:
@@ -423,9 +433,9 @@ class OpemFOAMCase(object):
         """
         return self.__writeAndRunCommands('meshCombo',
                                           ('blockMesh', 'snappyHexMesh'),
-                                          args, run, log)
+                                          args, run, log, wait)
 
-    def checkMesh(self, args=None, run=True, log=True):
+    def checkMesh(self, args=None, run=True, log=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
@@ -433,9 +443,9 @@ class OpemFOAMCase(object):
             of success otherwise the error message as a string.
         """
         return self.__writeAndRunCommands('checkMesh', ('checkMesh',),
-                                          args, run, log)
+                                          args, run, log, wait)
 
-    def simpleFoam(self, args=None, run=True, log=True):
+    def simpleFoam(self, args=None, run=True, log=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
@@ -443,12 +453,13 @@ class OpemFOAMCase(object):
             of success otherwise the error message as a string.
         """
         return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',),
-                                          args, run, log)
+                                          args, run, log, wait)
 
     # ************************* OpenFOAM Commands ************************* #
     # *************************        END        ************************* #
 
-    def __writeAndRunCommands(self, name, commands, args=None, run=True, log=True):
+    def __writeAndRunCommands(self, name, commands, args=None, run=True,
+                              log=True, wait=True):
         """Write batch files for commands and run them.
 
         Returns:
@@ -459,10 +470,12 @@ class OpemFOAMCase(object):
                                                includeHeader=True,
                                                log=log)
         _fpath = os.path.join(self.etcDir, '%s.bat' % name)
+
+        # write batch file to drive
         wfile(_fpath, _batchString)
 
         if run:
-            return runbatchfile(_fpath, printLog=log)
+            return runbatchfile(_fpath, printLog=log, wait=wait)
 
     def getSnappyHexMeshFolders(self):
         """Return sorted list of numerical folders."""
@@ -588,7 +601,7 @@ class OpemFOAMCase(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            success, err = self.checkMesh(args=('latestTime',))
+            success, err, p = self.checkMesh(args=('latestTime',))
             assert success, err
 
         f = os.path.join(self.projectDir, 'etc/checkMesh.log')

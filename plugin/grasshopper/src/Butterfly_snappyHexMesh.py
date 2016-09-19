@@ -23,7 +23,7 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.01\nSEP_18_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -47,7 +47,7 @@ if _case:
         _case.snappyHexMeshDict.save(_case.projectDir)
         if _case.getSnappyHexMeshFolders():
             _case.copySnappyHexMesh()
-        success, err = _case.snappyHexMesh()
+        success, err, p = _case.snappyHexMesh()
         if success:
             case = _case
         else:

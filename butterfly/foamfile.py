@@ -161,6 +161,10 @@ class FoamFile(object):
                                subFolder, self.name), "wb") as outf:
             outf.write(self.toOpenFOAM())
 
+    def __eq__(self, other):
+        """Check equality."""
+        return self.values == other.values
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()

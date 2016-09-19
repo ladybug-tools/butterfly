@@ -1,4 +1,5 @@
-# All Grasshopper functions and classes should be in this file
+"""Butterfly wind tunnel class for Grasshopper."""
+
 try:
     import Rhino as rc
 except ImportError:
