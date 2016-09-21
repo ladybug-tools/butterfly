@@ -5,6 +5,8 @@ try:
 except ImportError:
     pass
 
+import gzip
+
 
 def loadOFMeshToRhino(polyMeshFolder):
     """Convert OpenFOAM mesh to a Rhino Mesh."""
@@ -17,12 +19,22 @@ def loadOFMeshToRhino(polyMeshFolder):
     pf = os.path.join(polyMeshFolder, 'points')
     ff = os.path.join(polyMeshFolder, 'faces')
 
-    if not os.path.isfile(pf) or not os.path.isfile(ff):
-        print "Can't find point and faces file."
-        return
+    pfgz = os.path.join(polyMeshFolder, 'points.gz')
+    ffgz = os.path.join(polyMeshFolder, 'faces.gz')
 
-    # read points
-    with open(pf, 'rb') as ptFile:
+    if not os.path.isfile(pf) or not os.path.isfile(ff):
+        # check for zipped files
+        if not os.path.isfile(pfgz) or not os.path.isfile(ffgz):
+            raise Exception("Can't find point or faces file.")
+        else:
+            ptFile = gzip.open(pfgz, 'rb')
+            faceFile = gzip.open(ffgz, 'rb')
+    else:
+        ptFile = open(pf, 'rb')
+        faceFile = open(ff, 'rb')
+
+    try:
+        # read points
         for l in xrange(17):
             ptFile.readline()
 
@@ -43,9 +55,13 @@ def loadOFMeshToRhino(polyMeshFolder):
                 rc.Geometry.Point3d(*splitLine(ptFile.readline()))
                 for pt in xrange(nPoints)
             )
+    except Exception as e:
+        raise Exception('Failed to load points file:\n{}'.format(e))
+    finally:
+        ptFile.close()
 
     # read faces
-    with open(ff, 'rb') as faceFile:
+    try:
         for l in xrange(18):
             faceFile.readline()
 
@@ -55,6 +71,10 @@ def loadOFMeshToRhino(polyMeshFolder):
             (splitLine(faceFile.readline(), t=int))
             for pt in xrange(nFaces)
         )
+    except Exception as e:
+        raise Exception('Failed to load faces file:\n{}'.format(e))
+    finally:
+        faceFile.close()
 
     # create the mesh
     mesh = rc.Geometry.Mesh()
@@ -89,13 +109,20 @@ def loadOFPointsToRhino(polyMeshFolder):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
 
     pf = os.path.join(polyMeshFolder, 'points')
+    pfgz = os.path.join(polyMeshFolder, 'points.gz')
 
     if not os.path.isfile(pf):
-        print "Can't find point and faces file."
-        return
+        # check for zipped files
+        if not os.path.isfile(pfgz):
+            print "Can't find points file."
+            return
+        else:
+            ptFile = gzip.open(pfgz, 'rb')
+    else:
+        ptFile = open(pf, 'rb')
 
     # read points
-    with open(pf, 'rb') as ptFile:
+    try:
         for l in xrange(17):
             ptFile.readline()
 
@@ -116,29 +143,9 @@ def loadOFPointsToRhino(polyMeshFolder):
                 rc.Geometry.Point3d(*splitLine(ptFile.readline()))
                 for pt in xrange(nPoints)
             )
+    except Exception as e:
+        raise Exception('Failed to load points file:\n{}'.format(e))
+    finally:
+        ptFile.close()
 
     return pts
-
-
-def loadOFVectorsToRhino(resultsFolder, variable='U'):
-    """Load OpenFOAM vector results such as velocity."""
-    def splitLine(l, t=float):
-        return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
-
-    pf = os.path.join(resultsFolder, variable)
-
-    if not os.path.isfile(pf):
-        print "Can't find vector file."
-        return
-
-    # read vectors
-    with open(pf, 'rb') as ptFile:
-        for l in xrange(21):
-            line = ptFile.readline()
-        nVectors = int(line)
-        ptFile.readline()
-        vectors = tuple(
-            rc.Geometry.Vector3d(*splitLine(ptFile.readline()))
-            for pt in xrange(nVectors)
-        )
-    return vectors
