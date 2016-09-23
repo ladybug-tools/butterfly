@@ -80,6 +80,10 @@ class SteadyIncompressible(_BFRecipe):
 
         _BFRecipe.__init__(self, case, turbulenceProperties)
 
+        # update application
+        case.controlDict.application = 'simpleFoam'
+        case.controlDict.save(case.projectDir)
+
     @property
     def logFile(self):
         """Return address of the log file."""

@@ -580,6 +580,18 @@ class OpemFOAMCase(object):
             except Exception as e:
                 print 'Failed to remove {}:\n{}'.format(_f, e)
 
+    def removePostProcessingFolder(self):
+        """Remove post postProcessing folder."""
+        _f = os.path.join(self.projectDir, 'postProcessing')
+
+        if not os.path.isdir(_f):
+            return
+
+        try:
+            rmtree(_f)
+        except Exception as e:
+            print 'Failed to remove postProcessing folder:\n{}'.format(e)
+
     def removePolyMeshContent(self):
         """Remove results folder."""
         folder = os.path.join(self.constantDir, 'polyMesh')
@@ -593,7 +605,8 @@ class OpemFOAMCase(object):
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
-              removeResultFolders=False):
+              removeResultFolders=False,
+              removePostProcessingFolder=False):
         """Purge case folder."""
         if removePolyMeshContent:
             self.removePolyMeshContent()
@@ -601,6 +614,8 @@ class OpemFOAMCase(object):
             self.removeSnappyHexMeshFolders()
         if removeResultFolders:
             self.removeResultFolders()
+        if removePostProcessingFolder:
+            self.removePostProcessingFolder()
 
     # *************************** Post Process **************************** #
     def calculateMeshOrthogonality(self, useCurrntCheckMeshLog=False):

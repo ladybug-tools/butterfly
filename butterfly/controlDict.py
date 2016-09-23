@@ -9,7 +9,8 @@ class ControlDict(FoamFile):
     # set default valus for this class
     __defaultValues = OrderedDict()
     __defaultValues['#include'] = None
-    __defaultValues['application'] = 'simpleFoam'
+    # application will be updated based on recipe
+    __defaultValues['application'] = None
     __defaultValues['startFrom'] = 'latestTime'
     __defaultValues['startTime'] = '0'
     __defaultValues['stopAt'] = 'endTime'
