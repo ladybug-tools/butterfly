@@ -139,7 +139,7 @@ class FoamFile(object):
     @staticmethod
     def convertBoolValue(v=True):
         """Convert Boolean values to on/off string."""
-        if bool(v):
+        if v:
             return 'on'
         else:
             return 'off'

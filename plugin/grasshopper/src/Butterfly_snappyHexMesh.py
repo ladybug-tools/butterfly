@@ -23,10 +23,11 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_18_2016'
+ghenv.Component.Message = 'VER 0.0.01\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
+
 
 if _case:
     if not _locationInMesh_:
@@ -44,11 +45,24 @@ if _case:
     _case.snappyHexMeshDict.locationInMesh = _locationInMesh_
     
     if _run:
+        # remove result folders if any
         _case.snappyHexMeshDict.save(_case.projectDir)
-        if _case.getSnappyHexMeshFolders():
-            _case.copySnappyHexMesh()
+        _case.removeResultFolders()
+        
+        if _case.isPolyMeshSnappyHexMesh():
+            # check if meshBlock has been replaced by sHM
+            # remove current snappyHexMesh and re-run block mesh
+            _case.removeSnappyHexMeshFolders()
+            # run blockMesh
+            success, err, p = _case.blockMesh(removeContent=True)
+        
+            if not success:
+                raise Exception("\n --> OpenFOAM command Failed!\n%s" % err)                        
+        
         success, err, p = _case.snappyHexMesh()
         if success:
+            if _case.getSnappyHexMeshFolders():
+                _case.copySnappyHexMesh()
             case = _case
         else:
-            raise Exception("\n --> OpenFOAM command Failed!%s" % err)        
+            raise Exception("\n --> OpenFOAM command Failed!\n%s" % err)        

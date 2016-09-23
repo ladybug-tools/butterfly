@@ -171,7 +171,9 @@ def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=Non
         if not bfsrf.boundaryCondition.refLevels:
             continue
         if bfsrf.name not in _ref[projectName]['regions']:
-            _ref[projectName]['regions'][bfsrf.name] = {'level': '({} {})'.format(bfsrf.boundaryCondition.refLevels[0], bfsrf.boundaryCondition.refLevels[1])}
+            _ref[projectName]['regions'][bfsrf.name] = \
+                {'level': '({} {})'.format(bfsrf.boundaryCondition.refLevels[0],
+                                           bfsrf.boundaryCondition.refLevels[1])}
 
     return _ref
 

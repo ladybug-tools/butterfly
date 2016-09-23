@@ -206,11 +206,14 @@ class OpemFOAMCase(object):
         # find probes folder
         _basepath = os.path.join(projectPath, 'postProcessing', probesFolder)
 
-        folders = [int(f) for f in os.listdir(_basepath)
+        folders = [os.path.join(_basepath, f) for f in os.listdir(_basepath)
                    if (os.path.isdir(os.path.join(_basepath, f)) and
                        f.isdigit())]
 
-        folders.sort()
+        # sort based on last modified
+        folders = sorted(folders, key=lambda folder:
+                         max(tuple(os.stat(os.path.join(folder, f)).st_mtime
+                                   for f in os.listdir(folder))))
 
         # load the last line in the file
         _f = os.path.join(_basepath, str(folders[-1]), field)
@@ -458,6 +461,10 @@ class OpemFOAMCase(object):
     # ************************* OpenFOAM Commands ************************* #
     # *************************        END        ************************* #
 
+    def isPolyMeshSnappyHexMesh(self):
+        """Check if the mesh in polyMesh folder is snappyHexMesh."""
+        return len(os.listdir(os.path.join(self.constantDir, "polyMesh"))) > 5
+
     def __writeAndRunCommands(self, name, commands, args=None, run=True,
                               log=True, wait=True):
         """Write batch files for commands and run them.
@@ -568,7 +575,10 @@ class OpemFOAMCase(object):
         """Remove results folder."""
         _folders = self.getResultFolders()
         for _f in _folders:
-            rmtree(os.path.join(self.projectDir, _f))
+            try:
+                rmtree(os.path.join(self.projectDir, _f))
+            except Exception as e:
+                print 'Failed to remove {}:\n{}'.format(_f, e)
 
     def removePolyMeshContent(self):
         """Remove results folder."""

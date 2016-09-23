@@ -85,6 +85,4 @@ class ControlDict(FoamFile):
 
     @writeCompression.setter
     def writeCompression(self, value=True):
-        value = value if isinstance(value, bool) else \
-            bool(str(value).capitalize())
-        self.values['writeCompression'] = str(value).lower()
+        self.values['writeCompression'] = self.convertBoolValue(value)
