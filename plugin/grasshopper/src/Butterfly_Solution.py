@@ -13,7 +13,8 @@ Run recipes using OpenFOAM.
 
     Args:
         _recipe: A Butterfly recipe.
-        _numOfCPUs_: number of cpus for parallel run.
+        _parallelRunPar_: Parameters for parallel run. By default solution will
+            be run in serial.
         solutionParams_: Butterfly solutionParams. These parameters can be edited
             while the analysis is running.
         _interval_: Time interval for updating solution in Grasshopper in seconds.
@@ -27,13 +28,11 @@ Run recipes using OpenFOAM.
 
 ghenv.Component.Name = "Butterfly_Solution"
 ghenv.Component.NickName = "solution"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_21_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "07::Solver"
+ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-from subprocess import Popen
-import time
 from scriptcontext import sticky
 
 try:
@@ -50,8 +49,9 @@ except ImportError as e:
 
 uniqueKey = str(ghenv.Component.InstanceGuid)
 
-if _numOfCPUs_:
+if _parallelRunPar_:
     raise NotImplementedError('NotImplemented > Parallel run will be implemented soon!')
+
 if not _interval_:
     _interval_ = 2
 

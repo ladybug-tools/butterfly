@@ -23,7 +23,7 @@ Create Butterfly surface.
 
 ghenv.Component.Name = "Butterfly_Create Butterfly Surface"
 ghenv.Component.NickName = "createBFSurface"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

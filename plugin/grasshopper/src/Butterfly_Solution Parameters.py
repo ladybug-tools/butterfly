@@ -20,10 +20,10 @@ Set parameters for runDict
 """
 ghenv.Component.Name = "Butterfly_Solution Parameters"
 ghenv.Component.NickName = "solutionParams"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_18_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "07::Solver"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "06::Solution"
+ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
      from butterfly.solution import SolutionParameters

@@ -23,11 +23,15 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
+
+
+if _parallelRunPar_:
+    raise NotImplementedError('NotImplemented > Parallel run will be implemented soon!')
 
 if _case:
     if not _locationInMesh_:

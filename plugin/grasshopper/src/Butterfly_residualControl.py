@@ -20,16 +20,12 @@ Set residual control convergance values
 
 ghenv.Component.Name = "Butterfly_residualControl"
 ghenv.Component.NickName = "residualControl"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Etc"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "06::Solution"
+ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    #import butterfly
-    #reload(butterfly)
-    #reload(butterfly.foamfile)
-    #reload(butterfly.fvSolution)
     from butterfly.fvSolution import ResidualControl
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \

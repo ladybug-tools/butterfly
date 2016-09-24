@@ -22,7 +22,7 @@ chekMesh
 
 ghenv.Component.Name = "Butterfly_chekMesh"
 ghenv.Component.NickName = "chekMesh"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

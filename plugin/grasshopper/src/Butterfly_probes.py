@@ -19,10 +19,10 @@ Create Butterfly probes
 
 ghenv.Component.Name = "Butterfly_probes"
 ghenv.Component.NickName = "probes"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Etc"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "06::Solution"
+ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     #import butterfly

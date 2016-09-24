@@ -23,10 +23,10 @@ Butterfly refinement range.
 
 ghenv.Component.Name = "Butterfly_Refinement Region"
 ghenv.Component.NickName = "refinementRegion"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "03::Refinement"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "00::Create"
+ghenv.Component.AdditionalHelpFromDocStrings = "4"
 
 try:
     from butterfly.gh.refinementRegion import GHRefinementRegion

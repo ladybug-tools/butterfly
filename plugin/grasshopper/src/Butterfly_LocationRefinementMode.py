@@ -22,10 +22,10 @@ Inside/Ouside region refinement.
 
 ghenv.Component.Name = "Butterfly_LocationRefinementMode"
 ghenv.Component.NickName = "inOUTRefMode"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "03::Refinement"
-ghenv.Component.AdditionalHelpFromDocStrings = "2"
+ghenv.Component.SubCategory = "00::Create"
+ghenv.Component.AdditionalHelpFromDocStrings = "5"
 
 try:
     from butterfly.refinementRegion import Inside, Outside

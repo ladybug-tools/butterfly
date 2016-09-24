@@ -21,10 +21,10 @@ Load mesh from the case for preview.
 
 ghenv.Component.Name = "Butterfly_Load Mesh"
 ghenv.Component.NickName = "loadMesh"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_14_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "05::PostProcess"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "03::Mesh"
+ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 if _case and _load:
     _case.copySnappyHexMesh()

@@ -21,10 +21,10 @@ Purge case folder.
 
 ghenv.Component.Name = "Butterfly_purgeCase"
 ghenv.Component.NickName = "purgeCase"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Etc"
-ghenv.Component.AdditionalHelpFromDocStrings = "3"
+ghenv.Component.SubCategory = "07::Etc"
+ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 if _case:
     _case.purge(_blockMesh_, _snappyHexMesh_, _results_, _postProcessing_)

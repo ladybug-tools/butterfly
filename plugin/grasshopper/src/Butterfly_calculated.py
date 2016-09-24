@@ -16,7 +16,7 @@ calculated boundary condition.
 
 ghenv.Component.Name = "Butterfly_calculated"
 ghenv.Component.NickName = "calculated"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "02::BoundaryCondition"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"

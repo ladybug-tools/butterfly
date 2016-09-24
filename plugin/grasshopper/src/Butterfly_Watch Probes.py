@@ -7,32 +7,29 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Create an inlet boundary with uniform velocity value.
+Load results for a field in probes.
 
 -
 
     Args:
-        _velocityVec: Velocity vector.
-        _refLevels_: A tuple of (min, max) values for refinement levels.
+        _name: Butterfly project name.
+        _field: Probes' filed as a string (e.g. p, U).
+        
     Returns:
-        inletBoundary: Buttefly inlet boundary.
+        skippedPoints: List of points that are skipped during the solution.
+        values: List of values for the last timestep.
 """
 
-ghenv.Component.Name = "Butterfly_Inlet Boundary"
-ghenv.Component.NickName = "inlet"
+ghenv.Component.Name = "Butterfly_Watch Probes"
+ghenv.Component.NickName = "watchProbes"
 ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "01::Boundary"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "06::Solution"
+ghenv.Component.AdditionalHelpFromDocStrings = "3"
+
 
 try:
-    from butterfly import boundarycondition as bc
-    from butterfly.fields import FixedValue
-    
-    #import butterfly
-    #reload(butterfly)
-    #reload(butterfly.boundarycondition)
-    #reload(butterfly.fields)
+    from butterfly.gh.core import Case
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -42,9 +39,16 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _velocityVec:
-    _velocityVec = FixedValue(str(tuple(_velocityVec)).replace(',', '')) \
-                   if _velocityVec \
-                   else None
+from Rhino.Geometry import Point3d, Vector3d
+import os
 
-    inletBoundary = bc.FixedInletBoundaryCondition(refLevels=_refLevels_, u=_velocityVec)
+
+if _solution and _field:
+    _name = _solution.projectName
+    projectPath = 'c:/users/{}/butterfly/{}'.format(os.getenv("USERNAME"), _name)
+    
+    rawValues = Case.loadProbesFromProjectPath(projectPath, _field)
+    try:
+        values = tuple(Vector3d(*v) for v in rawValues)
+    except:
+        values = rawValues

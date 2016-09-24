@@ -7,29 +7,27 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Load results for a field in probes.
+nutkWallFunction boundary condition.
 
 -
-
     Args:
-        _name: Butterfly project name.
-        _field: Probes' filed as a string (e.g. p, U).
-        
+        _value: input value.
+        _Cmu_:
+        _kappa_:
+        _E_:
     Returns:
-        skippedPoints: List of points that are skipped during the solution.
-        values: List of values for the last timestep.
+        nutkWallFunction: nutkWallFunction boundary condition.
 """
 
-ghenv.Component.Name = "Butterfly_Load Probes From Project"
-ghenv.Component.NickName = "loadProbesFromProject"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_15_2016'
+ghenv.Component.Name = "Butterfly_nutkWallFunction"
+ghenv.Component.NickName = "nutkWallFunction"
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "05::PostProcess"
+ghenv.Component.SubCategory = "02::BoundaryCondition"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-
 try:
-    from butterfly.gh.core import Case
+    from butterfly.fields import NutkWallFunction
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -39,15 +37,5 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-from Rhino.Geometry import Point3d, Vector3d
-import os
-
-
-if _name and _field:
-    projectPath = 'c:/users/{}/butterfly/{}'.format(os.getenv("USERNAME"), _name)
-    
-    rawValues = Case.loadProbesFromProjectPath(projectPath, _field)
-    try:
-        values = tuple(Vector3d(*v) for v in rawValues)
-    except:
-        values = rawValues
+if _value:
+    nutkWallFunction = NutkWallFunction(_value, _Cmu_, _kappa_, _E_)

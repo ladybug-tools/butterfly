@@ -12,7 +12,7 @@ Load results for a field in probes.
 -
 
     Args:
-        _case: Butterfly case.
+        _name: Butterfly project name.
         _field: Probes' filed as a string (e.g. p, U).
         
     Returns:
@@ -22,18 +22,31 @@ Load results for a field in probes.
 
 ghenv.Component.Name = "Butterfly_Load Probes"
 ghenv.Component.NickName = "loadProbes"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "05::PostProcess"
+ghenv.Component.SubCategory = "07::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 
-from Rhino.Geometry import Point3d, Vector3d
+try:
+    from butterfly.gh.core import Case
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
-if _case and _field:
-    skippedPoints = tuple(Point3d(*p) for p in _case.loadSkippedProbes())
+from Rhino.Geometry import Point3d, Vector3d
+import os
+
+
+if _name and _field:
+    projectPath = 'c:/users/{}/butterfly/{}'.format(os.getenv("USERNAME"), _name)
     
-    rawValues = _case.loadProbes(_field)
+    rawValues = Case.loadProbesFromProjectPath(projectPath, _field)
     try:
         values = tuple(Vector3d(*v) for v in rawValues)
     except:

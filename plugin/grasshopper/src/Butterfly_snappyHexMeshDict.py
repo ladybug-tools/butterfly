@@ -24,10 +24,10 @@ Read more about snappyHexMeshDict here:
 
 ghenv.Component.Name = "Butterfly_snappyHexMeshDict"
 ghenv.Component.NickName = "snappyHexMeshDict"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Etc"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "03::Mesh"
+ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly.snappyHexMeshDict import SnappyHexMeshDict

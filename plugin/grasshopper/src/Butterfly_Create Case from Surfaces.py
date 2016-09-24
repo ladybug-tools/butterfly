@@ -26,7 +26,7 @@ Create an OpenFOAM Case from surfaces.
 
 ghenv.Component.Name = "Butterfly_Create Case from Surfaces"
 ghenv.Component.NickName = "createCaseFromSurfaces"
-ghenv.Component.Message = 'VER 0.0.01\nSEP_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

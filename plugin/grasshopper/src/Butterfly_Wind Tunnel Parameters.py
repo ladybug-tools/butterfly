@@ -25,10 +25,10 @@ Wind tunnel parameters.
 
 ghenv.Component.Name = "Butterfly_Wind Tunnel Parameters"
 ghenv.Component.NickName = "WindTunnelPar"
-ghenv.Component.Message = 'VER 0.0.01\nJUL_15_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Etc"
-ghenv.Component.AdditionalHelpFromDocStrings = "2"
+ghenv.Component.SubCategory = "00::Create"
+ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 try:
     from butterfly.windtunnel import TunnelParameters
