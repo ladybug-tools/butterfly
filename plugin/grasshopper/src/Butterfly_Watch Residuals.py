@@ -68,6 +68,7 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 from datetime import datetime
+from scriptcontext import sticky
 
 if _solution:
     text = tail(_solution.logFile).split("\nTime =")[-1].split('\n')
