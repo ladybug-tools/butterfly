@@ -87,7 +87,7 @@ class Distance(_RefinementMode):
 
     Attributes:
         levels: A list of (x, y) values for levels. 'levels' specifies per
-            distance to the surface the wanted refinement level.
+            distance to the geometry the wanted refinement level.
     """
 
     pass
@@ -97,8 +97,8 @@ class Inside(_RefinementMode):
     """Inside refinement mode.
 
     Attributes:
-        level: Refinement level as an integer. All cells inside the surface get
-            refined up to the level. The surface needs to be closed for this to
+        level: Refinement level as an integer. All cells inside the geometry get
+            refined up to the level. The geometry needs to be closed for this to
             be possible.
     """
 
@@ -116,8 +116,8 @@ class Outside(Inside):
     """Outside refinement mode.
 
     Attributes:
-        level: Refinement level as an integer. All cells inside the surface get
-            refined up to the level. The surface needs to be closed for this to
+        level: Refinement level as an integer. All cells inside the geometry get
+            refined up to the level. The geometry needs to be closed for this to
             be possible.
     """
 

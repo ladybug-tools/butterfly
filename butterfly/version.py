@@ -9,7 +9,7 @@ class Version(object):
     OFVer = "3.0"
     OFFullVer = "v1606+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
-    lastUpdated = datetime(year=2016, month=9, day=23, hour=22, minute=10)
+    lastUpdated = datetime(year=2016, month=9, day=27, hour=19, minute=30)
 
 
 class Header(object):

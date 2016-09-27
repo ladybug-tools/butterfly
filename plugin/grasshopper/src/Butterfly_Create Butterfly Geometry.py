@@ -13,17 +13,17 @@ Create Butterfly surface.
 
     Args:
         _geo: Grasshopper geometries.
-        _name: Surface name.
+        _name: Geometry name.
         _boundary_: Boundary for this surface (e.g. Inlet, Outlet, Wall)
         _meshSet_: Grasshopper mesh settings.
     Returns:
         readMe!: Reports, errors, warnings, etc.
-        BFSrf: A Buttefly surface.
+        BFGeo: A Buttefly geometry.
 """
 
-ghenv.Component.Name = "Butterfly_Create Butterfly Surface"
-ghenv.Component.NickName = "createBFSurface"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Name = "Butterfly_Create Butterfly Geometry"
+ghenv.Component.NickName = "createBFGeometry"
+ghenv.Component.Message = 'VER 0.0.02\nSEP_27_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -40,4 +40,4 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _geo and _name:
-    BFSrf = GHBFGeometry(_name, _geo, _boundary_, _meshSet_)
+    BFGeo = GHBFGeometry(_name, _geo, _boundary_, _meshSet_)

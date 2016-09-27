@@ -42,7 +42,7 @@ class CaseFoldersNotCreatedError(Exception):
 class OpemFOAMCase(object):
     """Butterfly case."""
 
-    def __init__(self, projectName, BFSurfaces, blockMeshDict,
+    def __init__(self, projectName, BFGeometries, blockMeshDict,
                  globalRefinementLevel=None, locationInMesh=None,
                  isSnappyHexMesh=False):
         """Init project."""
@@ -50,15 +50,15 @@ class OpemFOAMCase(object):
         self.version = float(Version.OFVer)
         self.projectName = projectName
         self.runmanager = RunManager(self.projectName)
-        self.BFSurfaces = BFSurfaces
+        self.BFGeometries = BFGeometries
 
         # meshing - constant
         self.blockMeshDict = blockMeshDict
 
         # meshing - system
         self.isSnappyHexMesh = isSnappyHexMesh
-        self.snappyHexMeshDict = SnappyHexMeshDict.fromBFSurfaces(
-            projectName, BFSurfaces, globalRefinementLevel, locationInMesh)
+        self.snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
+            projectName, BFGeometries, globalRefinementLevel, locationInMesh)
 
         # place holder for refinment regions
         self.__refinementRegions = []
@@ -71,12 +71,12 @@ class OpemFOAMCase(object):
         self.transportProperties = TransportProperties()
 
         # 0 floder
-        self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
-        self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
-        self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
-        self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces +
-                                              blockMeshDict.BFBlockGeometries)
-        self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFBlockGeometries)
+        self.u = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.p = P.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.k = K.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.epsilon = Epsilon.fromBFGeometries(BFGeometries +
+                                                blockMeshDict.BFBlockGeometries)
+        self.nut = Nut.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
 
         # system folder
         self.fvSchemes = FvSchemes()
@@ -125,15 +125,15 @@ class OpemFOAMCase(object):
         return _case
 
     @classmethod
-    def fromBlocks(cls, BFSurfaces, blocks, scale):
-        """Create case from BFSurfaces and blocks.
+    def fromBlocks(cls, BFGeometries, blocks, scale):
+        """Create case from BFGeometries and blocks.
 
         This case will only be meshed using blockMesh
         """
         raise NotImplementedError("Let us know if you in real need for this method!")
 
-        _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
-        return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
+        _blockMeshDict = BlockMeshDict(scale, BFGeometries, blocks)
+        return cls(BFGeometries, _blockMeshDict, isSnappyHexMesh=False)
 
     @property
     def isInitialConditionsIncluded(self):
@@ -346,10 +346,10 @@ class OpemFOAMCase(object):
             raise CaseFoldersNotCreatedError()
 
         # write stl files to triSurface
-        # for surface in self
+        # for geometry in self
         if self.isSnappyHexMesh:
             # collect stl strings
-            _stl = (BFSurface.toStlString() for BFSurface in self.BFSurfaces)
+            _stl = (BFGeometry.toStlString() for BFGeometry in self.BFGeometries)
             # write stl to stl file
             with open(os.path.join(self.constantDir,
                                    "triSurface\\%s.stl" % self.projectName),

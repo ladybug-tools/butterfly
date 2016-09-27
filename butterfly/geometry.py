@@ -58,7 +58,7 @@ class _BFMesh(object):
         return self.__normals
 
     def toStlString(self):
-        """Get STL definition for this surface as a string."""
+        """Get STL definition for this geometry as a string."""
         _hea = "solid {}".format(self.name)
         _tale = "endsolid {}".format(self.name)
         _body = "   facet normal {0} {1} {2}\n" \

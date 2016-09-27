@@ -11,7 +11,7 @@ class BoundaryCondition(object):
 
     Attributes:
         bcType: Boundary condition type. e.g.(patch, wall)
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.
@@ -52,7 +52,7 @@ class BoundaryCondition(object):
 
 
 class BoundingBoxBoundaryCondition(BoundaryCondition):
-    """Bounding box boundary condition for bounding box surface.
+    """Bounding box boundary condition for bounding box geometry.
 
     It returns a boundary condition of ZeroGradient for all the inputs.
     """
@@ -76,7 +76,7 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
 
     Attributes:
         temperature: Optional input for Temperature
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.
@@ -104,7 +104,7 @@ class FixedInletBoundaryCondition(BoundaryCondition):
     """Inlet boundary condition base class.
 
     Attributes:
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: Air velocity as fixed value (x, y, z).
         p: OpenFOAM value for p.
@@ -137,7 +137,7 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
 
     Attributes:
         pressure: Pressure as a float (default: 0)
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.
@@ -167,11 +167,11 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
 
 
 class WindTunnelWallBoundaryCondition(BoundaryCondition):
-    """Wall boundary condition for wall surfaces inside wind tunnel.
+    """Wall boundary condition for wall geometrys inside wind tunnel.
 
     Attributes:
         temperature: Optional input for Temperature
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.
@@ -201,7 +201,7 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
 
     Attributes:
         temperature: Optional input for Temperature
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.
@@ -229,7 +229,7 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
     """Wind tunnel atmBoundaryLayerInletVelocity boundary condition.
 
     Attributes:
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.
@@ -262,7 +262,7 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
 
     Attributes:
         pressure: Pressure as a float (default: 0)
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.
@@ -298,7 +298,7 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
 
     Attributes:
         pressure: Pressure as a float (default: 0)
-        refLevels: A tuple for min, max refinment levels for this surface.
+        refLevels: A tuple for min, max refinment levels for this geometry.
         temperature: Optional input for Temperature
         u: OpenFOAM value for u.
         p: OpenFOAM value for p.

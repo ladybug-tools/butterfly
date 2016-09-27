@@ -188,20 +188,20 @@ class ZeroFolderFoamFile(FoamFile):
     """
 
     @classmethod
-    def fromBFSurfaces(cls, BFSurfaces, values=None):
-        """Init class by BFSurfaces."""
+    def fromBFGeometries(cls, BFGeometries, values=None):
+        """Init class by BFGeometries."""
         _cls = cls(values)
-        _cls.setBoundaryField(BFSurfaces)
+        _cls.setBoundaryField(BFGeometries)
         return _cls
 
-    def setBoundaryField(self, BFSurfaces):
+    def setBoundaryField(self, BFGeometries):
         """Get data for getBoundaryField as a dictionary.
 
         Args:
-            BFSurfaces: List of Butterfly surfaces.
+            BFGeometries: List of Butterfly geometries.
         """
         self.values['boundaryField'] = getBoundaryField(
-            BFSurfaces, self.__class__.__name__.lower()
+            BFGeometries, self.__class__.__name__.lower()
         )
 
 

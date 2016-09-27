@@ -19,7 +19,7 @@ class GHMesh(object):
     """
 
     def __init__(self, geometries, meshingParameters=None):
-        """Init Butterfly surface in Grasshopper."""
+        """Init Butterfly geometry in Grasshopper."""
         if not meshingParameters:
             meshingParameters = rc.Geometry.MeshingParameters.Default
 
@@ -28,7 +28,7 @@ class GHMesh(object):
 
     @property
     def geometry(self):
-        """Mesh geometry of the surface."""
+        """Mesh geometry of the geometry."""
         return self.__geometry
 
     @geometry.setter
@@ -102,7 +102,7 @@ class GHBFGeometry(BFGeometry):
 
     @property
     def geometry(self):
-        """Mesh geometry of the surface."""
+        """Mesh geometry of the geometry."""
         return self.__geometry
 
 
@@ -174,7 +174,7 @@ class GHBFBlockGeometry(GHBFGeometry):
                 "   }\n"
 
         if not self.borderVertices:
-            raise TypeError("This Butterfly surface is created from meshes "
+            raise TypeError("This Butterfly geometry is created from meshes "
                             "and can't be expoerted as blockMeshDict.")
 
         try:

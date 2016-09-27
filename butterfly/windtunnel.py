@@ -7,13 +7,13 @@ class WindTunnel(object):
     """Butterfly WindTunnel.
 
     Args:
-        inlet: Inlet as a honeybee surface. inlet boundary condition should be
+        inlet: Inlet as a honeybee geometry. inlet boundary condition should be
             ABL (atmBoundaryLayer).
-        outlet: Outlet as a butterfly surface.
-        sides: Left and right side surfaces as butterfly surfaces.
-        top: Top face as buttefly surface.
-        ground: Ground face as butterfly surface.
-        testGeomtries: A list of geometries as butterfly surfaces that are located
+        outlet: Outlet as a butterfly geometry.
+        sides: Left and right side geometries as butterfly geometries.
+        top: Top face as buttefly geometry.
+        ground: Ground face as butterfly geometry.
+        testGeomtries: A list of geometries as butterfly geometries that are located
             within bounding box boundary.
         block: A butterfly Block for windtunnel bounding box.
         roughness: z0 (roughness) value.
@@ -32,13 +32,13 @@ class WindTunnel(object):
                  block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
-        self.inlet = self.__checkIfBFSurface(inlet)
-        self.outlet = self.__checkIfBFSurface(outlet)
-        self.sides = tuple(side for side in sides if self.__checkIfBFSurface(side))
-        self.top = self.__checkIfBFSurface(top)
-        self.ground = self.__checkIfBFSurface(ground)
+        self.inlet = self.__checkIfBFGeometry(inlet)
+        self.outlet = self.__checkIfBFGeometry(outlet)
+        self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
+        self.top = self.__checkIfBFGeometry(top)
+        self.ground = self.__checkIfBFGeometry(ground)
         self.testGeomtries = tuple(geo for geo in testGeomtries
-                                   if self.__checkIfBFSurface(geo))
+                                   if self.__checkIfBFGeometry(geo))
         self.z0 = roughness
         self.globalRefLevel = globalRefLevel
 
@@ -49,12 +49,12 @@ class WindTunnel(object):
         self.__refinementRegions = []
 
     @property
-    def boundingSurfaces(self):
-        """Return bounding surfaces of wind tunnel."""
+    def boundingGeometries(self):
+        """Return bounding geometries of wind tunnel."""
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
 
-    def __checkIfBFSurface(self, input):
+    def __checkIfBFGeometry(self, input):
         if hasattr(input, 'isBFGeometry'):
             return input
         else:
@@ -83,7 +83,7 @@ class WindTunnel(object):
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        return BlockMeshDict(self.convertToMeters, self.boundingSurfaces,
+        return BlockMeshDict(self.convertToMeters, self.boundingGeometries,
                              [self.block])
 
     @property

@@ -126,14 +126,14 @@ def readLastLine(filepath, blockSize=1024):
         f.close()
 
 
-def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+def getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
                                   meshingType='triSurfaceMesh',
                                   stlFile=None):
     """Get data for Geometry as a dictionary.
 
     Args:
         projectName: Name of OpenFOAM case.
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
         meshingType: Meshing type. (Default: triSurfaceMesh)
         stlFile: Name of .stl file if it is different from projectName.stl
 
@@ -145,20 +145,20 @@ def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
     _geo[stlFile]['type'] = meshingType
     _geo[stlFile]['name'] = projectName
     _geo[stlFile]['regions'] = {}
-    for bfsrf in BFSurfaces:
-        if bfsrf.name not in _geo[stlFile]['regions']:
-            _geo[stlFile]['regions'][bfsrf.name] = {'name': bfsrf.name}
+    for bfgeo in BFGeometries:
+        if bfgeo.name not in _geo[stlFile]['regions']:
+            _geo[stlFile]['regions'][bfgeo.name] = {'name': bfgeo.name}
 
     return _geo
 
 
-def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=None):
+def getSnappyHexMeshRefinementSurfaces(projectName, BFGeometries, globalLevels=None):
     """Get data for MeshRefinementSurfaces as a dictionary.
 
     Args:
         projectName: Name of OpenFOAM case.
-        BFSurfaces: List of Butterfly surfaces.
-        globalLevels: Default Min, max level of surface mesh refinement.
+        BFGeometries: List of Butterfly geometries.
+        globalLevels: Default Min, max level of geometry mesh refinement.
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
@@ -167,32 +167,32 @@ def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=Non
     _ref = {projectName: OrderedDict()}
     _ref[projectName]['level'] = '({} {})'.format(*(int(v) for v in globalLevels))
     _ref[projectName]['regions'] = {}
-    for bfsrf in BFSurfaces:
-        if not bfsrf.boundaryCondition.refLevels:
+    for bfgeo in BFGeometries:
+        if not bfgeo.boundaryCondition.refLevels:
             continue
-        if bfsrf.name not in _ref[projectName]['regions']:
-            _ref[projectName]['regions'][bfsrf.name] = \
-                {'level': '({} {})'.format(bfsrf.boundaryCondition.refLevels[0],
-                                           bfsrf.boundaryCondition.refLevels[1])}
+        if bfgeo.name not in _ref[projectName]['regions']:
+            _ref[projectName]['regions'][bfgeo.name] = \
+                {'level': '({} {})'.format(bfgeo.boundaryCondition.refLevels[0],
+                                           bfgeo.boundaryCondition.refLevels[1])}
 
     return _ref
 
 
-def getBoundaryField(BFSurfaces, field='u'):
+def getBoundaryField(BFGeometries, field='u'):
     """Get data for boundaryField as a dictionary.
 
     Args:
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
         parameter: One of the fileds as a string (u , p, k , epsilon, nut)
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
     """
     _bou = {}
-    for bfsrf in BFSurfaces:
-        if bfsrf.name not in _bou:
-            _bc = getattr(bfsrf.boundaryCondition, field)
-            _bou[bfsrf.name] = _bc.valueDict
+    for bfgeo in BFGeometries:
+        if bfgeo.name not in _bou:
+            _bc = getattr(bfgeo.boundaryCondition, field)
+            _bou[bfgeo.name] = _bc.valueDict
 
     return _bou
 

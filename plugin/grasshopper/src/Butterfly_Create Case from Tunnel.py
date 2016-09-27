@@ -13,7 +13,7 @@ Create Case from wind tunnel.
 
     Args:
         _name: Project name.
-        _BFSurfaces: List of butterfly surfaces that will be inside the tunnel.
+        _BFGeometries: List of butterfly geometries that will be inside the tunnel.
         _windSpeed: Wind speed in m/s at a the reference height (_refWindHeight_).
         _refWindHeight_: Reference height for wind velocity (default: 10m).
         _windDirection_: Wind direction as Vector3D (default: 0, 1, 0).
@@ -37,7 +37,7 @@ Create Case from wind tunnel.
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_27_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -57,8 +57,8 @@ import sys
 import types
 
 def main():
-    wt = butterfly.gh.windtunnel.GHWindTunnel(_name, _BFSurfaces, _windSpeed, _windDirection_, _tunnelPar_,
-                      _landscape_, _globalRefLevel_, _refWindHeight_)
+    wt = butterfly.gh.windtunnel.GHWindTunnel(_name, _BFGeometries, _windSpeed,
+        _windDirection_, _tunnelPar_, _landscape_, _globalRefLevel_, _refWindHeight_)
     
     for region in refRegions_:
         wt.addRefinementRegion(region)
@@ -70,5 +70,5 @@ def main():
     
     return geo, case
 
-if _run and _name and _BFSurfaces and _windSpeed:
+if _run and _name and _BFGeometries and _windSpeed:
         geo, case = main()

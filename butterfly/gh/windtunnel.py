@@ -24,7 +24,7 @@ class GHWindTunnel(WindTunnel):
     """A grasshopper wind tunnel.
 
     Args:
-        BFSurfaces: List of butterfly surfaces that will be inside the tunnel.
+        BFGeometries: List of butterfly geometries that will be inside the tunnel.
         windSpeed: Wind speed in m/s at Zref.
         windDirection: Wind direction as Vector3D.
         tunnelParameters: Butterfly tunnel parameters.
@@ -41,19 +41,19 @@ class GHWindTunnel(WindTunnel):
         Zref: Reference height for wind velocity in meters (default: 10).
     """
 
-    def __init__(self, name, BFSurfaces, windSpeed, windDirection=None,
+    def __init__(self, name, BFGeometries, windSpeed, windDirection=None,
                  tunnelParameters=None, landscape=1, globalRefLevel=None,
                  Zref=None):
         """Init grasshopper wind tunnel."""
         self.name = name
 
-        # update boundary condition of wall surfaces
-        for bfSurface in BFSurfaces:
-            bfSurface.boundaryCondition = WindTunnelWallBoundaryCondition(
-                bfSurface.boundaryCondition.refLevels
+        # update boundary condition of wall geometries
+        for bfGeometry in BFGeometries:
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+                bfGeometry.boundaryCondition.refLevels
             )
 
-        self.BFSurfaces = BFSurfaces
+        self.BFGeometries = BFGeometries
 
         try:
             self.z0 = Z0()[landscape]
@@ -81,20 +81,20 @@ class GHWindTunnel(WindTunnel):
         # create block
         block = self.block
 
-        # create butterfly surfaces
-        inlet, outlet, rightSide, leftSide, top, ground = self.boundingSurfaces
+        # create butterfly geometries
+        inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
 
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFSurfaces, block, self.z0, globalRefLevel, self.Zref,
+            self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
             convertDocumentUnitsToMeters()
         )
 
     @property
-    def ghBoundingSurfaces(self):
-        """Return Grasshopper surfaces of wind tunnel in a named tuple."""
-        wtSrfs = namedtuple('WindTunnelSurfaces',
+    def ghBoundingGeometries(self):
+        """Return Grasshopper geometries of wind tunnel in a named tuple."""
+        wtSrfs = namedtuple('WindTunnelGeometries',
                             'rightSide outlet leftSide inlet ground top')
 
         _srfs = self.boundingbox.Surfaces
@@ -113,36 +113,36 @@ class GHWindTunnel(WindTunnel):
                      self.tunnelParameters.gradXYZ)
 
     @property
-    def boundingSurfaces(self):
-        """Return bounding surfaces of wind tunnel.
+    def boundingGeometries(self):
+        """Return bounding geometries of wind tunnel.
 
         (inlet, outlet, rightSide, leftSide, top, ground)
         """
         # creat ABLCondition
         ablConditions = ABLConditions.fromWindTunnel(self)
 
-        # create BF surfaces for each wind tunnel surface
+        # create BF geometries for each wind tunnel geometry
         inlet = GHBFBlockGeometry('inlet',
-                                  (self.ghBoundingSurfaces.inlet.ToBrep(),),
+                                  (self.ghBoundingGeometries.inlet.ToBrep(),),
                                   WindTunnelInletBoundaryCondition(ablConditions))
 
         outlet = GHBFBlockGeometry('outlet',
-                                   (self.ghBoundingSurfaces.outlet.ToBrep(),),
+                                   (self.ghBoundingGeometries.outlet.ToBrep(),),
                                    WindTunnelOutletBoundaryCondition())
 
         rightSide = GHBFBlockGeometry('rightSide',
-                                      (self.ghBoundingSurfaces.rightSide.ToBrep(),),
+                                      (self.ghBoundingGeometries.rightSide.ToBrep(),),
                                       WindTunnelTopAndSidesBoundaryCondition())
 
         leftSide = GHBFBlockGeometry('lefttSide',
-                                     (self.ghBoundingSurfaces.leftSide.ToBrep(),),
+                                     (self.ghBoundingGeometries.leftSide.ToBrep(),),
                                      WindTunnelTopAndSidesBoundaryCondition())
 
-        top = GHBFBlockGeometry('top', (self.ghBoundingSurfaces.top.ToBrep(),),
+        top = GHBFBlockGeometry('top', (self.ghBoundingGeometries.top.ToBrep(),),
                                 WindTunnelTopAndSidesBoundaryCondition())
 
         ground = GHBFBlockGeometry('ground',
-                                   (self.ghBoundingSurfaces.ground.ToBrep(),),
+                                   (self.ghBoundingGeometries.ground.ToBrep(),),
                                    WindTunnelGroundBoundaryCondition(ablConditions))
 
         # return the new windTunnel
@@ -198,7 +198,7 @@ class GHWindTunnel(WindTunnel):
                 zDimension)
             boundingBox: Boundingbox geometry as Brep
         """
-        geometries = tuple(bfsrf.geometry for bfsrf in self.BFSurfaces)
+        geometries = tuple(bfgeo.geometry for bfgeo in self.BFGeometries)
 
         world = rc.Geometry.Plane.WorldXY
 

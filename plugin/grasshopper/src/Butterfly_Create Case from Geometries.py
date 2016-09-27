@@ -7,13 +7,13 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Create an OpenFOAM Case from surfaces.
+Create an OpenFOAM Case from geometries.
 
 -
 
     Args:
         _name: Project name.
-        _BFSurfaces: List of butterfly surfaces for this case.
+        _BFGeometries: List of butterfly geometries for this case.
         _blockMeshDict: A Butterfly BlockMeshDict.
         _globalRefLevel_: A tuple of (min, max) values for global refinment.
         refRegions_: A list of refinement regions.
@@ -24,19 +24,15 @@ Create an OpenFOAM Case from surfaces.
         case: Butterfly case.
 """
 
-ghenv.Component.Name = "Butterfly_Create Case from Surfaces"
-ghenv.Component.NickName = "createCaseFromSurfaces"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Name = "Butterfly_Create Case from Geometries"
+ghenv.Component.NickName = "caseFromGeos"
+ghenv.Component.Message = 'VER 0.0.02\nSEP_27_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly.gh.core import Case
-    #import butterfly
-    #reload(butterfly.core)
-    #reload(butterfly.controlDict)
-    #reload(butterfly.gh.core)
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -46,9 +42,9 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _run and _name and _BFSurfaces and _blockMeshDict: 
+if _run and _name and _BFGeometries and _blockMeshDict: 
     # create OpenFoam Case
-    case = Case(_name, _BFSurfaces, _blockMeshDict, _globalRefLevel_,
+    case = Case(_name, _BFGeometries, _blockMeshDict, _globalRefLevel_,
                 _blockMeshDict.center, isSnappyHexMesh=True)
     
     for reg in refRegions_:

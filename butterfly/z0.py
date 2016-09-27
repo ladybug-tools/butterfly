@@ -22,7 +22,7 @@ class Z0(object):
 
     @property
     def smooth(self):
-        """Roughness value for featureless land surfaces."""
+        """Roughness value for featureless land geometries."""
         return self.__roughnessDict['smooth']
 
     @property

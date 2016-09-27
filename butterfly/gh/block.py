@@ -1,4 +1,4 @@
-"""BF Surface for Grasshopper."""
+"""Butterfly Block for Grasshopper."""
 
 
 # TODO: Write Block class with no Grasshopper dependencies
@@ -7,6 +7,8 @@ class Block(object):
 
     Args:
         geometry: A closed brep that represents block boundary.
+        nDiv: Number of divisions in (x, y, z) as a tuple.
+        grading: grading as (x, y, z).
     """
 
     def __init__(self, geometry, nDiv, grading):

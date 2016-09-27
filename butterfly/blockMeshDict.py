@@ -13,7 +13,7 @@ class BlockMeshDict(FoamFile):
         self.blocks = blocks
         self.BFBlockGeometries = BFBlockGeometries
         try:
-            # collect uniqe vertices from all BFSurfaces
+            # collect uniqe vertices from all BFGeometries
             self.vertices = tuple(set(v for f in self.BFBlockGeometries
                                       for vgroup in f.borderVertices
                                       for v in vgroup))

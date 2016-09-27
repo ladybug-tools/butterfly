@@ -89,14 +89,14 @@ class SnappyHexMeshDict(FoamFile):
                           values=values)
 
     @classmethod
-    def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
-                       locationInMesh, meshingType='triSurfaceMesh',
-                       values=None):
-        """Create snappyHexMeshDict from HBSurfaces."""
+    def fromBFGeometries(cls, projectName, BFGeometries, globalRefinementLevel,
+                         locationInMesh, meshingType='triSurfaceMesh',
+                         values=None):
+        """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
         _cls.locationInMesh = locationInMesh
-        _cls.setGeometry(projectName, BFSurfaces, meshingType)
-        _cls.setRefinementSurfaces(projectName, BFSurfaces, globalRefinementLevel)
+        _cls.setGeometry(projectName, BFGeometries, meshingType)
+        _cls.setRefinementSurfaces(projectName, BFGeometries, globalRefinementLevel)
         return _cls
 
     @property
@@ -158,22 +158,22 @@ class SnappyHexMeshDict(FoamFile):
     def maxGlobalCells(self, value=2000000):
         self.values['castellatedMeshControls']['maxGlobalCells'] = str(int(value))
 
-    def setGeometry(self, projectName, BFSurfaces, meshingType='triSurfaceMesh'):
-        """Set geometry from BFSurfaces."""
-        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+    def setGeometry(self, projectName, BFGeometries, meshingType='triSurfaceMesh'):
+        """Set geometry from BFGeometries."""
+        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
                                                   meshingType)
         self.values['geometry'].update(_geoField)
 
-    def setRefinementSurfaces(self, projectName, BFSurfaces, globalLevels):
-        """Set refinement values for surfaces.
+    def setRefinementSurfaces(self, projectName, BFGeometries, globalLevels):
+        """Set refinement values for geometries.
 
         Args:
             projectName: Name of OpenFOAM case.
-            BFSurfaces: List of Butterfly surfaces.
-            globalLevels: Default Min, max level of surface mesh refinement.
+            BFGeometries: List of Butterfly geometries.
+            globalLevels: Default Min, max level of geometry mesh refinement.
         """
         _ref = getSnappyHexMeshRefinementSurfaces(projectName,
-                                                  BFSurfaces, globalLevels)
+                                                  BFGeometries, globalLevels)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 
