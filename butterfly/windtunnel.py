@@ -129,15 +129,17 @@ class TunnelParameters(object):
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
+    def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
                  gradXYZ=None):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
-        self.nDivXYZ = (20, 5, 10) if not nDivXYZ else tuple(nDivXYZ)
+        self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
         self.gradXYZ = (1, 1, 1) if not gradXYZ else tuple(gradXYZ)
+        # this will be calculated based on cellSize in windTunnel
+        self.nDivXYZ = None
 
     def __checkInput(self, input):
         """Check input values."""

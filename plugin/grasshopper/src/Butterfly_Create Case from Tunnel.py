@@ -37,7 +37,7 @@ Create Case from wind tunnel.
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_27_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_29_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -60,9 +60,11 @@ def main():
     wt = butterfly.gh.windtunnel.GHWindTunnel(_name, _BFGeometries, _windSpeed,
         _windDirection_, _tunnelPar_, _landscape_, _globalRefLevel_, _refWindHeight_)
     
+    print "Wind tunnel dimensions: {}, {} and {}".format(wt.X, wt.Y, wt.Z)
+    print "Number of divisions: {}, {} and {}".format(*_tunnelPar_.nDivXYZ)
     for region in refRegions_:
         wt.addRefinementRegion(region)
-        
+
     geo =  wt.boundingbox
     case = wt.toOpenFOAMCase()
     case.createCaseFolders()

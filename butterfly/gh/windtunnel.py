@@ -76,6 +76,13 @@ class GHWindTunnel(WindTunnel):
         self.plane = self.__calculatePlane()
 
         self.minmax, self.dimensions, self.boundingbox = self.getBoundingBox()
+
+        # calculate number of divisions in XYZ
+        self.tunnelParameters.nDivXYZ = \
+            int(round(self.X / self.tunnelParameters.cellSizeXYZ[0])), \
+            int(round(self.Y / self.tunnelParameters.cellSizeXYZ[1])), \
+            int(round(self.Z / self.tunnelParameters.cellSizeXYZ[2]))
+
         self.__scaleBoundingBox()
 
         # create block
@@ -90,6 +97,22 @@ class GHWindTunnel(WindTunnel):
             self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
             convertDocumentUnitsToMeters()
         )
+
+    @property
+    def X(self):
+        """Length of wind tunnel in X direction."""
+        return self.dimensions[0] + self.dimensions[2] * (2 * self.tunnelParameters.side)
+
+    @property
+    def Y(self):
+        """Length of wind tunnel in Y direction."""
+        return self.dimensions[1] + self.dimensions[2] * \
+            (self.tunnelParameters.leeward + self.tunnelParameters.windward)
+
+    @property
+    def Z(self):
+        """Length of wind tunnel in Z direction."""
+        return self.dimensions[2] + (self.dimensions[2] * self.tunnelParameters.top)
 
     @property
     def ghBoundingGeometries(self):
@@ -220,8 +243,8 @@ class GHWindTunnel(WindTunnel):
         max = uBBox.Max
         max.Transform(plane_to_world)
 
-        xDimension = self.__getDimension(min, max, self.plane.XAxis)
-        yDimension = self.__getDimension(min, max, self.plane.YAxis)
+        xDimension = self.__getDimension(min, max, self.plane.YAxis)
+        yDimension = self.__getDimension(min, max, self.plane.XAxis)
         zDimension = max.Z - min.Z
 
         return (min, max), (xDimension, yDimension, zDimension), box
@@ -236,10 +259,10 @@ class GHWindTunnel(WindTunnel):
         self.plane.Origin = rc.Geometry.Point3d(*cenPt)
 
         xScale = (self.tunnelParameters.windward + self.tunnelParameters.leeward) \
-            * (self.dimensions[2] / self.dimensions[0]) + 1
+            * (self.dimensions[2] / self.dimensions[1]) + 1
 
         yScale = (2 * self.tunnelParameters.side * (self.dimensions[2] /
-                                                    self.dimensions[1])) + 1
+                                                    self.dimensions[0])) + 1
 
         zScale = self.tunnelParameters.top + 1
 
