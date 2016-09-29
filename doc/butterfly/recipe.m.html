@@ -3,8 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>butterfly.k API documentation</title>
-    <meta name="description" content="k class." />
+    <title>butterfly.recipe API documentation</title>
+    <meta name="description" content="Butterfly recipes." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -989,22 +989,13 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly.k.K">K</a></span>
+        <span class="class_name"><a href="#butterfly.recipe.SteadyIncompressible">SteadyIncompressible</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly.k.K.convertBoolValue">convertBoolValue</a></li>
-    <li class="mono"><a href="#butterfly.k.K.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly.k.K.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.k.K.body">body</a></li>
-    <li class="mono"><a href="#butterfly.k.K.fromBFGeometries">fromBFGeometries</a></li>
-    <li class="mono"><a href="#butterfly.k.K.getValueByParameter">getValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.k.K.header">header</a></li>
-    <li class="mono"><a href="#butterfly.k.K.save">save</a></li>
-    <li class="mono"><a href="#butterfly.k.K.setBoundaryField">setBoundaryField</a></li>
-    <li class="mono"><a href="#butterfly.k.K.setValueByParameter">setValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.k.K.toOpenFOAM">toOpenFOAM</a></li>
-    <li class="mono"><a href="#butterfly.k.K.updateValues">updateValues</a></li>
+    <li class="mono"><a href="#butterfly.recipe.SteadyIncompressible.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.recipe.SteadyIncompressible.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.recipe.SteadyIncompressible.run">run</a></li>
   </ul>
 
         </li>
@@ -1022,32 +1013,120 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">butterfly.k</span> module</h1>
-  <p>k class.</p>
+  <h1 class="title"><span class="name">butterfly.recipe</span> module</h1>
+  <p>Butterfly recipes.</p>
   
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k" class="source">
-    <pre><code>"""k class."""
-from foamfile import ZeroFolderFoamFile
-from collections import OrderedDict
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.recipe', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.recipe" class="source">
+    <pre><code>"""Butterfly recipes."""
+import os
+from turbulenceProperties import TurbulenceProperties
 
 
-class K(ZeroFolderFoamFile):
-    """k class."""
+class _BFRecipe(object):
+    """Base class for recipes.
 
-    # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['dimensions'] = '[0 2 -2 0 0 0 0]'
-    __defaultValues['#include'] = None
-    __defaultValues['internalField'] = 'uniform 0.1'
-    __defaultValues['boundaryField'] = {}
+    Attributes:
+        case: An OpenFOAM Case.
+        turbulenceProperties: Turbulence properties.
+    """
 
-    def __init__(self, values=None):
-        """Init class."""
-        ZeroFolderFoamFile.__init__(self, name='k', cls='volScalarField',
-                                    location='0',
-                                    defaultValues=self.__defaultValues,
-                                    values=values)
+    def __init__(self, case, turbulenceProperties):
+        """Initiate recipe."""
+        self.__case = case
+        self.__turbulanceProprties = turbulenceProperties
+        self.__updateTurbulencePropertise()
+
+    @property
+    def case(self):
+        """Get the OpenFOAM case."""
+        return self.__case
+
+    @property
+    def logFile(self):
+        """Return address of the log file."""
+        raise NotImplementedError('abstractproperty.')
+
+    @property
+    def errFile(self):
+        """Return address of the error file."""
+        raise NotImplementedError('abstractproperty.')
+
+    @property
+    def turbulenceProperties(self):
+        """Get the OpenFOAM case."""
+        return self.__turbulanceProprties
+
+    @property
+    def quantities(self):
+        """Important Quantities for the recipe."""
+        raise NotImplementedError('abstractproperty.')
+
+    def __updateTurbulencePropertise(self):
+        """Update turbulence file for the case."""
+        self.case.turbulenceProperties = self.turbulenceProperties
+        try:
+            self.case.turbulenceProperties.save(self.case.projectDir)
+        except Exception as e:
+            raise Exception(
+                'Failed to update the turbulence Properties:\n{}'.format(e))
+
+    def run(self):
+        """Execute the recipe."""
+        raise NotImplementedError('abstractmethod.')
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        return '{} Recipe'.format(self.__class__.__name__)
+
+
+class SteadyIncompressible(_BFRecipe):
+    """Recipe for Steady Incompressible flows.
+
+    This recipe excutes simpleFoam for the input case.
+
+    Attributes:
+        case: An OpenFOAM Case.
+        turbulenceProperties: Turbulence properties.
+    """
+
+    def __init__(self, case, turbulenceProperties=None):
+        """Initiate recipe."""
+        if not turbulenceProperties:
+            turbulenceProperties = TurbulenceProperties.RAS()
+
+        _BFRecipe.__init__(self, case, turbulenceProperties)
+
+        # update application
+        case.controlDict.application = 'simpleFoam'
+        case.controlDict.save(case.projectDir)
+
+    @property
+    def residualFile(self):
+        """Return address of the residual file."""
+        return os.path.join(self.case.etcDir, 'simpleFoam.log')
+
+    @property
+    def logFile(self):
+        """Return address of the log file."""
+        return os.path.join(self.case.etcDir, 'simpleFoam.log')
+
+    @property
+    def errFile(self):
+        """Return address of the error file."""
+        return os.path.join(self.case.etcDir, 'simpleFoam.err')
+
+    @property
+    def quantities(self):
+        """Important Quantities for the recipe."""
+        return ('Ux', 'Uy', 'Uz', 'p', 'k', 'epsilon')
+
+    def run(self, args=None, decomposeParDict=None, run=True, wait=True):
+        """Execute the recipe."""
+        return self.case.simpleFoam(args, decomposeParDict, run, wait)
 </code></pre>
   </div>
 
@@ -1059,29 +1138,61 @@ class K(ZeroFolderFoamFile):
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
-      <p id="butterfly.k.K" class="name">class <span class="ident">K</span></p>
+      <p id="butterfly.recipe.SteadyIncompressible" class="name">class <span class="ident">SteadyIncompressible</span></p>
       
   
-    <div class="desc"><p>k class.</p></div>
+    <div class="desc"><p>Recipe for Steady Incompressible flows.</p>
+<p>This recipe excutes simpleFoam for the input case.</p>
+<p>Attributes:
+    case: An OpenFOAM Case.
+    turbulenceProperties: Turbulence properties.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K" class="source">
-    <pre><code>class K(ZeroFolderFoamFile):
-    """k class."""
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.recipe.SteadyIncompressible', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.recipe.SteadyIncompressible" class="source">
+    <pre><code>class SteadyIncompressible(_BFRecipe):
+    """Recipe for Steady Incompressible flows.
 
-    # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['dimensions'] = '[0 2 -2 0 0 0 0]'
-    __defaultValues['#include'] = None
-    __defaultValues['internalField'] = 'uniform 0.1'
-    __defaultValues['boundaryField'] = {}
+    This recipe excutes simpleFoam for the input case.
 
-    def __init__(self, values=None):
-        """Init class."""
-        ZeroFolderFoamFile.__init__(self, name='k', cls='volScalarField',
-                                    location='0',
-                                    defaultValues=self.__defaultValues,
-                                    values=values)
+    Attributes:
+        case: An OpenFOAM Case.
+        turbulenceProperties: Turbulence properties.
+    """
+
+    def __init__(self, case, turbulenceProperties=None):
+        """Initiate recipe."""
+        if not turbulenceProperties:
+            turbulenceProperties = TurbulenceProperties.RAS()
+
+        _BFRecipe.__init__(self, case, turbulenceProperties)
+
+        # update application
+        case.controlDict.application = 'simpleFoam'
+        case.controlDict.save(case.projectDir)
+
+    @property
+    def residualFile(self):
+        """Return address of the residual file."""
+        return os.path.join(self.case.etcDir, 'simpleFoam.log')
+
+    @property
+    def logFile(self):
+        """Return address of the log file."""
+        return os.path.join(self.case.etcDir, 'simpleFoam.log')
+
+    @property
+    def errFile(self):
+        """Return address of the error file."""
+        return os.path.join(self.case.etcDir, 'simpleFoam.err')
+
+    @property
+    def quantities(self):
+        """Important Quantities for the recipe."""
+        return ('Ux', 'Uy', 'Uz', 'p', 'k', 'epsilon')
+
+    def run(self, args=None, decomposeParDict=None, run=True, wait=True):
+        """Execute the recipe."""
+        return self.case.simpleFoam(args, decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>
@@ -1090,60 +1201,73 @@ class K(ZeroFolderFoamFile):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly.k.K">K</a></li>
-          <li>butterfly.foamfile.ZeroFolderFoamFile</li>
-          <li>butterfly.foamfile.FoamFile</li>
+          <li><a href="#butterfly.recipe.SteadyIncompressible">SteadyIncompressible</a></li>
+          <li>butterfly.recipe._BFRecipe</li>
           <li>__builtin__.object</li>
           </ul>
-          <h3>Static methods</h3>
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.convertBoolValue">
-    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.convertBoolValue', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.convertBoolValue" class="source">
-    <pre><code>@staticmethod
-def convertBoolValue(v=True):
-    """Convert Boolean values to on/off string."""
-    _v = ('off', 'on')
-    if v in _v:
-        return v
-    if v:
-        return 'on'
-    else:
-        return 'off'
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.k.K.parameters" class="name">var <span class="ident">parameters</span></p>
+            <p id="butterfly.recipe.SteadyIncompressible.case" class="name">var <span class="ident">case</span></p>
             
 
             
   
-    <div class="desc"><p>Get list of parameters.</p></div>
+    <div class="desc"><p>Get the OpenFOAM case.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.k.K.values" class="name">var <span class="ident">values</span></p>
+            <p id="butterfly.recipe.SteadyIncompressible.errFile" class="name">var <span class="ident">errFile</span></p>
             
 
             
   
-    <div class="desc"><p>Return values as a dictionary.</p></div>
+    <div class="desc"><p>Return address of the error file.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.recipe.SteadyIncompressible.logFile" class="name">var <span class="ident">logFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return address of the log file.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.recipe.SteadyIncompressible.quantities" class="name">var <span class="ident">quantities</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Important Quantities for the recipe.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.recipe.SteadyIncompressible.residualFile" class="name">var <span class="ident">residualFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return address of the residual file.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.recipe.SteadyIncompressible.turbulenceProperties" class="name">var <span class="ident">turbulenceProperties</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get the OpenFOAM case.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1151,23 +1275,25 @@ def convertBoolValue(v=True):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly.k.K.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, values=None)</p>
+    <div class="name def" id="butterfly.recipe.SteadyIncompressible.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, case, turbulenceProperties=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init class.</p></div>
+    <div class="desc"><p>Initiate recipe.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.__init__" class="source">
-    <pre><code>def __init__(self, values=None):
-    """Init class."""
-    ZeroFolderFoamFile.__init__(self, name='k', cls='volScalarField',
-                                location='0',
-                                defaultValues=self.__defaultValues,
-                                values=values)
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.recipe.SteadyIncompressible.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.recipe.SteadyIncompressible.__init__" class="source">
+    <pre><code>def __init__(self, case, turbulenceProperties=None):
+    """Initiate recipe."""
+    if not turbulenceProperties:
+        turbulenceProperties = TurbulenceProperties.RAS()
+    _BFRecipe.__init__(self, case, turbulenceProperties)
+    # update application
+    case.controlDict.application = 'simpleFoam'
+    case.controlDict.save(case.projectDir)
 </code></pre>
   </div>
 </div>
@@ -1176,7 +1302,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.k.K.ToString">
+    <div class="name def" id="butterfly.recipe.SteadyIncompressible.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -1185,8 +1311,8 @@ def convertBoolValue(v=True):
   
     <div class="desc"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.recipe.SteadyIncompressible.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.recipe.SteadyIncompressible.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -1198,267 +1324,20 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.k.K.body">
-    <p>def <span class="ident">body</span>(</p><p>self)</p>
+    <div class="name def" id="butterfly.recipe.SteadyIncompressible.run">
+    <p>def <span class="ident">run</span>(</p><p>self, args=None, decomposeParDict=None, run=True, wait=True)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Return body string.</p></div>
+    <div class="desc"><p>Execute the recipe.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.body', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.body" class="source">
-    <pre><code>def body(self):
-    """Return body string."""
-    # remove None values
-    _values = OrderedDict()
-    for key, value in self.values.iteritems():
-        if value:
-            _values[key] = value
-    # make python dictionary look like c++ dictionary!!
-    of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
-        .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
-        .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
-    # remove first and last {} and prettify[!] the file
-    l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-         for line in of.split("\n")[1:-1])
-    return "\n\n".join(l)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.fromBFGeometries">
-    <p>def <span class="ident">fromBFGeometries</span>(</p><p>cls, BFGeometries, values=None)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Init class by BFGeometries.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.fromBFGeometries', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.fromBFGeometries" class="source">
-    <pre><code>@classmethod
-def fromBFGeometries(cls, BFGeometries, values=None):
-    """Init class by BFGeometries."""
-    _cls = cls(values)
-    _cls.setBoundaryField(BFGeometries)
-    return _cls
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.getValueByParameter">
-    <p>def <span class="ident">getValueByParameter</span>(</p><p>self, parameter)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Get values for a given parameter by parameter name.</p>
-<p>Args:
-    parameter: Name of a parameter as a string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.getValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.getValueByParameter" class="source">
-    <pre><code>def getValueByParameter(self, parameter):
-    """Get values for a given parameter by parameter name.
-    Args:
-        parameter: Name of a parameter as a string.
-    """
-    try:
-        return self.values[parameter]
-    except KeyError:
-        raise KeyError('{} is not available in {}.'.format(
-            parameter, self.__class__.__name__
-        ))
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.header">
-    <p>def <span class="ident">header</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return open foam style string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.header', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.header" class="source">
-    <pre><code>def header(self):
-    """Return open foam style string."""
-    if self.location:
-        return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tlocation\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.location,
-                     self.name)
-    else:
-        return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.name)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.save">
-    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Save to file.</p>
-<p>Args:
-    projectFolder: Path to project folder as a string.
-    subFolder: Optional input for subFolder (default: self.location).</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.save', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.save" class="source">
-    <pre><code>def save(self, projectFolder, subFolder=None):
-    """Save to file.
-    Args:
-        projectFolder: Path to project folder as a string.
-        subFolder: Optional input for subFolder (default: self.location).
-    """
-    subFolder = self.location.replace('"', '') if not subFolder else subFolder
-    with open(os.path.join(projectFolder,
-                           subFolder, self.name), "wb") as outf:
-        outf.write(self.toOpenFOAM())
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.setBoundaryField">
-    <p>def <span class="ident">setBoundaryField</span>(</p><p>self, BFGeometries)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Get data for getBoundaryField as a dictionary.</p>
-<p>Args:
-    BFGeometries: List of Butterfly geometries.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.setBoundaryField', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.setBoundaryField" class="source">
-    <pre><code>def setBoundaryField(self, BFGeometries):
-    """Get data for getBoundaryField as a dictionary.
-    Args:
-        BFGeometries: List of Butterfly geometries.
-    """
-    self.values['boundaryField'] = getBoundaryField(
-        BFGeometries, self.__class__.__name__.lower()
-    )
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.setValueByParameter">
-    <p>def <span class="ident">setValueByParameter</span>(</p><p>self, parameter, value)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Set value for a parameter.</p>
-<p>Args:
-    parameter: Name of a parameter as a string.
-    value: Parameter value as a string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.setValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.setValueByParameter" class="source">
-    <pre><code>def setValueByParameter(self, parameter, value):
-    """Set value for a parameter.
-    Args:
-        parameter: Name of a parameter as a string.
-        value: Parameter value as a string.
-    """
-    self.values[parameter] = value
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.toOpenFOAM">
-    <p>def <span class="ident">toOpenFOAM</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return OpenFOAM string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.toOpenFOAM', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.toOpenFOAM" class="source">
-    <pre><code>def toOpenFOAM(self):
-    """Return OpenFOAM string."""
-    return "\n".join((self.header(), self.body()))
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.k.K.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Update current values from dictionat v.</p>
-<p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.k.K.updateValues', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.k.K.updateValues" class="source">
-    <pre><code>def updateValues(self, v):
-    """Update current values from dictionat v.
-    if key is not available in current values it will be added, if the key
-    already exists it will be updated.
-    """
-    self.__values.update(v)
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.recipe.SteadyIncompressible.run', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.recipe.SteadyIncompressible.run" class="source">
+    <pre><code>def run(self, args=None, decomposeParDict=None, run=True, wait=True):
+    """Execute the recipe."""
+    return self.case.simpleFoam(args, decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>

@@ -993,10 +993,13 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.addRefinementRegion">addRefinementRegion</a></li>
+    <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.addStlGeometry">addStlGeometry</a></li>
     <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.body">body</a></li>
-    <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFSurfaces">fromBFSurfaces</a></li>
+    <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFGeometries">fromBFGeometries</a></li>
     <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.header">header</a></li>
     <li class="mono"><a href="#butterfly.snappyHexMeshDict.SnappyHexMeshDict.save">save</a></li>
@@ -1118,14 +1121,14 @@ class SnappyHexMeshDict(FoamFile):
                           values=values)
 
     @classmethod
-    def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
-                       locationInMesh, meshingType='triSurfaceMesh',
-                       values=None):
-        """Create snappyHexMeshDict from HBSurfaces."""
+    def fromBFGeometries(cls, projectName, BFGeometries, globalRefinementLevel,
+                         locationInMesh, meshingType='triSurfaceMesh',
+                         values=None):
+        """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
         _cls.locationInMesh = locationInMesh
-        _cls.setGeometry(projectName, BFSurfaces, meshingType)
-        _cls.setRefinementSurfaces(projectName, BFSurfaces, globalRefinementLevel)
+        _cls.setGeometry(projectName, BFGeometries, meshingType)
+        _cls.setRefinementSurfaces(projectName, BFGeometries, globalRefinementLevel)
         return _cls
 
     @property
@@ -1152,6 +1155,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @castellatedMesh.setter
     def castellatedMesh(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['castellatedMesh'] = str(value).lower()
 
     @property
@@ -1161,6 +1166,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @snap.setter
     def snap(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['snap'] = str(value).lower()
 
     @property
@@ -1170,6 +1177,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @addLayers.setter
     def addLayers(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['addLayers'] = str(value).lower()
 
     @property
@@ -1181,24 +1190,49 @@ class SnappyHexMeshDict(FoamFile):
     def maxGlobalCells(self, value=2000000):
         self.values['castellatedMeshControls']['maxGlobalCells'] = str(int(value))
 
-    def setGeometry(self, projectName, BFSurfaces, meshingType='triSurfaceMesh'):
-        """Set geometry from BFSurfaces."""
-        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+    def setGeometry(self, projectName, BFGeometries, meshingType='triSurfaceMesh'):
+        """Set geometry from BFGeometries."""
+        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
                                                   meshingType)
-        self.values['geometry'] = _geoField
+        self.values['geometry'].update(_geoField)
 
-    def setRefinementSurfaces(self, projectName, BFSurfaces, globalLevels):
-        """Set refinement values for surfaces.
+    def setRefinementSurfaces(self, projectName, BFGeometries, globalLevels):
+        """Set refinement values for geometries.
 
         Args:
             projectName: Name of OpenFOAM case.
-            BFSurfaces: List of Butterfly surfaces.
-            globalLevels: Default Min, max level of surface mesh refinement.
+            BFGeometries: List of Butterfly geometries.
+            globalLevels: Default Min, max level of geometry mesh refinement.
         """
         _ref = getSnappyHexMeshRefinementSurfaces(projectName,
-                                                  BFSurfaces, globalLevels)
+                                                  BFGeometries, globalLevels)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
+
+    def addStlGeometry(self, fileName):
+        """Add stl geometry to snappyHexMeshDict.
+
+        Args:
+            fileName: Stl file name. This file should be located under
+                /constant/triSurface.
+        """
+        stl = {'{}.stl'.format(fileName): {'type': 'triSurfaceMesh',
+                                           'name': fileName}}
+
+        self.values['geometry'].update(stl)
+
+    def addRefinementRegion(self, refinementRegion=None):
+        """Add refinement region to snappyHexMeshDict."""
+        # assert hasattr(refinementRegion, 'isRefinementRegion'), \
+        #     '{} is not a refinement region.'.format(refinementRegion)
+
+        # add geometry to stl
+        self.addStlGeometry(refinementRegion.name)
+
+        rg = {refinementRegion.name:
+              refinementRegion.refinementMode.toOpenFOAMDict()}
+
+        self.values['castellatedMeshControls']['refinementRegions'].update(rg)
 </code></pre>
   </div>
 
@@ -1299,14 +1333,14 @@ class SnappyHexMeshDict(FoamFile):
                           values=values)
 
     @classmethod
-    def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
-                       locationInMesh, meshingType='triSurfaceMesh',
-                       values=None):
-        """Create snappyHexMeshDict from HBSurfaces."""
+    def fromBFGeometries(cls, projectName, BFGeometries, globalRefinementLevel,
+                         locationInMesh, meshingType='triSurfaceMesh',
+                         values=None):
+        """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
         _cls.locationInMesh = locationInMesh
-        _cls.setGeometry(projectName, BFSurfaces, meshingType)
-        _cls.setRefinementSurfaces(projectName, BFSurfaces, globalRefinementLevel)
+        _cls.setGeometry(projectName, BFGeometries, meshingType)
+        _cls.setRefinementSurfaces(projectName, BFGeometries, globalRefinementLevel)
         return _cls
 
     @property
@@ -1333,6 +1367,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @castellatedMesh.setter
     def castellatedMesh(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['castellatedMesh'] = str(value).lower()
 
     @property
@@ -1342,6 +1378,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @snap.setter
     def snap(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['snap'] = str(value).lower()
 
     @property
@@ -1351,6 +1389,8 @@ class SnappyHexMeshDict(FoamFile):
 
     @addLayers.setter
     def addLayers(self, value=True):
+        value = value if isinstance(value, bool) else \
+            bool(str(value).capitalize())
         self.values['addLayers'] = str(value).lower()
 
     @property
@@ -1362,24 +1402,49 @@ class SnappyHexMeshDict(FoamFile):
     def maxGlobalCells(self, value=2000000):
         self.values['castellatedMeshControls']['maxGlobalCells'] = str(int(value))
 
-    def setGeometry(self, projectName, BFSurfaces, meshingType='triSurfaceMesh'):
-        """Set geometry from BFSurfaces."""
-        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+    def setGeometry(self, projectName, BFGeometries, meshingType='triSurfaceMesh'):
+        """Set geometry from BFGeometries."""
+        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
                                                   meshingType)
-        self.values['geometry'] = _geoField
+        self.values['geometry'].update(_geoField)
 
-    def setRefinementSurfaces(self, projectName, BFSurfaces, globalLevels):
-        """Set refinement values for surfaces.
+    def setRefinementSurfaces(self, projectName, BFGeometries, globalLevels):
+        """Set refinement values for geometries.
 
         Args:
             projectName: Name of OpenFOAM case.
-            BFSurfaces: List of Butterfly surfaces.
-            globalLevels: Default Min, max level of surface mesh refinement.
+            BFGeometries: List of Butterfly geometries.
+            globalLevels: Default Min, max level of geometry mesh refinement.
         """
         _ref = getSnappyHexMeshRefinementSurfaces(projectName,
-                                                  BFSurfaces, globalLevels)
+                                                  BFGeometries, globalLevels)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
+
+    def addStlGeometry(self, fileName):
+        """Add stl geometry to snappyHexMeshDict.
+
+        Args:
+            fileName: Stl file name. This file should be located under
+                /constant/triSurface.
+        """
+        stl = {'{}.stl'.format(fileName): {'type': 'triSurfaceMesh',
+                                           'name': fileName}}
+
+        self.values['geometry'].update(stl)
+
+    def addRefinementRegion(self, refinementRegion=None):
+        """Add refinement region to snappyHexMeshDict."""
+        # assert hasattr(refinementRegion, 'isRefinementRegion'), \
+        #     '{} is not a refinement region.'.format(refinementRegion)
+
+        # add geometry to stl
+        self.addStlGeometry(refinementRegion.name)
+
+        rg = {refinementRegion.name:
+              refinementRegion.refinementMode.toOpenFOAMDict()}
+
+        self.values['castellatedMeshControls']['refinementRegions'].update(rg)
 </code></pre>
   </div>
 </div>
@@ -1392,6 +1457,36 @@ class SnappyHexMeshDict(FoamFile):
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.addLayers" class="name">var <span class="ident">addLayers</span></p>
@@ -1519,6 +1614,65 @@ class SnappyHexMeshDict(FoamFile):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.addRefinementRegion">
+    <p>def <span class="ident">addRefinementRegion</span>(</p><p>self, refinementRegion=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Add refinement region to snappyHexMeshDict.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.addRefinementRegion', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.addRefinementRegion" class="source">
+    <pre><code>def addRefinementRegion(self, refinementRegion=None):
+    """Add refinement region to snappyHexMeshDict."""
+    # assert hasattr(refinementRegion, 'isRefinementRegion'), \
+    #     '{} is not a refinement region.'.format(refinementRegion)
+    # add geometry to stl
+    self.addStlGeometry(refinementRegion.name)
+    rg = {refinementRegion.name:
+          refinementRegion.refinementMode.toOpenFOAMDict()}
+    self.values['castellatedMeshControls']['refinementRegions'].update(rg)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.addStlGeometry">
+    <p>def <span class="ident">addStlGeometry</span>(</p><p>self, fileName)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Add stl geometry to snappyHexMeshDict.</p>
+<p>Args:
+    fileName: Stl file name. This file should be located under
+        /constant/triSurface.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.addStlGeometry', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.addStlGeometry" class="source">
+    <pre><code>def addStlGeometry(self, fileName):
+    """Add stl geometry to snappyHexMeshDict.
+    Args:
+        fileName: Stl file name. This file should be located under
+            /constant/triSurface.
+    """
+    stl = {'{}.stl'.format(fileName): {'type': 'triSurfaceMesh',
+                                       'name': fileName}}
+    self.values['geometry'].update(stl)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.body">
     <p>def <span class="ident">body</span>(</p><p>self)</p>
     </div>
@@ -1553,26 +1707,26 @@ class SnappyHexMeshDict(FoamFile):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFSurfaces">
-    <p>def <span class="ident">fromBFSurfaces</span>(</p><p>cls, projectName, BFSurfaces, globalRefinementLevel, locationInMesh, meshingType=&#39;triSurfaceMesh&#39;, values=None)</p>
+    <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFGeometries">
+    <p>def <span class="ident">fromBFGeometries</span>(</p><p>cls, projectName, BFGeometries, globalRefinementLevel, locationInMesh, meshingType=&#39;triSurfaceMesh&#39;, values=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Create snappyHexMeshDict from HBSurfaces.</p></div>
+    <div class="desc"><p>Create snappyHexMeshDict from HBGeometries.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFSurfaces', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFSurfaces" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFGeometries', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.fromBFGeometries" class="source">
     <pre><code>@classmethod
-def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
-                   locationInMesh, meshingType='triSurfaceMesh',
-                   values=None):
-    """Create snappyHexMeshDict from HBSurfaces."""
+def fromBFGeometries(cls, projectName, BFGeometries, globalRefinementLevel,
+                     locationInMesh, meshingType='triSurfaceMesh',
+                     values=None):
+    """Create snappyHexMeshDict from HBGeometries."""
     _cls = cls(values)
     _cls.locationInMesh = locationInMesh
-    _cls.setGeometry(projectName, BFSurfaces, meshingType)
-    _cls.setRefinementSurfaces(projectName, BFSurfaces, globalRefinementLevel)
+    _cls.setGeometry(projectName, BFGeometries, meshingType)
+    _cls.setRefinementSurfaces(projectName, BFGeometries, globalRefinementLevel)
     return _cls
 </code></pre>
   </div>
@@ -1686,21 +1840,21 @@ def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
             
   <div class="item">
     <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.setGeometry">
-    <p>def <span class="ident">setGeometry</span>(</p><p>self, projectName, BFSurfaces, meshingType=&#39;triSurfaceMesh&#39;)</p>
+    <p>def <span class="ident">setGeometry</span>(</p><p>self, projectName, BFGeometries, meshingType=&#39;triSurfaceMesh&#39;)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Set geometry from BFSurfaces.</p></div>
+    <div class="desc"><p>Set geometry from BFGeometries.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.setGeometry', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.setGeometry" class="source">
-    <pre><code>def setGeometry(self, projectName, BFSurfaces, meshingType='triSurfaceMesh'):
-    """Set geometry from BFSurfaces."""
-    _geoField = getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+    <pre><code>def setGeometry(self, projectName, BFGeometries, meshingType='triSurfaceMesh'):
+    """Set geometry from BFGeometries."""
+    _geoField = getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
                                               meshingType)
-    self.values['geometry'] = _geoField
+    self.values['geometry'].update(_geoField)
 </code></pre>
   </div>
 </div>
@@ -1710,29 +1864,29 @@ def fromBFSurfaces(cls, projectName, BFSurfaces, globalRefinementLevel,
             
   <div class="item">
     <div class="name def" id="butterfly.snappyHexMeshDict.SnappyHexMeshDict.setRefinementSurfaces">
-    <p>def <span class="ident">setRefinementSurfaces</span>(</p><p>self, projectName, BFSurfaces, globalLevels)</p>
+    <p>def <span class="ident">setRefinementSurfaces</span>(</p><p>self, projectName, BFGeometries, globalLevels)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Set refinement values for surfaces.</p>
+    <div class="desc"><p>Set refinement values for geometries.</p>
 <p>Args:
     projectName: Name of OpenFOAM case.
-    BFSurfaces: List of Butterfly surfaces.
-    globalLevels: Default Min, max level of surface mesh refinement.</p></div>
+    BFGeometries: List of Butterfly geometries.
+    globalLevels: Default Min, max level of geometry mesh refinement.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.setRefinementSurfaces', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.snappyHexMeshDict.SnappyHexMeshDict.setRefinementSurfaces" class="source">
-    <pre><code>def setRefinementSurfaces(self, projectName, BFSurfaces, globalLevels):
-    """Set refinement values for surfaces.
+    <pre><code>def setRefinementSurfaces(self, projectName, BFGeometries, globalLevels):
+    """Set refinement values for geometries.
     Args:
         projectName: Name of OpenFOAM case.
-        BFSurfaces: List of Butterfly surfaces.
-        globalLevels: Default Min, max level of surface mesh refinement.
+        BFGeometries: List of Butterfly geometries.
+        globalLevels: Default Min, max level of geometry mesh refinement.
     """
     _ref = getSnappyHexMeshRefinementSurfaces(projectName,
-                                              BFSurfaces, globalLevels)
+                                              BFGeometries, globalLevels)
     self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 </code></pre>
   </div>

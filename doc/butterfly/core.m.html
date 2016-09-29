@@ -1002,8 +1002,10 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.loadProbesFromProjectPath">loadProbesFromProjectPath</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.addRefinementRegion">addRefinementRegion</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.blockMesh">blockMesh</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.calculateMeshOrthogonality">calculateMeshOrthogonality</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.checkMesh">checkMesh</a></li>
@@ -1013,21 +1015,23 @@ table {
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.fromWindTunnel">fromWindTunnel</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.getResultFolders">getResultFolders</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.getSnappyHexMeshFolders">getSnappyHexMeshFolders</a></li>
+    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.isPolyMeshSnappyHexMesh">isPolyMeshSnappyHexMesh</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.loadMesh">loadMesh</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.loadPoints">loadPoints</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.loadProbes">loadProbes</a></li>
+    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.loadSkippedProbes">loadSkippedProbes</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.loadVelocity">loadVelocity</a></li>
-    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.meshCombo">meshCombo</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.populateConstantContents">populateConstantContents</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.populateContents">populateContents</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.populateSystemContents">populateSystemContents</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.populateZeroContents">populateZeroContents</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.purge">purge</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.removePolyMeshContent">removePolyMeshContent</a></li>
+    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.removePostProcessingFolder">removePostProcessingFolder</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.removeResultFolders">removeResultFolders</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.removeSnappyHexMeshFolders">removeSnappyHexMeshFolders</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.renameSnappyHexMeshFolders">renameSnappyHexMeshFolders</a></li>
-    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.setFvSchemesfromAverageOrthogonality">setFvSchemesfromAverageOrthogonality</a></li>
+    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.setFvSchemesfromMeshOrthogonality">setFvSchemesfromMeshOrthogonality</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.simpleFoam">simpleFoam</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.snappyHexMesh">snappyHexMesh</a></li>
   </ul>
@@ -1056,9 +1060,11 @@ table {
 import os
 from shutil import rmtree
 from distutils.dir_util import copy_tree
+from collections import namedtuple
 
 from version import Version
-from helper import mkdir, wfile, runbatchfile, readLastLine
+from helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes, \
+    checkFiles
 # constant folder objects
 from turbulenceProperties import TurbulenceProperties
 from RASProperties import RASProperties
@@ -1096,24 +1102,26 @@ class CaseFoldersNotCreatedError(Exception):
 class OpemFOAMCase(object):
     """Butterfly case."""
 
-    def __init__(self, projectName, BFSurfaces, blockMeshDict,
+    def __init__(self, projectName, BFGeometries, blockMeshDict,
                  globalRefinementLevel=None, locationInMesh=None,
-                 isSnappyHexMesh=False, isABLConditionsIncluded=False,
-                 isInitialConditionsIncluded=False):
+                 isSnappyHexMesh=False):
         """Init project."""
         self.username = os.getenv("USERNAME")
         self.version = float(Version.OFVer)
         self.projectName = projectName
         self.runmanager = RunManager(self.projectName)
-        self.BFSurfaces = BFSurfaces
+        self.BFGeometries = BFGeometries
 
         # meshing - constant
         self.blockMeshDict = blockMeshDict
 
         # meshing - system
         self.isSnappyHexMesh = isSnappyHexMesh
-        self.snappyHexMeshDict = SnappyHexMeshDict.fromBFSurfaces(
-            projectName, BFSurfaces, globalRefinementLevel, locationInMesh)
+        self.snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
+            projectName, BFGeometries, globalRefinementLevel, locationInMesh)
+
+        # place holder for refinment regions
+        self.__refinementRegions = []
 
         # constant folder
         if self.version < 3:
@@ -1123,11 +1131,12 @@ class OpemFOAMCase(object):
         self.transportProperties = TransportProperties()
 
         # 0 floder
-        self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+        self.u = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.p = P.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.k = K.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.epsilon = Epsilon.fromBFGeometries(BFGeometries +
+                                                blockMeshDict.BFBlockGeometries)
+        self.nut = Nut.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
 
         # system folder
         self.fvSchemes = FvSchemes()
@@ -1137,11 +1146,8 @@ class OpemFOAMCase(object):
         self.probes = None
 
         # if any of these files are included they should be written to 0 floder
-        if not isABLConditionsIncluded:
-            self.ABLConditions = None
-
-        if not isInitialConditionsIncluded:
-            self.initialConditions = None
+        self.ABLConditions = None
+        self.initialConditions = None
 
         self._isInit = False
         self._isSnappyHexMeshFoldersRenamed = False
@@ -1155,12 +1161,10 @@ class OpemFOAMCase(object):
         _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
                     globalRefinementLevel=windTunnel.globalRefLevel,
                     locationInMesh=_locationInMesh, isSnappyHexMesh=True,
-                    isABLConditionsIncluded=True,
-                    isInitialConditionsIncluded=True)
+                    )
 
-        InitialConditions()
         _case.initialConditions = InitialConditions(
-            Uref=windTunnel.flowSpeed, z0=windTunnel.z0)
+            Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
 
         _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
 
@@ -1173,17 +1177,23 @@ class OpemFOAMCase(object):
                              'internalField': 'uniform $turbulentKE'})
         _case.epsilon.updateValues({'#include': '"initialConditions"',
                                     'internalField': 'uniform $turbulentEpsilon'})
+
+        if windTunnel.refinementRegions:
+            for region in windTunnel.refinementRegions:
+                _case.addRefinementRegion(region)
+
         return _case
 
     @classmethod
-    def fromBlocks(cls, BFSurfaces, blocks, scale):
-        """Create case from BFSurfaces and blocks.
+    def fromBlocks(cls, BFGeometries, blocks, scale):
+        """Create case from BFGeometries and blocks.
 
         This case will only be meshed using blockMesh
         """
         raise NotImplementedError("Let us know if you in real need for this method!")
-        _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
-        return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
+
+        _blockMeshDict = BlockMeshDict(scale, BFGeometries, blocks)
+        return cls(BFGeometries, _blockMeshDict, isSnappyHexMesh=False)
 
     @property
     def isInitialConditionsIncluded(self):
@@ -1224,6 +1234,11 @@ class OpemFOAMCase(object):
             self.__isABLConditionsIncluded = True
 
     @property
+    def refinementRegions(self):
+        """Get refinement regions."""
+        return self.__refinementRegions
+
+    @property
     def probes(self):
         """Get and set Probes."""
         return self.__probes
@@ -1240,6 +1255,49 @@ class OpemFOAMCase(object):
             # include probes in controlDict
             self.controlDict.include(self.probes.filename)
 
+    @staticmethod
+    def loadProbesFromProjectPath(projectPath, field, probesFolder='probes'):
+        """Return OpenFOAM probes results for a field.
+
+        Args:
+            projectPath: Path to project root folder.
+            field: Probes field (e.g. U, p, T).
+        """
+        # find probes folder
+        _basepath = os.path.join(projectPath, 'postProcessing', probesFolder)
+
+        folders = [os.path.join(_basepath, f) for f in os.listdir(_basepath)
+                   if (os.path.isdir(os.path.join(_basepath, f)) and
+                       f.isdigit())]
+
+        # sort based on last modified
+        folders = sorted(folders, key=lambda folder:
+                         max(tuple(os.stat(os.path.join(folder, f)).st_mtime
+                                   for f in os.listdir(folder))))
+
+        # load the last line in the file
+        _f = os.path.join(_basepath, str(folders[-1]), field)
+
+        assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
+        _res = readLastLine(_f).split()[1:]
+
+        # convert values to tuple or number
+        _rawres = tuple(d.strip() for d in readLastLine(_f).split()
+                        if d.strip())[1:]
+
+        try:
+            # it's a number
+            _res = tuple(float(r) for r in _rawres)
+        except ValueError:
+            try:
+                # it's a vector
+                _res = tuple(eval(','.join(_rawres[3 * i: 3 * (i + 1)]))
+                             for i in range(int(len(_rawres) / 3)))
+            except Exception as e:
+                raise Exception('\nFailed to load probes:\n{}'.format(e))
+
+        return _res
+
     def loadProbes(self, field):
         """Return OpenFOAM probes results for a field."""
         if not self.probes:
@@ -1249,24 +1307,12 @@ class OpemFOAMCase(object):
             raise ValueError("Can't find {} in {}.".format(field,
                                                            self.probes.fields))
 
-        # load the last line in the file
-        _f = os.path.join(self.projectDir, 'postProcessing',
-                          self.probes.filename, '0', field)
+        self.loadProbesFromProjectPath(
+            self.projectDir, field, self.probes.filename)
 
-        assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
-
-        _res = readLastLine(_f).split()[1:]
-
-        # convert values to tuple or number
-        _rawres = readLastLine(_f).split('      ')[2:]
-        if _rawres[1].find('(') > -1:
-            # it's a vector
-            _res = (tuple(eval(r.strip().replace(' ', ',')) for r in _rawres if r))
-        else:
-            # it's a number
-            _res = (tuple(float(r) for r in _rawres))
-
-        return _res
+    def loadSkippedProbes(self):
+        """Get list of probes that are skipped in calculation."""
+        return loadSkippedProbes(os.path.join(self.projectDir, 'etc', 'simpleFoam.log'))
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
@@ -1282,6 +1328,14 @@ class OpemFOAMCase(object):
         """Return OpenFOAM mesh as a Rhino mesh."""
         # This is a abstract property which should be implemented in subclasses
         raise NotImplementedError()
+
+    def addRefinementRegion(self, refinementRegion):
+        """Add refinement regions to this case."""
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
+
+        self.__refinementRegions.append(refinementRegion)
+        self.snappyHexMeshDict.addRefinementRegion(refinementRegion)
 
     def createCaseFolders(self, workingDir=None):
         """Create project folders and subfolders.
@@ -1352,15 +1406,23 @@ class OpemFOAMCase(object):
             raise CaseFoldersNotCreatedError()
 
         # write stl files to triSurface
-        # for surface in self
+        # for geometry in self
         if self.isSnappyHexMesh:
             # collect stl strings
-            _stl = (BFSurface.toStlString() for BFSurface in self.BFSurfaces)
+            _stl = (BFGeometry.toStlString() for BFGeometry in self.BFGeometries)
             # write stl to stl file
             with open(os.path.join(self.constantDir,
                                    "triSurface\\%s.stl" % self.projectName),
                       'wb') as outf:
                 outf.write("\n\n".join(_stl))
+
+        if self.refinementRegions:
+            for region in self.refinementRegions:
+                with open(
+                    os.path.join(self.constantDir,
+                                 "triSurface\\%s.stl" % region.name), 'wb') as outf:
+
+                    outf.write(region.toStlString())
 
         if self.version < 3:
             # write blockMeshDict to polyMesh
@@ -1402,12 +1464,11 @@ class OpemFOAMCase(object):
 
     # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #
-    def blockMesh(self, run=True, log=True, removeContent=True):
+    def blockMesh(self, args=None, removeContent=True, run=True, wait=True):
         """Run meshBlock command for this case.
 
         Args:
-            removeContent: Remove current content of the folder except for
-                blockMeshDict
+            removeContent: Remove current content of the folder
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
@@ -1416,60 +1477,90 @@ class OpemFOAMCase(object):
         if removeContent:
             self.removePolyMeshContent()
 
-        return self.__writeAndRunCommands('blockMesh', ('blockMesh',), run, log)
+        return self.__writeAndRunCommands('blockMesh', 'blockMesh', args, None,
+                                          run, wait)
 
-    def snappyHexMesh(self, run=True, log=True):
+    def snappyHexMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run snappyHexMesh command for this case."""
-        return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
-                                          run, log)
+        return self.__writeAndRunCommands('snappyHexMesh', 'snappyHexMesh',
+                                          args, decomposeParDict, run, wait)
 
-    def meshCombo(self, run=True, log=True):
-        """Run meshBlock and snappyHexMesh.
-
-        Returns:
-            A tuple as (success, err). success is a boolen. err is None in case
-            of success otherwise the error message as a string.
-        """
-        return self.__writeAndRunCommands('meshCombo',
-                                          ('blockMesh', 'snappyHexMesh'),
-                                          run, log)
-
-    def checkMesh(self, run=True, log=True):
+    def checkMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('checkMesh', ('checkMesh',), run, log)
+        return self.__writeAndRunCommands('checkMesh', 'checkMesh', args,
+                                          decomposeParDict, run, wait)
 
-    def simpleFoam(self, run=True, log=True):
+    def simpleFoam(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run, log)
+        return self.__writeAndRunCommands('simpleFoam', 'simpleFoam', args,
+                                          decomposeParDict, run, wait)
 
     # ************************* OpenFOAM Commands ************************* #
     # *************************        END        ************************* #
 
-    def __writeAndRunCommands(self, name, commands, run=True, log=True):
+    def isPolyMeshSnappyHexMesh(self):
+        """Check if the mesh in polyMesh folder is snappyHexMesh."""
+        return len(os.listdir(os.path.join(self.constantDir, "polyMesh"))) > 5
+
+    def __writeAndRunCommands(self, name, command, args=None,
+                              decomposeParDict=None, run=True, wait=True):
         """Write batch files for commands and run them.
 
-        Returns:
-            A tuple as (success, err). success is a boolen. err is None in case
-            of success otherwise the error message as a string.
+        returns:
+            If run it reaturns a namedtuple.
+                (success, error, process, logfiles, errorfiles).
+                success: as a boolen.
+                error: None in case of success otherwise the error message as
+                    a string.
+                process: Popen process.
+                logfiles: List of fullpath to log files.
+                errorfiles: List of fullpath to error files.
         """
-        _batchString = self.runmanager.command(commands,
-                                               includeHeader=True,
-                                               log=log)
+        log = namedtuple('log', 'success error process logfiles errorfiles')
+
+        if decomposeParDict:
+            decomposeParDict.save(self.projectDir)
+
+        _batchString, logfiles, errfiles = self.runmanager.command(
+            command, args, decomposeParDict=decomposeParDict, includeHeader=True
+        )
+
         _fpath = os.path.join(self.etcDir, '%s.bat' % name)
+
+        # write batch file to drive
         wfile(_fpath, _batchString)
 
+        # generate fullpath for files
+        logfiles = tuple(os.path.normpath(os.path.join(self.etcDir, f))
+                         for f in logfiles)
+
+        errfiles = tuple(os.path.normpath(os.path.join(self.etcDir, f))
+                         for f in errfiles)
+
         if run:
-            return runbatchfile(_fpath, printLog=log)
+
+            p = runbatchfile(_fpath, wait=wait)
+
+            if p.poll:
+                # if the analysis is over check log files and error files
+                checkFiles(logfiles)
+                success, err = checkFiles(errfiles)
+                return log(success, err, p, logfiles, errfiles)
+            else:
+                # analysis is still running return Popen process
+                return log(True, None, p, logfiles, errfiles)
+        else:
+            return log(True, None, None, logfiles, errfiles)
 
     def getSnappyHexMeshFolders(self):
         """Return sorted list of numerical folders."""
@@ -1510,7 +1601,10 @@ class OpemFOAMCase(object):
         _t = os.path.join(self.constantDir, "polyMesh")
 
         # copy files to constant/polyMesh
-        copy_tree(_s, _t)
+        try:
+            copy_tree(_s, _t)
+        except Exception as e:
+            print "Failed to copy snappyHexMesh folder: {}".format(e)
 
     def renameSnappyHexMeshFolders(self):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa."""
@@ -1530,8 +1624,11 @@ class OpemFOAMCase(object):
 
             # rename them starting from 1
             for f in _folders:
-                os.rename(os.path.join(self.projectDir, f),
-                          os.path.join(self.projectDir, '%s.org' % f))
+                try:
+                    os.rename(os.path.join(self.projectDir, f),
+                              os.path.join(self.projectDir, '%s.org' % f))
+                except Exception as e:
+                    raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
 
             self._isSnappyHexMeshFoldersRenamed = True
 
@@ -1556,18 +1653,38 @@ class OpemFOAMCase(object):
         """Remove results folder."""
         _folders = self.getResultFolders()
         for _f in _folders:
-            rmtree(os.path.join(self.projectDir, _f))
+            try:
+                rmtree(os.path.join(self.projectDir, _f))
+            except Exception as e:
+                print 'Failed to remove {}:\n{}'.format(_f, e)
+
+    def removePostProcessingFolder(self):
+        """Remove post postProcessing folder."""
+        _f = os.path.join(self.projectDir, 'postProcessing')
+
+        if not os.path.isdir(_f):
+            return
+
+        try:
+            rmtree(_f)
+        except Exception as e:
+            print 'Failed to remove postProcessing folder:\n{}'.format(e)
 
     def removePolyMeshContent(self):
         """Remove results folder."""
         folder = os.path.join(self.constantDir, 'polyMesh')
         for _f in os.listdir(folder):
             if _f != 'blockMeshDict':
-                os.remove(os.path.join(folder, _f))
+                _fp = os.path.join(folder, _f)
+                if os.path.isfile(_fp):
+                    os.remove(_fp)
+                elif os.path.isdir(_fp):
+                    rmtree(_fp)
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
-              removeResultFolders=False):
+              removeResultFolders=False,
+              removePostProcessingFolder=False):
         """Purge case folder."""
         if removePolyMeshContent:
             self.removePolyMeshContent()
@@ -1575,6 +1692,8 @@ class OpemFOAMCase(object):
             self.removeSnappyHexMeshFolders()
         if removeResultFolders:
             self.removeResultFolders()
+        if removePostProcessingFolder:
+            self.removePostProcessingFolder()
 
     # *************************** Post Process **************************** #
     def calculateMeshOrthogonality(self, useCurrntCheckMeshLog=False):
@@ -1585,8 +1704,8 @@ class OpemFOAMCase(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            success, err = self.checkMesh()
-            assert success, err
+            log = self.checkMesh(args=('latestTime',))
+            assert log.success, log.error
 
         f = os.path.join(self.projectDir, 'etc/checkMesh.log')
         assert os.path.isfile(f), 'Failed to find {}.'.format(f)
@@ -1602,13 +1721,13 @@ class OpemFOAMCase(object):
 
         return float(maximum), float(average)
 
-    def setFvSchemesfromAverageOrthogonality(self, averageOrthogonality):
+    def setFvSchemesfromMeshOrthogonality(self, meshOrthogonality):
         """Set fvSchemes based on mesh orthogonality.
 
         Check pp. 45-50 of this document:
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
         """
-        self.fvSchemes = FvSchemes.fromAverageOrthogonality(averageOrthogonality)
+        self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1715,24 +1834,26 @@ class OpemFOAMCase(object):
     <pre><code>class OpemFOAMCase(object):
     """Butterfly case."""
 
-    def __init__(self, projectName, BFSurfaces, blockMeshDict,
+    def __init__(self, projectName, BFGeometries, blockMeshDict,
                  globalRefinementLevel=None, locationInMesh=None,
-                 isSnappyHexMesh=False, isABLConditionsIncluded=False,
-                 isInitialConditionsIncluded=False):
+                 isSnappyHexMesh=False):
         """Init project."""
         self.username = os.getenv("USERNAME")
         self.version = float(Version.OFVer)
         self.projectName = projectName
         self.runmanager = RunManager(self.projectName)
-        self.BFSurfaces = BFSurfaces
+        self.BFGeometries = BFGeometries
 
         # meshing - constant
         self.blockMeshDict = blockMeshDict
 
         # meshing - system
         self.isSnappyHexMesh = isSnappyHexMesh
-        self.snappyHexMeshDict = SnappyHexMeshDict.fromBFSurfaces(
-            projectName, BFSurfaces, globalRefinementLevel, locationInMesh)
+        self.snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
+            projectName, BFGeometries, globalRefinementLevel, locationInMesh)
+
+        # place holder for refinment regions
+        self.__refinementRegions = []
 
         # constant folder
         if self.version < 3:
@@ -1742,11 +1863,12 @@ class OpemFOAMCase(object):
         self.transportProperties = TransportProperties()
 
         # 0 floder
-        self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-        self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+        self.u = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.p = P.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.k = K.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.epsilon = Epsilon.fromBFGeometries(BFGeometries +
+                                                blockMeshDict.BFBlockGeometries)
+        self.nut = Nut.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
 
         # system folder
         self.fvSchemes = FvSchemes()
@@ -1756,11 +1878,8 @@ class OpemFOAMCase(object):
         self.probes = None
 
         # if any of these files are included they should be written to 0 floder
-        if not isABLConditionsIncluded:
-            self.ABLConditions = None
-
-        if not isInitialConditionsIncluded:
-            self.initialConditions = None
+        self.ABLConditions = None
+        self.initialConditions = None
 
         self._isInit = False
         self._isSnappyHexMeshFoldersRenamed = False
@@ -1774,12 +1893,10 @@ class OpemFOAMCase(object):
         _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
                     globalRefinementLevel=windTunnel.globalRefLevel,
                     locationInMesh=_locationInMesh, isSnappyHexMesh=True,
-                    isABLConditionsIncluded=True,
-                    isInitialConditionsIncluded=True)
+                    )
 
-        InitialConditions()
         _case.initialConditions = InitialConditions(
-            Uref=windTunnel.flowSpeed, z0=windTunnel.z0)
+            Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
 
         _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
 
@@ -1792,17 +1909,23 @@ class OpemFOAMCase(object):
                              'internalField': 'uniform $turbulentKE'})
         _case.epsilon.updateValues({'#include': '"initialConditions"',
                                     'internalField': 'uniform $turbulentEpsilon'})
+
+        if windTunnel.refinementRegions:
+            for region in windTunnel.refinementRegions:
+                _case.addRefinementRegion(region)
+
         return _case
 
     @classmethod
-    def fromBlocks(cls, BFSurfaces, blocks, scale):
-        """Create case from BFSurfaces and blocks.
+    def fromBlocks(cls, BFGeometries, blocks, scale):
+        """Create case from BFGeometries and blocks.
 
         This case will only be meshed using blockMesh
         """
         raise NotImplementedError("Let us know if you in real need for this method!")
-        _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
-        return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
+
+        _blockMeshDict = BlockMeshDict(scale, BFGeometries, blocks)
+        return cls(BFGeometries, _blockMeshDict, isSnappyHexMesh=False)
 
     @property
     def isInitialConditionsIncluded(self):
@@ -1843,6 +1966,11 @@ class OpemFOAMCase(object):
             self.__isABLConditionsIncluded = True
 
     @property
+    def refinementRegions(self):
+        """Get refinement regions."""
+        return self.__refinementRegions
+
+    @property
     def probes(self):
         """Get and set Probes."""
         return self.__probes
@@ -1859,6 +1987,49 @@ class OpemFOAMCase(object):
             # include probes in controlDict
             self.controlDict.include(self.probes.filename)
 
+    @staticmethod
+    def loadProbesFromProjectPath(projectPath, field, probesFolder='probes'):
+        """Return OpenFOAM probes results for a field.
+
+        Args:
+            projectPath: Path to project root folder.
+            field: Probes field (e.g. U, p, T).
+        """
+        # find probes folder
+        _basepath = os.path.join(projectPath, 'postProcessing', probesFolder)
+
+        folders = [os.path.join(_basepath, f) for f in os.listdir(_basepath)
+                   if (os.path.isdir(os.path.join(_basepath, f)) and
+                       f.isdigit())]
+
+        # sort based on last modified
+        folders = sorted(folders, key=lambda folder:
+                         max(tuple(os.stat(os.path.join(folder, f)).st_mtime
+                                   for f in os.listdir(folder))))
+
+        # load the last line in the file
+        _f = os.path.join(_basepath, str(folders[-1]), field)
+
+        assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
+        _res = readLastLine(_f).split()[1:]
+
+        # convert values to tuple or number
+        _rawres = tuple(d.strip() for d in readLastLine(_f).split()
+                        if d.strip())[1:]
+
+        try:
+            # it's a number
+            _res = tuple(float(r) for r in _rawres)
+        except ValueError:
+            try:
+                # it's a vector
+                _res = tuple(eval(','.join(_rawres[3 * i: 3 * (i + 1)]))
+                             for i in range(int(len(_rawres) / 3)))
+            except Exception as e:
+                raise Exception('\nFailed to load probes:\n{}'.format(e))
+
+        return _res
+
     def loadProbes(self, field):
         """Return OpenFOAM probes results for a field."""
         if not self.probes:
@@ -1868,24 +2039,12 @@ class OpemFOAMCase(object):
             raise ValueError("Can't find {} in {}.".format(field,
                                                            self.probes.fields))
 
-        # load the last line in the file
-        _f = os.path.join(self.projectDir, 'postProcessing',
-                          self.probes.filename, '0', field)
+        self.loadProbesFromProjectPath(
+            self.projectDir, field, self.probes.filename)
 
-        assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
-
-        _res = readLastLine(_f).split()[1:]
-
-        # convert values to tuple or number
-        _rawres = readLastLine(_f).split('      ')[2:]
-        if _rawres[1].find('(') > -1:
-            # it's a vector
-            _res = (tuple(eval(r.strip().replace(' ', ',')) for r in _rawres if r))
-        else:
-            # it's a number
-            _res = (tuple(float(r) for r in _rawres))
-
-        return _res
+    def loadSkippedProbes(self):
+        """Get list of probes that are skipped in calculation."""
+        return loadSkippedProbes(os.path.join(self.projectDir, 'etc', 'simpleFoam.log'))
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
@@ -1901,6 +2060,14 @@ class OpemFOAMCase(object):
         """Return OpenFOAM mesh as a Rhino mesh."""
         # This is a abstract property which should be implemented in subclasses
         raise NotImplementedError()
+
+    def addRefinementRegion(self, refinementRegion):
+        """Add refinement regions to this case."""
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
+
+        self.__refinementRegions.append(refinementRegion)
+        self.snappyHexMeshDict.addRefinementRegion(refinementRegion)
 
     def createCaseFolders(self, workingDir=None):
         """Create project folders and subfolders.
@@ -1971,15 +2138,23 @@ class OpemFOAMCase(object):
             raise CaseFoldersNotCreatedError()
 
         # write stl files to triSurface
-        # for surface in self
+        # for geometry in self
         if self.isSnappyHexMesh:
             # collect stl strings
-            _stl = (BFSurface.toStlString() for BFSurface in self.BFSurfaces)
+            _stl = (BFGeometry.toStlString() for BFGeometry in self.BFGeometries)
             # write stl to stl file
             with open(os.path.join(self.constantDir,
                                    "triSurface\\%s.stl" % self.projectName),
                       'wb') as outf:
                 outf.write("\n\n".join(_stl))
+
+        if self.refinementRegions:
+            for region in self.refinementRegions:
+                with open(
+                    os.path.join(self.constantDir,
+                                 "triSurface\\%s.stl" % region.name), 'wb') as outf:
+
+                    outf.write(region.toStlString())
 
         if self.version < 3:
             # write blockMeshDict to polyMesh
@@ -2021,12 +2196,11 @@ class OpemFOAMCase(object):
 
     # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #
-    def blockMesh(self, run=True, log=True, removeContent=True):
+    def blockMesh(self, args=None, removeContent=True, run=True, wait=True):
         """Run meshBlock command for this case.
 
         Args:
-            removeContent: Remove current content of the folder except for
-                blockMeshDict
+            removeContent: Remove current content of the folder
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
@@ -2035,60 +2209,90 @@ class OpemFOAMCase(object):
         if removeContent:
             self.removePolyMeshContent()
 
-        return self.__writeAndRunCommands('blockMesh', ('blockMesh',), run, log)
+        return self.__writeAndRunCommands('blockMesh', 'blockMesh', args, None,
+                                          run, wait)
 
-    def snappyHexMesh(self, run=True, log=True):
+    def snappyHexMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run snappyHexMesh command for this case."""
-        return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
-                                          run, log)
+        return self.__writeAndRunCommands('snappyHexMesh', 'snappyHexMesh',
+                                          args, decomposeParDict, run, wait)
 
-    def meshCombo(self, run=True, log=True):
-        """Run meshBlock and snappyHexMesh.
-
-        Returns:
-            A tuple as (success, err). success is a boolen. err is None in case
-            of success otherwise the error message as a string.
-        """
-        return self.__writeAndRunCommands('meshCombo',
-                                          ('blockMesh', 'snappyHexMesh'),
-                                          run, log)
-
-    def checkMesh(self, run=True, log=True):
+    def checkMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('checkMesh', ('checkMesh',), run, log)
+        return self.__writeAndRunCommands('checkMesh', 'checkMesh', args,
+                                          decomposeParDict, run, wait)
 
-    def simpleFoam(self, run=True, log=True):
+    def simpleFoam(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run, log)
+        return self.__writeAndRunCommands('simpleFoam', 'simpleFoam', args,
+                                          decomposeParDict, run, wait)
 
     # ************************* OpenFOAM Commands ************************* #
     # *************************        END        ************************* #
 
-    def __writeAndRunCommands(self, name, commands, run=True, log=True):
+    def isPolyMeshSnappyHexMesh(self):
+        """Check if the mesh in polyMesh folder is snappyHexMesh."""
+        return len(os.listdir(os.path.join(self.constantDir, "polyMesh"))) > 5
+
+    def __writeAndRunCommands(self, name, command, args=None,
+                              decomposeParDict=None, run=True, wait=True):
         """Write batch files for commands and run them.
 
-        Returns:
-            A tuple as (success, err). success is a boolen. err is None in case
-            of success otherwise the error message as a string.
+        returns:
+            If run it reaturns a namedtuple.
+                (success, error, process, logfiles, errorfiles).
+                success: as a boolen.
+                error: None in case of success otherwise the error message as
+                    a string.
+                process: Popen process.
+                logfiles: List of fullpath to log files.
+                errorfiles: List of fullpath to error files.
         """
-        _batchString = self.runmanager.command(commands,
-                                               includeHeader=True,
-                                               log=log)
+        log = namedtuple('log', 'success error process logfiles errorfiles')
+
+        if decomposeParDict:
+            decomposeParDict.save(self.projectDir)
+
+        _batchString, logfiles, errfiles = self.runmanager.command(
+            command, args, decomposeParDict=decomposeParDict, includeHeader=True
+        )
+
         _fpath = os.path.join(self.etcDir, '%s.bat' % name)
+
+        # write batch file to drive
         wfile(_fpath, _batchString)
 
+        # generate fullpath for files
+        logfiles = tuple(os.path.normpath(os.path.join(self.etcDir, f))
+                         for f in logfiles)
+
+        errfiles = tuple(os.path.normpath(os.path.join(self.etcDir, f))
+                         for f in errfiles)
+
         if run:
-            return runbatchfile(_fpath, printLog=log)
+
+            p = runbatchfile(_fpath, wait=wait)
+
+            if p.poll:
+                # if the analysis is over check log files and error files
+                checkFiles(logfiles)
+                success, err = checkFiles(errfiles)
+                return log(success, err, p, logfiles, errfiles)
+            else:
+                # analysis is still running return Popen process
+                return log(True, None, p, logfiles, errfiles)
+        else:
+            return log(True, None, None, logfiles, errfiles)
 
     def getSnappyHexMeshFolders(self):
         """Return sorted list of numerical folders."""
@@ -2129,7 +2333,10 @@ class OpemFOAMCase(object):
         _t = os.path.join(self.constantDir, "polyMesh")
 
         # copy files to constant/polyMesh
-        copy_tree(_s, _t)
+        try:
+            copy_tree(_s, _t)
+        except Exception as e:
+            print "Failed to copy snappyHexMesh folder: {}".format(e)
 
     def renameSnappyHexMeshFolders(self):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa."""
@@ -2149,8 +2356,11 @@ class OpemFOAMCase(object):
 
             # rename them starting from 1
             for f in _folders:
-                os.rename(os.path.join(self.projectDir, f),
-                          os.path.join(self.projectDir, '%s.org' % f))
+                try:
+                    os.rename(os.path.join(self.projectDir, f),
+                              os.path.join(self.projectDir, '%s.org' % f))
+                except Exception as e:
+                    raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
 
             self._isSnappyHexMeshFoldersRenamed = True
 
@@ -2175,18 +2385,38 @@ class OpemFOAMCase(object):
         """Remove results folder."""
         _folders = self.getResultFolders()
         for _f in _folders:
-            rmtree(os.path.join(self.projectDir, _f))
+            try:
+                rmtree(os.path.join(self.projectDir, _f))
+            except Exception as e:
+                print 'Failed to remove {}:\n{}'.format(_f, e)
+
+    def removePostProcessingFolder(self):
+        """Remove post postProcessing folder."""
+        _f = os.path.join(self.projectDir, 'postProcessing')
+
+        if not os.path.isdir(_f):
+            return
+
+        try:
+            rmtree(_f)
+        except Exception as e:
+            print 'Failed to remove postProcessing folder:\n{}'.format(e)
 
     def removePolyMeshContent(self):
         """Remove results folder."""
         folder = os.path.join(self.constantDir, 'polyMesh')
         for _f in os.listdir(folder):
             if _f != 'blockMeshDict':
-                os.remove(os.path.join(folder, _f))
+                _fp = os.path.join(folder, _f)
+                if os.path.isfile(_fp):
+                    os.remove(_fp)
+                elif os.path.isdir(_fp):
+                    rmtree(_fp)
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
-              removeResultFolders=False):
+              removeResultFolders=False,
+              removePostProcessingFolder=False):
         """Purge case folder."""
         if removePolyMeshContent:
             self.removePolyMeshContent()
@@ -2194,6 +2424,8 @@ class OpemFOAMCase(object):
             self.removeSnappyHexMeshFolders()
         if removeResultFolders:
             self.removeResultFolders()
+        if removePostProcessingFolder:
+            self.removePostProcessingFolder()
 
     # *************************** Post Process **************************** #
     def calculateMeshOrthogonality(self, useCurrntCheckMeshLog=False):
@@ -2204,8 +2436,8 @@ class OpemFOAMCase(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            success, err = self.checkMesh()
-            assert success, err
+            log = self.checkMesh(args=('latestTime',))
+            assert log.success, log.error
 
         f = os.path.join(self.projectDir, 'etc/checkMesh.log')
         assert os.path.isfile(f), 'Failed to find {}.'.format(f)
@@ -2221,13 +2453,13 @@ class OpemFOAMCase(object):
 
         return float(maximum), float(average)
 
-    def setFvSchemesfromAverageOrthogonality(self, averageOrthogonality):
+    def setFvSchemesfromMeshOrthogonality(self, meshOrthogonality):
         """Set fvSchemes based on mesh orthogonality.
 
         Check pp. 45-50 of this document:
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
         """
-        self.fvSchemes = FvSchemes.fromAverageOrthogonality(averageOrthogonality)
+        self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -2247,6 +2479,63 @@ class OpemFOAMCase(object):
           <li><a href="#butterfly.core.OpemFOAMCase">OpemFOAMCase</a></li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.core.OpemFOAMCase.loadProbesFromProjectPath">
+    <p>def <span class="ident">loadProbesFromProjectPath</span>(</p><p>projectPath, field, probesFolder=&#39;probes&#39;)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return OpenFOAM probes results for a field.</p>
+<p>Args:
+    projectPath: Path to project root folder.
+    field: Probes field (e.g. U, p, T).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.loadProbesFromProjectPath', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.core.OpemFOAMCase.loadProbesFromProjectPath" class="source">
+    <pre><code>@staticmethod
+def loadProbesFromProjectPath(projectPath, field, probesFolder='probes'):
+    """Return OpenFOAM probes results for a field.
+    Args:
+        projectPath: Path to project root folder.
+        field: Probes field (e.g. U, p, T).
+    """
+    # find probes folder
+    _basepath = os.path.join(projectPath, 'postProcessing', probesFolder)
+    folders = [os.path.join(_basepath, f) for f in os.listdir(_basepath)
+               if (os.path.isdir(os.path.join(_basepath, f)) and
+                   f.isdigit())]
+    # sort based on last modified
+    folders = sorted(folders, key=lambda folder:
+                     max(tuple(os.stat(os.path.join(folder, f)).st_mtime
+                               for f in os.listdir(folder))))
+    # load the last line in the file
+    _f = os.path.join(_basepath, str(folders[-1]), field)
+    assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
+    _res = readLastLine(_f).split()[1:]
+    # convert values to tuple or number
+    _rawres = tuple(d.strip() for d in readLastLine(_f).split()
+                    if d.strip())[1:]
+    try:
+        # it's a number
+        _res = tuple(float(r) for r in _rawres)
+    except ValueError:
+        try:
+            # it's a vector
+            _res = tuple(eval(','.join(_rawres[3 * i: 3 * (i + 1)]))
+                         for i in range(int(len(_rawres) / 3)))
+        except Exception as e:
+            raise Exception('\nFailed to load probes:\n{}'.format(e))
+    return _res
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.core.OpemFOAMCase.ABLConditions" class="name">var <span class="ident">ABLConditions</span></p>
@@ -2254,13 +2543,12 @@ class OpemFOAMCase(object):
 
             
   
-    <div class="desc"><p>Get ABLConditions.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.core.OpemFOAMCase.BFSurfaces" class="name">var <span class="ident">BFSurfaces</span></p>
+            <p id="butterfly.core.OpemFOAMCase.BFGeometries" class="name">var <span class="ident">BFGeometries</span></p>
             
 
             
@@ -2325,7 +2613,6 @@ class OpemFOAMCase(object):
 
             
   
-    <div class="desc"><p>Get initialConditions.</p></div>
   <div class="source_cont">
 </div>
 
@@ -2413,6 +2700,17 @@ class OpemFOAMCase(object):
 
             </div>
             <div class="item">
+            <p id="butterfly.core.OpemFOAMCase.refinementRegions" class="name">var <span class="ident">refinementRegions</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get refinement regions.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.core.OpemFOAMCase.runmanager" class="name">var <span class="ident">runmanager</span></p>
             
 
@@ -2476,7 +2774,7 @@ class OpemFOAMCase(object):
             
   <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, projectName, BFSurfaces, blockMeshDict, globalRefinementLevel=None, locationInMesh=None, isSnappyHexMesh=False, isABLConditionsIncluded=False, isInitialConditionsIncluded=False)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, projectName, BFGeometries, blockMeshDict, globalRefinementLevel=None, locationInMesh=None, isSnappyHexMesh=False)</p>
     </div>
     
 
@@ -2486,22 +2784,23 @@ class OpemFOAMCase(object):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.core.OpemFOAMCase.__init__" class="source">
-    <pre><code>def __init__(self, projectName, BFSurfaces, blockMeshDict,
+    <pre><code>def __init__(self, projectName, BFGeometries, blockMeshDict,
              globalRefinementLevel=None, locationInMesh=None,
-             isSnappyHexMesh=False, isABLConditionsIncluded=False,
-             isInitialConditionsIncluded=False):
+             isSnappyHexMesh=False):
     """Init project."""
     self.username = os.getenv("USERNAME")
     self.version = float(Version.OFVer)
     self.projectName = projectName
     self.runmanager = RunManager(self.projectName)
-    self.BFSurfaces = BFSurfaces
+    self.BFGeometries = BFGeometries
     # meshing - constant
     self.blockMeshDict = blockMeshDict
     # meshing - system
     self.isSnappyHexMesh = isSnappyHexMesh
-    self.snappyHexMeshDict = SnappyHexMeshDict.fromBFSurfaces(
-        projectName, BFSurfaces, globalRefinementLevel, locationInMesh)
+    self.snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
+        projectName, BFGeometries, globalRefinementLevel, locationInMesh)
+    # place holder for refinment regions
+    self.__refinementRegions = []
     # constant folder
     if self.version < 3:
         self.RASProperties = RASProperties()
@@ -2509,21 +2808,20 @@ class OpemFOAMCase(object):
         self.turbulenceProperties = TurbulenceProperties()
     self.transportProperties = TransportProperties()
     # 0 floder
-    self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+    self.u = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+    self.p = P.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+    self.k = K.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+    self.epsilon = Epsilon.fromBFGeometries(BFGeometries +
+                                            blockMeshDict.BFBlockGeometries)
+    self.nut = Nut.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
     # system folder
     self.fvSchemes = FvSchemes()
     self.fvSolution = FvSolution()
     self.controlDict = ControlDict()
     self.probes = None
     # if any of these files are included they should be written to 0 floder
-    if not isABLConditionsIncluded:
-        self.ABLConditions = None
-    if not isInitialConditionsIncluded:
-        self.initialConditions = None
+    self.ABLConditions = None
+    self.initialConditions = None
     self._isInit = False
     self._isSnappyHexMeshFoldersRenamed = False
 </code></pre>
@@ -2556,8 +2854,33 @@ class OpemFOAMCase(object):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.core.OpemFOAMCase.addRefinementRegion">
+    <p>def <span class="ident">addRefinementRegion</span>(</p><p>self, refinementRegion)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Add refinement regions to this case.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.addRefinementRegion', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.core.OpemFOAMCase.addRefinementRegion" class="source">
+    <pre><code>def addRefinementRegion(self, refinementRegion):
+    """Add refinement regions to this case."""
+    assert hasattr(refinementRegion, 'isRefinementRegion'), \
+        "{} is not a refinement region.".format(refinementRegion)
+    self.__refinementRegions.append(refinementRegion)
+    self.snappyHexMeshDict.addRefinementRegion(refinementRegion)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.blockMesh">
-    <p>def <span class="ident">blockMesh</span>(</p><p>self, run=True, log=True, removeContent=True)</p>
+    <p>def <span class="ident">blockMesh</span>(</p><p>self, args=None, removeContent=True, run=True, wait=True)</p>
     </div>
     
 
@@ -2565,26 +2888,25 @@ class OpemFOAMCase(object):
   
     <div class="desc"><p>Run meshBlock command for this case.</p>
 <p>Args:
-    removeContent: Remove current content of the folder except for
-        blockMeshDict</p>
+    removeContent: Remove current content of the folder</p>
 <p>Returns:
     A tuple as (success, err). success is a boolen. err is None in case
     of success otherwise the error message as a string.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.blockMesh', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.core.OpemFOAMCase.blockMesh" class="source">
-    <pre><code>def blockMesh(self, run=True, log=True, removeContent=True):
+    <pre><code>def blockMesh(self, args=None, removeContent=True, run=True, wait=True):
     """Run meshBlock command for this case.
     Args:
-        removeContent: Remove current content of the folder except for
-            blockMeshDict
+        removeContent: Remove current content of the folder
     Returns:
         A tuple as (success, err). success is a boolen. err is None in case
         of success otherwise the error message as a string.
     """
     if removeContent:
         self.removePolyMeshContent()
-    return self.__writeAndRunCommands('blockMesh', ('blockMesh',), run, log)
+    return self.__writeAndRunCommands('blockMesh', 'blockMesh', args, None,
+                                      run, wait)
 </code></pre>
   </div>
 </div>
@@ -2614,8 +2936,8 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
     try case.setFvSchemes(averageOrthogonality)
     """
     if not useCurrntCheckMeshLog:
-        success, err = self.checkMesh()
-        assert success, err
+        log = self.checkMesh(args=('latestTime',))
+        assert log.success, log.error
     f = os.path.join(self.projectDir, 'etc/checkMesh.log')
     assert os.path.isfile(f), 'Failed to find {}.'.format(f)
     with open(f, 'rb') as inf:
@@ -2634,7 +2956,7 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.checkMesh">
-    <p>def <span class="ident">checkMesh</span>(</p><p>self, run=True, log=True)</p>
+    <p>def <span class="ident">checkMesh</span>(</p><p>self, args=None, decomposeParDict=None, run=True, wait=True)</p>
     </div>
     
 
@@ -2647,13 +2969,14 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.checkMesh', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.core.OpemFOAMCase.checkMesh" class="source">
-    <pre><code>def checkMesh(self, run=True, log=True):
+    <pre><code>def checkMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
     """Run simpleFoam command for this case.
     Returns:
         A tuple as (success, err). success is a boolen. err is None in case
         of success otherwise the error message as a string.
     """
-    return self.__writeAndRunCommands('checkMesh', ('checkMesh',), run, log)
+    return self.__writeAndRunCommands('checkMesh', 'checkMesh', args,
+                                      decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>
@@ -2686,7 +3009,10 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
         _s = os.path.join(self.projectDir, _folders[-1], 'polyMesh')
     _t = os.path.join(self.constantDir, "polyMesh")
     # copy files to constant/polyMesh
-    copy_tree(_s, _t)
+    try:
+        copy_tree(_s, _t)
+    except Exception as e:
+        print "Failed to copy snappyHexMesh folder: {}".format(e)
 </code></pre>
   </div>
 </div>
@@ -2742,25 +3068,25 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.fromBlocks">
-    <p>def <span class="ident">fromBlocks</span>(</p><p>cls, BFSurfaces, blocks, scale)</p>
+    <p>def <span class="ident">fromBlocks</span>(</p><p>cls, BFGeometries, blocks, scale)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Create case from BFSurfaces and blocks.</p>
+    <div class="desc"><p>Create case from BFGeometries and blocks.</p>
 <p>This case will only be meshed using blockMesh</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.fromBlocks', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.core.OpemFOAMCase.fromBlocks" class="source">
     <pre><code>@classmethod
-def fromBlocks(cls, BFSurfaces, blocks, scale):
-    """Create case from BFSurfaces and blocks.
+def fromBlocks(cls, BFGeometries, blocks, scale):
+    """Create case from BFGeometries and blocks.
     This case will only be meshed using blockMesh
     """
     raise NotImplementedError("Let us know if you in real need for this method!")
-    _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
-    return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
+    _blockMeshDict = BlockMeshDict(scale, BFGeometries, blocks)
+    return cls(BFGeometries, _blockMeshDict, isSnappyHexMesh=False)
 </code></pre>
   </div>
 </div>
@@ -2788,11 +3114,9 @@ def fromWindTunnel(cls, windTunnel):
     _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
                 globalRefinementLevel=windTunnel.globalRefLevel,
                 locationInMesh=_locationInMesh, isSnappyHexMesh=True,
-                isABLConditionsIncluded=True,
-                isInitialConditionsIncluded=True)
-    InitialConditions()
+                )
     _case.initialConditions = InitialConditions(
-        Uref=windTunnel.flowSpeed, z0=windTunnel.z0)
+        Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
     _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
     # edit files in 0 folder
     _case.u.updateValues({'#include': '"initialConditions"',
@@ -2803,6 +3127,9 @@ def fromWindTunnel(cls, windTunnel):
                          'internalField': 'uniform $turbulentKE'})
     _case.epsilon.updateValues({'#include': '"initialConditions"',
                                 'internalField': 'uniform $turbulentEpsilon'})
+    if windTunnel.refinementRegions:
+        for region in windTunnel.refinementRegions:
+            _case.addRefinementRegion(region)
     return _case
 </code></pre>
   </div>
@@ -2860,6 +3187,28 @@ def fromWindTunnel(cls, windTunnel):
               )]
     _f.sort()
     return tuple(str(f) for f in _f)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.core.OpemFOAMCase.isPolyMeshSnappyHexMesh">
+    <p>def <span class="ident">isPolyMeshSnappyHexMesh</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Check if the mesh in polyMesh folder is snappyHexMesh.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.isPolyMeshSnappyHexMesh', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.core.OpemFOAMCase.isPolyMeshSnappyHexMesh" class="source">
+    <pre><code>def isPolyMeshSnappyHexMesh(self):
+    """Check if the mesh in polyMesh folder is snappyHexMesh."""
+    return len(os.listdir(os.path.join(self.constantDir, "polyMesh"))) > 5
 </code></pre>
   </div>
 </div>
@@ -2932,20 +3281,30 @@ def fromWindTunnel(cls, windTunnel):
     if field not in self.probes.fields:
         raise ValueError("Can't find {} in {}.".format(field,
                                                        self.probes.fields))
-    # load the last line in the file
-    _f = os.path.join(self.projectDir, 'postProcessing',
-                      self.probes.filename, '0', field)
-    assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
-    _res = readLastLine(_f).split()[1:]
-    # convert values to tuple or number
-    _rawres = readLastLine(_f).split('      ')[2:]
-    if _rawres[1].find('(') > -1:
-        # it's a vector
-        _res = (tuple(eval(r.strip().replace(' ', ',')) for r in _rawres if r))
-    else:
-        # it's a number
-        _res = (tuple(float(r) for r in _rawres))
-    return _res
+    self.loadProbesFromProjectPath(
+        self.projectDir, field, self.probes.filename)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.core.OpemFOAMCase.loadSkippedProbes">
+    <p>def <span class="ident">loadSkippedProbes</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Get list of probes that are skipped in calculation.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.loadSkippedProbes', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.core.OpemFOAMCase.loadSkippedProbes" class="source">
+    <pre><code>def loadSkippedProbes(self):
+    """Get list of probes that are skipped in calculation."""
+    return loadSkippedProbes(os.path.join(self.projectDir, 'etc', 'simpleFoam.log'))
 </code></pre>
   </div>
 </div>
@@ -2977,37 +3336,6 @@ def fromWindTunnel(cls, windTunnel):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.core.OpemFOAMCase.meshCombo">
-    <p>def <span class="ident">meshCombo</span>(</p><p>self, run=True, log=True)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Run meshBlock and snappyHexMesh.</p>
-<p>Returns:
-    A tuple as (success, err). success is a boolen. err is None in case
-    of success otherwise the error message as a string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.meshCombo', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.core.OpemFOAMCase.meshCombo" class="source">
-    <pre><code>def meshCombo(self, run=True, log=True):
-    """Run meshBlock and snappyHexMesh.
-    Returns:
-        A tuple as (success, err). success is a boolen. err is None in case
-        of success otherwise the error message as a string.
-    """
-    return self.__writeAndRunCommands('meshCombo',
-                                      ('blockMesh', 'snappyHexMesh'),
-                                      run, log)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.populateConstantContents">
     <p>def <span class="ident">populateConstantContents</span>(</p><p>self)</p>
     </div>
@@ -3024,15 +3352,21 @@ def fromWindTunnel(cls, windTunnel):
     if not self._isInit:
         raise CaseFoldersNotCreatedError()
     # write stl files to triSurface
-    # for surface in self
+    # for geometry in self
     if self.isSnappyHexMesh:
         # collect stl strings
-        _stl = (BFSurface.toStlString() for BFSurface in self.BFSurfaces)
+        _stl = (BFGeometry.toStlString() for BFGeometry in self.BFGeometries)
         # write stl to stl file
         with open(os.path.join(self.constantDir,
                                "triSurface\\%s.stl" % self.projectName),
                   'wb') as outf:
             outf.write("\n\n".join(_stl))
+    if self.refinementRegions:
+        for region in self.refinementRegions:
+            with open(
+                os.path.join(self.constantDir,
+                             "triSurface\\%s.stl" % region.name), 'wb') as outf:
+                outf.write(region.toStlString())
     if self.version < 3:
         # write blockMeshDict to polyMesh
         self.blockMeshDict.save(self.projectDir, 'constant\\polyMesh')
@@ -3135,7 +3469,7 @@ def fromWindTunnel(cls, windTunnel):
             
   <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.purge">
-    <p>def <span class="ident">purge</span>(</p><p>self, removePolyMeshContent=True, removeSnappyHexMeshFolders=True, removeResultFolders=False)</p>
+    <p>def <span class="ident">purge</span>(</p><p>self, removePolyMeshContent=True, removeSnappyHexMeshFolders=True, removeResultFolders=False, removePostProcessingFolder=False)</p>
     </div>
     
 
@@ -3147,7 +3481,8 @@ def fromWindTunnel(cls, windTunnel):
   <div id="source-butterfly.core.OpemFOAMCase.purge" class="source">
     <pre><code>def purge(self, removePolyMeshContent=True,
           removeSnappyHexMeshFolders=True,
-          removeResultFolders=False):
+          removeResultFolders=False,
+          removePostProcessingFolder=False):
     """Purge case folder."""
     if removePolyMeshContent:
         self.removePolyMeshContent()
@@ -3155,6 +3490,8 @@ def fromWindTunnel(cls, windTunnel):
         self.removeSnappyHexMeshFolders()
     if removeResultFolders:
         self.removeResultFolders()
+    if removePostProcessingFolder:
+        self.removePostProcessingFolder()
 </code></pre>
   </div>
 </div>
@@ -3179,7 +3516,39 @@ def fromWindTunnel(cls, windTunnel):
     folder = os.path.join(self.constantDir, 'polyMesh')
     for _f in os.listdir(folder):
         if _f != 'blockMeshDict':
-            os.remove(os.path.join(folder, _f))
+            _fp = os.path.join(folder, _f)
+            if os.path.isfile(_fp):
+                os.remove(_fp)
+            elif os.path.isdir(_fp):
+                rmtree(_fp)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.core.OpemFOAMCase.removePostProcessingFolder">
+    <p>def <span class="ident">removePostProcessingFolder</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Remove post postProcessing folder.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.removePostProcessingFolder', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.core.OpemFOAMCase.removePostProcessingFolder" class="source">
+    <pre><code>def removePostProcessingFolder(self):
+    """Remove post postProcessing folder."""
+    _f = os.path.join(self.projectDir, 'postProcessing')
+    if not os.path.isdir(_f):
+        return
+    try:
+        rmtree(_f)
+    except Exception as e:
+        print 'Failed to remove postProcessing folder:\n{}'.format(e)
 </code></pre>
   </div>
 </div>
@@ -3203,7 +3572,10 @@ def fromWindTunnel(cls, windTunnel):
     """Remove results folder."""
     _folders = self.getResultFolders()
     for _f in _folders:
-        rmtree(os.path.join(self.projectDir, _f))
+        try:
+            rmtree(os.path.join(self.projectDir, _f))
+        except Exception as e:
+            print 'Failed to remove {}:\n{}'.format(_f, e)
 </code></pre>
   </div>
 </div>
@@ -3271,8 +3643,11 @@ def fromWindTunnel(cls, windTunnel):
         _folders = self.getSnappyHexMeshFolders()
         # rename them starting from 1
         for f in _folders:
-            os.rename(os.path.join(self.projectDir, f),
-                      os.path.join(self.projectDir, '%s.org' % f))
+            try:
+                os.rename(os.path.join(self.projectDir, f),
+                          os.path.join(self.projectDir, '%s.org' % f))
+            except Exception as e:
+                raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
         self._isSnappyHexMeshFoldersRenamed = True
 </code></pre>
   </div>
@@ -3282,8 +3657,8 @@ def fromWindTunnel(cls, windTunnel):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.core.OpemFOAMCase.setFvSchemesfromAverageOrthogonality">
-    <p>def <span class="ident">setFvSchemesfromAverageOrthogonality</span>(</p><p>self, averageOrthogonality)</p>
+    <div class="name def" id="butterfly.core.OpemFOAMCase.setFvSchemesfromMeshOrthogonality">
+    <p>def <span class="ident">setFvSchemesfromMeshOrthogonality</span>(</p><p>self, meshOrthogonality)</p>
     </div>
     
 
@@ -3293,14 +3668,14 @@ def fromWindTunnel(cls, windTunnel):
 <p>Check pp. 45-50 of this document:
 http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.setFvSchemesfromAverageOrthogonality', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.core.OpemFOAMCase.setFvSchemesfromAverageOrthogonality" class="source">
-    <pre><code>def setFvSchemesfromAverageOrthogonality(self, averageOrthogonality):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.setFvSchemesfromMeshOrthogonality', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.core.OpemFOAMCase.setFvSchemesfromMeshOrthogonality" class="source">
+    <pre><code>def setFvSchemesfromMeshOrthogonality(self, meshOrthogonality):
     """Set fvSchemes based on mesh orthogonality.
     Check pp. 45-50 of this document:
     http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
     """
-    self.fvSchemes = FvSchemes.fromAverageOrthogonality(averageOrthogonality)
+    self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
 </code></pre>
   </div>
 </div>
@@ -3310,7 +3685,7 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.simpleFoam">
-    <p>def <span class="ident">simpleFoam</span>(</p><p>self, run=True, log=True)</p>
+    <p>def <span class="ident">simpleFoam</span>(</p><p>self, args=None, decomposeParDict=None, run=True, wait=True)</p>
     </div>
     
 
@@ -3323,13 +3698,14 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.simpleFoam', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.core.OpemFOAMCase.simpleFoam" class="source">
-    <pre><code>def simpleFoam(self, run=True, log=True):
+    <pre><code>def simpleFoam(self, args=None, decomposeParDict=None, run=True, wait=True):
     """Run simpleFoam command for this case.
     Returns:
         A tuple as (success, err). success is a boolen. err is None in case
         of success otherwise the error message as a string.
     """
-    return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run, log)
+    return self.__writeAndRunCommands('simpleFoam', 'simpleFoam', args,
+                                      decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>
@@ -3339,7 +3715,7 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.core.OpemFOAMCase.snappyHexMesh">
-    <p>def <span class="ident">snappyHexMesh</span>(</p><p>self, run=True, log=True)</p>
+    <p>def <span class="ident">snappyHexMesh</span>(</p><p>self, args=None, decomposeParDict=None, run=True, wait=True)</p>
     </div>
     
 
@@ -3349,10 +3725,10 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.snappyHexMesh', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.core.OpemFOAMCase.snappyHexMesh" class="source">
-    <pre><code>def snappyHexMesh(self, run=True, log=True):
+    <pre><code>def snappyHexMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
     """Run snappyHexMesh command for this case."""
-    return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
-                                      run, log)
+    return self.__writeAndRunCommands('snappyHexMesh', 'snappyHexMesh',
+                                      args, decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>

@@ -993,6 +993,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.conditions.ABLConditions.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.conditions.ABLConditions.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.conditions.ABLConditions.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.conditions.ABLConditions.body">body</a></li>
@@ -1011,6 +1012,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.conditions.InitialConditions.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.conditions.InitialConditions.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.conditions.InitialConditions.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.conditions.InitialConditions.body">body</a></li>
@@ -1060,6 +1062,7 @@ class ABLConditions(Condition):
     __defaultValues['flowDir'] = '(0 1 0)'  # direction of flow
     __defaultValues['zDir'] = '(0 0 1)'  # z direction (0 0 1) always for our cases
     __defaultValues['zGround'] = 'uniform 0'  # min z value of the bounding box
+    __defaultValues['value'] = '$internalField'
 
     def __init__(self, values=None):
         """Init class."""
@@ -1122,12 +1125,12 @@ class InitialConditions(Condition):
                 (default: False).
         """
         _Uabl = self.Uref * self.k / math.log((self.Zref + self.z0) / self.z0)
-        epsilon = _Uabl ** 3 / self.k * (self.Zref + self.z0)
+        epsilon = _Uabl ** 3 / (self.k * (self.Zref + self.z0))
         k = _Uabl ** 2 / math.sqrt(self.Cm)
 
         if init:
-            self.__defaultValues['turbulentKE'] = '%.3f' % k
-            self.__defaultValues['turbulentEpsilon'] = '%.3f' % epsilon
+            self.__defaultValues['turbulentKE'] = '%.5f' % k
+            self.__defaultValues['turbulentEpsilon'] = '%.5f' % epsilon
         else:
             self.values['turbulentKE'] = str(k)
             self.values['turbulentEpsilon'] = str(epsilon)
@@ -1217,6 +1220,7 @@ class InitialConditions(Condition):
     __defaultValues['flowDir'] = '(0 1 0)'  # direction of flow
     __defaultValues['zDir'] = '(0 0 1)'  # z direction (0 0 1) always for our cases
     __defaultValues['zGround'] = 'uniform 0'  # min z value of the bounding box
+    __defaultValues['value'] = '$internalField'
 
     def __init__(self, values=None):
         """Init class."""
@@ -1252,6 +1256,36 @@ class InitialConditions(Condition):
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.conditions.ABLConditions.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.conditions.ABLConditions.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.conditions.ABLConditions.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.conditions.ABLConditions.flowDir" class="name">var <span class="ident">flowDir</span></p>
@@ -1615,12 +1649,12 @@ already exists it will be updated.</p></div>
                 (default: False).
         """
         _Uabl = self.Uref * self.k / math.log((self.Zref + self.z0) / self.z0)
-        epsilon = _Uabl ** 3 / self.k * (self.Zref + self.z0)
+        epsilon = _Uabl ** 3 / (self.k * (self.Zref + self.z0))
         k = _Uabl ** 2 / math.sqrt(self.Cm)
 
         if init:
-            self.__defaultValues['turbulentKE'] = '%.3f' % k
-            self.__defaultValues['turbulentEpsilon'] = '%.3f' % epsilon
+            self.__defaultValues['turbulentKE'] = '%.5f' % k
+            self.__defaultValues['turbulentEpsilon'] = '%.5f' % epsilon
         else:
             self.values['turbulentKE'] = str(k)
             self.values['turbulentEpsilon'] = str(epsilon)
@@ -1694,6 +1728,36 @@ already exists it will be updated.</p></div>
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.conditions.InitialConditions.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.conditions.InitialConditions.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.conditions.InitialConditions.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.conditions.InitialConditions.Cm" class="name">var <span class="ident">Cm</span></p>
@@ -1894,11 +1958,11 @@ already exists it will be updated.</p></div>
             (default: False).
     """
     _Uabl = self.Uref * self.k / math.log((self.Zref + self.z0) / self.z0)
-    epsilon = _Uabl ** 3 / self.k * (self.Zref + self.z0)
+    epsilon = _Uabl ** 3 / (self.k * (self.Zref + self.z0))
     k = _Uabl ** 2 / math.sqrt(self.Cm)
     if init:
-        self.__defaultValues['turbulentKE'] = '%.3f' % k
-        self.__defaultValues['turbulentEpsilon'] = '%.3f' % epsilon
+        self.__defaultValues['turbulentKE'] = '%.5f' % k
+        self.__defaultValues['turbulentEpsilon'] = '%.5f' % epsilon
     else:
         self.values['turbulentKE'] = str(k)
         self.values['turbulentEpsilon'] = str(epsilon)

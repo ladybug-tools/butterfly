@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>butterfly.gh.windtunnel API documentation</title>
-    <meta name="description" content="" />
+    <meta name="description" content="Butterfly wind tunnel class for Grasshopper." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -1002,6 +1002,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.addRefinementRegion">addRefinementRegion</a></li>
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.getBoundingBox">getBoundingBox</a></li>
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.toOpenFOAMCase">toOpenFOAMCase</a></li>
   </ul>
@@ -1022,25 +1023,23 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">butterfly.gh.windtunnel</span> module</h1>
-  
+  <p>Butterfly wind tunnel class for Grasshopper.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.windtunnel', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.windtunnel" class="source">
-    <pre><code># All Grasshopper functions and classes should be in this file
-import os
+    <pre><code>"""Butterfly wind tunnel class for Grasshopper."""
+
 try:
     import Rhino as rc
-    from scriptcontext import doc
 except ImportError:
     pass
 
 from .block import Block
-from .bfsurface import BFSurface
+from .geometry import GHBFBlockGeometry
 from .core import Case
-
+from .unitconversion import convertDocumentUnitsToMeters
 from ..windtunnel import TunnelParameters, WindTunnel
-from ..boundarycondition import BoundaryCondition, \
-    WindTunnelGroundBoundaryCondition, \
+from ..boundarycondition import WindTunnelGroundBoundaryCondition, \
     WindTunnelInletBoundaryCondition, WindTunnelOutletBoundaryCondition, \
     WindTunnelTopAndSidesBoundaryCondition, WindTunnelWallBoundaryCondition
 from ..z0 import Z0
@@ -1054,41 +1053,47 @@ class GHWindTunnel(WindTunnel):
     """A grasshopper wind tunnel.
 
     Args:
-        BFSurfaces: List of butterfly surfaces that will be inside the tunnel.
-        windSpeed: Wind speed in m/s.
+        BFGeometries: List of butterfly geometries that will be inside the tunnel.
+        windSpeed: Wind speed in m/s at Zref.
         windDirection: Wind direction as Vector3D.
         tunnelParameters: Butterfly tunnel parameters.
         landscape: An integer between 0-7 to calculate z0 (roughness).
-            0: '0.0002'  # sea
-            1: '0.005'   # smooth
-            2: '0.03'    # open
-            3: '0.10'    # roughlyOpen
-            4: '0.25'    # rough
-            5: '0.5'     # veryRough
-            6: '1.0'     # closed
-            7: '2.0'     # chaotic
+            0 > '0.0002'  # sea
+            1 > '0.005'   # smooth
+            2 > '0.03'    # open
+            3 > '0.10'    # roughlyOpen
+            4 > '0.25'    # rough
+            5 > '0.5'     # veryRough
+            6 > '1.0'     # closed
+            7 > '2.0'     # chaotic
         globalRefLevel: A tuple of (min, max) values for global refinment.
+        Zref: Reference height for wind velocity in meters (default: 10).
     """
 
-    def __init__(self, name, BFSurfaces, windSpeed, windDirection=None,
-                 tunnelParameters=None, landscape=1, globalRefLevel=None):
+    def __init__(self, name, BFGeometries, windSpeed, windDirection=None,
+                 tunnelParameters=None, landscape=1, globalRefLevel=None,
+                 Zref=None):
         """Init grasshopper wind tunnel."""
         self.name = name
 
-        # update boundary condition of wall surfaces
-        for bfSurface in BFSurfaces:
-            bfSurface.boundaryCondition = WindTunnelWallBoundaryCondition(
-                bfSurface.boundaryCondition.refLevels
-                )
+        # update boundary condition of wall geometries
+        for bfGeometry in BFGeometries:
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+                bfGeometry.boundaryCondition.refLevels
+            )
 
-        self.BFSurfaces = BFSurfaces
+        self.BFGeometries = BFGeometries
 
         try:
             self.z0 = Z0()[landscape]
         except Exception as e:
-            raise ValueError('Invalid input for landscape.\n{}'.format(landscape))
+            raise ValueError('Invalid input for landscape:{}\n{}'.format(
+                landscape, e)
+            )
 
         self.windSpeed = float(windSpeed)
+
+        self.Zref = float(Zref) if Zref else 10
 
         self.windDirection = rc.Geometry.Vector3d.YAxis if not windDirection \
             else rc.Geometry.Vector3d(windDirection)
@@ -1105,20 +1110,21 @@ class GHWindTunnel(WindTunnel):
         # create block
         block = self.block
 
-        # create butterfly surfaces
-        inlet, outlet, rightSide, leftSide, top, ground = self.boundingSurfaces
+        # create butterfly geometries
+        inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
 
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFSurfaces, block, self.z0, globalRefLevel
+            self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
+            convertDocumentUnitsToMeters()
         )
 
     @property
-    def ghBoundingSurfaces(self):
-        """Return Grasshopper surfaces of wind tunnel in a named tuple."""
-        wtSrfs = namedtuple('WindTunnelSurfaces',
-                          'rightSide outlet leftSide inlet ground top')
+    def ghBoundingGeometries(self):
+        """Return Grasshopper geometries of wind tunnel in a named tuple."""
+        wtSrfs = namedtuple('WindTunnelGeometries',
+                            'rightSide outlet leftSide inlet ground top')
 
         _srfs = self.boundingbox.Surfaces
 
@@ -1132,38 +1138,41 @@ class GHWindTunnel(WindTunnel):
     def block(self):
         """Create block for this windTunnel."""
         # create block
-        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ, \
+        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ,
                      self.tunnelParameters.gradXYZ)
 
     @property
-    def boundingSurfaces(self):
-        """Return bounding surfaces of wind tunnel.
+    def boundingGeometries(self):
+        """Return bounding geometries of wind tunnel.
 
         (inlet, outlet, rightSide, leftSide, top, ground)
         """
         # creat ABLCondition
         ablConditions = ABLConditions.fromWindTunnel(self)
 
-        # create BF surfaces for each wind tunnel surface
-        inlet = BFSurface('inlet', (self.ghBoundingSurfaces.inlet.ToBrep(),),
-                          WindTunnelInletBoundaryCondition(ablConditions))
+        # create BF geometries for each wind tunnel geometry
+        inlet = GHBFBlockGeometry('inlet',
+                                  (self.ghBoundingGeometries.inlet.ToBrep(),),
+                                  WindTunnelInletBoundaryCondition(ablConditions))
 
-        outlet = BFSurface('outlet', (self.ghBoundingSurfaces.outlet.ToBrep(),),
-                           WindTunnelOutletBoundaryCondition())
+        outlet = GHBFBlockGeometry('outlet',
+                                   (self.ghBoundingGeometries.outlet.ToBrep(),),
+                                   WindTunnelOutletBoundaryCondition())
 
-        rightSide = BFSurface('rightSide',
-                              (self.ghBoundingSurfaces.rightSide.ToBrep(),),
-                              WindTunnelTopAndSidesBoundaryCondition())
+        rightSide = GHBFBlockGeometry('rightSide',
+                                      (self.ghBoundingGeometries.rightSide.ToBrep(),),
+                                      WindTunnelTopAndSidesBoundaryCondition())
 
-        leftSide = BFSurface('lefttSide',
-                             (self.ghBoundingSurfaces.leftSide.ToBrep(),),
-                             WindTunnelTopAndSidesBoundaryCondition())
+        leftSide = GHBFBlockGeometry('lefttSide',
+                                     (self.ghBoundingGeometries.leftSide.ToBrep(),),
+                                     WindTunnelTopAndSidesBoundaryCondition())
 
-        top = BFSurface('top', (self.ghBoundingSurfaces.top.ToBrep(),),
-                        WindTunnelTopAndSidesBoundaryCondition())
+        top = GHBFBlockGeometry('top', (self.ghBoundingGeometries.top.ToBrep(),),
+                                WindTunnelTopAndSidesBoundaryCondition())
 
-        ground = BFSurface('ground', (self.ghBoundingSurfaces.ground.ToBrep(),),
-                           WindTunnelGroundBoundaryCondition(ablConditions))
+        ground = GHBFBlockGeometry('ground',
+                                   (self.ghBoundingGeometries.ground.ToBrep(),),
+                                   WindTunnelGroundBoundaryCondition(ablConditions))
 
         # return the new windTunnel
         return inlet, outlet, rightSide, leftSide, top, ground
@@ -1173,6 +1182,7 @@ class GHWindTunnel(WindTunnel):
         """Get ABLCondition for this wind tunnel as a dictionary."""
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(self.windSpeed)
+        _ABLCDict['Zref'] = str(self.Zref)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
         _ABLCDict['flowDir'] = '({} {} {})'.format(self.windDirection.X,
                                                    self.windDirection.Y,
@@ -1193,13 +1203,13 @@ class GHWindTunnel(WindTunnel):
                                      self.windDirection.Z)
         # calculate YAxis
         yAxis = rc.Geometry.Vector3d(xAxis)
-        yAxis.Rotate(PI/2, rc.Geometry.Vector3d.ZAxis)
+        yAxis.Rotate(PI / 2, rc.Geometry.Vector3d.ZAxis)
         return rc.Geometry.Plane(rc.Geometry.Point3d.Origin, xAxis, yAxis)
 
     def __getDimension(self, min, max, axis):
         """Calculate dimensions of each axis of a boundingbox."""
         perpPlane = rc.Geometry.Plane(self.plane)
-        perpPlane.Rotate(PI/2, axis)
+        perpPlane.Rotate(PI / 2, axis)
 
         maxN = perpPlane.ClosestPoint(max)
         maxN.Z = 0
@@ -1217,7 +1227,7 @@ class GHWindTunnel(WindTunnel):
                 zDimension)
             boundingBox: Boundingbox geometry as Brep
         """
-        geometries = tuple(bfsrf.geometry for bfsrf in self.BFSurfaces)
+        geometries = tuple(bfgeo.geometry for bfgeo in self.BFGeometries)
 
         world = rc.Geometry.Plane.WorldXY
 
@@ -1247,7 +1257,6 @@ class GHWindTunnel(WindTunnel):
 
     def __scaleBoundingBox(self):
         """Scale original bounding box to create wind tunnel."""
-
         vp = rc.Geometry.VolumeMassProperties.Compute(self.boundingbox)
 
         cenPt = (vp.Centroid.X, vp.Centroid.Y, 0)
@@ -1256,10 +1265,10 @@ class GHWindTunnel(WindTunnel):
         self.plane.Origin = rc.Geometry.Point3d(*cenPt)
 
         xScale = (self.tunnelParameters.windward + self.tunnelParameters.leeward) \
-                 * (self.dimensions[2] / self.dimensions[0]) + 1
+            * (self.dimensions[2] / self.dimensions[0]) + 1
 
-        yScale = (2 * self.tunnelParameters.side
-                  * (self.dimensions[2] / self.dimensions[1])) + 1
+        yScale = (2 * self.tunnelParameters.side * (self.dimensions[2] /
+                                                    self.dimensions[1])) + 1
 
         zScale = self.tunnelParameters.top + 1
 
@@ -1267,10 +1276,10 @@ class GHWindTunnel(WindTunnel):
 
         self.boundingbox.Transform(_scale)
 
-        moveVector = ((self.tunnelParameters.leeward + self.tunnelParameters.windward)
-                      / 2 - self.tunnelParameters.windward) \
-                      * self.plane.XAxis \
-                      * self.dimensions[2]
+        moveVector = ((self.tunnelParameters.leeward +
+                       self.tunnelParameters.windward) /
+                      2 - self.tunnelParameters.windward) * self.plane.XAxis * \
+            self.dimensions[2]
 
         self.boundingbox.Transform(rc.Geometry.Transform.Translation(moveVector.X,
                                                                      moveVector.Y,
@@ -1300,20 +1309,21 @@ class GHWindTunnel(WindTunnel):
   
     <div class="desc"><p>A grasshopper wind tunnel.</p>
 <p>Args:
-    BFSurfaces: List of butterfly surfaces that will be inside the tunnel.
-    windSpeed: Wind speed in m/s.
+    BFGeometries: List of butterfly geometries that will be inside the tunnel.
+    windSpeed: Wind speed in m/s at Zref.
     windDirection: Wind direction as Vector3D.
     tunnelParameters: Butterfly tunnel parameters.
     landscape: An integer between 0-7 to calculate z0 (roughness).
-        0: '0.0002'  # sea
-        1: '0.005'   # smooth
-        2: '0.03'    # open
-        3: '0.10'    # roughlyOpen
-        4: '0.25'    # rough
-        5: '0.5'     # veryRough
-        6: '1.0'     # closed
-        7: '2.0'     # chaotic
-    globalRefLevel: A tuple of (min, max) values for global refinment.</p></div>
+        0 &gt; '0.0002'  # sea
+        1 &gt; '0.005'   # smooth
+        2 &gt; '0.03'    # open
+        3 &gt; '0.10'    # roughlyOpen
+        4 &gt; '0.25'    # rough
+        5 &gt; '0.5'     # veryRough
+        6 &gt; '1.0'     # closed
+        7 &gt; '2.0'     # chaotic
+    globalRefLevel: A tuple of (min, max) values for global refinment.
+    Zref: Reference height for wind velocity in meters (default: 10).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.windtunnel.GHWindTunnel', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.windtunnel.GHWindTunnel" class="source">
@@ -1321,41 +1331,47 @@ class GHWindTunnel(WindTunnel):
     """A grasshopper wind tunnel.
 
     Args:
-        BFSurfaces: List of butterfly surfaces that will be inside the tunnel.
-        windSpeed: Wind speed in m/s.
+        BFGeometries: List of butterfly geometries that will be inside the tunnel.
+        windSpeed: Wind speed in m/s at Zref.
         windDirection: Wind direction as Vector3D.
         tunnelParameters: Butterfly tunnel parameters.
         landscape: An integer between 0-7 to calculate z0 (roughness).
-            0: '0.0002'  # sea
-            1: '0.005'   # smooth
-            2: '0.03'    # open
-            3: '0.10'    # roughlyOpen
-            4: '0.25'    # rough
-            5: '0.5'     # veryRough
-            6: '1.0'     # closed
-            7: '2.0'     # chaotic
+            0 > '0.0002'  # sea
+            1 > '0.005'   # smooth
+            2 > '0.03'    # open
+            3 > '0.10'    # roughlyOpen
+            4 > '0.25'    # rough
+            5 > '0.5'     # veryRough
+            6 > '1.0'     # closed
+            7 > '2.0'     # chaotic
         globalRefLevel: A tuple of (min, max) values for global refinment.
+        Zref: Reference height for wind velocity in meters (default: 10).
     """
 
-    def __init__(self, name, BFSurfaces, windSpeed, windDirection=None,
-                 tunnelParameters=None, landscape=1, globalRefLevel=None):
+    def __init__(self, name, BFGeometries, windSpeed, windDirection=None,
+                 tunnelParameters=None, landscape=1, globalRefLevel=None,
+                 Zref=None):
         """Init grasshopper wind tunnel."""
         self.name = name
 
-        # update boundary condition of wall surfaces
-        for bfSurface in BFSurfaces:
-            bfSurface.boundaryCondition = WindTunnelWallBoundaryCondition(
-                bfSurface.boundaryCondition.refLevels
-                )
+        # update boundary condition of wall geometries
+        for bfGeometry in BFGeometries:
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+                bfGeometry.boundaryCondition.refLevels
+            )
 
-        self.BFSurfaces = BFSurfaces
+        self.BFGeometries = BFGeometries
 
         try:
             self.z0 = Z0()[landscape]
         except Exception as e:
-            raise ValueError('Invalid input for landscape.\n{}'.format(landscape))
+            raise ValueError('Invalid input for landscape:{}\n{}'.format(
+                landscape, e)
+            )
 
         self.windSpeed = float(windSpeed)
+
+        self.Zref = float(Zref) if Zref else 10
 
         self.windDirection = rc.Geometry.Vector3d.YAxis if not windDirection \
             else rc.Geometry.Vector3d(windDirection)
@@ -1372,20 +1388,21 @@ class GHWindTunnel(WindTunnel):
         # create block
         block = self.block
 
-        # create butterfly surfaces
-        inlet, outlet, rightSide, leftSide, top, ground = self.boundingSurfaces
+        # create butterfly geometries
+        inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
 
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFSurfaces, block, self.z0, globalRefLevel
+            self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
+            convertDocumentUnitsToMeters()
         )
 
     @property
-    def ghBoundingSurfaces(self):
-        """Return Grasshopper surfaces of wind tunnel in a named tuple."""
-        wtSrfs = namedtuple('WindTunnelSurfaces',
-                          'rightSide outlet leftSide inlet ground top')
+    def ghBoundingGeometries(self):
+        """Return Grasshopper geometries of wind tunnel in a named tuple."""
+        wtSrfs = namedtuple('WindTunnelGeometries',
+                            'rightSide outlet leftSide inlet ground top')
 
         _srfs = self.boundingbox.Surfaces
 
@@ -1399,38 +1416,41 @@ class GHWindTunnel(WindTunnel):
     def block(self):
         """Create block for this windTunnel."""
         # create block
-        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ, \
+        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ,
                      self.tunnelParameters.gradXYZ)
 
     @property
-    def boundingSurfaces(self):
-        """Return bounding surfaces of wind tunnel.
+    def boundingGeometries(self):
+        """Return bounding geometries of wind tunnel.
 
         (inlet, outlet, rightSide, leftSide, top, ground)
         """
         # creat ABLCondition
         ablConditions = ABLConditions.fromWindTunnel(self)
 
-        # create BF surfaces for each wind tunnel surface
-        inlet = BFSurface('inlet', (self.ghBoundingSurfaces.inlet.ToBrep(),),
-                          WindTunnelInletBoundaryCondition(ablConditions))
+        # create BF geometries for each wind tunnel geometry
+        inlet = GHBFBlockGeometry('inlet',
+                                  (self.ghBoundingGeometries.inlet.ToBrep(),),
+                                  WindTunnelInletBoundaryCondition(ablConditions))
 
-        outlet = BFSurface('outlet', (self.ghBoundingSurfaces.outlet.ToBrep(),),
-                           WindTunnelOutletBoundaryCondition())
+        outlet = GHBFBlockGeometry('outlet',
+                                   (self.ghBoundingGeometries.outlet.ToBrep(),),
+                                   WindTunnelOutletBoundaryCondition())
 
-        rightSide = BFSurface('rightSide',
-                              (self.ghBoundingSurfaces.rightSide.ToBrep(),),
-                              WindTunnelTopAndSidesBoundaryCondition())
+        rightSide = GHBFBlockGeometry('rightSide',
+                                      (self.ghBoundingGeometries.rightSide.ToBrep(),),
+                                      WindTunnelTopAndSidesBoundaryCondition())
 
-        leftSide = BFSurface('lefttSide',
-                             (self.ghBoundingSurfaces.leftSide.ToBrep(),),
-                             WindTunnelTopAndSidesBoundaryCondition())
+        leftSide = GHBFBlockGeometry('lefttSide',
+                                     (self.ghBoundingGeometries.leftSide.ToBrep(),),
+                                     WindTunnelTopAndSidesBoundaryCondition())
 
-        top = BFSurface('top', (self.ghBoundingSurfaces.top.ToBrep(),),
-                        WindTunnelTopAndSidesBoundaryCondition())
+        top = GHBFBlockGeometry('top', (self.ghBoundingGeometries.top.ToBrep(),),
+                                WindTunnelTopAndSidesBoundaryCondition())
 
-        ground = BFSurface('ground', (self.ghBoundingSurfaces.ground.ToBrep(),),
-                           WindTunnelGroundBoundaryCondition(ablConditions))
+        ground = GHBFBlockGeometry('ground',
+                                   (self.ghBoundingGeometries.ground.ToBrep(),),
+                                   WindTunnelGroundBoundaryCondition(ablConditions))
 
         # return the new windTunnel
         return inlet, outlet, rightSide, leftSide, top, ground
@@ -1440,6 +1460,7 @@ class GHWindTunnel(WindTunnel):
         """Get ABLCondition for this wind tunnel as a dictionary."""
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(self.windSpeed)
+        _ABLCDict['Zref'] = str(self.Zref)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
         _ABLCDict['flowDir'] = '({} {} {})'.format(self.windDirection.X,
                                                    self.windDirection.Y,
@@ -1460,13 +1481,13 @@ class GHWindTunnel(WindTunnel):
                                      self.windDirection.Z)
         # calculate YAxis
         yAxis = rc.Geometry.Vector3d(xAxis)
-        yAxis.Rotate(PI/2, rc.Geometry.Vector3d.ZAxis)
+        yAxis.Rotate(PI / 2, rc.Geometry.Vector3d.ZAxis)
         return rc.Geometry.Plane(rc.Geometry.Point3d.Origin, xAxis, yAxis)
 
     def __getDimension(self, min, max, axis):
         """Calculate dimensions of each axis of a boundingbox."""
         perpPlane = rc.Geometry.Plane(self.plane)
-        perpPlane.Rotate(PI/2, axis)
+        perpPlane.Rotate(PI / 2, axis)
 
         maxN = perpPlane.ClosestPoint(max)
         maxN.Z = 0
@@ -1484,7 +1505,7 @@ class GHWindTunnel(WindTunnel):
                 zDimension)
             boundingBox: Boundingbox geometry as Brep
         """
-        geometries = tuple(bfsrf.geometry for bfsrf in self.BFSurfaces)
+        geometries = tuple(bfgeo.geometry for bfgeo in self.BFGeometries)
 
         world = rc.Geometry.Plane.WorldXY
 
@@ -1514,7 +1535,6 @@ class GHWindTunnel(WindTunnel):
 
     def __scaleBoundingBox(self):
         """Scale original bounding box to create wind tunnel."""
-
         vp = rc.Geometry.VolumeMassProperties.Compute(self.boundingbox)
 
         cenPt = (vp.Centroid.X, vp.Centroid.Y, 0)
@@ -1523,10 +1543,10 @@ class GHWindTunnel(WindTunnel):
         self.plane.Origin = rc.Geometry.Point3d(*cenPt)
 
         xScale = (self.tunnelParameters.windward + self.tunnelParameters.leeward) \
-                 * (self.dimensions[2] / self.dimensions[0]) + 1
+            * (self.dimensions[2] / self.dimensions[0]) + 1
 
-        yScale = (2 * self.tunnelParameters.side
-                  * (self.dimensions[2] / self.dimensions[1])) + 1
+        yScale = (2 * self.tunnelParameters.side * (self.dimensions[2] /
+                                                    self.dimensions[1])) + 1
 
         zScale = self.tunnelParameters.top + 1
 
@@ -1534,10 +1554,10 @@ class GHWindTunnel(WindTunnel):
 
         self.boundingbox.Transform(_scale)
 
-        moveVector = ((self.tunnelParameters.leeward + self.tunnelParameters.windward)
-                      / 2 - self.tunnelParameters.windward) \
-                      * self.plane.XAxis \
-                      * self.dimensions[2]
+        moveVector = ((self.tunnelParameters.leeward +
+                       self.tunnelParameters.windward) /
+                      2 - self.tunnelParameters.windward) * self.plane.XAxis * \
+            self.dimensions[2]
 
         self.boundingbox.Transform(rc.Geometry.Transform.Translation(moveVector.X,
                                                                      moveVector.Y,
@@ -1567,7 +1587,17 @@ class GHWindTunnel(WindTunnel):
 
             </div>
             <div class="item">
-            <p id="butterfly.gh.windtunnel.GHWindTunnel.BFSurfaces" class="name">var <span class="ident">BFSurfaces</span></p>
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.BFGeometries" class="name">var <span class="ident">BFGeometries</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.Zref" class="name">var <span class="ident">Zref</span></p>
             
 
             
@@ -1599,12 +1629,12 @@ class GHWindTunnel(WindTunnel):
 
             </div>
             <div class="item">
-            <p id="butterfly.gh.windtunnel.GHWindTunnel.boundingSurfaces" class="name">var <span class="ident">boundingSurfaces</span></p>
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.boundingGeometries" class="name">var <span class="ident">boundingGeometries</span></p>
             
 
             
   
-    <div class="desc"><p>Return bounding surfaces of wind tunnel.</p>
+    <div class="desc"><p>Return bounding geometries of wind tunnel.</p>
 <p>(inlet, outlet, rightSide, leftSide, top, ground)</p></div>
   <div class="source_cont">
 </div>
@@ -1633,12 +1663,12 @@ class GHWindTunnel(WindTunnel):
 
             </div>
             <div class="item">
-            <p id="butterfly.gh.windtunnel.GHWindTunnel.ghBoundingSurfaces" class="name">var <span class="ident">ghBoundingSurfaces</span></p>
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.ghBoundingGeometries" class="name">var <span class="ident">ghBoundingGeometries</span></p>
             
 
             
   
-    <div class="desc"><p>Return Grasshopper surfaces of wind tunnel in a named tuple.</p></div>
+    <div class="desc"><p>Return Grasshopper geometries of wind tunnel in a named tuple.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1659,6 +1689,17 @@ class GHWindTunnel(WindTunnel):
 
             
   
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.refinementRegions" class="name">var <span class="ident">refinementRegions</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get refinement regions.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1708,7 +1749,7 @@ class GHWindTunnel(WindTunnel):
             
   <div class="item">
     <div class="name def" id="butterfly.gh.windtunnel.GHWindTunnel.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, BFSurfaces, windSpeed, windDirection=None, tunnelParameters=None, landscape=1, globalRefLevel=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, BFGeometries, windSpeed, windDirection=None, tunnelParameters=None, landscape=1, globalRefLevel=None, Zref=None)</p>
     </div>
     
 
@@ -1718,21 +1759,25 @@ class GHWindTunnel(WindTunnel):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.windtunnel.GHWindTunnel.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.windtunnel.GHWindTunnel.__init__" class="source">
-    <pre><code>def __init__(self, name, BFSurfaces, windSpeed, windDirection=None,
-             tunnelParameters=None, landscape=1, globalRefLevel=None):
+    <pre><code>def __init__(self, name, BFGeometries, windSpeed, windDirection=None,
+             tunnelParameters=None, landscape=1, globalRefLevel=None,
+             Zref=None):
     """Init grasshopper wind tunnel."""
     self.name = name
-    # update boundary condition of wall surfaces
-    for bfSurface in BFSurfaces:
-        bfSurface.boundaryCondition = WindTunnelWallBoundaryCondition(
-            bfSurface.boundaryCondition.refLevels
-            )
-    self.BFSurfaces = BFSurfaces
+    # update boundary condition of wall geometries
+    for bfGeometry in BFGeometries:
+        bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+            bfGeometry.boundaryCondition.refLevels
+        )
+    self.BFGeometries = BFGeometries
     try:
         self.z0 = Z0()[landscape]
     except Exception as e:
-        raise ValueError('Invalid input for landscape.\n{}'.format(landscape))
+        raise ValueError('Invalid input for landscape:{}\n{}'.format(
+            landscape, e)
+        )
     self.windSpeed = float(windSpeed)
+    self.Zref = float(Zref) if Zref else 10
     self.windDirection = rc.Geometry.Vector3d.YAxis if not windDirection \
         else rc.Geometry.Vector3d(windDirection)
     self.windDirection.Unitize()
@@ -1743,12 +1788,13 @@ class GHWindTunnel(WindTunnel):
     self.__scaleBoundingBox()
     # create block
     block = self.block
-    # create butterfly surfaces
-    inlet, outlet, rightSide, leftSide, top, ground = self.boundingSurfaces
+    # create butterfly geometries
+    inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
     # init openFOAM windTunnel
     super(GHWindTunnel, self).__init__(
         self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-        self.BFSurfaces, block, self.z0, globalRefLevel
+        self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
+        convertDocumentUnitsToMeters()
     )
 </code></pre>
   </div>
@@ -1772,6 +1818,30 @@ class GHWindTunnel(WindTunnel):
     <pre><code>def ToString(self):
     """Overwrite ToString .NET method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.windtunnel.GHWindTunnel.addRefinementRegion">
+    <p>def <span class="ident">addRefinementRegion</span>(</p><p>self, refinementRegion)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Add refinement regions to this case.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.windtunnel.GHWindTunnel.addRefinementRegion', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.windtunnel.GHWindTunnel.addRefinementRegion" class="source">
+    <pre><code>def addRefinementRegion(self, refinementRegion):
+    """Add refinement regions to this case."""
+    assert hasattr(refinementRegion, 'isRefinementRegion'), \
+        "{} is not a refinement region.".format(refinementRegion)
+    self.__refinementRegions.append(refinementRegion)
 </code></pre>
   </div>
 </div>
@@ -1804,7 +1874,7 @@ class GHWindTunnel(WindTunnel):
             zDimension)
         boundingBox: Boundingbox geometry as Brep
     """
-    geometries = tuple(bfsrf.geometry for bfsrf in self.BFSurfaces)
+    geometries = tuple(bfgeo.geometry for bfgeo in self.BFGeometries)
     world = rc.Geometry.Plane.WorldXY
     plane_to_world = rc.Geometry.Transform.ChangeBasis(self.plane, world)
     uBBox = geometries[0].GetBoundingBox(self.plane)

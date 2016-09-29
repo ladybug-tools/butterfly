@@ -993,6 +993,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.controlDict.ControlDict.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.controlDict.ControlDict.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.controlDict.ControlDict.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.controlDict.ControlDict.body">body</a></li>
@@ -1036,7 +1037,8 @@ class ControlDict(FoamFile):
     # set default valus for this class
     __defaultValues = OrderedDict()
     __defaultValues['#include'] = None
-    __defaultValues['application'] = 'simpleFoam'
+    # application will be updated based on recipe
+    __defaultValues['application'] = None
     __defaultValues['startFrom'] = 'latestTime'
     __defaultValues['startTime'] = '0'
     __defaultValues['stopAt'] = 'endTime'
@@ -1046,7 +1048,7 @@ class ControlDict(FoamFile):
     __defaultValues['writeInterval'] = '100'
     __defaultValues['purgeWrite'] = '0'
     __defaultValues['writeFormat'] = 'ascii'
-    __defaultValues['writePrecision'] = '6'
+    __defaultValues['writePrecision'] = '7'
     __defaultValues['writeCompression'] = 'off'
     __defaultValues['timeFormat'] = 'general'
     __defaultValues['timePrecision'] = '6'
@@ -1112,7 +1114,7 @@ class ControlDict(FoamFile):
 
     @writeCompression.setter
     def writeCompression(self, value=True):
-        self.values['writeCompression'] = str(bool(value)).lower()
+        self.values['writeCompression'] = self.convertBoolValue(value)
 </code></pre>
   </div>
 
@@ -1137,7 +1139,8 @@ class ControlDict(FoamFile):
     # set default valus for this class
     __defaultValues = OrderedDict()
     __defaultValues['#include'] = None
-    __defaultValues['application'] = 'simpleFoam'
+    # application will be updated based on recipe
+    __defaultValues['application'] = None
     __defaultValues['startFrom'] = 'latestTime'
     __defaultValues['startTime'] = '0'
     __defaultValues['stopAt'] = 'endTime'
@@ -1147,7 +1150,7 @@ class ControlDict(FoamFile):
     __defaultValues['writeInterval'] = '100'
     __defaultValues['purgeWrite'] = '0'
     __defaultValues['writeFormat'] = 'ascii'
-    __defaultValues['writePrecision'] = '6'
+    __defaultValues['writePrecision'] = '7'
     __defaultValues['writeCompression'] = 'off'
     __defaultValues['timeFormat'] = 'general'
     __defaultValues['timePrecision'] = '6'
@@ -1213,7 +1216,7 @@ class ControlDict(FoamFile):
 
     @writeCompression.setter
     def writeCompression(self, value=True):
-        self.values['writeCompression'] = str(bool(value)).lower()
+        self.values['writeCompression'] = self.convertBoolValue(value)
 </code></pre>
   </div>
 </div>
@@ -1226,6 +1229,36 @@ class ControlDict(FoamFile):
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.controlDict.ControlDict.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.controlDict.ControlDict.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.controlDict.ControlDict.application" class="name">var <span class="ident">application</span></p>

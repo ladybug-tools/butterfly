@@ -4,7 +4,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>butterfly.runmanager API documentation</title>
-    <meta name="description" content="" />
+    <meta name="description" content="Runmanager for butterfly.
+
+Run manager is only useful for running OpenFOAM for Windows which runs in..." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -1024,12 +1026,24 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">butterfly.runmanager</span> module</h1>
-  
+  <p>Runmanager for butterfly.</p>
+<p>Run manager is only useful for running OpenFOAM for Windows which runs in a
+docker container. For linux systems simply use .bash files or libraries such as
+pyFOAM.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.runmanager" class="source">
-    <pre><code>import os
+    <pre><code>"""Runmanager for butterfly.
+
+Run manager is only useful for running OpenFOAM for Windows which runs in a
+docker container. For linux systems simply use .bash files or libraries such as
+pyFOAM.
+"""
+from version import Version
+
+import os
 from subprocess import PIPE, Popen
+from collections import namedtuple
 
 
 class RunManager(object):
@@ -1048,23 +1062,44 @@ class RunManager(object):
         Project path will be set to: C:/Users/%USERNAME%/butterfly/projectName
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
-        self.projectName = projectName
+        self.__projectName = projectName
+
+        self.isUsingDockerMachine = True \
+            if hasattr(Version, 'isUsingDockerMachine') and Version.isUsingDockerMachine \
+            else False
+
+        self.dockerPath = r'C:\Program Files\Docker Toolbox' \
+            if self.isUsingDockerMachine \
+            else r'C:\Program Files\Boot2Docker for Windows'
 
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
         os.environ['PATH'] += ';%s' % r'C:\Program Files (x86)\Git\bin'
-        os.environ['PATH'] += ';%s' % r'C:\Program Files\Boot2Docker for Windows'
-        process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
-                        stderr=PIPE)
+        os.environ['PATH'] += ';%s' % self.dockerPath
+
+        if self.isUsingDockerMachine:
+            # version 1606 and higher
+            process = Popen('docker-machine env', shell=True, stdout=PIPE,
+                            stderr=PIPE)
+        else:
+            # older versions are using boot2docker
+            process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
+                            stderr=PIPE)
+
+        if tuple(process.stderr):
+            print 'ERROR!'
+            for line in process.stderr:
+                print line
+            # return
 
         return tuple(line.replace('$Env:', 'set ')
                      .replace(' = ', '=')
                      .replace('"', '').strip()
-                     for line in process.stdout)
+                     for line in process.stdout
+                     if not line.startswith('REM'))
 
-    def getContainerId(self, name='of_plus_300'):
+    def getContainerId(self):
         """Get OpenFOAM's container id."""
-        # It seems to always be the same number: 63915d16038d
         _id = None
         if not self.shellinit:
             self.shellinit = self.getShellinit()
@@ -1087,7 +1122,7 @@ class RunManager(object):
             if line.find('docker ps') > 0:
                 # find container
                 _id = next(line.split()[0] for line in p.stdout
-                           if line.split()[-1] == name)
+                           if line.split()[-1].startswith('of_plus'))
 
         try:
             os.remove(_batchFile)
@@ -1098,7 +1133,12 @@ class RunManager(object):
 
     def startOpenFOAM(self):
         """Start OpenFOAM for Windows image from batch file."""
-        fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        if Version.OFFullVer == 'v3.0+':
+            fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        else:
+            fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+                "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
+
         Popen(fp, shell=True)
 
     def header(self):
@@ -1107,32 +1147,46 @@ class RunManager(object):
             self.shellinit = self.getShellinit()
 
         _base = '@echo off\n' \
-                'cd "C:\Program Files\Boot2Docker for Windows"\n' \
+                'cd {}\n' \
                 'echo Setting up the environment to connect to docker...\n' \
                 'echo .\n' \
-                '{}\n{}\n{}\n' \
+                '{}\n' \
                 'echo Done!\n' \
                 'echo Running OpenFOAM commands...\n' \
                 'echo .'
 
-        return _base.format(*self.shellinit)
+        return _base.format(self.dockerPath, '\n'.join(self.shellinit))
 
-    def command(self, cmds, includeHeader=False, log=True, startOpenFOAM=False):
+    def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True,
+                startOpenFOAM=False):
         """
         Get command line for OpenFOAM commands.
 
         Args:
-            cmds: A sequence of commnads.
-            includeHeader:
-            log:
-            startOpenFOAM: Execute OpenFOAM in case it's not already running.
+            cmd: An OpenFOAM command.
+            args: List of optional arguments for command. e.g. ('c', 'latestTime')
+            decomposeParDict: decomposeParDict for parallel runs (default: None).
+            includeHeader: Include header lines to set up the environment
+                (default: True).
+            startOpenFOAM: Execute OpenFOAM in case it's not already running
+                (default: False).
+
+        Returns:
+            (cmd, logfiles, errorfiles)
         """
-        _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        res = namedtuple('log', 'cmd logfiles errorfiles')
+
+        if Version.OFFullVer == 'v3.0+':
+            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        else:
+            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+                "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
 
         _msg = "Failed to find container id. Do you have the OpenFOAM container running?\n" + \
             "You can initiate OpenFOAM container by running start_OF.bat:\n" + \
             _fp
 
+        # try to get containerId
         if not self.containerId:
             self.containerId = self.getContainerId()
 
@@ -1147,21 +1201,49 @@ class RunManager(object):
         finally:
             assert self.containerId, _msg
 
+        # containerId is found. put the commands together
         _base = 'docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
+        _baseCmd = '{0} {1} > >(tee etc/{2}.log) 2> >(tee etc/{2}.err >&2)'
 
-        if log:
-            _baseCmd = '{0} > >(tee etc/{0}.log) 2> >(tee etc/{0}.err >&2)'
+        # join arguments for the command
+        arguments = '' if not args else '-{}'.format(' -'.join(args))
 
-            _cmds = (_baseCmd.format(cmd, self.projectName) for cmd in cmds)
+        if decomposeParDict:
+            # run in parallel
+            n = decomposeParDict.numberOfSubdomains
+            arguments = arguments + ' -parallel'
+
+            if cmd == 'snappyHexMesh':
+                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                           'reconstructParMesh', 'rm')
+                argList = ('', arguments + ' -overwrite', '-constant', '-r proc*')
+                cmdNameList = ('decomposePar', cmd, 'reconstructParMesh', 'rm')
+            else:
+                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                           'reconstructPar', 'rm')
+                argList = ('', arguments, '', '-r proc*')
+                cmdNameList = ('decomposePar', cmd, 'reconstructPar', 'rm')
+
+            # join commands together
+            cmds = (_baseCmd.format(c, arg, name) for c, arg, name in
+                    zip(cmdList, argList, cmdNameList))
+
+            cmds = _base.format(self.containerId, self.__projectName,
+                                '; '.join(cmds))
+
+            errfiles = tuple('{}.err'.format(name) for name in cmdNameList)
+            logfiles = tuple('{}.log'.format(name) for name in cmdNameList)
         else:
-            _cmds = cmds
-
-        _cmd = _base.format(self.containerId, self.projectName, '; '.join(_cmds))
+            # run is serial
+            cmds = _base.format(self.containerId, self.__projectName,
+                                _baseCmd.format(cmd, arguments, cmd))
+            errfiles = ('{}.err'.format(cmd),)
+            logfiles = ('{}.log'.format(cmd),)
 
         if includeHeader:
-            return self.header() + "\n" + _cmd
+            return res(self.header() + "\n" + cmds, logfiles, errfiles)
         else:
-            return _cmd
+            return res(cmds, logfiles, errfiles)
 </code></pre>
   </div>
 
@@ -1206,23 +1288,44 @@ class RunManager(object):
         Project path will be set to: C:/Users/%USERNAME%/butterfly/projectName
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
-        self.projectName = projectName
+        self.__projectName = projectName
+
+        self.isUsingDockerMachine = True \
+            if hasattr(Version, 'isUsingDockerMachine') and Version.isUsingDockerMachine \
+            else False
+
+        self.dockerPath = r'C:\Program Files\Docker Toolbox' \
+            if self.isUsingDockerMachine \
+            else r'C:\Program Files\Boot2Docker for Windows'
 
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
         os.environ['PATH'] += ';%s' % r'C:\Program Files (x86)\Git\bin'
-        os.environ['PATH'] += ';%s' % r'C:\Program Files\Boot2Docker for Windows'
-        process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
-                        stderr=PIPE)
+        os.environ['PATH'] += ';%s' % self.dockerPath
+
+        if self.isUsingDockerMachine:
+            # version 1606 and higher
+            process = Popen('docker-machine env', shell=True, stdout=PIPE,
+                            stderr=PIPE)
+        else:
+            # older versions are using boot2docker
+            process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
+                            stderr=PIPE)
+
+        if tuple(process.stderr):
+            print 'ERROR!'
+            for line in process.stderr:
+                print line
+            # return
 
         return tuple(line.replace('$Env:', 'set ')
                      .replace(' = ', '=')
                      .replace('"', '').strip()
-                     for line in process.stdout)
+                     for line in process.stdout
+                     if not line.startswith('REM'))
 
-    def getContainerId(self, name='of_plus_300'):
+    def getContainerId(self):
         """Get OpenFOAM's container id."""
-        # It seems to always be the same number: 63915d16038d
         _id = None
         if not self.shellinit:
             self.shellinit = self.getShellinit()
@@ -1245,7 +1348,7 @@ class RunManager(object):
             if line.find('docker ps') > 0:
                 # find container
                 _id = next(line.split()[0] for line in p.stdout
-                           if line.split()[-1] == name)
+                           if line.split()[-1].startswith('of_plus'))
 
         try:
             os.remove(_batchFile)
@@ -1256,7 +1359,12 @@ class RunManager(object):
 
     def startOpenFOAM(self):
         """Start OpenFOAM for Windows image from batch file."""
-        fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        if Version.OFFullVer == 'v3.0+':
+            fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        else:
+            fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+                "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
+
         Popen(fp, shell=True)
 
     def header(self):
@@ -1265,32 +1373,46 @@ class RunManager(object):
             self.shellinit = self.getShellinit()
 
         _base = '@echo off\n' \
-                'cd "C:\Program Files\Boot2Docker for Windows"\n' \
+                'cd {}\n' \
                 'echo Setting up the environment to connect to docker...\n' \
                 'echo .\n' \
-                '{}\n{}\n{}\n' \
+                '{}\n' \
                 'echo Done!\n' \
                 'echo Running OpenFOAM commands...\n' \
                 'echo .'
 
-        return _base.format(*self.shellinit)
+        return _base.format(self.dockerPath, '\n'.join(self.shellinit))
 
-    def command(self, cmds, includeHeader=False, log=True, startOpenFOAM=False):
+    def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True,
+                startOpenFOAM=False):
         """
         Get command line for OpenFOAM commands.
 
         Args:
-            cmds: A sequence of commnads.
-            includeHeader:
-            log:
-            startOpenFOAM: Execute OpenFOAM in case it's not already running.
+            cmd: An OpenFOAM command.
+            args: List of optional arguments for command. e.g. ('c', 'latestTime')
+            decomposeParDict: decomposeParDict for parallel runs (default: None).
+            includeHeader: Include header lines to set up the environment
+                (default: True).
+            startOpenFOAM: Execute OpenFOAM in case it's not already running
+                (default: False).
+
+        Returns:
+            (cmd, logfiles, errorfiles)
         """
-        _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        res = namedtuple('log', 'cmd logfiles errorfiles')
+
+        if Version.OFFullVer == 'v3.0+':
+            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+        else:
+            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+                "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
 
         _msg = "Failed to find container id. Do you have the OpenFOAM container running?\n" + \
             "You can initiate OpenFOAM container by running start_OF.bat:\n" + \
             _fp
 
+        # try to get containerId
         if not self.containerId:
             self.containerId = self.getContainerId()
 
@@ -1305,21 +1427,49 @@ class RunManager(object):
         finally:
             assert self.containerId, _msg
 
+        # containerId is found. put the commands together
         _base = 'docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
+        _baseCmd = '{0} {1} > >(tee etc/{2}.log) 2> >(tee etc/{2}.err >&2)'
 
-        if log:
-            _baseCmd = '{0} > >(tee etc/{0}.log) 2> >(tee etc/{0}.err >&2)'
+        # join arguments for the command
+        arguments = '' if not args else '-{}'.format(' -'.join(args))
 
-            _cmds = (_baseCmd.format(cmd, self.projectName) for cmd in cmds)
+        if decomposeParDict:
+            # run in parallel
+            n = decomposeParDict.numberOfSubdomains
+            arguments = arguments + ' -parallel'
+
+            if cmd == 'snappyHexMesh':
+                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                           'reconstructParMesh', 'rm')
+                argList = ('', arguments + ' -overwrite', '-constant', '-r proc*')
+                cmdNameList = ('decomposePar', cmd, 'reconstructParMesh', 'rm')
+            else:
+                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                           'reconstructPar', 'rm')
+                argList = ('', arguments, '', '-r proc*')
+                cmdNameList = ('decomposePar', cmd, 'reconstructPar', 'rm')
+
+            # join commands together
+            cmds = (_baseCmd.format(c, arg, name) for c, arg, name in
+                    zip(cmdList, argList, cmdNameList))
+
+            cmds = _base.format(self.containerId, self.__projectName,
+                                '; '.join(cmds))
+
+            errfiles = tuple('{}.err'.format(name) for name in cmdNameList)
+            logfiles = tuple('{}.log'.format(name) for name in cmdNameList)
         else:
-            _cmds = cmds
-
-        _cmd = _base.format(self.containerId, self.projectName, '; '.join(_cmds))
+            # run is serial
+            cmds = _base.format(self.containerId, self.__projectName,
+                                _baseCmd.format(cmd, arguments, cmd))
+            errfiles = ('{}.err'.format(cmd),)
+            logfiles = ('{}.log'.format(cmd),)
 
         if includeHeader:
-            return self.header() + "\n" + _cmd
+            return res(self.header() + "\n" + cmds, logfiles, errfiles)
         else:
-            return _cmd
+            return res(cmds, logfiles, errfiles)
 </code></pre>
   </div>
 </div>
@@ -1354,7 +1504,17 @@ class RunManager(object):
             </div>
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.runmanager.RunManager.projectName" class="name">var <span class="ident">projectName</span></p>
+            <p id="butterfly.runmanager.RunManager.dockerPath" class="name">var <span class="ident">dockerPath</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.runmanager.RunManager.isUsingDockerMachine" class="name">var <span class="ident">isUsingDockerMachine</span></p>
             
 
             
@@ -1383,7 +1543,13 @@ class RunManager(object):
     Project path will be set to: C:/Users/%USERNAME%/butterfly/projectName
     """
     assert os.name == 'nt', "Currently RunManager is only supported on Windows."
-    self.projectName = projectName
+    self.__projectName = projectName
+    self.isUsingDockerMachine = True \
+        if hasattr(Version, 'isUsingDockerMachine') and Version.isUsingDockerMachine \
+        else False
+    self.dockerPath = r'C:\Program Files\Docker Toolbox' \
+        if self.isUsingDockerMachine \
+        else r'C:\Program Files\Boot2Docker for Windows'
 </code></pre>
   </div>
 </div>
@@ -1393,7 +1559,7 @@ class RunManager(object):
             
   <div class="item">
     <div class="name def" id="butterfly.runmanager.RunManager.command">
-    <p>def <span class="ident">command</span>(</p><p>self, cmds, includeHeader=False, log=True, startOpenFOAM=False)</p>
+    <p>def <span class="ident">command</span>(</p><p>self, cmd, args=None, decomposeParDict=None, includeHeader=True, startOpenFOAM=False)</p>
     </div>
     
 
@@ -1401,26 +1567,43 @@ class RunManager(object):
   
     <div class="desc"><p>Get command line for OpenFOAM commands.</p>
 <p>Args:
-    cmds: A sequence of commnads.
-    includeHeader:
-    log:
-    startOpenFOAM: Execute OpenFOAM in case it's not already running.</p></div>
+    cmd: An OpenFOAM command.
+    args: List of optional arguments for command. e.g. ('c', 'latestTime')
+    decomposeParDict: decomposeParDict for parallel runs (default: None).
+    includeHeader: Include header lines to set up the environment
+        (default: True).
+    startOpenFOAM: Execute OpenFOAM in case it's not already running
+        (default: False).</p>
+<p>Returns:
+    (cmd, logfiles, errorfiles)</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager.command', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.runmanager.RunManager.command" class="source">
-    <pre><code>def command(self, cmds, includeHeader=False, log=True, startOpenFOAM=False):
+    <pre><code>def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True,
+            startOpenFOAM=False):
     """
     Get command line for OpenFOAM commands.
     Args:
-        cmds: A sequence of commnads.
-        includeHeader:
-        log:
-        startOpenFOAM: Execute OpenFOAM in case it's not already running.
+        cmd: An OpenFOAM command.
+        args: List of optional arguments for command. e.g. ('c', 'latestTime')
+        decomposeParDict: decomposeParDict for parallel runs (default: None).
+        includeHeader: Include header lines to set up the environment
+            (default: True).
+        startOpenFOAM: Execute OpenFOAM in case it's not already running
+            (default: False).
+    Returns:
+        (cmd, logfiles, errorfiles)
     """
-    _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+    res = namedtuple('log', 'cmd logfiles errorfiles')
+    if Version.OFFullVer == 'v3.0+':
+        _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+    else:
+        _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+            "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
     _msg = "Failed to find container id. Do you have the OpenFOAM container running?\n" + \
         "You can initiate OpenFOAM container by running start_OF.bat:\n" + \
         _fp
+    # try to get containerId
     if not self.containerId:
         self.containerId = self.getContainerId()
     try:
@@ -1433,17 +1616,42 @@ class RunManager(object):
             self.containerId = self.getContainerId()
     finally:
         assert self.containerId, _msg
+    # containerId is found. put the commands together
     _base = 'docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
-    if log:
-        _baseCmd = '{0} > >(tee etc/{0}.log) 2> >(tee etc/{0}.err >&2)'
-        _cmds = (_baseCmd.format(cmd, self.projectName) for cmd in cmds)
+    _baseCmd = '{0} {1} > >(tee etc/{2}.log) 2> >(tee etc/{2}.err >&2)'
+    # join arguments for the command
+    arguments = '' if not args else '-{}'.format(' -'.join(args))
+    if decomposeParDict:
+        # run in parallel
+        n = decomposeParDict.numberOfSubdomains
+        arguments = arguments + ' -parallel'
+        if cmd == 'snappyHexMesh':
+            cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                       'reconstructParMesh', 'rm')
+            argList = ('', arguments + ' -overwrite', '-constant', '-r proc*')
+            cmdNameList = ('decomposePar', cmd, 'reconstructParMesh', 'rm')
+        else:
+            cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                       'reconstructPar', 'rm')
+            argList = ('', arguments, '', '-r proc*')
+            cmdNameList = ('decomposePar', cmd, 'reconstructPar', 'rm')
+        # join commands together
+        cmds = (_baseCmd.format(c, arg, name) for c, arg, name in
+                zip(cmdList, argList, cmdNameList))
+        cmds = _base.format(self.containerId, self.__projectName,
+                            '; '.join(cmds))
+        errfiles = tuple('{}.err'.format(name) for name in cmdNameList)
+        logfiles = tuple('{}.log'.format(name) for name in cmdNameList)
     else:
-        _cmds = cmds
-    _cmd = _base.format(self.containerId, self.projectName, '; '.join(_cmds))
+        # run is serial
+        cmds = _base.format(self.containerId, self.__projectName,
+                            _baseCmd.format(cmd, arguments, cmd))
+        errfiles = ('{}.err'.format(cmd),)
+        logfiles = ('{}.log'.format(cmd),)
     if includeHeader:
-        return self.header() + "\n" + _cmd
+        return res(self.header() + "\n" + cmds, logfiles, errfiles)
     else:
-        return _cmd
+        return res(cmds, logfiles, errfiles)
 </code></pre>
   </div>
 </div>
@@ -1453,7 +1661,7 @@ class RunManager(object):
             
   <div class="item">
     <div class="name def" id="butterfly.runmanager.RunManager.getContainerId">
-    <p>def <span class="ident">getContainerId</span>(</p><p>self, name=&#39;of_plus_300&#39;)</p>
+    <p>def <span class="ident">getContainerId</span>(</p><p>self)</p>
     </div>
     
 
@@ -1463,9 +1671,8 @@ class RunManager(object):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager.getContainerId', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.runmanager.RunManager.getContainerId" class="source">
-    <pre><code>def getContainerId(self, name='of_plus_300'):
+    <pre><code>def getContainerId(self):
     """Get OpenFOAM's container id."""
-    # It seems to always be the same number: 63915d16038d
     _id = None
     if not self.shellinit:
         self.shellinit = self.getShellinit()
@@ -1484,7 +1691,7 @@ class RunManager(object):
         if line.find('docker ps') > 0:
             # find container
             _id = next(line.split()[0] for line in p.stdout
-                       if line.split()[-1] == name)
+                       if line.split()[-1].startswith('of_plus'))
     try:
         os.remove(_batchFile)
     except:
@@ -1513,13 +1720,25 @@ class RunManager(object):
     <pre><code>def getShellinit(self):
     """Get shellinit for setting up initial environment for docker."""
     os.environ['PATH'] += ';%s' % r'C:\Program Files (x86)\Git\bin'
-    os.environ['PATH'] += ';%s' % r'C:\Program Files\Boot2Docker for Windows'
-    process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
-                    stderr=PIPE)
+    os.environ['PATH'] += ';%s' % self.dockerPath
+    if self.isUsingDockerMachine:
+        # version 1606 and higher
+        process = Popen('docker-machine env', shell=True, stdout=PIPE,
+                        stderr=PIPE)
+    else:
+        # older versions are using boot2docker
+        process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
+                        stderr=PIPE)
+    if tuple(process.stderr):
+        print 'ERROR!'
+        for line in process.stderr:
+            print line
+        # return
     return tuple(line.replace('$Env:', 'set ')
                  .replace(' = ', '=')
                  .replace('"', '').strip()
-                 for line in process.stdout)
+                 for line in process.stdout
+                 if not line.startswith('REM'))
 </code></pre>
   </div>
 </div>
@@ -1544,14 +1763,14 @@ class RunManager(object):
     if not self.shellinit:
         self.shellinit = self.getShellinit()
     _base = '@echo off\n' \
-            'cd "C:\Program Files\Boot2Docker for Windows"\n' \
+            'cd {}\n' \
             'echo Setting up the environment to connect to docker...\n' \
             'echo .\n' \
-            '{}\n{}\n{}\n' \
+            '{}\n' \
             'echo Done!\n' \
             'echo Running OpenFOAM commands...\n' \
             'echo .'
-    return _base.format(*self.shellinit)
+    return _base.format(self.dockerPath, '\n'.join(self.shellinit))
 </code></pre>
   </div>
 </div>
@@ -1573,7 +1792,11 @@ class RunManager(object):
   <div id="source-butterfly.runmanager.RunManager.startOpenFOAM" class="source">
     <pre><code>def startOpenFOAM(self):
     """Start OpenFOAM for Windows image from batch file."""
-    fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+    if Version.OFFullVer == 'v3.0+':
+        fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
+    else:
+        fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+            "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
     Popen(fp, shell=True)
 </code></pre>
   </div>

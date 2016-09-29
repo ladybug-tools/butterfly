@@ -990,7 +990,6 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.gh.postprocess.loadOFMeshToRhino">loadOFMeshToRhino</a></li>
     <li class="mono"><a href="#butterfly.gh.postprocess.loadOFPointsToRhino">loadOFPointsToRhino</a></li>
-    <li class="mono"><a href="#butterfly.gh.postprocess.loadOFVectorsToRhino">loadOFVectorsToRhino</a></li>
   </ul>
 
     </li>
@@ -1016,14 +1015,14 @@ table {
 import os
 try:
     import Rhino as rc
-    from scriptcontext import doc
 except ImportError:
     pass
+
+import gzip
 
 
 def loadOFMeshToRhino(polyMeshFolder):
     """Convert OpenFOAM mesh to a Rhino Mesh."""
-
     def splitLine(l, t=float):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
 
@@ -1033,12 +1032,22 @@ def loadOFMeshToRhino(polyMeshFolder):
     pf = os.path.join(polyMeshFolder, 'points')
     ff = os.path.join(polyMeshFolder, 'faces')
 
-    if not os.path.isfile(pf) or not os.path.isfile(ff):
-        print "Can't find point and faces file."
-        return
+    pfgz = os.path.join(polyMeshFolder, 'points.gz')
+    ffgz = os.path.join(polyMeshFolder, 'faces.gz')
 
-    # read points
-    with open(pf, 'rb') as ptFile:
+    if not os.path.isfile(pf) or not os.path.isfile(ff):
+        # check for zipped files
+        if not os.path.isfile(pfgz) or not os.path.isfile(ffgz):
+            raise Exception("Can't find point or faces file.")
+        else:
+            ptFile = gzip.open(pfgz, 'rb')
+            faceFile = gzip.open(ffgz, 'rb')
+    else:
+        ptFile = open(pf, 'rb')
+        faceFile = open(ff, 'rb')
+
+    try:
+        # read points
         for l in xrange(17):
             ptFile.readline()
 
@@ -1047,29 +1056,38 @@ def loadOFMeshToRhino(polyMeshFolder):
             line = ptFile.readline()
             nPoints = int(line[0])
             pts = tuple(
-                       rc.Geometry.Point3d(*pt)
-                       for pt in eval(line[1:].replace(" ", ", "))
-                       )
+                rc.Geometry.Point3d(*pt)
+                for pt in eval(line[1:].replace(" ", ", "))
+            )
         except:
-            #snappyHexMesh
+            # snappyHexMesh
             line = ptFile.readline()
             nPoints = int(line)
             ptFile.readline()
             pts = tuple(
-                       rc.Geometry.Point3d(*splitLine(ptFile.readline()))
-                       for pt in xrange(nPoints)
-                )
+                rc.Geometry.Point3d(*splitLine(ptFile.readline()))
+                for pt in xrange(nPoints)
+            )
+    except Exception as e:
+        raise Exception('Failed to load points file:\n{}'.format(e))
+    finally:
+        ptFile.close()
 
     # read faces
-    with open(ff, 'rb') as faceFile:
-       for l in xrange(18):
-           faceFile.readline()
+    try:
+        for l in xrange(18):
+            faceFile.readline()
 
-       nFaces = int(faceFile.readline())
-       faceFile.readline()
-       faces = tuple((splitLine(faceFile.readline(), t=int))
-                   for pt in xrange(nFaces)
-            )
+        nFaces = int(faceFile.readline())
+        faceFile.readline()
+        faces = tuple(
+            (splitLine(faceFile.readline(), t=int))
+            for pt in xrange(nFaces)
+        )
+    except Exception as e:
+        raise Exception('Failed to load faces file:\n{}'.format(e))
+    finally:
+        faceFile.close()
 
     # create the mesh
     mesh = rc.Geometry.Mesh()
@@ -1104,13 +1122,20 @@ def loadOFPointsToRhino(polyMeshFolder):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
 
     pf = os.path.join(polyMeshFolder, 'points')
+    pfgz = os.path.join(polyMeshFolder, 'points.gz')
 
     if not os.path.isfile(pf):
-        print "Can't find point and faces file."
-        return
+        # check for zipped files
+        if not os.path.isfile(pfgz):
+            print "Can't find points file."
+            return
+        else:
+            ptFile = gzip.open(pfgz, 'rb')
+    else:
+        ptFile = open(pf, 'rb')
 
     # read points
-    with open(pf, 'rb') as ptFile:
+    try:
         for l in xrange(17):
             ptFile.readline()
 
@@ -1119,44 +1144,24 @@ def loadOFPointsToRhino(polyMeshFolder):
             line = ptFile.readline()
             nPoints = int(line[0])
             pts = tuple(
-                       rc.Geometry.Point3d(*pt)
-                       for pt in eval(line[1:].replace(" ", ", "))
-                       )
+                rc.Geometry.Point3d(*pt)
+                for pt in eval(line[1:].replace(" ", ", "))
+            )
         except:
-            #snappyHexMesh
+            # snappyHexMesh
             line = ptFile.readline()
             nPoints = int(line)
             ptFile.readline()
             pts = tuple(
-                       rc.Geometry.Point3d(*splitLine(ptFile.readline()))
-                       for pt in xrange(nPoints)
-                )
+                rc.Geometry.Point3d(*splitLine(ptFile.readline()))
+                for pt in xrange(nPoints)
+            )
+    except Exception as e:
+        raise Exception('Failed to load points file:\n{}'.format(e))
+    finally:
+        ptFile.close()
 
     return pts
-
-
-def loadOFVectorsToRhino(resultsFolder, variable='U'):
-    """Load OpenFOAM vector results such as velocity."""
-    def splitLine(l, t=float):
-        return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
-
-    pf = os.path.join(resultsFolder, variable)
-
-    if not os.path.isfile(pf):
-        print "Can't find vector file."
-        return
-
-    # read vectors
-    with open(pf, 'rb') as ptFile:
-        for l in xrange(21):
-            line = ptFile.readline()
-        nVectors = int(line)
-        ptFile.readline()
-        vectors = tuple(
-                   rc.Geometry.Vector3d(*splitLine(ptFile.readline()))
-                   for pt in xrange(nVectors)
-            )
-    return vectors
 </code></pre>
   </div>
 
@@ -1180,7 +1185,6 @@ def loadOFVectorsToRhino(resultsFolder, variable='U'):
   <div id="source-butterfly.gh.postprocess.loadOFMeshToRhino" class="source">
     <pre><code>def loadOFMeshToRhino(polyMeshFolder):
     """Convert OpenFOAM mesh to a Rhino Mesh."""
-
     def splitLine(l, t=float):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
 
@@ -1190,12 +1194,22 @@ def loadOFVectorsToRhino(resultsFolder, variable='U'):
     pf = os.path.join(polyMeshFolder, 'points')
     ff = os.path.join(polyMeshFolder, 'faces')
 
-    if not os.path.isfile(pf) or not os.path.isfile(ff):
-        print "Can't find point and faces file."
-        return
+    pfgz = os.path.join(polyMeshFolder, 'points.gz')
+    ffgz = os.path.join(polyMeshFolder, 'faces.gz')
 
-    # read points
-    with open(pf, 'rb') as ptFile:
+    if not os.path.isfile(pf) or not os.path.isfile(ff):
+        # check for zipped files
+        if not os.path.isfile(pfgz) or not os.path.isfile(ffgz):
+            raise Exception("Can't find point or faces file.")
+        else:
+            ptFile = gzip.open(pfgz, 'rb')
+            faceFile = gzip.open(ffgz, 'rb')
+    else:
+        ptFile = open(pf, 'rb')
+        faceFile = open(ff, 'rb')
+
+    try:
+        # read points
         for l in xrange(17):
             ptFile.readline()
 
@@ -1204,29 +1218,38 @@ def loadOFVectorsToRhino(resultsFolder, variable='U'):
             line = ptFile.readline()
             nPoints = int(line[0])
             pts = tuple(
-                       rc.Geometry.Point3d(*pt)
-                       for pt in eval(line[1:].replace(" ", ", "))
-                       )
+                rc.Geometry.Point3d(*pt)
+                for pt in eval(line[1:].replace(" ", ", "))
+            )
         except:
-            #snappyHexMesh
+            # snappyHexMesh
             line = ptFile.readline()
             nPoints = int(line)
             ptFile.readline()
             pts = tuple(
-                       rc.Geometry.Point3d(*splitLine(ptFile.readline()))
-                       for pt in xrange(nPoints)
-                )
+                rc.Geometry.Point3d(*splitLine(ptFile.readline()))
+                for pt in xrange(nPoints)
+            )
+    except Exception as e:
+        raise Exception('Failed to load points file:\n{}'.format(e))
+    finally:
+        ptFile.close()
 
     # read faces
-    with open(ff, 'rb') as faceFile:
-       for l in xrange(18):
-           faceFile.readline()
+    try:
+        for l in xrange(18):
+            faceFile.readline()
 
-       nFaces = int(faceFile.readline())
-       faceFile.readline()
-       faces = tuple((splitLine(faceFile.readline(), t=int))
-                   for pt in xrange(nFaces)
-            )
+        nFaces = int(faceFile.readline())
+        faceFile.readline()
+        faces = tuple(
+            (splitLine(faceFile.readline(), t=int))
+            for pt in xrange(nFaces)
+        )
+    except Exception as e:
+        raise Exception('Failed to load faces file:\n{}'.format(e))
+    finally:
+        faceFile.close()
 
     # create the mesh
     mesh = rc.Geometry.Mesh()
@@ -1278,13 +1301,20 @@ def loadOFVectorsToRhino(resultsFolder, variable='U'):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
 
     pf = os.path.join(polyMeshFolder, 'points')
+    pfgz = os.path.join(polyMeshFolder, 'points.gz')
 
     if not os.path.isfile(pf):
-        print "Can't find point and faces file."
-        return
+        # check for zipped files
+        if not os.path.isfile(pfgz):
+            print "Can't find points file."
+            return
+        else:
+            ptFile = gzip.open(pfgz, 'rb')
+    else:
+        ptFile = open(pf, 'rb')
 
     # read points
-    with open(pf, 'rb') as ptFile:
+    try:
         for l in xrange(17):
             ptFile.readline()
 
@@ -1293,61 +1323,24 @@ def loadOFVectorsToRhino(resultsFolder, variable='U'):
             line = ptFile.readline()
             nPoints = int(line[0])
             pts = tuple(
-                       rc.Geometry.Point3d(*pt)
-                       for pt in eval(line[1:].replace(" ", ", "))
-                       )
+                rc.Geometry.Point3d(*pt)
+                for pt in eval(line[1:].replace(" ", ", "))
+            )
         except:
-            #snappyHexMesh
+            # snappyHexMesh
             line = ptFile.readline()
             nPoints = int(line)
             ptFile.readline()
             pts = tuple(
-                       rc.Geometry.Point3d(*splitLine(ptFile.readline()))
-                       for pt in xrange(nPoints)
-                )
+                rc.Geometry.Point3d(*splitLine(ptFile.readline()))
+                for pt in xrange(nPoints)
+            )
+    except Exception as e:
+        raise Exception('Failed to load points file:\n{}'.format(e))
+    finally:
+        ptFile.close()
 
     return pts
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-      
-  <div class="item">
-    <div class="name def" id="butterfly.gh.postprocess.loadOFVectorsToRhino">
-    <p>def <span class="ident">loadOFVectorsToRhino</span>(</p><p>resultsFolder, variable=&#39;U&#39;)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Load OpenFOAM vector results such as velocity.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.postprocess.loadOFVectorsToRhino', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.postprocess.loadOFVectorsToRhino" class="source">
-    <pre><code>def loadOFVectorsToRhino(resultsFolder, variable='U'):
-    """Load OpenFOAM vector results such as velocity."""
-    def splitLine(l, t=float):
-        return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
-
-    pf = os.path.join(resultsFolder, variable)
-
-    if not os.path.isfile(pf):
-        print "Can't find vector file."
-        return
-
-    # read vectors
-    with open(pf, 'rb') as ptFile:
-        for l in xrange(21):
-            line = ptFile.readline()
-        nVectors = int(line)
-        ptFile.readline()
-        vectors = tuple(
-                   rc.Geometry.Vector3d(*splitLine(ptFile.readline()))
-                   for pt in xrange(nVectors)
-            )
-    return vectors
 </code></pre>
   </div>
 </div>

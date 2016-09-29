@@ -996,19 +996,25 @@ table {
         <li class="mono"><a href="conditions.m.html">butterfly.conditions</a></li>
         <li class="mono"><a href="controlDict.m.html">butterfly.controlDict</a></li>
         <li class="mono"><a href="core.m.html">butterfly.core</a></li>
+        <li class="mono"><a href="decomposeParDict.m.html">butterfly.decomposeParDict</a></li>
         <li class="mono"><a href="epsilon.m.html">butterfly.epsilon</a></li>
         <li class="mono"><a href="fields.m.html">butterfly.fields</a></li>
         <li class="mono"><a href="foamfile.m.html">butterfly.foamfile</a></li>
         <li class="mono"><a href="functions.m.html">butterfly.functions</a></li>
         <li class="mono"><a href="fvSchemes.m.html">butterfly.fvSchemes</a></li>
         <li class="mono"><a href="fvSolution.m.html">butterfly.fvSolution</a></li>
+        <li class="mono"><a href="g.m.html">butterfly.g</a></li>
+        <li class="mono"><a href="geometry.m.html">butterfly.geometry</a></li>
         <li class="mono"><a href="gh/index.html">butterfly.gh</a></li>
         <li class="mono"><a href="helper.m.html">butterfly.helper</a></li>
         <li class="mono"><a href="k.m.html">butterfly.k</a></li>
         <li class="mono"><a href="nut.m.html">butterfly.nut</a></li>
         <li class="mono"><a href="p.m.html">butterfly.p</a></li>
+        <li class="mono"><a href="recipe.m.html">butterfly.recipe</a></li>
+        <li class="mono"><a href="refinementRegion.m.html">butterfly.refinementRegion</a></li>
         <li class="mono"><a href="runmanager.m.html">butterfly.runmanager</a></li>
         <li class="mono"><a href="snappyHexMeshDict.m.html">butterfly.snappyHexMeshDict</a></li>
+        <li class="mono"><a href="solution.m.html">butterfly.solution</a></li>
         <li class="mono"><a href="transportProperties.m.html">butterfly.transportProperties</a></li>
         <li class="mono"><a href="turbulenceProperties.m.html">butterfly.turbulenceProperties</a></li>
         <li class="mono"><a href="version.m.html">butterfly.version</a></li>
@@ -1033,15 +1039,15 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly', this);">Show source &equiv;</a></p>
   <div id="source-butterfly" class="source">
     <pre><code>__all__ = ['blockMeshDict', 'boundarycondition', 'conditions', 'controlDict',
-           'core', 'epsilon', 'fields', 'foamfile', 'fvSchemes', 'fvSolution',
-           'helper', 'k', 'nut', 'p', 'RASProperties', 'runmanager',
-           'snappyHexMeshDict', 'transportProperties', 'turbulenceProperties',
-           'U', 'version', 'windtunnel']
+           'core', 'epsilon', 'fields', 'foamfile', 'functions', 'fvSchemes',
+           'fvSolution', 'geometry', 'helper', 'k', 'nut', 'p', 'RASProperties',
+           'runmanager', 'snappyHexMeshDict', 'solution', 'transportProperties',
+           'turbulenceProperties', 'U', 'version', 'windtunnel']
 
 import blockMeshDict, boundarycondition, conditions, controlDict, core, \
-    epsilon, fields, foamfile, fvSchemes, fvSolution, helper, k, nut, p, \
-    RASProperties, runmanager, snappyHexMeshDict, transportProperties, \
-    turbulenceProperties, U, version, windtunnel
+    epsilon, fields, foamfile, functions, fvSchemes, fvSolution, geometry, \
+    helper, k, nut, p, RASProperties, runmanager, snappyHexMeshDict, solution, \
+    transportProperties, turbulenceProperties, U, version, windtunnel
 </code></pre>
   </div>
 
@@ -1103,6 +1109,14 @@ import blockMeshDict, boundarycondition, conditions, controlDict, core, \
 
       </div>
       <div class="item">
+      <p class="name"><a href="decomposeParDict.m.html">butterfly.decomposeParDict</a></p>
+      
+  
+    <div class="desc"><p>decomposeParDict class.</p>
+<p>Decompose parameters for parallel runs.</p></div>
+
+      </div>
+      <div class="item">
       <p class="name"><a href="epsilon.m.html">butterfly.epsilon</a></p>
       
   
@@ -1145,6 +1159,20 @@ import blockMeshDict, boundarycondition, conditions, controlDict, core, \
 
       </div>
       <div class="item">
+      <p class="name"><a href="g.m.html">butterfly.g</a></p>
+      
+  
+    <div class="desc"><p>g[ravity] class.</p></div>
+
+      </div>
+      <div class="item">
+      <p class="name"><a href="geometry.m.html">butterfly.geometry</a></p>
+      
+  
+    <div class="desc"><p>BF geometry library.</p></div>
+
+      </div>
+      <div class="item">
       <p class="name"><a href="gh/index.html">butterfly.gh</a></p>
       
   
@@ -1179,9 +1207,26 @@ import blockMeshDict, boundarycondition, conditions, controlDict, core, \
 
       </div>
       <div class="item">
+      <p class="name"><a href="recipe.m.html">butterfly.recipe</a></p>
+      
+  
+    <div class="desc"><p>Butterfly recipes.</p></div>
+
+      </div>
+      <div class="item">
+      <p class="name"><a href="refinementRegion.m.html">butterfly.refinementRegion</a></p>
+      
+  
+
+      </div>
+      <div class="item">
       <p class="name"><a href="runmanager.m.html">butterfly.runmanager</a></p>
       
   
+    <div class="desc"><p>Runmanager for butterfly.</p>
+<p>Run manager is only useful for running OpenFOAM for Windows which runs in a
+docker container. For linux systems simply use .bash files or libraries such as
+pyFOAM.</p></div>
 
       </div>
       <div class="item">
@@ -1189,6 +1234,13 @@ import blockMeshDict, boundarycondition, conditions, controlDict, core, \
       
   
     <div class="desc"><p>snappyHexMeshDict class.</p></div>
+
+      </div>
+      <div class="item">
+      <p class="name"><a href="solution.m.html">butterfly.solution</a></p>
+      
+  
+    <div class="desc"><p>Butterfly Solution.</p></div>
 
       </div>
       <div class="item">

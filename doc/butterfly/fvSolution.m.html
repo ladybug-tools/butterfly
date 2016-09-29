@@ -993,12 +993,12 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.fvSolution.FvSolution.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.body">body</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.header">header</a></li>
-    <li class="mono"><a href="#butterfly.fvSolution.FvSolution.residualControl">residualControl</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.save">save</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.setValueByParameter">setValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.fvSolution.FvSolution.toOpenFOAM">toOpenFOAM</a></li>
@@ -1104,28 +1104,36 @@ class FvSolution(FoamFile):
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
 
-    def residualControl(self, p=1e-5, U=1e-5, k=1e-5, epsilon=1e-5, other=None):
+        self.__residualControl = ResidualControl(
+            p=self.values['SIMPLE']['residualControl']['p'],
+            U=self.values['SIMPLE']['residualControl']['U'],
+            k=self.values['SIMPLE']['residualControl']['k'],
+            epsilon=self.values['SIMPLE']['residualControl']['epsilon']
+        )
+
+    @property
+    def residualControl(self):
+        """Get and set residual controls."""
+        return self.__residualControl
+
+    @residualControl.setter
+    def residualControl(self, resControl):
         """Set residual control values.
 
         Args:
-            p: Residual control valeus for p (default: 1e-5)
-            U: Residual control valeus for U (default: 1e-5)
-            k: Residual control valeus for k (default: 1e-5)
-            epsilon: Residual control valeus for epsilon (default: 1e-5)
-            other: Key values as dictionary for other paramaters (e.g. {'g': 1e-5})
+            resControl: New residual control.
         """
-        p = str(p) if p else '1e-5'
-        U = str(U) if U else '1e-5'
-        k = str(k) if k else '1e-5'
-        epsilon = str(epsilon) if epsilon else '1e-5'
+        if not resControl:
+            return
 
-        self.values['SIMPLE']['residualControl']['p'] = p
-        self.values['SIMPLE']['residualControl']['U'] = U
-        self.values['SIMPLE']['residualControl']['k'] = k
-        self.values['SIMPLE']['residualControl']['epsilon'] = epsilon
+        self.values['SIMPLE']['residualControl']['p'] = str(resControl.p)
+        self.values['SIMPLE']['residualControl']['U'] = str(resControl.U)
+        self.values['SIMPLE']['residualControl']['k'] = str(resControl.k)
+        self.values['SIMPLE']['residualControl']['epsilon'] = str(resControl.epsilon)
+        self.__residualControl = resControl
 
-        if other:
-            for key, value in other.iteritems():
+        if resControl.other:
+            for key, value in resControl.other.iteritems():
                 self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 
 
@@ -1153,6 +1161,23 @@ class ResidualControl(object):
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
+
+    # TODO: Need to check kargs
+    def __eq__(self, other):
+        """Check equality."""
+        if not isinstance(other, self):
+            return False
+
+        if float(self.p) != float(other.p):
+            return False
+        if float(self.U) != float(other.U):
+            return False
+        if float(self.k) != float(other.k):
+            return False
+        if float(self.epsilon) != float(other.epsilon):
+            return False
+
+        return True
 
     def __repr__(self):
         """Representation."""
@@ -1241,28 +1266,36 @@ class ResidualControl(object):
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
 
-    def residualControl(self, p=1e-5, U=1e-5, k=1e-5, epsilon=1e-5, other=None):
+        self.__residualControl = ResidualControl(
+            p=self.values['SIMPLE']['residualControl']['p'],
+            U=self.values['SIMPLE']['residualControl']['U'],
+            k=self.values['SIMPLE']['residualControl']['k'],
+            epsilon=self.values['SIMPLE']['residualControl']['epsilon']
+        )
+
+    @property
+    def residualControl(self):
+        """Get and set residual controls."""
+        return self.__residualControl
+
+    @residualControl.setter
+    def residualControl(self, resControl):
         """Set residual control values.
 
         Args:
-            p: Residual control valeus for p (default: 1e-5)
-            U: Residual control valeus for U (default: 1e-5)
-            k: Residual control valeus for k (default: 1e-5)
-            epsilon: Residual control valeus for epsilon (default: 1e-5)
-            other: Key values as dictionary for other paramaters (e.g. {'g': 1e-5})
+            resControl: New residual control.
         """
-        p = str(p) if p else '1e-5'
-        U = str(U) if U else '1e-5'
-        k = str(k) if k else '1e-5'
-        epsilon = str(epsilon) if epsilon else '1e-5'
+        if not resControl:
+            return
 
-        self.values['SIMPLE']['residualControl']['p'] = p
-        self.values['SIMPLE']['residualControl']['U'] = U
-        self.values['SIMPLE']['residualControl']['k'] = k
-        self.values['SIMPLE']['residualControl']['epsilon'] = epsilon
+        self.values['SIMPLE']['residualControl']['p'] = str(resControl.p)
+        self.values['SIMPLE']['residualControl']['U'] = str(resControl.U)
+        self.values['SIMPLE']['residualControl']['k'] = str(resControl.k)
+        self.values['SIMPLE']['residualControl']['epsilon'] = str(resControl.epsilon)
+        self.__residualControl = resControl
 
-        if other:
-            for key, value in other.iteritems():
+        if resControl.other:
+            for key, value in resControl.other.iteritems():
                 self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 </code></pre>
   </div>
@@ -1276,6 +1309,36 @@ class ResidualControl(object):
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.fvSolution.FvSolution.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.fvSolution.FvSolution.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.fvSolution.FvSolution.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.fvSolution.FvSolution.parameters" class="name">var <span class="ident">parameters</span></p>
@@ -1284,6 +1347,17 @@ class ResidualControl(object):
             
   
     <div class="desc"><p>Get list of parameters.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.fvSolution.FvSolution.residualControl" class="name">var <span class="ident">residualControl</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get and set residual controls.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1318,6 +1392,12 @@ class ResidualControl(object):
     FoamFile.__init__(self, name='fvSolution', cls='dictionary',
                       location='system', defaultValues=self.__defaultValues,
                       values=values)
+    self.__residualControl = ResidualControl(
+        p=self.values['SIMPLE']['residualControl']['p'],
+        U=self.values['SIMPLE']['residualControl']['U'],
+        k=self.values['SIMPLE']['residualControl']['k'],
+        epsilon=self.values['SIMPLE']['residualControl']['epsilon']
+    )
 </code></pre>
   </div>
 </div>
@@ -1445,51 +1525,6 @@ class ResidualControl(object):
             "\tclass\t\t%s;\n" \
             "\tobject\t\t%s;\n" \
             "}\n" % (self.__version, self.format, self.cls, self.name)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.fvSolution.FvSolution.residualControl">
-    <p>def <span class="ident">residualControl</span>(</p><p>self, p=1e-05, U=1e-05, k=1e-05, epsilon=1e-05, other=None)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Set residual control values.</p>
-<p>Args:
-    p: Residual control valeus for p (default: 1e-5)
-    U: Residual control valeus for U (default: 1e-5)
-    k: Residual control valeus for k (default: 1e-5)
-    epsilon: Residual control valeus for epsilon (default: 1e-5)
-    other: Key values as dictionary for other paramaters (e.g. {'g': 1e-5})</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.fvSolution.FvSolution.residualControl', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.fvSolution.FvSolution.residualControl" class="source">
-    <pre><code>def residualControl(self, p=1e-5, U=1e-5, k=1e-5, epsilon=1e-5, other=None):
-    """Set residual control values.
-    Args:
-        p: Residual control valeus for p (default: 1e-5)
-        U: Residual control valeus for U (default: 1e-5)
-        k: Residual control valeus for k (default: 1e-5)
-        epsilon: Residual control valeus for epsilon (default: 1e-5)
-        other: Key values as dictionary for other paramaters (e.g. {'g': 1e-5})
-    """
-    p = str(p) if p else '1e-5'
-    U = str(U) if U else '1e-5'
-    k = str(k) if k else '1e-5'
-    epsilon = str(epsilon) if epsilon else '1e-5'
-    self.values['SIMPLE']['residualControl']['p'] = p
-    self.values['SIMPLE']['residualControl']['U'] = U
-    self.values['SIMPLE']['residualControl']['k'] = k
-    self.values['SIMPLE']['residualControl']['epsilon'] = epsilon
-    if other:
-        for key, value in other.iteritems():
-            self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 </code></pre>
   </div>
 </div>
@@ -1647,6 +1682,23 @@ already exists it will be updated.</p></div>
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
+
+    # TODO: Need to check kargs
+    def __eq__(self, other):
+        """Check equality."""
+        if not isinstance(other, self):
+            return False
+
+        if float(self.p) != float(other.p):
+            return False
+        if float(self.U) != float(other.U):
+            return False
+        if float(self.k) != float(other.k):
+            return False
+        if float(self.epsilon) != float(other.epsilon):
+            return False
+
+        return True
 
     def __repr__(self):
         """Representation."""

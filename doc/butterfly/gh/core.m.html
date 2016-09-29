@@ -993,8 +993,10 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.gh.core.Case.loadProbesFromProjectPath">loadProbesFromProjectPath</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.gh.core.Case.addRefinementRegion">addRefinementRegion</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.blockMesh">blockMesh</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.calculateMeshOrthogonality">calculateMeshOrthogonality</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.checkMesh">checkMesh</a></li>
@@ -1004,21 +1006,23 @@ table {
     <li class="mono"><a href="#butterfly.gh.core.Case.fromWindTunnel">fromWindTunnel</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.getResultFolders">getResultFolders</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.getSnappyHexMeshFolders">getSnappyHexMeshFolders</a></li>
+    <li class="mono"><a href="#butterfly.gh.core.Case.isPolyMeshSnappyHexMesh">isPolyMeshSnappyHexMesh</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.loadMesh">loadMesh</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.loadPoints">loadPoints</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.loadProbes">loadProbes</a></li>
+    <li class="mono"><a href="#butterfly.gh.core.Case.loadSkippedProbes">loadSkippedProbes</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.loadVelocity">loadVelocity</a></li>
-    <li class="mono"><a href="#butterfly.gh.core.Case.meshCombo">meshCombo</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.populateConstantContents">populateConstantContents</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.populateContents">populateContents</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.populateSystemContents">populateSystemContents</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.populateZeroContents">populateZeroContents</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.purge">purge</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.removePolyMeshContent">removePolyMeshContent</a></li>
+    <li class="mono"><a href="#butterfly.gh.core.Case.removePostProcessingFolder">removePostProcessingFolder</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.removeResultFolders">removeResultFolders</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.removeSnappyHexMeshFolders">removeSnappyHexMeshFolders</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.renameSnappyHexMeshFolders">renameSnappyHexMeshFolders</a></li>
-    <li class="mono"><a href="#butterfly.gh.core.Case.setFvSchemesfromAverageOrthogonality">setFvSchemesfromAverageOrthogonality</a></li>
+    <li class="mono"><a href="#butterfly.gh.core.Case.setFvSchemesfromMeshOrthogonality">setFvSchemesfromMeshOrthogonality</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.simpleFoam">simpleFoam</a></li>
     <li class="mono"><a href="#butterfly.gh.core.Case.snappyHexMesh">snappyHexMesh</a></li>
   </ul>
@@ -1047,7 +1051,7 @@ table {
 import os
 
 from ..core import OpemFOAMCase
-from .postprocess import loadOFMeshToRhino, loadOFPointsToRhino, loadOFVectorsToRhino
+from .postprocess import loadOFMeshToRhino, loadOFPointsToRhino
 
 
 class Case(OpemFOAMCase):
@@ -1060,24 +1064,6 @@ class Case(OpemFOAMCase):
     def loadPoints(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
         return loadOFPointsToRhino(os.path.join(self.constantDir, "polyMesh"))
-
-    def loadVelocity(self, timestep=None):
-        """Return OpenFOAM mesh as a Rhino mesh."""
-        # find results folders
-        _folders = self.getResultFolders()
-
-        # if there is no timestep pick the last one
-        _folder = _folders[-1]
-
-        if timestep:
-            try:
-                # pick the one based on timestep
-                _folder = _folders[timestep + 1]
-            except IndexError:
-                pass
-
-        return loadOFVectorsToRhino(os.path.join(self.projectDir, str(_folder)),
-                                    variable='U')
 </code></pre>
   </div>
 
@@ -1106,24 +1092,6 @@ class Case(OpemFOAMCase):
     def loadPoints(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
         return loadOFPointsToRhino(os.path.join(self.constantDir, "polyMesh"))
-
-    def loadVelocity(self, timestep=None):
-        """Return OpenFOAM mesh as a Rhino mesh."""
-        # find results folders
-        _folders = self.getResultFolders()
-
-        # if there is no timestep pick the last one
-        _folder = _folders[-1]
-
-        if timestep:
-            try:
-                # pick the one based on timestep
-                _folder = _folders[timestep + 1]
-            except IndexError:
-                pass
-
-        return loadOFVectorsToRhino(os.path.join(self.projectDir, str(_folder)),
-                                    variable='U')
 </code></pre>
   </div>
 </div>
@@ -1136,6 +1104,63 @@ class Case(OpemFOAMCase):
           <li>butterfly.core.OpemFOAMCase</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.core.Case.loadProbesFromProjectPath">
+    <p>def <span class="ident">loadProbesFromProjectPath</span>(</p><p>projectPath, field, probesFolder=&#39;probes&#39;)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return OpenFOAM probes results for a field.</p>
+<p>Args:
+    projectPath: Path to project root folder.
+    field: Probes field (e.g. U, p, T).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.loadProbesFromProjectPath', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.core.Case.loadProbesFromProjectPath" class="source">
+    <pre><code>@staticmethod
+def loadProbesFromProjectPath(projectPath, field, probesFolder='probes'):
+    """Return OpenFOAM probes results for a field.
+    Args:
+        projectPath: Path to project root folder.
+        field: Probes field (e.g. U, p, T).
+    """
+    # find probes folder
+    _basepath = os.path.join(projectPath, 'postProcessing', probesFolder)
+    folders = [os.path.join(_basepath, f) for f in os.listdir(_basepath)
+               if (os.path.isdir(os.path.join(_basepath, f)) and
+                   f.isdigit())]
+    # sort based on last modified
+    folders = sorted(folders, key=lambda folder:
+                     max(tuple(os.stat(os.path.join(folder, f)).st_mtime
+                               for f in os.listdir(folder))))
+    # load the last line in the file
+    _f = os.path.join(_basepath, str(folders[-1]), field)
+    assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
+    _res = readLastLine(_f).split()[1:]
+    # convert values to tuple or number
+    _rawres = tuple(d.strip() for d in readLastLine(_f).split()
+                    if d.strip())[1:]
+    try:
+        # it's a number
+        _res = tuple(float(r) for r in _rawres)
+    except ValueError:
+        try:
+            # it's a vector
+            _res = tuple(eval(','.join(_rawres[3 * i: 3 * (i + 1)]))
+                         for i in range(int(len(_rawres) / 3)))
+        except Exception as e:
+            raise Exception('\nFailed to load probes:\n{}'.format(e))
+    return _res
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.gh.core.Case.ABLConditions" class="name">var <span class="ident">ABLConditions</span></p>
@@ -1192,11 +1217,22 @@ class Case(OpemFOAMCase):
 </div>
 
             </div>
+            <div class="item">
+            <p id="butterfly.gh.core.Case.refinementRegions" class="name">var <span class="ident">refinementRegions</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get refinement regions.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.gh.core.Case.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, projectName, BFSurfaces, blockMeshDict, globalRefinementLevel=None, locationInMesh=None, isSnappyHexMesh=False, isABLConditionsIncluded=False, isInitialConditionsIncluded=False)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, projectName, BFGeometries, blockMeshDict, globalRefinementLevel=None, locationInMesh=None, isSnappyHexMesh=False)</p>
     </div>
     
 
@@ -1206,22 +1242,23 @@ class Case(OpemFOAMCase):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.core.Case.__init__" class="source">
-    <pre><code>def __init__(self, projectName, BFSurfaces, blockMeshDict,
+    <pre><code>def __init__(self, projectName, BFGeometries, blockMeshDict,
              globalRefinementLevel=None, locationInMesh=None,
-             isSnappyHexMesh=False, isABLConditionsIncluded=False,
-             isInitialConditionsIncluded=False):
+             isSnappyHexMesh=False):
     """Init project."""
     self.username = os.getenv("USERNAME")
     self.version = float(Version.OFVer)
     self.projectName = projectName
     self.runmanager = RunManager(self.projectName)
-    self.BFSurfaces = BFSurfaces
+    self.BFGeometries = BFGeometries
     # meshing - constant
     self.blockMeshDict = blockMeshDict
     # meshing - system
     self.isSnappyHexMesh = isSnappyHexMesh
-    self.snappyHexMeshDict = SnappyHexMeshDict.fromBFSurfaces(
-        projectName, BFSurfaces, globalRefinementLevel, locationInMesh)
+    self.snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
+        projectName, BFGeometries, globalRefinementLevel, locationInMesh)
+    # place holder for refinment regions
+    self.__refinementRegions = []
     # constant folder
     if self.version < 3:
         self.RASProperties = RASProperties()
@@ -1229,21 +1266,20 @@ class Case(OpemFOAMCase):
         self.turbulenceProperties = TurbulenceProperties()
     self.transportProperties = TransportProperties()
     # 0 floder
-    self.u = U.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.p = P.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.k = K.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.epsilon = Epsilon.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
-    self.nut = Nut.fromBFSurfaces(BFSurfaces + blockMeshDict.BFSurfaces)
+    self.u = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+    self.p = P.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+    self.k = K.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+    self.epsilon = Epsilon.fromBFGeometries(BFGeometries +
+                                            blockMeshDict.BFBlockGeometries)
+    self.nut = Nut.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
     # system folder
     self.fvSchemes = FvSchemes()
     self.fvSolution = FvSolution()
     self.controlDict = ControlDict()
     self.probes = None
     # if any of these files are included they should be written to 0 floder
-    if not isABLConditionsIncluded:
-        self.ABLConditions = None
-    if not isInitialConditionsIncluded:
-        self.initialConditions = None
+    self.ABLConditions = None
+    self.initialConditions = None
     self._isInit = False
     self._isSnappyHexMeshFoldersRenamed = False
 </code></pre>
@@ -1276,8 +1312,33 @@ class Case(OpemFOAMCase):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.gh.core.Case.addRefinementRegion">
+    <p>def <span class="ident">addRefinementRegion</span>(</p><p>self, refinementRegion)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Add refinement regions to this case.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.addRefinementRegion', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.core.Case.addRefinementRegion" class="source">
+    <pre><code>def addRefinementRegion(self, refinementRegion):
+    """Add refinement regions to this case."""
+    assert hasattr(refinementRegion, 'isRefinementRegion'), \
+        "{} is not a refinement region.".format(refinementRegion)
+    self.__refinementRegions.append(refinementRegion)
+    self.snappyHexMeshDict.addRefinementRegion(refinementRegion)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.gh.core.Case.blockMesh">
-    <p>def <span class="ident">blockMesh</span>(</p><p>self, run=True, log=True, removeContent=True)</p>
+    <p>def <span class="ident">blockMesh</span>(</p><p>self, args=None, removeContent=True, run=True, wait=True)</p>
     </div>
     
 
@@ -1285,26 +1346,25 @@ class Case(OpemFOAMCase):
   
     <div class="desc"><p>Run meshBlock command for this case.</p>
 <p>Args:
-    removeContent: Remove current content of the folder except for
-        blockMeshDict</p>
+    removeContent: Remove current content of the folder</p>
 <p>Returns:
     A tuple as (success, err). success is a boolen. err is None in case
     of success otherwise the error message as a string.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.blockMesh', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.core.Case.blockMesh" class="source">
-    <pre><code>def blockMesh(self, run=True, log=True, removeContent=True):
+    <pre><code>def blockMesh(self, args=None, removeContent=True, run=True, wait=True):
     """Run meshBlock command for this case.
     Args:
-        removeContent: Remove current content of the folder except for
-            blockMeshDict
+        removeContent: Remove current content of the folder
     Returns:
         A tuple as (success, err). success is a boolen. err is None in case
         of success otherwise the error message as a string.
     """
     if removeContent:
         self.removePolyMeshContent()
-    return self.__writeAndRunCommands('blockMesh', ('blockMesh',), run, log)
+    return self.__writeAndRunCommands('blockMesh', 'blockMesh', args, None,
+                                      run, wait)
 </code></pre>
   </div>
 </div>
@@ -1334,8 +1394,8 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
     try case.setFvSchemes(averageOrthogonality)
     """
     if not useCurrntCheckMeshLog:
-        success, err = self.checkMesh()
-        assert success, err
+        log = self.checkMesh(args=('latestTime',))
+        assert log.success, log.error
     f = os.path.join(self.projectDir, 'etc/checkMesh.log')
     assert os.path.isfile(f), 'Failed to find {}.'.format(f)
     with open(f, 'rb') as inf:
@@ -1354,7 +1414,7 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.gh.core.Case.checkMesh">
-    <p>def <span class="ident">checkMesh</span>(</p><p>self, run=True, log=True)</p>
+    <p>def <span class="ident">checkMesh</span>(</p><p>self, args=None, decomposeParDict=None, run=True, wait=True)</p>
     </div>
     
 
@@ -1367,13 +1427,14 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.checkMesh', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.core.Case.checkMesh" class="source">
-    <pre><code>def checkMesh(self, run=True, log=True):
+    <pre><code>def checkMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
     """Run simpleFoam command for this case.
     Returns:
         A tuple as (success, err). success is a boolen. err is None in case
         of success otherwise the error message as a string.
     """
-    return self.__writeAndRunCommands('checkMesh', ('checkMesh',), run, log)
+    return self.__writeAndRunCommands('checkMesh', 'checkMesh', args,
+                                      decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>
@@ -1406,7 +1467,10 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
         _s = os.path.join(self.projectDir, _folders[-1], 'polyMesh')
     _t = os.path.join(self.constantDir, "polyMesh")
     # copy files to constant/polyMesh
-    copy_tree(_s, _t)
+    try:
+        copy_tree(_s, _t)
+    except Exception as e:
+        print "Failed to copy snappyHexMesh folder: {}".format(e)
 </code></pre>
   </div>
 </div>
@@ -1462,25 +1526,25 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.gh.core.Case.fromBlocks">
-    <p>def <span class="ident">fromBlocks</span>(</p><p>cls, BFSurfaces, blocks, scale)</p>
+    <p>def <span class="ident">fromBlocks</span>(</p><p>cls, BFGeometries, blocks, scale)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Create case from BFSurfaces and blocks.</p>
+    <div class="desc"><p>Create case from BFGeometries and blocks.</p>
 <p>This case will only be meshed using blockMesh</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.fromBlocks', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.core.Case.fromBlocks" class="source">
     <pre><code>@classmethod
-def fromBlocks(cls, BFSurfaces, blocks, scale):
-    """Create case from BFSurfaces and blocks.
+def fromBlocks(cls, BFGeometries, blocks, scale):
+    """Create case from BFGeometries and blocks.
     This case will only be meshed using blockMesh
     """
     raise NotImplementedError("Let us know if you in real need for this method!")
-    _blockMeshDict = BlockMeshDict(scale, BFSurfaces, blocks)
-    return cls(BFSurfaces, _blockMeshDict, isSnappyHexMesh=False)
+    _blockMeshDict = BlockMeshDict(scale, BFGeometries, blocks)
+    return cls(BFGeometries, _blockMeshDict, isSnappyHexMesh=False)
 </code></pre>
   </div>
 </div>
@@ -1508,11 +1572,9 @@ def fromWindTunnel(cls, windTunnel):
     _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
                 globalRefinementLevel=windTunnel.globalRefLevel,
                 locationInMesh=_locationInMesh, isSnappyHexMesh=True,
-                isABLConditionsIncluded=True,
-                isInitialConditionsIncluded=True)
-    InitialConditions()
+                )
     _case.initialConditions = InitialConditions(
-        Uref=windTunnel.flowSpeed, z0=windTunnel.z0)
+        Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
     _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
     # edit files in 0 folder
     _case.u.updateValues({'#include': '"initialConditions"',
@@ -1523,6 +1585,9 @@ def fromWindTunnel(cls, windTunnel):
                          'internalField': 'uniform $turbulentKE'})
     _case.epsilon.updateValues({'#include': '"initialConditions"',
                                 'internalField': 'uniform $turbulentEpsilon'})
+    if windTunnel.refinementRegions:
+        for region in windTunnel.refinementRegions:
+            _case.addRefinementRegion(region)
     return _case
 </code></pre>
   </div>
@@ -1580,6 +1645,28 @@ def fromWindTunnel(cls, windTunnel):
               )]
     _f.sort()
     return tuple(str(f) for f in _f)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.core.Case.isPolyMeshSnappyHexMesh">
+    <p>def <span class="ident">isPolyMeshSnappyHexMesh</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Check if the mesh in polyMesh folder is snappyHexMesh.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.isPolyMeshSnappyHexMesh', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.core.Case.isPolyMeshSnappyHexMesh" class="source">
+    <pre><code>def isPolyMeshSnappyHexMesh(self):
+    """Check if the mesh in polyMesh folder is snappyHexMesh."""
+    return len(os.listdir(os.path.join(self.constantDir, "polyMesh"))) > 5
 </code></pre>
   </div>
 </div>
@@ -1650,20 +1737,30 @@ def fromWindTunnel(cls, windTunnel):
     if field not in self.probes.fields:
         raise ValueError("Can't find {} in {}.".format(field,
                                                        self.probes.fields))
-    # load the last line in the file
-    _f = os.path.join(self.projectDir, 'postProcessing',
-                      self.probes.filename, '0', field)
-    assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
-    _res = readLastLine(_f).split()[1:]
-    # convert values to tuple or number
-    _rawres = readLastLine(_f).split('      ')[2:]
-    if _rawres[1].find('(') > -1:
-        # it's a vector
-        _res = (tuple(eval(r.strip().replace(' ', ',')) for r in _rawres if r))
-    else:
-        # it's a number
-        _res = (tuple(float(r) for r in _rawres))
-    return _res
+    self.loadProbesFromProjectPath(
+        self.projectDir, field, self.probes.filename)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.core.Case.loadSkippedProbes">
+    <p>def <span class="ident">loadSkippedProbes</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Get list of probes that are skipped in calculation.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.loadSkippedProbes', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.core.Case.loadSkippedProbes" class="source">
+    <pre><code>def loadSkippedProbes(self):
+    """Get list of probes that are skipped in calculation."""
+    return loadSkippedProbes(os.path.join(self.projectDir, 'etc', 'simpleFoam.log'))
 </code></pre>
   </div>
 </div>
@@ -1685,49 +1782,8 @@ def fromWindTunnel(cls, windTunnel):
   <div id="source-butterfly.gh.core.Case.loadVelocity" class="source">
     <pre><code>def loadVelocity(self, timestep=None):
     """Return OpenFOAM mesh as a Rhino mesh."""
-    # find results folders
-    _folders = self.getResultFolders()
-    # if there is no timestep pick the last one
-    _folder = _folders[-1]
-    if timestep:
-        try:
-            # pick the one based on timestep
-            _folder = _folders[timestep + 1]
-        except IndexError:
-            pass
-    return loadOFVectorsToRhino(os.path.join(self.projectDir, str(_folder)),
-                                variable='U')
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.gh.core.Case.meshCombo">
-    <p>def <span class="ident">meshCombo</span>(</p><p>self, run=True, log=True)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Run meshBlock and snappyHexMesh.</p>
-<p>Returns:
-    A tuple as (success, err). success is a boolen. err is None in case
-    of success otherwise the error message as a string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.meshCombo', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.core.Case.meshCombo" class="source">
-    <pre><code>def meshCombo(self, run=True, log=True):
-    """Run meshBlock and snappyHexMesh.
-    Returns:
-        A tuple as (success, err). success is a boolen. err is None in case
-        of success otherwise the error message as a string.
-    """
-    return self.__writeAndRunCommands('meshCombo',
-                                      ('blockMesh', 'snappyHexMesh'),
-                                      run, log)
+    # This is a abstract property which should be implemented in subclasses
+    raise NotImplementedError()
 </code></pre>
   </div>
 </div>
@@ -1752,15 +1808,21 @@ def fromWindTunnel(cls, windTunnel):
     if not self._isInit:
         raise CaseFoldersNotCreatedError()
     # write stl files to triSurface
-    # for surface in self
+    # for geometry in self
     if self.isSnappyHexMesh:
         # collect stl strings
-        _stl = (BFSurface.toStlString() for BFSurface in self.BFSurfaces)
+        _stl = (BFGeometry.toStlString() for BFGeometry in self.BFGeometries)
         # write stl to stl file
         with open(os.path.join(self.constantDir,
                                "triSurface\\%s.stl" % self.projectName),
                   'wb') as outf:
             outf.write("\n\n".join(_stl))
+    if self.refinementRegions:
+        for region in self.refinementRegions:
+            with open(
+                os.path.join(self.constantDir,
+                             "triSurface\\%s.stl" % region.name), 'wb') as outf:
+                outf.write(region.toStlString())
     if self.version < 3:
         # write blockMeshDict to polyMesh
         self.blockMeshDict.save(self.projectDir, 'constant\\polyMesh')
@@ -1863,7 +1925,7 @@ def fromWindTunnel(cls, windTunnel):
             
   <div class="item">
     <div class="name def" id="butterfly.gh.core.Case.purge">
-    <p>def <span class="ident">purge</span>(</p><p>self, removePolyMeshContent=True, removeSnappyHexMeshFolders=True, removeResultFolders=False)</p>
+    <p>def <span class="ident">purge</span>(</p><p>self, removePolyMeshContent=True, removeSnappyHexMeshFolders=True, removeResultFolders=False, removePostProcessingFolder=False)</p>
     </div>
     
 
@@ -1875,7 +1937,8 @@ def fromWindTunnel(cls, windTunnel):
   <div id="source-butterfly.gh.core.Case.purge" class="source">
     <pre><code>def purge(self, removePolyMeshContent=True,
           removeSnappyHexMeshFolders=True,
-          removeResultFolders=False):
+          removeResultFolders=False,
+          removePostProcessingFolder=False):
     """Purge case folder."""
     if removePolyMeshContent:
         self.removePolyMeshContent()
@@ -1883,6 +1946,8 @@ def fromWindTunnel(cls, windTunnel):
         self.removeSnappyHexMeshFolders()
     if removeResultFolders:
         self.removeResultFolders()
+    if removePostProcessingFolder:
+        self.removePostProcessingFolder()
 </code></pre>
   </div>
 </div>
@@ -1907,7 +1972,39 @@ def fromWindTunnel(cls, windTunnel):
     folder = os.path.join(self.constantDir, 'polyMesh')
     for _f in os.listdir(folder):
         if _f != 'blockMeshDict':
-            os.remove(os.path.join(folder, _f))
+            _fp = os.path.join(folder, _f)
+            if os.path.isfile(_fp):
+                os.remove(_fp)
+            elif os.path.isdir(_fp):
+                rmtree(_fp)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.core.Case.removePostProcessingFolder">
+    <p>def <span class="ident">removePostProcessingFolder</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Remove post postProcessing folder.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.removePostProcessingFolder', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.core.Case.removePostProcessingFolder" class="source">
+    <pre><code>def removePostProcessingFolder(self):
+    """Remove post postProcessing folder."""
+    _f = os.path.join(self.projectDir, 'postProcessing')
+    if not os.path.isdir(_f):
+        return
+    try:
+        rmtree(_f)
+    except Exception as e:
+        print 'Failed to remove postProcessing folder:\n{}'.format(e)
 </code></pre>
   </div>
 </div>
@@ -1931,7 +2028,10 @@ def fromWindTunnel(cls, windTunnel):
     """Remove results folder."""
     _folders = self.getResultFolders()
     for _f in _folders:
-        rmtree(os.path.join(self.projectDir, _f))
+        try:
+            rmtree(os.path.join(self.projectDir, _f))
+        except Exception as e:
+            print 'Failed to remove {}:\n{}'.format(_f, e)
 </code></pre>
   </div>
 </div>
@@ -1999,8 +2099,11 @@ def fromWindTunnel(cls, windTunnel):
         _folders = self.getSnappyHexMeshFolders()
         # rename them starting from 1
         for f in _folders:
-            os.rename(os.path.join(self.projectDir, f),
-                      os.path.join(self.projectDir, '%s.org' % f))
+            try:
+                os.rename(os.path.join(self.projectDir, f),
+                          os.path.join(self.projectDir, '%s.org' % f))
+            except Exception as e:
+                raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
         self._isSnappyHexMeshFoldersRenamed = True
 </code></pre>
   </div>
@@ -2010,8 +2113,8 @@ def fromWindTunnel(cls, windTunnel):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.gh.core.Case.setFvSchemesfromAverageOrthogonality">
-    <p>def <span class="ident">setFvSchemesfromAverageOrthogonality</span>(</p><p>self, averageOrthogonality)</p>
+    <div class="name def" id="butterfly.gh.core.Case.setFvSchemesfromMeshOrthogonality">
+    <p>def <span class="ident">setFvSchemesfromMeshOrthogonality</span>(</p><p>self, meshOrthogonality)</p>
     </div>
     
 
@@ -2021,14 +2124,14 @@ def fromWindTunnel(cls, windTunnel):
 <p>Check pp. 45-50 of this document:
 http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.setFvSchemesfromAverageOrthogonality', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.core.Case.setFvSchemesfromAverageOrthogonality" class="source">
-    <pre><code>def setFvSchemesfromAverageOrthogonality(self, averageOrthogonality):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.setFvSchemesfromMeshOrthogonality', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.core.Case.setFvSchemesfromMeshOrthogonality" class="source">
+    <pre><code>def setFvSchemesfromMeshOrthogonality(self, meshOrthogonality):
     """Set fvSchemes based on mesh orthogonality.
     Check pp. 45-50 of this document:
     http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
     """
-    self.fvSchemes = FvSchemes.fromAverageOrthogonality(averageOrthogonality)
+    self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
 </code></pre>
   </div>
 </div>
@@ -2038,7 +2141,7 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.gh.core.Case.simpleFoam">
-    <p>def <span class="ident">simpleFoam</span>(</p><p>self, run=True, log=True)</p>
+    <p>def <span class="ident">simpleFoam</span>(</p><p>self, args=None, decomposeParDict=None, run=True, wait=True)</p>
     </div>
     
 
@@ -2051,13 +2154,14 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.simpleFoam', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.core.Case.simpleFoam" class="source">
-    <pre><code>def simpleFoam(self, run=True, log=True):
+    <pre><code>def simpleFoam(self, args=None, decomposeParDict=None, run=True, wait=True):
     """Run simpleFoam command for this case.
     Returns:
         A tuple as (success, err). success is a boolen. err is None in case
         of success otherwise the error message as a string.
     """
-    return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',), run, log)
+    return self.__writeAndRunCommands('simpleFoam', 'simpleFoam', args,
+                                      decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>
@@ -2067,7 +2171,7 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
             
   <div class="item">
     <div class="name def" id="butterfly.gh.core.Case.snappyHexMesh">
-    <p>def <span class="ident">snappyHexMesh</span>(</p><p>self, run=True, log=True)</p>
+    <p>def <span class="ident">snappyHexMesh</span>(</p><p>self, args=None, decomposeParDict=None, run=True, wait=True)</p>
     </div>
     
 
@@ -2077,10 +2181,10 @@ http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.core.Case.snappyHexMesh', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh.core.Case.snappyHexMesh" class="source">
-    <pre><code>def snappyHexMesh(self, run=True, log=True):
+    <pre><code>def snappyHexMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
     """Run snappyHexMesh command for this case."""
-    return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
-                                      run, log)
+    return self.__writeAndRunCommands('snappyHexMesh', 'snappyHexMesh',
+                                      args, decomposeParDict, run, wait)
 </code></pre>
   </div>
 </div>

@@ -993,6 +993,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.foamfile.Condition.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.body">body</a></li>
@@ -1010,6 +1011,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFile.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.body">body</a></li>
@@ -1027,10 +1029,11 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.body">body</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.fromBFSurfaces">fromBFSurfaces</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries">fromBFGeometries</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.header">header</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.save">save</a></li>
@@ -1198,6 +1201,19 @@ class FoamFile(object):
 
         return "\n\n".join(l)
 
+    @staticmethod
+    def convertBoolValue(v=True):
+        """Convert Boolean values to on/off string."""
+        _v = ('off', 'on')
+
+        if v in _v:
+            return v
+
+        if v:
+            return 'on'
+        else:
+            return 'off'
+
     def toOpenFOAM(self):
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
@@ -1214,6 +1230,10 @@ class FoamFile(object):
         with open(os.path.join(projectFolder,
                                subFolder, self.name), "wb") as outf:
             outf.write(self.toOpenFOAM())
+
+    def __eq__(self, other):
+        """Check equality."""
+        return self.values == other.values
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1233,20 +1253,20 @@ class ZeroFolderFoamFile(FoamFile):
     """
 
     @classmethod
-    def fromBFSurfaces(cls, BFSurfaces, values=None):
-        """Init class by BFSurfaces."""
+    def fromBFGeometries(cls, BFGeometries, values=None):
+        """Init class by BFGeometries."""
         _cls = cls(values)
-        _cls.setBoundaryField(BFSurfaces)
+        _cls.setBoundaryField(BFGeometries)
         return _cls
 
-    def setBoundaryField(self, BFSurfaces):
+    def setBoundaryField(self, BFGeometries):
         """Get data for getBoundaryField as a dictionary.
 
         Args:
-            BFSurfaces: List of Butterfly surfaces.
+            BFGeometries: List of Butterfly geometries.
         """
         self.values['boundaryField'] = getBoundaryField(
-            BFSurfaces, self.__class__.__name__.lower()
+            BFGeometries, self.__class__.__name__.lower()
         )
 
 
@@ -1302,6 +1322,40 @@ Conditions don't have OpenFOAM header. It's only values.</p></div>
           <li><a href="#butterfly.foamfile.FoamFile">FoamFile</a></li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.Condition.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.convertBoolValue">convertBoolValue</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.Condition.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.Condition.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.foamfile.Condition.cls" class="name">var <span class="ident">cls</span></p>
@@ -1837,6 +1891,19 @@ more information about FoamFile</p>
 
         return "\n\n".join(l)
 
+    @staticmethod
+    def convertBoolValue(v=True):
+        """Convert Boolean values to on/off string."""
+        _v = ('off', 'on')
+
+        if v in _v:
+            return v
+
+        if v:
+            return 'on'
+        else:
+            return 'off'
+
     def toOpenFOAM(self):
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
@@ -1853,6 +1920,10 @@ more information about FoamFile</p>
         with open(os.path.join(projectFolder,
                                subFolder, self.name), "wb") as outf:
             outf.write(self.toOpenFOAM())
+
+    def __eq__(self, other):
+        """Check equality."""
+        return self.values == other.values
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1872,6 +1943,36 @@ more information about FoamFile</p>
           <li><a href="#butterfly.foamfile.FoamFile">FoamFile</a></li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.FoamFile.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFile.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFile.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.foamfile.FoamFile.cls" class="name">var <span class="ident">cls</span></p>
@@ -2239,20 +2340,20 @@ geometry (e.g. Butterfly objects).</p></div>
     """
 
     @classmethod
-    def fromBFSurfaces(cls, BFSurfaces, values=None):
-        """Init class by BFSurfaces."""
+    def fromBFGeometries(cls, BFGeometries, values=None):
+        """Init class by BFGeometries."""
         _cls = cls(values)
-        _cls.setBoundaryField(BFSurfaces)
+        _cls.setBoundaryField(BFGeometries)
         return _cls
 
-    def setBoundaryField(self, BFSurfaces):
+    def setBoundaryField(self, BFGeometries):
         """Get data for getBoundaryField as a dictionary.
 
         Args:
-            BFSurfaces: List of Butterfly surfaces.
+            BFGeometries: List of Butterfly geometries.
         """
         self.values['boundaryField'] = getBoundaryField(
-            BFSurfaces, self.__class__.__name__.lower()
+            BFGeometries, self.__class__.__name__.lower()
         )
 </code></pre>
   </div>
@@ -2266,6 +2367,40 @@ geometry (e.g. Butterfly objects).</p></div>
           <li><a href="#butterfly.foamfile.FoamFile">FoamFile</a></li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.convertBoolValue">convertBoolValue</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.foamfile.ZeroFolderFoamFile.cls" class="name">var <span class="ident">cls</span></p>
@@ -2467,22 +2602,22 @@ geometry (e.g. Butterfly objects).</p></div>
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.fromBFSurfaces">
-    <p>def <span class="ident">fromBFSurfaces</span>(</p><p>cls, BFSurfaces, values=None)</p>
+    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries">
+    <p>def <span class="ident">fromBFGeometries</span>(</p><p>cls, BFGeometries, values=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init class by BFSurfaces.</p></div>
+    <div class="desc"><p>Init class by BFGeometries.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.fromBFSurfaces', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.fromBFSurfaces" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries" class="source">
     <pre><code>@classmethod
-def fromBFSurfaces(cls, BFSurfaces, values=None):
-    """Init class by BFSurfaces."""
+def fromBFGeometries(cls, BFGeometries, values=None):
+    """Init class by BFGeometries."""
     _cls = cls(values)
-    _cls.setBoundaryField(BFSurfaces)
+    _cls.setBoundaryField(BFGeometries)
     return _cls
 </code></pre>
   </div>
@@ -2608,7 +2743,7 @@ def fromBFSurfaces(cls, BFSurfaces, values=None):
             
   <div class="item">
     <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.setBoundaryField">
-    <p>def <span class="ident">setBoundaryField</span>(</p><p>self, BFSurfaces)</p>
+    <p>def <span class="ident">setBoundaryField</span>(</p><p>self, BFGeometries)</p>
     </div>
     
 
@@ -2616,17 +2751,17 @@ def fromBFSurfaces(cls, BFSurfaces, values=None):
   
     <div class="desc"><p>Get data for getBoundaryField as a dictionary.</p>
 <p>Args:
-    BFSurfaces: List of Butterfly surfaces.</p></div>
+    BFGeometries: List of Butterfly geometries.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.setBoundaryField', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.foamfile.ZeroFolderFoamFile.setBoundaryField" class="source">
-    <pre><code>def setBoundaryField(self, BFSurfaces):
+    <pre><code>def setBoundaryField(self, BFGeometries):
     """Get data for getBoundaryField as a dictionary.
     Args:
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
     """
     self.values['boundaryField'] = getBoundaryField(
-        BFSurfaces, self.__class__.__name__.lower()
+        BFGeometries, self.__class__.__name__.lower()
     )
 </code></pre>
   </div>

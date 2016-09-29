@@ -1021,14 +1021,17 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.version" class="source">
     <pre><code>"""Versions and header."""
+from datetime import datetime
 
 
 class Version(object):
     """Version class."""
 
-    BFVer = "0.0.1"
+    BFVer = "0.0.2"
     OFVer = "3.0"
-    OFFullVer = "v3.0+"
+    OFFullVer = "v1606+"
+    isUsingDockerMachine = True  # useful to run OpenFOAM container
+    lastUpdated = datetime(year=2016, month=9, day=29, hour=14, minute=00)
 
 
 class Header(object):
@@ -1110,7 +1113,7 @@ class Header(object):
             
   <div class="item">
     <div class="name def" id="butterfly.version.Header.header">
-    <p>def <span class="ident">header</span>(</p><p>OpenFOAMVersion=&#39;v3.0+&#39;, ButterflyVersion=&#39;0.0.1&#39;)</p>
+    <p>def <span class="ident">header</span>(</p><p>OpenFOAMVersion=&#39;v1606+&#39;, ButterflyVersion=&#39;0.0.2&#39;)</p>
     </div>
     
 
@@ -1153,9 +1156,11 @@ def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
     <pre><code>class Version(object):
     """Version class."""
 
-    BFVer = "0.0.1"
+    BFVer = "0.0.2"
     OFVer = "3.0"
-    OFFullVer = "v3.0+"
+    OFFullVer = "v1606+"
+    isUsingDockerMachine = True  # useful to run OpenFOAM container
+    lastUpdated = datetime(year=2016, month=9, day=29, hour=14, minute=00)
 </code></pre>
   </div>
 </div>
@@ -1190,6 +1195,26 @@ def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
             </div>
             <div class="item">
             <p id="butterfly.version.Version.OFVer" class="name">var <span class="ident">OFVer</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.version.Version.isUsingDockerMachine" class="name">var <span class="ident">isUsingDockerMachine</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.version.Version.lastUpdated" class="name">var <span class="ident">lastUpdated</span></p>
             
 
             

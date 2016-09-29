@@ -1005,6 +1005,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.addRefinementRegion">addRefinementRegion</a></li>
     <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.toOpenFOAMCase">toOpenFOAMCase</a></li>
   </ul>
 
@@ -1037,13 +1038,13 @@ class WindTunnel(object):
     """Butterfly WindTunnel.
 
     Args:
-        inlet: Inlet as a honeybee surface. inlet boundary condition should be
+        inlet: Inlet as a honeybee geometry. inlet boundary condition should be
             ABL (atmBoundaryLayer).
-        outlet: Outlet as a butterfly surface.
-        sides: Left and right side surfaces as butterfly surfaces.
-        top: Top face as buttefly surface.
-        ground: Ground face as butterfly surface.
-        testGeomtries: A list of geometries as butterfly surfaces that are located
+        outlet: Outlet as a butterfly geometry.
+        sides: Left and right side geometries as butterfly geometries.
+        top: Top face as buttefly geometry.
+        ground: Ground face as butterfly geometry.
+        testGeomtries: A list of geometries as butterfly geometries that are located
             within bounding box boundary.
         block: A butterfly Block for windtunnel bounding box.
         roughness: z0 (roughness) value.
@@ -1055,33 +1056,45 @@ class WindTunnel(object):
                 '0.5'     # veryRough
                 '1.0'     # closed
                 '2.0'     # chaotic
+        Zref: Reference height for wind velocity in meters (default: 10).
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globalRefLevel):
+                 block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
-        self.inlet = self.__checkIfBFSurface(inlet)
-        self.outlet = self.__checkIfBFSurface(outlet)
-        self.sides = tuple(side for side in sides if self.__checkIfBFSurface(side))
-        self.top = self.__checkIfBFSurface(top)
-        self.ground = self.__checkIfBFSurface(ground)
+        self.inlet = self.__checkIfBFGeometry(inlet)
+        self.outlet = self.__checkIfBFGeometry(outlet)
+        self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
+        self.top = self.__checkIfBFGeometry(top)
+        self.ground = self.__checkIfBFGeometry(ground)
         self.testGeomtries = tuple(geo for geo in testGeomtries
-                                   if self.__checkIfBFSurface(geo))
+                                   if self.__checkIfBFGeometry(geo))
         self.z0 = roughness
         self.globalRefLevel = globalRefLevel
 
+        self.Zref = float(Zref) if Zref else 10
+        self.convertToMeters = convertToMeters
+
+        # place holder for refinment regions
+        self.__refinementRegions = []
+
     @property
-    def boundingSurfaces(self):
-        """Return bounding surfaces of wind tunnel."""
+    def boundingGeometries(self):
+        """Return bounding geometries of wind tunnel."""
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
 
-    def __checkIfBFSurface(self, input):
-        if hasattr(input, 'isBFSurface'):
+    def __checkIfBFGeometry(self, input):
+        if hasattr(input, 'isBFGeometry'):
             return input
         else:
-            raise ValueError('{} is not a Butterfly surface.'.format(input))
+            raise ValueError('{} is not a Butterfly geometry.'.format(input))
+
+    @property
+    def refinementRegions(self):
+        """Get refinement regions."""
+        return self.__refinementRegions
 
     @property
     def flowDir(self):
@@ -1101,7 +1114,8 @@ class WindTunnel(object):
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        return BlockMeshDict(1, self.boundingSurfaces, [self.block])
+        return BlockMeshDict(self.convertToMeters, self.boundingGeometries,
+                             [self.block])
 
     @property
     def ABLConditionsDict(self):
@@ -1112,6 +1126,13 @@ class WindTunnel(object):
         _ABLCDict['flowDir'] = '({} {} {})'.format(*self.flowDir)
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
+
+    def addRefinementRegion(self, refinementRegion):
+        """Add refinement regions to this case."""
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
+
+        self.__refinementRegions.append(refinementRegion)
 
     def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""
@@ -1135,8 +1156,8 @@ class TunnelParameters(object):
     Args:
         windward: Multiplier value for windward extension (default: 3).
         top: Multiplier value for top extension (default: 3).
-        side: Multiplier value for side extension (default: 3).
-        leeward: Multiplier value for leeward extension (default: 3).
+        side: Multiplier value for side extension (default: 2).
+        leeward: Multiplier value for leeward extension (default: 15).
     """
 
     def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
@@ -1186,8 +1207,8 @@ class TunnelParameters(object):
 <p>Args:
     windward: Multiplier value for windward extension (default: 3).
     top: Multiplier value for top extension (default: 3).
-    side: Multiplier value for side extension (default: 3).
-    leeward: Multiplier value for leeward extension (default: 3).</p></div>
+    side: Multiplier value for side extension (default: 2).
+    leeward: Multiplier value for leeward extension (default: 15).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.TunnelParameters', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.TunnelParameters" class="source">
@@ -1199,8 +1220,8 @@ class TunnelParameters(object):
     Args:
         windward: Multiplier value for windward extension (default: 3).
         top: Multiplier value for top extension (default: 3).
-        side: Multiplier value for side extension (default: 3).
-        leeward: Multiplier value for leeward extension (default: 3).
+        side: Multiplier value for side extension (default: 2).
+        leeward: Multiplier value for leeward extension (default: 15).
     """
 
     def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
@@ -1363,13 +1384,13 @@ class TunnelParameters(object):
   
     <div class="desc"><p>Butterfly WindTunnel.</p>
 <p>Args:
-    inlet: Inlet as a honeybee surface. inlet boundary condition should be
+    inlet: Inlet as a honeybee geometry. inlet boundary condition should be
         ABL (atmBoundaryLayer).
-    outlet: Outlet as a butterfly surface.
-    sides: Left and right side surfaces as butterfly surfaces.
-    top: Top face as buttefly surface.
-    ground: Ground face as butterfly surface.
-    testGeomtries: A list of geometries as butterfly surfaces that are located
+    outlet: Outlet as a butterfly geometry.
+    sides: Left and right side geometries as butterfly geometries.
+    top: Top face as buttefly geometry.
+    ground: Ground face as butterfly geometry.
+    testGeomtries: A list of geometries as butterfly geometries that are located
         within bounding box boundary.
     block: A butterfly Block for windtunnel bounding box.
     roughness: z0 (roughness) value.
@@ -1380,7 +1401,8 @@ class TunnelParameters(object):
             '0.25'    # rough
             '0.5'     # veryRough
             '1.0'     # closed
-            '2.0'     # chaotic</p></div>
+            '2.0'     # chaotic
+    Zref: Reference height for wind velocity in meters (default: 10).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.WindTunnel" class="source">
@@ -1388,13 +1410,13 @@ class TunnelParameters(object):
     """Butterfly WindTunnel.
 
     Args:
-        inlet: Inlet as a honeybee surface. inlet boundary condition should be
+        inlet: Inlet as a honeybee geometry. inlet boundary condition should be
             ABL (atmBoundaryLayer).
-        outlet: Outlet as a butterfly surface.
-        sides: Left and right side surfaces as butterfly surfaces.
-        top: Top face as buttefly surface.
-        ground: Ground face as butterfly surface.
-        testGeomtries: A list of geometries as butterfly surfaces that are located
+        outlet: Outlet as a butterfly geometry.
+        sides: Left and right side geometries as butterfly geometries.
+        top: Top face as buttefly geometry.
+        ground: Ground face as butterfly geometry.
+        testGeomtries: A list of geometries as butterfly geometries that are located
             within bounding box boundary.
         block: A butterfly Block for windtunnel bounding box.
         roughness: z0 (roughness) value.
@@ -1406,33 +1428,45 @@ class TunnelParameters(object):
                 '0.5'     # veryRough
                 '1.0'     # closed
                 '2.0'     # chaotic
+        Zref: Reference height for wind velocity in meters (default: 10).
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globalRefLevel):
+                 block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
-        self.inlet = self.__checkIfBFSurface(inlet)
-        self.outlet = self.__checkIfBFSurface(outlet)
-        self.sides = tuple(side for side in sides if self.__checkIfBFSurface(side))
-        self.top = self.__checkIfBFSurface(top)
-        self.ground = self.__checkIfBFSurface(ground)
+        self.inlet = self.__checkIfBFGeometry(inlet)
+        self.outlet = self.__checkIfBFGeometry(outlet)
+        self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
+        self.top = self.__checkIfBFGeometry(top)
+        self.ground = self.__checkIfBFGeometry(ground)
         self.testGeomtries = tuple(geo for geo in testGeomtries
-                                   if self.__checkIfBFSurface(geo))
+                                   if self.__checkIfBFGeometry(geo))
         self.z0 = roughness
         self.globalRefLevel = globalRefLevel
 
+        self.Zref = float(Zref) if Zref else 10
+        self.convertToMeters = convertToMeters
+
+        # place holder for refinment regions
+        self.__refinementRegions = []
+
     @property
-    def boundingSurfaces(self):
-        """Return bounding surfaces of wind tunnel."""
+    def boundingGeometries(self):
+        """Return bounding geometries of wind tunnel."""
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
 
-    def __checkIfBFSurface(self, input):
-        if hasattr(input, 'isBFSurface'):
+    def __checkIfBFGeometry(self, input):
+        if hasattr(input, 'isBFGeometry'):
             return input
         else:
-            raise ValueError('{} is not a Butterfly surface.'.format(input))
+            raise ValueError('{} is not a Butterfly geometry.'.format(input))
+
+    @property
+    def refinementRegions(self):
+        """Get refinement regions."""
+        return self.__refinementRegions
 
     @property
     def flowDir(self):
@@ -1452,7 +1486,8 @@ class TunnelParameters(object):
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        return BlockMeshDict(1, self.boundingSurfaces, [self.block])
+        return BlockMeshDict(self.convertToMeters, self.boundingGeometries,
+                             [self.block])
 
     @property
     def ABLConditionsDict(self):
@@ -1463,6 +1498,13 @@ class TunnelParameters(object):
         _ABLCDict['flowDir'] = '({} {} {})'.format(*self.flowDir)
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
+
+    def addRefinementRegion(self, refinementRegion):
+        """Add refinement regions to this case."""
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
+
+        self.__refinementRegions.append(refinementRegion)
 
     def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""
@@ -1500,6 +1542,16 @@ class TunnelParameters(object):
 
             </div>
             <div class="item">
+            <p id="butterfly.windtunnel.WindTunnel.Zref" class="name">var <span class="ident">Zref</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.windtunnel.WindTunnel.blockMeshDict" class="name">var <span class="ident">blockMeshDict</span></p>
             
 
@@ -1511,12 +1563,22 @@ class TunnelParameters(object):
 
             </div>
             <div class="item">
-            <p id="butterfly.windtunnel.WindTunnel.boundingSurfaces" class="name">var <span class="ident">boundingSurfaces</span></p>
+            <p id="butterfly.windtunnel.WindTunnel.boundingGeometries" class="name">var <span class="ident">boundingGeometries</span></p>
             
 
             
   
-    <div class="desc"><p>Return bounding surfaces of wind tunnel.</p></div>
+    <div class="desc"><p>Return bounding geometries of wind tunnel.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.windtunnel.WindTunnel.convertToMeters" class="name">var <span class="ident">convertToMeters</span></p>
+            
+
+            
+  
   <div class="source_cont">
 </div>
 
@@ -1594,6 +1656,17 @@ class TunnelParameters(object):
 
             </div>
             <div class="item">
+            <p id="butterfly.windtunnel.WindTunnel.refinementRegions" class="name">var <span class="ident">refinementRegions</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get refinement regions.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.windtunnel.WindTunnel.sides" class="name">var <span class="ident">sides</span></p>
             
 
@@ -1648,7 +1721,7 @@ class TunnelParameters(object):
             
   <div class="item">
     <div class="name def" id="butterfly.windtunnel.WindTunnel.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, inlet, outlet, sides, top, ground, testGeomtries, block, roughness, globalRefLevel)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, inlet, outlet, sides, top, ground, testGeomtries, block, roughness, globalRefLevel, Zref=None, convertToMeters=1)</p>
     </div>
     
 
@@ -1659,18 +1732,22 @@ class TunnelParameters(object):
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.WindTunnel.__init__" class="source">
     <pre><code>def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-             block, roughness, globalRefLevel):
+             block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
     """Init wind tunnel."""
     self.name = str(name)
-    self.inlet = self.__checkIfBFSurface(inlet)
-    self.outlet = self.__checkIfBFSurface(outlet)
-    self.sides = tuple(side for side in sides if self.__checkIfBFSurface(side))
-    self.top = self.__checkIfBFSurface(top)
-    self.ground = self.__checkIfBFSurface(ground)
+    self.inlet = self.__checkIfBFGeometry(inlet)
+    self.outlet = self.__checkIfBFGeometry(outlet)
+    self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
+    self.top = self.__checkIfBFGeometry(top)
+    self.ground = self.__checkIfBFGeometry(ground)
     self.testGeomtries = tuple(geo for geo in testGeomtries
-                               if self.__checkIfBFSurface(geo))
+                               if self.__checkIfBFGeometry(geo))
     self.z0 = roughness
     self.globalRefLevel = globalRefLevel
+    self.Zref = float(Zref) if Zref else 10
+    self.convertToMeters = convertToMeters
+    # place holder for refinment regions
+    self.__refinementRegions = []
 </code></pre>
   </div>
 </div>
@@ -1693,6 +1770,30 @@ class TunnelParameters(object):
     <pre><code>def ToString(self):
     """Overwrite ToString .NET method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.windtunnel.WindTunnel.addRefinementRegion">
+    <p>def <span class="ident">addRefinementRegion</span>(</p><p>self, refinementRegion)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Add refinement regions to this case.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel.addRefinementRegion', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.windtunnel.WindTunnel.addRefinementRegion" class="source">
+    <pre><code>def addRefinementRegion(self, refinementRegion):
+    """Add refinement regions to this case."""
+    assert hasattr(refinementRegion, 'isRefinementRegion'), \
+        "{} is not a refinement region.".format(refinementRegion)
+    self.__refinementRegions.append(refinementRegion)
 </code></pre>
   </div>
 </div>

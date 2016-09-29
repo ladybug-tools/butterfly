@@ -995,9 +995,11 @@ table {
     <li class="set"><h3><a href="#header-functions">Functions</a></h3>
       
   <ul>
+    <li class="mono"><a href="#butterfly.helper.checkFiles">checkFiles</a></li>
     <li class="mono"><a href="#butterfly.helper.getBoundaryField">getBoundaryField</a></li>
     <li class="mono"><a href="#butterfly.helper.getSnappyHexMeshGeometryFeild">getSnappyHexMeshGeometryFeild</a></li>
     <li class="mono"><a href="#butterfly.helper.getSnappyHexMeshRefinementSurfaces">getSnappyHexMeshRefinementSurfaces</a></li>
+    <li class="mono"><a href="#butterfly.helper.loadSkippedProbes">loadSkippedProbes</a></li>
     <li class="mono"><a href="#butterfly.helper.mkdir">mkdir</a></li>
     <li class="mono"><a href="#butterfly.helper.readLastLine">readLastLine</a></li>
     <li class="mono"><a href="#butterfly.helper.runbatchfile">runbatchfile</a></li>
@@ -1059,41 +1061,52 @@ def wfile(fullPath, content):
     return fullPath
 
 
-def runbatchfile(filepath, printLog=True):
+def runbatchfile(filepath, wait=True):
     """run an executable .bat file.
 
+    args:
+        wait: Wait for analysis to finish (default: True).
+
     returns:
-        A tuple as (success, err). success is a boolen. err is None in case of
-        success otherwise the error message as a string.
+        Popen process.
     """
     if not os.path.isfile(filepath):
         raise ValueError('Cannot find %s' % filepath)
 
-    _success = True
-    _err = None
     sys.stdout.flush()
     p = Popen(filepath, shell=False, stdin=PIPE)
-    p.communicate(input='y\n')
 
-    if printLog:
+    if wait:
+        p.communicate(input='Y\n')
+
+    return p
+
+
+def checkFiles(files):
+    """Check files for content and print them out if any.
+
+    args:
+        files: A list of ASCII files.
+
+    returns:
+        (hasContent, content)
+        hasContent: A boolean that shows if there is any contents.
+        content: Files content if any
+    """
+    contents = False
+    _lines = []
+    for f in files:
         try:
-            logfile = ".".join(filepath.split(".")[:-1]) + ".log"
-            errfile = ".".join(filepath.split(".")[:-1]) + ".err"
-
-            with open(logfile, 'rb') as log:
-                _lines = ' '.join(log.readlines())
-                print(_lines)
-
-            with open(errfile, 'rb') as log:
-                _err = ' '.join(log.readlines())
-                if len(_err) > 0:
-                    _success = False
-                    print(_err)
+            with open(f, 'rb') as log:
+                _lines.append(' '.join(log.readlines()))
+                if len(_lines) > 0:
+                    contents = True
 
         except Exception as e:
-            print('Failed to read {} and {}:\n{}'.format(logfile, errfile, e))
+            print('Failed to read {}:\n{}'.format(f, e))
 
-    return _success, _err
+    print('\n'.join(_lines))
+    return contents, '\n'.join(_lines)
 
 
 def readLastLine(filepath, blockSize=1024):
@@ -1140,14 +1153,14 @@ def readLastLine(filepath, blockSize=1024):
         f.close()
 
 
-def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+def getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
                                   meshingType='triSurfaceMesh',
                                   stlFile=None):
     """Get data for Geometry as a dictionary.
 
     Args:
         projectName: Name of OpenFOAM case.
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
         meshingType: Meshing type. (Default: triSurfaceMesh)
         stlFile: Name of .stl file if it is different from projectName.stl
 
@@ -1159,20 +1172,20 @@ def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
     _geo[stlFile]['type'] = meshingType
     _geo[stlFile]['name'] = projectName
     _geo[stlFile]['regions'] = {}
-    for bfsrf in BFSurfaces:
-        if bfsrf.name not in _geo[stlFile]['regions']:
-            _geo[stlFile]['regions'][bfsrf.name] = {'name': bfsrf.name}
+    for bfgeo in BFGeometries:
+        if bfgeo.name not in _geo[stlFile]['regions']:
+            _geo[stlFile]['regions'][bfgeo.name] = {'name': bfgeo.name}
 
     return _geo
 
 
-def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=None):
+def getSnappyHexMeshRefinementSurfaces(projectName, BFGeometries, globalLevels=None):
     """Get data for MeshRefinementSurfaces as a dictionary.
 
     Args:
         projectName: Name of OpenFOAM case.
-        BFSurfaces: List of Butterfly surfaces.
-        globalLevels: Default Min, max level of surface mesh refinement.
+        BFGeometries: List of Butterfly geometries.
+        globalLevels: Default Min, max level of geometry mesh refinement.
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
@@ -1181,32 +1194,48 @@ def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=Non
     _ref = {projectName: OrderedDict()}
     _ref[projectName]['level'] = '({} {})'.format(*(int(v) for v in globalLevels))
     _ref[projectName]['regions'] = {}
-    for bfsrf in BFSurfaces:
-        if not bfsrf.boundaryCondition.refLevels:
+    for bfgeo in BFGeometries:
+        if not bfgeo.boundaryCondition.refLevels:
             continue
-        if bfsrf.name not in _ref[projectName]['regions']:
-            _ref[projectName]['regions'][bfsrf.name] = {'level': '({} {})'.format(bfsrf.boundaryCondition.refLevels[0], bfsrf.boundaryCondition.refLevels[1])}
+        if bfgeo.name not in _ref[projectName]['regions']:
+            _ref[projectName]['regions'][bfgeo.name] = \
+                {'level': '({} {})'.format(bfgeo.boundaryCondition.refLevels[0],
+                                           bfgeo.boundaryCondition.refLevels[1])}
 
     return _ref
 
 
-def getBoundaryField(BFSurfaces, field='u'):
+def getBoundaryField(BFGeometries, field='u'):
     """Get data for boundaryField as a dictionary.
 
     Args:
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
         parameter: One of the fileds as a string (u , p, k , epsilon, nut)
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
     """
     _bou = {}
-    for bfsrf in BFSurfaces:
-        if bfsrf.name not in _bou:
-            _bc = getattr(bfsrf.boundaryCondition, field)
-            _bou[bfsrf.name] = _bc.valueDict
+    for bfgeo in BFGeometries:
+        if bfgeo.name not in _bou:
+            _bc = getattr(bfgeo.boundaryCondition, field)
+            _bou[bfgeo.name] = _bc.valueDict
 
     return _bou
+
+
+def loadSkippedProbes(logFile):
+    """Return list of skipped points as tuples."""
+    assert os.path.isfile(logFile), "Can't find {}.".format(logFile)
+    _pts = []
+    with open(logFile, 'rb') as inf:
+        line = inf.readline()
+        while line and not line.startswith('Time = '):
+            if line.startswith('    Did not find location'):
+                _pts.append(tuple(float(i) for i in line.split("(")[1].split(")")[0].split()))
+            line = inf.readline()
+
+    return _pts
 </code></pre>
   </div>
 
@@ -1226,8 +1255,58 @@ def getBoundaryField(BFSurfaces, field='u'):
     <h2 class="section-title" id="header-functions">Functions</h2>
       
   <div class="item">
+    <div class="name def" id="butterfly.helper.checkFiles">
+    <p>def <span class="ident">checkFiles</span>(</p><p>files)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Check files for content and print them out if any.</p>
+<p>args:
+    files: A list of ASCII files.</p>
+<p>returns:
+    (hasContent, content)
+    hasContent: A boolean that shows if there is any contents.
+    content: Files content if any</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.helper.checkFiles', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.helper.checkFiles" class="source">
+    <pre><code>def checkFiles(files):
+    """Check files for content and print them out if any.
+
+    args:
+        files: A list of ASCII files.
+
+    returns:
+        (hasContent, content)
+        hasContent: A boolean that shows if there is any contents.
+        content: Files content if any
+    """
+    contents = False
+    _lines = []
+    for f in files:
+        try:
+            with open(f, 'rb') as log:
+                _lines.append(' '.join(log.readlines()))
+                if len(_lines) > 0:
+                    contents = True
+
+        except Exception as e:
+            print('Failed to read {}:\n{}'.format(f, e))
+
+    print('\n'.join(_lines))
+    return contents, '\n'.join(_lines)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
     <div class="name def" id="butterfly.helper.getBoundaryField">
-    <p>def <span class="ident">getBoundaryField</span>(</p><p>BFSurfaces, field=&#39;u&#39;)</p>
+    <p>def <span class="ident">getBoundaryField</span>(</p><p>BFGeometries, field=&#39;u&#39;)</p>
     </div>
     
 
@@ -1235,28 +1314,28 @@ def getBoundaryField(BFSurfaces, field='u'):
   
     <div class="desc"><p>Get data for boundaryField as a dictionary.</p>
 <p>Args:
-    BFSurfaces: List of Butterfly surfaces.
+    BFGeometries: List of Butterfly geometries.
     parameter: One of the fileds as a string (u , p, k , epsilon, nut)</p>
 <p>Returns:
     A dictionary of data that can be passed to snappyHexMeshDict.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.helper.getBoundaryField', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.helper.getBoundaryField" class="source">
-    <pre><code>def getBoundaryField(BFSurfaces, field='u'):
+    <pre><code>def getBoundaryField(BFGeometries, field='u'):
     """Get data for boundaryField as a dictionary.
 
     Args:
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
         parameter: One of the fileds as a string (u , p, k , epsilon, nut)
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
     """
     _bou = {}
-    for bfsrf in BFSurfaces:
-        if bfsrf.name not in _bou:
-            _bc = getattr(bfsrf.boundaryCondition, field)
-            _bou[bfsrf.name] = _bc.valueDict
+    for bfgeo in BFGeometries:
+        if bfgeo.name not in _bou:
+            _bc = getattr(bfgeo.boundaryCondition, field)
+            _bou[bfgeo.name] = _bc.valueDict
 
     return _bou
 </code></pre>
@@ -1268,7 +1347,7 @@ def getBoundaryField(BFSurfaces, field='u'):
       
   <div class="item">
     <div class="name def" id="butterfly.helper.getSnappyHexMeshGeometryFeild">
-    <p>def <span class="ident">getSnappyHexMeshGeometryFeild</span>(</p><p>projectName, BFSurfaces, meshingType=&#39;triSurfaceMesh&#39;, stlFile=None)</p>
+    <p>def <span class="ident">getSnappyHexMeshGeometryFeild</span>(</p><p>projectName, BFGeometries, meshingType=&#39;triSurfaceMesh&#39;, stlFile=None)</p>
     </div>
     
 
@@ -1277,7 +1356,7 @@ def getBoundaryField(BFSurfaces, field='u'):
     <div class="desc"><p>Get data for Geometry as a dictionary.</p>
 <p>Args:
     projectName: Name of OpenFOAM case.
-    BFSurfaces: List of Butterfly surfaces.
+    BFGeometries: List of Butterfly geometries.
     meshingType: Meshing type. (Default: triSurfaceMesh)
     stlFile: Name of .stl file if it is different from projectName.stl</p>
 <p>Returns:
@@ -1285,14 +1364,14 @@ def getBoundaryField(BFSurfaces, field='u'):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.helper.getSnappyHexMeshGeometryFeild', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.helper.getSnappyHexMeshGeometryFeild" class="source">
-    <pre><code>def getSnappyHexMeshGeometryFeild(projectName, BFSurfaces,
+    <pre><code>def getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
                                   meshingType='triSurfaceMesh',
                                   stlFile=None):
     """Get data for Geometry as a dictionary.
 
     Args:
         projectName: Name of OpenFOAM case.
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
         meshingType: Meshing type. (Default: triSurfaceMesh)
         stlFile: Name of .stl file if it is different from projectName.stl
 
@@ -1304,9 +1383,9 @@ def getBoundaryField(BFSurfaces, field='u'):
     _geo[stlFile]['type'] = meshingType
     _geo[stlFile]['name'] = projectName
     _geo[stlFile]['regions'] = {}
-    for bfsrf in BFSurfaces:
-        if bfsrf.name not in _geo[stlFile]['regions']:
-            _geo[stlFile]['regions'][bfsrf.name] = {'name': bfsrf.name}
+    for bfgeo in BFGeometries:
+        if bfgeo.name not in _geo[stlFile]['regions']:
+            _geo[stlFile]['regions'][bfgeo.name] = {'name': bfgeo.name}
 
     return _geo
 </code></pre>
@@ -1318,7 +1397,7 @@ def getBoundaryField(BFSurfaces, field='u'):
       
   <div class="item">
     <div class="name def" id="butterfly.helper.getSnappyHexMeshRefinementSurfaces">
-    <p>def <span class="ident">getSnappyHexMeshRefinementSurfaces</span>(</p><p>projectName, BFSurfaces, globalLevels=None)</p>
+    <p>def <span class="ident">getSnappyHexMeshRefinementSurfaces</span>(</p><p>projectName, BFGeometries, globalLevels=None)</p>
     </div>
     
 
@@ -1327,20 +1406,20 @@ def getBoundaryField(BFSurfaces, field='u'):
     <div class="desc"><p>Get data for MeshRefinementSurfaces as a dictionary.</p>
 <p>Args:
     projectName: Name of OpenFOAM case.
-    BFSurfaces: List of Butterfly surfaces.
-    globalLevels: Default Min, max level of surface mesh refinement.</p>
+    BFGeometries: List of Butterfly geometries.
+    globalLevels: Default Min, max level of geometry mesh refinement.</p>
 <p>Returns:
     A dictionary of data that can be passed to snappyHexMeshDict.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.helper.getSnappyHexMeshRefinementSurfaces', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.helper.getSnappyHexMeshRefinementSurfaces" class="source">
-    <pre><code>def getSnappyHexMeshRefinementSurfaces(projectName, BFSurfaces, globalLevels=None):
+    <pre><code>def getSnappyHexMeshRefinementSurfaces(projectName, BFGeometries, globalLevels=None):
     """Get data for MeshRefinementSurfaces as a dictionary.
 
     Args:
         projectName: Name of OpenFOAM case.
-        BFSurfaces: List of Butterfly surfaces.
-        globalLevels: Default Min, max level of surface mesh refinement.
+        BFGeometries: List of Butterfly geometries.
+        globalLevels: Default Min, max level of geometry mesh refinement.
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
@@ -1349,13 +1428,46 @@ def getBoundaryField(BFSurfaces, field='u'):
     _ref = {projectName: OrderedDict()}
     _ref[projectName]['level'] = '({} {})'.format(*(int(v) for v in globalLevels))
     _ref[projectName]['regions'] = {}
-    for bfsrf in BFSurfaces:
-        if not bfsrf.boundaryCondition.refLevels:
+    for bfgeo in BFGeometries:
+        if not bfgeo.boundaryCondition.refLevels:
             continue
-        if bfsrf.name not in _ref[projectName]['regions']:
-            _ref[projectName]['regions'][bfsrf.name] = {'level': '({} {})'.format(bfsrf.boundaryCondition.refLevels[0], bfsrf.boundaryCondition.refLevels[1])}
+        if bfgeo.name not in _ref[projectName]['regions']:
+            _ref[projectName]['regions'][bfgeo.name] = \
+                {'level': '({} {})'.format(bfgeo.boundaryCondition.refLevels[0],
+                                           bfgeo.boundaryCondition.refLevels[1])}
 
     return _ref
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="butterfly.helper.loadSkippedProbes">
+    <p>def <span class="ident">loadSkippedProbes</span>(</p><p>logFile)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return list of skipped points as tuples.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.helper.loadSkippedProbes', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.helper.loadSkippedProbes" class="source">
+    <pre><code>def loadSkippedProbes(logFile):
+    """Return list of skipped points as tuples."""
+    assert os.path.isfile(logFile), "Can't find {}.".format(logFile)
+    _pts = []
+    with open(logFile, 'rb') as inf:
+        line = inf.readline()
+        while line and not line.startswith('Time = '):
+            if line.startswith('    Did not find location'):
+                _pts.append(tuple(float(i) for i in line.split("(")[1].split(")")[0].split()))
+            line = inf.readline()
+
+    return _pts
 </code></pre>
   </div>
 </div>
@@ -1468,54 +1580,39 @@ Args:
       
   <div class="item">
     <div class="name def" id="butterfly.helper.runbatchfile">
-    <p>def <span class="ident">runbatchfile</span>(</p><p>filepath, printLog=True)</p>
+    <p>def <span class="ident">runbatchfile</span>(</p><p>filepath, wait=True)</p>
     </div>
     
 
     
   
     <div class="desc"><p>run an executable .bat file.</p>
+<p>args:
+    wait: Wait for analysis to finish (default: True).</p>
 <p>returns:
-    A tuple as (success, err). success is a boolen. err is None in case of
-    success otherwise the error message as a string.</p></div>
+    Popen process.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.helper.runbatchfile', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.helper.runbatchfile" class="source">
-    <pre><code>def runbatchfile(filepath, printLog=True):
+    <pre><code>def runbatchfile(filepath, wait=True):
     """run an executable .bat file.
 
+    args:
+        wait: Wait for analysis to finish (default: True).
+
     returns:
-        A tuple as (success, err). success is a boolen. err is None in case of
-        success otherwise the error message as a string.
+        Popen process.
     """
     if not os.path.isfile(filepath):
         raise ValueError('Cannot find %s' % filepath)
 
-    _success = True
-    _err = None
     sys.stdout.flush()
     p = Popen(filepath, shell=False, stdin=PIPE)
-    p.communicate(input='y\n')
 
-    if printLog:
-        try:
-            logfile = ".".join(filepath.split(".")[:-1]) + ".log"
-            errfile = ".".join(filepath.split(".")[:-1]) + ".err"
+    if wait:
+        p.communicate(input='Y\n')
 
-            with open(logfile, 'rb') as log:
-                _lines = ' '.join(log.readlines())
-                print(_lines)
-
-            with open(errfile, 'rb') as log:
-                _err = ' '.join(log.readlines())
-                if len(_err) > 0:
-                    _success = False
-                    print(_err)
-
-        except Exception as e:
-            print('Failed to read {} and {}:\n{}'.format(logfile, errfile, e))
-
-    return _success, _err
+    return p
 </code></pre>
   </div>
 </div>

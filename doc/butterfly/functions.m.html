@@ -993,6 +993,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.functions.Probes.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.body">body</a></li>
@@ -1198,6 +1199,36 @@ class Probes(Condition):
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Probes.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Probes.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.functions.Probes.fields" class="name">var <span class="ident">fields</span></p>

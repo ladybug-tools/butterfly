@@ -993,10 +993,11 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.U.U.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.U.U.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.U.U.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.U.U.body">body</a></li>
-    <li class="mono"><a href="#butterfly.U.U.fromBFSurfaces">fromBFSurfaces</a></li>
+    <li class="mono"><a href="#butterfly.U.U.fromBFGeometries">fromBFGeometries</a></li>
     <li class="mono"><a href="#butterfly.U.U.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.U.U.header">header</a></li>
     <li class="mono"><a href="#butterfly.U.U.save">save</a></li>
@@ -1094,6 +1095,36 @@ class U(ZeroFolderFoamFile):
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.U.U.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.U.U.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.U.U.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
             <p id="butterfly.U.U.parameters" class="name">var <span class="ident">parameters</span></p>
@@ -1201,22 +1232,22 @@ class U(ZeroFolderFoamFile):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.U.U.fromBFSurfaces">
-    <p>def <span class="ident">fromBFSurfaces</span>(</p><p>cls, BFSurfaces, values=None)</p>
+    <div class="name def" id="butterfly.U.U.fromBFGeometries">
+    <p>def <span class="ident">fromBFGeometries</span>(</p><p>cls, BFGeometries, values=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init class by BFSurfaces.</p></div>
+    <div class="desc"><p>Init class by BFGeometries.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.U.U.fromBFSurfaces', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.U.U.fromBFSurfaces" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.U.U.fromBFGeometries', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.U.U.fromBFGeometries" class="source">
     <pre><code>@classmethod
-def fromBFSurfaces(cls, BFSurfaces, values=None):
-    """Init class by BFSurfaces."""
+def fromBFGeometries(cls, BFGeometries, values=None):
+    """Init class by BFGeometries."""
     _cls = cls(values)
-    _cls.setBoundaryField(BFSurfaces)
+    _cls.setBoundaryField(BFGeometries)
     return _cls
 </code></pre>
   </div>
@@ -1330,7 +1361,7 @@ def fromBFSurfaces(cls, BFSurfaces, values=None):
             
   <div class="item">
     <div class="name def" id="butterfly.U.U.setBoundaryField">
-    <p>def <span class="ident">setBoundaryField</span>(</p><p>self, BFSurfaces)</p>
+    <p>def <span class="ident">setBoundaryField</span>(</p><p>self, BFGeometries)</p>
     </div>
     
 
@@ -1338,17 +1369,17 @@ def fromBFSurfaces(cls, BFSurfaces, values=None):
   
     <div class="desc"><p>Get data for getBoundaryField as a dictionary.</p>
 <p>Args:
-    BFSurfaces: List of Butterfly surfaces.</p></div>
+    BFGeometries: List of Butterfly geometries.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.U.U.setBoundaryField', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.U.U.setBoundaryField" class="source">
-    <pre><code>def setBoundaryField(self, BFSurfaces):
+    <pre><code>def setBoundaryField(self, BFGeometries):
     """Get data for getBoundaryField as a dictionary.
     Args:
-        BFSurfaces: List of Butterfly surfaces.
+        BFGeometries: List of Butterfly geometries.
     """
     self.values['boundaryField'] = getBoundaryField(
-        BFSurfaces, self.__class__.__name__.lower()
+        BFGeometries, self.__class__.__name__.lower()
     )
 </code></pre>
   </div>

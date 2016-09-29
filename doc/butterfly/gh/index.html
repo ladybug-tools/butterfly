@@ -989,10 +989,13 @@ table {
 
     <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
       <ul>
-        <li class="mono"><a href="bfsurface.m.html">butterfly.gh.bfsurface</a></li>
         <li class="mono"><a href="block.m.html">butterfly.gh.block</a></li>
         <li class="mono"><a href="core.m.html">butterfly.gh.core</a></li>
+        <li class="mono"><a href="geometry.m.html">butterfly.gh.geometry</a></li>
         <li class="mono"><a href="postprocess.m.html">butterfly.gh.postprocess</a></li>
+        <li class="mono"><a href="refinementRegion.m.html">butterfly.gh.refinementRegion</a></li>
+        <li class="mono"><a href="timer.m.html">butterfly.gh.timer</a></li>
+        <li class="mono"><a href="unitconversion.m.html">butterfly.gh.unitconversion</a></li>
         <li class="mono"><a href="windtunnel.m.html">butterfly.gh.windtunnel</a></li>
       </ul>
     </li>
@@ -1012,9 +1015,9 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.gh" class="source">
-    <pre><code>__all__ = ['bfsurface', 'block', 'core', 'postprocess', 'windtunnel']
+    <pre><code>__all__ = ['block', 'core', 'geometry', 'postprocess', 'refinementRegion', 'windtunnel']
 
-import bfsurface, block, core, postprocess, windtunnel
+import block, core, geometry, postprocess, refinementRegion, windtunnel
 </code></pre>
   </div>
 
@@ -1026,17 +1029,10 @@ import bfsurface, block, core, postprocess, windtunnel
 
     <h2 class="section-title" id="header-submodules">Sub-modules</h2>
       <div class="item">
-      <p class="name"><a href="bfsurface.m.html">butterfly.gh.bfsurface</a></p>
-      
-  
-    <div class="desc"><p>BF Surface for Grasshopper.</p></div>
-
-      </div>
-      <div class="item">
       <p class="name"><a href="block.m.html">butterfly.gh.block</a></p>
       
   
-    <div class="desc"><p>BF Surface for Grasshopper.</p></div>
+    <div class="desc"><p>Butterfly Block for Grasshopper.</p></div>
 
       </div>
       <div class="item">
@@ -1047,6 +1043,13 @@ import bfsurface, block, core, postprocess, windtunnel
 
       </div>
       <div class="item">
+      <p class="name"><a href="geometry.m.html">butterfly.gh.geometry</a></p>
+      
+  
+    <div class="desc"><p>BF Grasshopper geometry library.</p></div>
+
+      </div>
+      <div class="item">
       <p class="name"><a href="postprocess.m.html">butterfly.gh.postprocess</a></p>
       
   
@@ -1054,9 +1057,30 @@ import bfsurface, block, core, postprocess, windtunnel
 
       </div>
       <div class="item">
+      <p class="name"><a href="refinementRegion.m.html">butterfly.gh.refinementRegion</a></p>
+      
+  
+
+      </div>
+      <div class="item">
+      <p class="name"><a href="timer.m.html">butterfly.gh.timer</a></p>
+      
+  
+    <div class="desc"><p>Grasshopper timer.</p></div>
+
+      </div>
+      <div class="item">
+      <p class="name"><a href="unitconversion.m.html">butterfly.gh.unitconversion</a></p>
+      
+  
+    <div class="desc"><p>Unit conversion to meters for Grasshopper.</p></div>
+
+      </div>
+      <div class="item">
       <p class="name"><a href="windtunnel.m.html">butterfly.gh.windtunnel</a></p>
       
   
+    <div class="desc"><p>Butterfly wind tunnel class for Grasshopper.</p></div>
 
       </div>
   </section>

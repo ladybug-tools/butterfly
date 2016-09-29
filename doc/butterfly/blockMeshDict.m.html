@@ -993,6 +993,7 @@ table {
         
           
   <ul>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.convertBoolValue">convertBoolValue</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.body">body</a></li>
@@ -1031,15 +1032,22 @@ from foamfile import FoamFile
 class BlockMeshDict(FoamFile):
     """BlockMeshDict."""
 
-    def __init__(self, scale, BFSurfaces, blocks):
+    def __init__(self, convertToMeters, BFBlockGeometries, blocks):
         """Init BlockMeshDict."""
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
                           location='system')
-        self.scale = scale
+        self.convertToMeters = convertToMeters
         self.blocks = blocks
-        self.BFSurfaces = BFSurfaces
-        # collect uniqe vertices from all BFSurfaces
-        self.vertices = tuple(set(v for f in BFSurfaces for vgroup in f.borderVertices for v in vgroup))
+        self.BFBlockGeometries = BFBlockGeometries
+        try:
+            # collect uniqe vertices from all BFGeometries
+            self.vertices = tuple(set(v for f in self.BFBlockGeometries
+                                      for vgroup in f.borderVertices
+                                      for v in vgroup))
+        except AttributeError as e:
+            raise TypeError('At least one of the input geometries is not a '
+                            'Butterfly block geometry:\n{}'.format(e))
+
         self.center = self.__averageVerices()
 
     def __averageVerices(self):
@@ -1057,7 +1065,7 @@ class BlockMeshDict(FoamFile):
     def toOpenFOAM(self):
         """Return OpenFOAM representation as a string."""
         _hea = self.header()
-        _body = "\nconvertToMeters 1;\n" \
+        _body = "\nconvertToMeters %.4f;\n" \
                 "\n" \
                 "vertices\n" \
                 "(\n%s\n);\n" \
@@ -1076,13 +1084,14 @@ class BlockMeshDict(FoamFile):
 
         return _hea + \
             _body % (
+                self.convertToMeters,
                 "\n".join(tuple(str(ver).replace(",", "")
                           for ver in self.vertices)),
-                "\n".join(block.blockMeshDict(self.vertices)
+                "\n".join(block.toBlockMeshDict(self.vertices)
                           for block in self.blocks),  # blocks
                 "\n",  # edges
-                "\n".join(srf.blockMeshDict(self.vertices)
-                          for srf in self.BFSurfaces),
+                "\n".join(srf.toBlockMeshDict(self.vertices)
+                          for srf in self.BFBlockGeometries),
                 "\n")  # merge patch pair
 
     def ToString(self):
@@ -1113,15 +1122,22 @@ class BlockMeshDict(FoamFile):
     <pre><code>class BlockMeshDict(FoamFile):
     """BlockMeshDict."""
 
-    def __init__(self, scale, BFSurfaces, blocks):
+    def __init__(self, convertToMeters, BFBlockGeometries, blocks):
         """Init BlockMeshDict."""
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
                           location='system')
-        self.scale = scale
+        self.convertToMeters = convertToMeters
         self.blocks = blocks
-        self.BFSurfaces = BFSurfaces
-        # collect uniqe vertices from all BFSurfaces
-        self.vertices = tuple(set(v for f in BFSurfaces for vgroup in f.borderVertices for v in vgroup))
+        self.BFBlockGeometries = BFBlockGeometries
+        try:
+            # collect uniqe vertices from all BFGeometries
+            self.vertices = tuple(set(v for f in self.BFBlockGeometries
+                                      for vgroup in f.borderVertices
+                                      for v in vgroup))
+        except AttributeError as e:
+            raise TypeError('At least one of the input geometries is not a '
+                            'Butterfly block geometry:\n{}'.format(e))
+
         self.center = self.__averageVerices()
 
     def __averageVerices(self):
@@ -1139,7 +1155,7 @@ class BlockMeshDict(FoamFile):
     def toOpenFOAM(self):
         """Return OpenFOAM representation as a string."""
         _hea = self.header()
-        _body = "\nconvertToMeters 1;\n" \
+        _body = "\nconvertToMeters %.4f;\n" \
                 "\n" \
                 "vertices\n" \
                 "(\n%s\n);\n" \
@@ -1158,13 +1174,14 @@ class BlockMeshDict(FoamFile):
 
         return _hea + \
             _body % (
+                self.convertToMeters,
                 "\n".join(tuple(str(ver).replace(",", "")
                           for ver in self.vertices)),
-                "\n".join(block.blockMeshDict(self.vertices)
+                "\n".join(block.toBlockMeshDict(self.vertices)
                           for block in self.blocks),  # blocks
                 "\n",  # edges
-                "\n".join(srf.blockMeshDict(self.vertices)
-                          for srf in self.BFSurfaces),
+                "\n".join(srf.toBlockMeshDict(self.vertices)
+                          for srf in self.BFBlockGeometries),
                 "\n")  # merge patch pair
 
     def ToString(self):
@@ -1186,9 +1203,39 @@ class BlockMeshDict(FoamFile):
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.blockMeshDict.BlockMeshDict.BFSurfaces" class="name">var <span class="ident">BFSurfaces</span></p>
+            <p id="butterfly.blockMeshDict.BlockMeshDict.BFBlockGeometries" class="name">var <span class="ident">BFBlockGeometries</span></p>
             
 
             
@@ -1218,22 +1265,22 @@ class BlockMeshDict(FoamFile):
 
             </div>
             <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.convertToMeters" class="name">var <span class="ident">convertToMeters</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.blockMeshDict.BlockMeshDict.parameters" class="name">var <span class="ident">parameters</span></p>
             
 
             
   
     <div class="desc"><p>Get list of parameters.</p></div>
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.blockMeshDict.BlockMeshDict.scale" class="name">var <span class="ident">scale</span></p>
-            
-
-            
-  
   <div class="source_cont">
 </div>
 
@@ -1249,21 +1296,11 @@ class BlockMeshDict(FoamFile):
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.blockMeshDict.BlockMeshDict.vertices" class="name">var <span class="ident">vertices</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, scale, BFSurfaces, blocks)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, convertToMeters, BFBlockGeometries, blocks)</p>
     </div>
     
 
@@ -1273,15 +1310,21 @@ class BlockMeshDict(FoamFile):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.blockMeshDict.BlockMeshDict.__init__" class="source">
-    <pre><code>def __init__(self, scale, BFSurfaces, blocks):
+    <pre><code>def __init__(self, convertToMeters, BFBlockGeometries, blocks):
     """Init BlockMeshDict."""
     FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
                       location='system')
-    self.scale = scale
+    self.convertToMeters = convertToMeters
     self.blocks = blocks
-    self.BFSurfaces = BFSurfaces
-    # collect uniqe vertices from all BFSurfaces
-    self.vertices = tuple(set(v for f in BFSurfaces for vgroup in f.borderVertices for v in vgroup))
+    self.BFBlockGeometries = BFBlockGeometries
+    try:
+        # collect uniqe vertices from all BFGeometries
+        self.vertices = tuple(set(v for f in self.BFBlockGeometries
+                                  for vgroup in f.borderVertices
+                                  for v in vgroup))
+    except AttributeError as e:
+        raise TypeError('At least one of the input geometries is not a '
+                        'Butterfly block geometry:\n{}'.format(e))
     self.center = self.__averageVerices()
 </code></pre>
   </div>
@@ -1493,7 +1536,7 @@ class BlockMeshDict(FoamFile):
     <pre><code>def toOpenFOAM(self):
     """Return OpenFOAM representation as a string."""
     _hea = self.header()
-    _body = "\nconvertToMeters 1;\n" \
+    _body = "\nconvertToMeters %.4f;\n" \
             "\n" \
             "vertices\n" \
             "(\n%s\n);\n" \
@@ -1511,13 +1554,14 @@ class BlockMeshDict(FoamFile):
             "(%s);\n"
     return _hea + \
         _body % (
+            self.convertToMeters,
             "\n".join(tuple(str(ver).replace(",", "")
                       for ver in self.vertices)),
-            "\n".join(block.blockMeshDict(self.vertices)
+            "\n".join(block.toBlockMeshDict(self.vertices)
                       for block in self.blocks),  # blocks
             "\n",  # edges
-            "\n".join(srf.blockMeshDict(self.vertices)
-                      for srf in self.BFSurfaces),
+            "\n".join(srf.toBlockMeshDict(self.vertices)
+                      for srf in self.BFBlockGeometries),
             "\n")  # merge patch pair
 </code></pre>
   </div>
