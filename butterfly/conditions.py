@@ -15,6 +15,7 @@ class ABLConditions(Condition):
     __defaultValues['flowDir'] = '(0 1 0)'  # direction of flow
     __defaultValues['zDir'] = '(0 0 1)'  # z direction (0 0 1) always for our cases
     __defaultValues['zGround'] = 'uniform 0'  # min z value of the bounding box
+    __defaultValues['value'] = '$internalField'
 
     def __init__(self, values=None):
         """Init class."""

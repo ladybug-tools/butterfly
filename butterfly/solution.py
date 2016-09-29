@@ -1,4 +1,5 @@
 """Butterfly Solution."""
+from .helper import checkFiles
 
 
 class Solution(object):
@@ -10,12 +11,15 @@ class Solution(object):
         recipe: A butterfly recipe.
     """
 
-    def __init__(self, recipe):
+    def __init__(self, recipe, decomposeParDict=None):
         """Init solution."""
         self.__recipe = recipe
+        self.__decomposeParDict = decomposeParDict
         self.__isRunStarted = False
         self.__isRunFinished = False
         self.__process = None
+        self.__logFiles = None
+        self.__errFiles = None
 
     @property
     def projectName(self):
@@ -48,23 +52,24 @@ class Solution(object):
         return self.__recipe.case.probes
 
     @property
-    def logFile(self):
-        """Get full path to log file."""
-        return self.__recipe.logFile
+    def residualFile(self):
+        """Return address of the residual file."""
+        return self.__recipe.residualFile
+
+    @property
+    def logFiles(self):
+        """Get full path to log files."""
+        return self.__logFiles
 
     @property
     def log(self):
         """Get the log report."""
-        try:
-            with open(self.logFile, 'rb') as log:
-                return ' '.join(log.readlines())
-        except Exception as e:
-            return 'Failed to load the log file:\n{}'.format(e)
+        isContent, content = checkFiles(self.logFiles)
 
     @property
-    def errFile(self):
-        """Get full path to error file."""
-        return self.__recipe.errFile
+    def errFiles(self):
+        """Get full path to error files."""
+        return self.__errFiles
 
     @property
     def isRunning(self):
@@ -77,11 +82,10 @@ class Solution(object):
             self.__isRunFinished = True
             self.recipe.case.renameSnappyHexMeshFolders()
             # load errors if any
-            with open(self.errFile, 'rb') as log:
-                _err = ' '.join(log.readlines())
-                if len(_err) > 0:
-                    raise Exception(_err)
-            return False
+            checkFiles(self.logFiles)
+            failed, err = checkFiles(self.errFiles)
+
+            assert not failed, err
 
     def updateSolutionParams(self, simParams):
         """Update parameters."""
@@ -120,8 +124,11 @@ class Solution(object):
     def run(self):
         """Execute the solution."""
         self.recipe.case.renameSnappyHexMeshFolders()
-        log = self.recipe.run(wait=False)
+        log = self.recipe.run(decomposeParDict=self.__decomposeParDict,
+                              wait=False)
         self.__process = log.process
+        self.__errFiles = log.errorfiles
+        self.__logFiles = log.logfiles
         self.__isRunStarted = True
         self.__isRunFinished = False
 

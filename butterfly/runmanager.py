@@ -8,6 +8,7 @@ from version import Version
 
 import os
 from subprocess import PIPE, Popen
+from collections import namedtuple
 
 
 class RunManager(object):
@@ -26,7 +27,7 @@ class RunManager(object):
         Project path will be set to: C:/Users/%USERNAME%/butterfly/projectName
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
-        self.projectName = projectName
+        self.__projectName = projectName
 
         self.isUsingDockerMachine = True \
             if hasattr(Version, 'isUsingDockerMachine') and Version.isUsingDockerMachine \
@@ -121,18 +122,25 @@ class RunManager(object):
 
         return _base.format(self.dockerPath, '\n'.join(self.shellinit))
 
-    def command(self, cmds, args=None, includeHeader=False, log=True,
+    def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True,
                 startOpenFOAM=False):
         """
         Get command line for OpenFOAM commands.
 
         Args:
-            cmds: A sequence of commnads.
-            args: List of arguments for command. e.g. ('c', 'latestTime')
-            includeHeader: Include header lines to set up the environment.
-            log: Write the results to log files.
-            startOpenFOAM: Execute OpenFOAM in case it's not already running.
+            cmd: An OpenFOAM command.
+            args: List of optional arguments for command. e.g. ('c', 'latestTime')
+            decomposeParDict: decomposeParDict for parallel runs (default: None).
+            includeHeader: Include header lines to set up the environment
+                (default: True).
+            startOpenFOAM: Execute OpenFOAM in case it's not already running
+                (default: False).
+
+        Returns:
+            (cmd, logfiles, errorfiles)
         """
+        res = namedtuple('log', 'cmd logfiles errorfiles')
+
         if Version.OFFullVer == 'v3.0+':
             _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
         else:
@@ -143,6 +151,7 @@ class RunManager(object):
             "You can initiate OpenFOAM container by running start_OF.bat:\n" + \
             _fp
 
+        # try to get containerId
         if not self.containerId:
             self.containerId = self.getContainerId()
 
@@ -157,20 +166,46 @@ class RunManager(object):
         finally:
             assert self.containerId, _msg
 
+        # containerId is found. put the commands together
         _base = 'docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
+        _baseCmd = '{0} {1} > >(tee etc/{2}.log) 2> >(tee etc/{2}.err >&2)'
 
+        # join arguments for the command
         arguments = '' if not args else '-{}'.format(' -'.join(args))
 
-        if log:
-            _baseCmd = '{0} {1} > >(tee etc/{0}.log) 2> >(tee etc/{0}.err >&2)'
+        if decomposeParDict:
+            # run in parallel
+            n = decomposeParDict.numberOfSubdomains
+            arguments = arguments + ' -parallel'
 
-            _cmds = (_baseCmd.format(cmd, arguments) for cmd in cmds)
+            if cmd == 'snappyHexMesh':
+                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                           'reconstructParMesh', 'rm')
+                argList = ('', arguments + ' -overwrite', '-constant', '-r proc*')
+                cmdNameList = ('decomposePar', cmd, 'reconstructParMesh', 'rm')
+            else:
+                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                           'reconstructPar', 'rm')
+                argList = ('', arguments, '', '-r proc*')
+                cmdNameList = ('decomposePar', cmd, 'reconstructPar', 'rm')
+
+            # join commands together
+            cmds = (_baseCmd.format(c, arg, name) for c, arg, name in
+                    zip(cmdList, argList, cmdNameList))
+
+            cmds = _base.format(self.containerId, self.__projectName,
+                                '; '.join(cmds))
+
+            errfiles = tuple('{}.err'.format(name) for name in cmdNameList)
+            logfiles = tuple('{}.log'.format(name) for name in cmdNameList)
         else:
-            _cmds = ('{} {} '.format(cmd, arguments) for cmd in cmds)
-
-        _cmd = _base.format(self.containerId, self.projectName, '; '.join(_cmds))
+            # run is serial
+            cmds = _base.format(self.containerId, self.__projectName,
+                                _baseCmd.format(cmd, arguments, cmd))
+            errfiles = ('{}.err'.format(cmd),)
+            logfiles = ('{}.log'.format(cmd),)
 
         if includeHeader:
-            return self.header() + "\n" + _cmd
+            return res(self.header() + "\n" + cmds, logfiles, errfiles)
         else:
-            return _cmd
+            return res(cmds, logfiles, errfiles)

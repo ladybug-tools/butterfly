@@ -28,7 +28,7 @@ Run recipes using OpenFOAM.
 
 ghenv.Component.Name = "Butterfly_Solution"
 ghenv.Component.NickName = "solution"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_29_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -49,9 +49,6 @@ except ImportError as e:
 
 uniqueKey = str(ghenv.Component.InstanceGuid)
 
-if _parallelRunPar_:
-    raise NotImplementedError('NotImplemented > Parallel run will be implemented soon!')
-
 if not _interval_:
     _interval_ = 2
 
@@ -60,7 +57,7 @@ if _recipe and _write:
         if uniqueKey not in sticky:
             # solution hasn't been created or has been removed
             # create a new one and copy it to sticky
-            solution = Solution(_recipe)
+            solution = Solution(_recipe, decomposeParDict_)
             
             solution.updateSolutionParams(solutionParams_)
             
@@ -92,6 +89,7 @@ if _recipe and _write:
         # clean up solution in case of failure
         if uniqueKey in sticky:
             del(sticky[uniqueKey])
-        raise Exception(str(e))
+        print str(e)
         
-    logFile = _recipe.logFile
+    
+    logFiles = solution.logFiles if solution.logFiles else _recipe.logFile

@@ -13,14 +13,13 @@ decomposeParDict. Dictionary for parallel runs.
 
     Args:
         _mode_: Decompose mode (0: scotch, 1: simple).
-        number
     Returns:
         locationRefMode: Refinement mode.
 """
 
 ghenv.Component.Name = "Butterfly_decomposeParDict"
 ghenv.Component.NickName = "decomposeParDict"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_27_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_28_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "07::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -49,7 +48,7 @@ if not _mode_:
     modifyComponentInput(index=2, name='.', nickName='.', description='.')
     try:
         numberOfSubdomains = _numOfCpus_[0]
-    except IndexError:
+    except:
         numberOfSubdomains = 2
  
     decomposeParDict = DecomposeParDict.scotch(numberOfSubdomains)

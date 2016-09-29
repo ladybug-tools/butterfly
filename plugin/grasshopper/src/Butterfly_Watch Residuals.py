@@ -50,7 +50,7 @@ def tail(filePath, lines=20):
 
 ghenv.Component.Name = "Butterfly_Watch Residuals"
 ghenv.Component.NickName = "watchRes"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_28_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -67,11 +67,10 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-from datetime import datetime
 from scriptcontext import sticky
 
 if _solution:
-    text = tail(_solution.logFile).split("\nTime =")[-1].split('\n')
+    text = tail(_solution.residualFile).split("\nTime =")[-1].split('\n')
     keys = ('Ux', 'Uy', 'Uz', 'epsilon', 'k')
     if 'res' not in sticky:
         sticky['res'] = dict.fromkeys(keys, 0)
@@ -81,7 +80,10 @@ if _solution:
         t = int(text[0])
     except:
         t = 'unknown'
-    
+
+    for key in keys:
+        print key    
+
     for line in text:
         try:
             p, ir, fr, ni = line.split('smoothSolver:  Solving for ')[1].split(',')
@@ -89,6 +91,5 @@ if _solution:
             # print (p, ir.split('= ')[-1], fr.split('= ')[-1])
         except IndexError:
             pass
-    print ">> {}".format(datetime.now())
     residualValues = (results[key] for key in keys)
     ghenv.Component.Message = "TimeStep = {}".format(t)

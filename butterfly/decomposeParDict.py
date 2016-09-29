@@ -20,6 +20,11 @@ class DecomposeParDict(FoamFile):
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
 
+    @property
+    def numberOfSubdomains(self):
+        """Get number of total subdomains."""
+        return self.values['numberOfSubdomains']
+
     @classmethod
     def scotch(cls, numberOfSubdomains=2):
         """Scotch method.

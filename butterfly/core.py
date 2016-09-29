@@ -2,9 +2,11 @@
 import os
 from shutil import rmtree
 from distutils.dir_util import copy_tree
+from collections import namedtuple
 
 from version import Version
-from helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes
+from helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes, \
+    checkFiles
 # constant folder objects
 from turbulenceProperties import TurbulenceProperties
 from RASProperties import RASProperties
@@ -404,13 +406,11 @@ class OpemFOAMCase(object):
 
     # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #
-    def blockMesh(self, args=None, run=True, log=True, wait=True,
-                  removeContent=True):
+    def blockMesh(self, args=None, removeContent=True, run=True, wait=True):
         """Run meshBlock command for this case.
 
         Args:
-            removeContent: Remove current content of the folder except for
-                blockMeshDict
+            removeContent: Remove current content of the folder
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
@@ -419,44 +419,33 @@ class OpemFOAMCase(object):
         if removeContent:
             self.removePolyMeshContent()
 
-        return self.__writeAndRunCommands('blockMesh', ('blockMesh',), args,
-                                          run, log, wait)
+        return self.__writeAndRunCommands('blockMesh', 'blockMesh', args, None,
+                                          run, wait)
 
-    def snappyHexMesh(self, args=None, run=True, log=True, wait=True):
+    def snappyHexMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run snappyHexMesh command for this case."""
-        return self.__writeAndRunCommands('snappyHexMesh', ('snappyHexMesh',),
-                                          args, run, log, wait)
+        return self.__writeAndRunCommands('snappyHexMesh', 'snappyHexMesh',
+                                          args, decomposeParDict, run, wait)
 
-    def meshCombo(self, args=None, run=True, log=True, wait=True):
-        """Run meshBlock and snappyHexMesh.
-
-        Returns:
-            A tuple as (success, err). success is a boolen. err is None in case
-            of success otherwise the error message as a string.
-        """
-        return self.__writeAndRunCommands('meshCombo',
-                                          ('blockMesh', 'snappyHexMesh'),
-                                          args, run, log, wait)
-
-    def checkMesh(self, args=None, run=True, log=True, wait=True):
+    def checkMesh(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('checkMesh', ('checkMesh',),
-                                          args, run, log, wait)
+        return self.__writeAndRunCommands('checkMesh', 'checkMesh', args,
+                                          decomposeParDict, run, wait)
 
-    def simpleFoam(self, args=None, run=True, log=True, wait=True):
+    def simpleFoam(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Run simpleFoam command for this case.
 
         Returns:
             A tuple as (success, err). success is a boolen. err is None in case
             of success otherwise the error message as a string.
         """
-        return self.__writeAndRunCommands('simpleFoam', ('simpleFoam',),
-                                          args, run, log, wait)
+        return self.__writeAndRunCommands('simpleFoam', 'simpleFoam', args,
+                                          decomposeParDict, run, wait)
 
     # ************************* OpenFOAM Commands ************************* #
     # *************************        END        ************************* #
@@ -465,24 +454,55 @@ class OpemFOAMCase(object):
         """Check if the mesh in polyMesh folder is snappyHexMesh."""
         return len(os.listdir(os.path.join(self.constantDir, "polyMesh"))) > 5
 
-    def __writeAndRunCommands(self, name, commands, args=None, run=True,
-                              log=True, wait=True):
+    def __writeAndRunCommands(self, name, command, args=None,
+                              decomposeParDict=None, run=True, wait=True):
         """Write batch files for commands and run them.
 
-        Returns:
-            A tuple as (success, err). success is a boolen. err is None in case
-            of success otherwise the error message as a string.
+        returns:
+            If run it reaturns a namedtuple.
+                (success, error, process, logfiles, errorfiles).
+                success: as a boolen.
+                error: None in case of success otherwise the error message as
+                    a string.
+                process: Popen process.
+                logfiles: List of fullpath to log files.
+                errorfiles: List of fullpath to error files.
         """
-        _batchString = self.runmanager.command(commands, args,
-                                               includeHeader=True,
-                                               log=log)
+        log = namedtuple('log', 'success error process logfiles errorfiles')
+
+        if decomposeParDict:
+            decomposeParDict.save(self.projectDir)
+
+        _batchString, logfiles, errfiles = self.runmanager.command(
+            command, args, decomposeParDict=decomposeParDict, includeHeader=True
+        )
+
         _fpath = os.path.join(self.etcDir, '%s.bat' % name)
 
         # write batch file to drive
         wfile(_fpath, _batchString)
 
+        # generate fullpath for files
+        logfiles = tuple(os.path.normpath(os.path.join(self.etcDir, f))
+                         for f in logfiles)
+
+        errfiles = tuple(os.path.normpath(os.path.join(self.etcDir, f))
+                         for f in errfiles)
+
         if run:
-            return runbatchfile(_fpath, printLog=log, wait=wait)
+
+            p = runbatchfile(_fpath, wait=wait)
+
+            if p.poll:
+                # if the analysis is over check log files and error files
+                checkFiles(logfiles)
+                success, err = checkFiles(errfiles)
+                return log(success, err, p, logfiles, errfiles)
+            else:
+                # analysis is still running return Popen process
+                return log(True, None, p, logfiles, errfiles)
+        else:
+            return log(True, None, None, logfiles, errfiles)
 
     def getSnappyHexMeshFolders(self):
         """Return sorted list of numerical folders."""
@@ -626,8 +646,8 @@ class OpemFOAMCase(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            success, err, p = self.checkMesh(args=('latestTime',))
-            assert success, err
+            log = self.checkMesh(args=('latestTime',))
+            assert log.success, log.error
 
         f = os.path.join(self.projectDir, 'etc/checkMesh.log')
         assert os.path.isfile(f), 'Failed to find {}.'.format(f)

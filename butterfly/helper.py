@@ -2,7 +2,7 @@
 from __future__ import print_function
 import os
 import sys
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 from subprocess import Popen, PIPE
 
 
@@ -34,26 +34,17 @@ def wfile(fullPath, content):
     return fullPath
 
 
-def runbatchfile(filepath, printLog=True, wait=True):
+def runbatchfile(filepath, wait=True):
     """run an executable .bat file.
 
     args:
-        printLog: Boolean switch to print log file to terminal once the analysis
-            is over. It will only work if wait is also set to True (default: True).
         wait: Wait for analysis to finish (default: True).
 
     returns:
-        A tuple as (success, err, process).
-            success is a boolen.
-            err is None in case of success otherwise the error message as a string.
-            process is Popen process.
+        Popen process.
     """
     if not os.path.isfile(filepath):
         raise ValueError('Cannot find %s' % filepath)
-
-    _success = True
-    _err = None
-    Log = namedtuple('Report', 'success err process')
 
     sys.stdout.flush()
     p = Popen(filepath, shell=False, stdin=PIPE)
@@ -61,25 +52,34 @@ def runbatchfile(filepath, printLog=True, wait=True):
     if wait:
         p.communicate(input='Y\n')
 
-        if printLog:
-            try:
-                logfile = ".".join(filepath.split(".")[:-1]) + ".log"
-                errfile = ".".join(filepath.split(".")[:-1]) + ".err"
+    return p
 
-                with open(logfile, 'rb') as log:
-                    _lines = ' '.join(log.readlines())
-                    print(_lines)
 
-                with open(errfile, 'rb') as log:
-                    _err = ' '.join(log.readlines())
-                    if len(_err) > 0:
-                        _success = False
-                        print(_err)
+def checkFiles(files):
+    """Check files for content and print them out if any.
 
-            except Exception as e:
-                print('Failed to read {} and {}:\n{}'.format(logfile, errfile, e))
+    args:
+        files: A list of ASCII files.
 
-    return Log(success=_success, err=_err, process=p)
+    returns:
+        (hasContent, content)
+        hasContent: A boolean that shows if there is any contents.
+        content: Files content if any
+    """
+    contents = False
+    _lines = []
+    for f in files:
+        try:
+            with open(f, 'rb') as log:
+                _lines.append(' '.join(log.readlines()))
+                if len(_lines) > 0:
+                    contents = True
+
+        except Exception as e:
+            print('Failed to read {}:\n{}'.format(f, e))
+
+    print('\n'.join(_lines))
+    return contents, '\n'.join(_lines)
 
 
 def readLastLine(filepath, blockSize=1024):

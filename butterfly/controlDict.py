@@ -20,7 +20,7 @@ class ControlDict(FoamFile):
     __defaultValues['writeInterval'] = '100'
     __defaultValues['purgeWrite'] = '0'
     __defaultValues['writeFormat'] = 'ascii'
-    __defaultValues['writePrecision'] = '6'
+    __defaultValues['writePrecision'] = '7'
     __defaultValues['writeCompression'] = 'off'
     __defaultValues['timeFormat'] = 'general'
     __defaultValues['timePrecision'] = '6'

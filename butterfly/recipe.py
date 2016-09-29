@@ -85,6 +85,11 @@ class SteadyIncompressible(_BFRecipe):
         case.controlDict.save(case.projectDir)
 
     @property
+    def residualFile(self):
+        """Return address of the residual file."""
+        return os.path.join(self.case.etcDir, 'simpleFoam.log')
+
+    @property
     def logFile(self):
         """Return address of the log file."""
         return os.path.join(self.case.etcDir, 'simpleFoam.log')
@@ -99,6 +104,6 @@ class SteadyIncompressible(_BFRecipe):
         """Important Quantities for the recipe."""
         return ('Ux', 'Uy', 'Uz', 'p', 'k', 'epsilon')
 
-    def run(self, args=None, run=True, log=True, wait=True):
+    def run(self, args=None, decomposeParDict=None, run=True, wait=True):
         """Execute the recipe."""
-        return self.case.simpleFoam(args, run, log, wait)
+        return self.case.simpleFoam(args, decomposeParDict, run, wait)

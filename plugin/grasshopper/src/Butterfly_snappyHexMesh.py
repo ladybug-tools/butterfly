@@ -15,6 +15,7 @@ snappyHexMesh
         _case: Butterfly case.
         _locationInMesh_: A point 3d to locate the volume that should be meshed. By default center of the boundingbox will be used.
         _snappyHexMeshDict_: optional modified snappyHexMeshDict.
+        decomposeParDict_: decomposeParDict for running snappyHexMesh in parallel.
         _run: run snappyHexMesh.
     Returns:
         readMe!: Reports, errors, warnings, etc.
@@ -23,15 +24,11 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_28_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-
-
-if _parallelRunPar_:
-    raise NotImplementedError('NotImplemented > Parallel run will be implemented soon!')
 
 if _case:
     if not _locationInMesh_:
@@ -58,15 +55,16 @@ if _case:
             # remove current snappyHexMesh and re-run block mesh
             _case.removeSnappyHexMeshFolders()
             # run blockMesh
-            success, err, p = _case.blockMesh(removeContent=True)
+            log = _case.blockMesh(removeContent=True)
         
-            if not success:
-                raise Exception("\n --> OpenFOAM command Failed!\n%s" % err)                        
+            if not log.success:
+                raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)                        
         
-        success, err, p = _case.snappyHexMesh()
-        if success:
+        log = _case.snappyHexMesh(decomposeParDict=decomposeParDict_)
+        
+        if log.success:
             if _case.getSnappyHexMeshFolders():
                 _case.copySnappyHexMesh()
             case = _case
         else:
-            raise Exception("\n --> OpenFOAM command Failed!\n%s" % err)        
+            raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)        
