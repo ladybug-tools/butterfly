@@ -1,21 +1,29 @@
 """Butterfly Block for Grasshopper."""
+from ..block import Block
 
 
-# TODO: Write Block class with no Grasshopper dependencies
-class Block(object):
+class GHBlock(Block):
     """Block in blockMeshDict.
 
     Args:
-        geometry: A closed brep that represents block boundary.
-        nDiv: Number of divisions in (x, y, z) as a tuple.
-        grading: grading as (x, y, z).
+        box: A Box that represents block boundary.
+        cellSizeXYZ: Size of cell in X, Y and Z directions in Rhino model units
+            as a tuple.
+        grading: grading as (x, y, z) (default: (1, 1, 1))
     """
 
-    def __init__(self, geometry, nDiv, grading):
+    def __init__(self, box, cellSizeXYZ=None, grading=None):
         """Init Block class."""
-        self.vertices = self.__calculateVertices(geometry)
-        self.nDiv = tuple(int(v) for v in nDiv)
-        self.grading = tuple(grading)
+        self.cellSizeXYZ = tuple(cellSizeXYZ) if cellSizeXYZ else (5, 5, 5)
+
+        nDivXYZ = \
+            int(round(box.X.Length / self.cellSizeXYZ[0])), \
+            int(round(box.Y.Length / self.cellSizeXYZ[1])), \
+            int(round(box.Z.Length / self.cellSizeXYZ[2]))
+
+        vertices = self._calculateVertices(box.ToBrep())
+
+        Block.__init__(self, vertices, nDivXYZ, grading)
 
     @property
     def minZ(self):
@@ -28,18 +36,18 @@ class Block(object):
 
         return _minZ
 
-    def __calculateVertices(self, geo):
+    def _calculateVertices(self, geo):
         # sort faces based on Z value
         faces = sorted(geo.Faces, key=lambda f: self._cenPt(f).Z)
 
         return tuple((ver.Location.X, ver.Location.Y, ver.Location.Z)
                      for verGroup in
-                     (self.shiftVertices(faces[0].ToBrep().Vertices),
+                     (self._shiftVertices(faces[0].ToBrep().Vertices),
                      faces[-1].ToBrep().Vertices)
                      for ver in verGroup)
 
     @staticmethod
-    def shiftVertices(vertices):
+    def _shiftVertices(vertices):
         """Shift vertices to match openfoam order."""
         _ver = list(vertices)
         _ver.reverse()
@@ -50,32 +58,3 @@ class Block(object):
         """Calculate center point for a grasshopper face."""
         return f.PointAt((f.Domain(0).Min + f.Domain(0).Max) / 2,
                          (f.Domain(1).Min + f.Domain(1).Max) / 2)
-
-    def toBlockMeshDict(self, vertices):
-        """Get blockMeshDict string.
-
-        Args:
-            vertices: list of vertices for all the geometries in the case.
-                This method should be moved under the case class.
-        """
-        _body = "   hex {} {} simpleGrading {}"
-
-        try:
-            indices = tuple(vertices.index(v) for v in self.vertices)
-        except ValueError:
-            raise ValueError("Can't find the vertex "
-                             "in the vertices:\ninput: {}\n vertices: {}"
-                             .format(self.vertices, vertices))
-
-        return _body.format(str(indices).replace(",", ""),
-                            str(self.nDiv).replace(",", ""),
-                            str(self.grading).replace(",", ""))
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """OpenFOAM boundary."""
-        return "Boundary: {} simpleGrading {}".format(
-            str(self.nDiv).replace(",", ""), str(self.grading).replace(",", ""))

@@ -13,8 +13,10 @@ Read more about snappyHexMeshDict here:
 
 
     Args:
-        _bbox: A geometry that represents bounding box of the the domain. It should be slightly bigger than the domain itself.
-        _nDivXYZ_: Number of Block divisions in X, Y and Z. You can use a point component to input values.
+        _bbox: A geometry that represents bounding box of the the domain.
+            It should be slightly bigger than the domain itself.
+        _cellSizeXYZ_: Size of cell in X, Y and Z directions in Rhino model units.
+            You can use a point component to input values.
         _gradXYZ_: Grading value for X, Y and Z. You can use a point component to input values.
     Returns:
         blockMeshDict: Butterfly blockMeshDict.
@@ -22,7 +24,7 @@ Read more about snappyHexMeshDict here:
 
 ghenv.Component.Name = "Butterfly_blockMeshDict"
 ghenv.Component.NickName = "blockMeshDict"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nSEP_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -30,7 +32,7 @@ ghenv.Component.AdditionalHelpFromDocStrings = "2"
 try:
     # import butterfly
     from butterfly.gh.geometry import GHBFBlockGeometry
-    from butterfly.gh.block import Block
+    from butterfly.gh.block import GHBlock
     from butterfly.gh.unitconversion import convertDocumentUnitsToMeters
     from butterfly.blockMeshDict import BlockMeshDict
     from butterfly.boundarycondition import BoundingBoxBoundaryCondition
@@ -45,8 +47,9 @@ except ImportError as e:
 
 # create blockMeshDict based on BBox
 if _bbox:
-    block = Block(_bbox, _nDivXYZ_, _gradXYZ_)
+    block = GHBlock(_bbox, _cellSizeXYZ_, _gradXYZ_)
+    print "Number of divisions: {}, {} and {}".format(*block.nDivXYZ)
     bc = BoundingBoxBoundaryCondition()
-    BBBlockSurface = GHBFBlockGeometry('boundingbox', [_bbox], bc)
+    BBBlockSurface = GHBFBlockGeometry('boundingbox', [_bbox.ToBrep()], bc)
     blockMeshDict = BlockMeshDict(convertDocumentUnitsToMeters(),
                                   [BBBlockSurface], [block])

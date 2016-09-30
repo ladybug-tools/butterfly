@@ -5,7 +5,7 @@ try:
 except ImportError:
     pass
 
-from .block import Block
+from .block import GHBlock
 from .geometry import GHBFBlockGeometry
 from .core import Case
 from .unitconversion import convertDocumentUnitsToMeters
@@ -75,7 +75,7 @@ class GHWindTunnel(WindTunnel):
 
         self.plane = self.__calculatePlane()
 
-        self.minmax, self.dimensions, self.boundingbox = self.getBoundingBox()
+        self.minmax, self.dimensions, self.boundingbox = self._getBoundingBox()
 
         # calculate number of divisions in XYZ
         self.tunnelParameters.nDivXYZ = \
@@ -85,16 +85,13 @@ class GHWindTunnel(WindTunnel):
 
         self.__scaleBoundingBox()
 
-        # create block
-        block = self.block
-
         # create butterfly geometries
         inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
 
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
+            self.BFGeometries, self.block, self.z0, globalRefLevel, self.Zref,
             convertDocumentUnitsToMeters()
         )
 
@@ -132,8 +129,9 @@ class GHWindTunnel(WindTunnel):
     def block(self):
         """Create block for this windTunnel."""
         # create block
-        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ,
-                     self.tunnelParameters.gradXYZ)
+        _box = rc.Geometry.Box(self.plane, self.boundingbox)
+        return GHBlock(_box, self.tunnelParameters.nDivXYZ,
+                       self.tunnelParameters.gradXYZ)
 
     @property
     def boundingGeometries(self):
@@ -212,7 +210,7 @@ class GHWindTunnel(WindTunnel):
 
         return minN.DistanceTo(maxN)
 
-    def getBoundingBox(self):
+    def _getBoundingBox(self):
         """Find boundingbox for a list of geometries.
 
         Returns:
