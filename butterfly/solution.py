@@ -1,4 +1,5 @@
 """Butterfly Solution."""
+from copy import deepcopy
 from .helper import checkFiles
 
 
@@ -136,6 +137,10 @@ class Solution(object):
         """Cancel the solution."""
         self.__process.terminate()
 
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
@@ -159,6 +164,10 @@ class SolutionParameters(object):
         self.controlDict = controlDict
         self.residualControl = residualControl
         self.probes = probes
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

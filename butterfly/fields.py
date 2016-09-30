@@ -1,5 +1,6 @@
 """OpenFOAM field values."""
 from collections import OrderedDict
+from copy import deepcopy
 
 
 class OpenFOAMValue(object):
@@ -14,6 +15,10 @@ class OpenFOAMValue(object):
     def valueDict(self):
         """Get fields as a dictionary."""
         return {'type': self.type}
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

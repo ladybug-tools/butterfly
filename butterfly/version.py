@@ -1,4 +1,5 @@
 """Versions and header."""
+from copy import deepcopy
 from datetime import datetime
 
 
@@ -10,6 +11,18 @@ class Version(object):
     OFFullVer = "v1606+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
     lastUpdated = datetime(year=2016, month=9, day=29, hour=14, minute=00)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Version."""
+        return 'Version::Butterfly{}::OpenFOAM{}'.format(self.BFVer, self.OFVer)
 
 
 class Header(object):
@@ -26,7 +39,7 @@ class Header(object):
         header = "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
                  "| =========                 |                                                 |\n" + \
                  "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
-                 "|  \\\\    /   O peration     | Version:  {}                                 |\n" + \
+                 "|  \\\\    /   O peration     | Version:  {}                                |\n" + \
                  "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \
                  "|    \\\\/     M anipulation  |                                                 |\n" + \
                  "\\*---------------------------------------------------------------------------*/\n" + \
@@ -34,3 +47,15 @@ class Header(object):
                  "\\*---------------------------------------------------------------------------*/\n"
 
         return header.format(OpenFOAMVersion, ButterflyVersion)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Header."""
+        return self.header

@@ -3,6 +3,7 @@ import os
 from shutil import rmtree
 from distutils.dir_util import copy_tree
 from collections import namedtuple
+from copy import deepcopy
 
 from version import Version
 from helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes, \
@@ -670,6 +671,10 @@ class OpemFOAMCase(object):
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
         """
         self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

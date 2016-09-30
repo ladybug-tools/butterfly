@@ -1,6 +1,8 @@
 """Butterfly wind tunnel."""
-from blockMeshDict import BlockMeshDict
-from core import OpemFOAMCase
+from copy import deepcopy
+
+from .blockMeshDict import BlockMeshDict
+from .core import OpemFOAMCase
 
 
 class WindTunnel(object):
@@ -150,6 +152,10 @@ class TunnelParameters(object):
         else:
             assert _inp > 0, "Value (%.2f) should be larger than 0." % _inp
             return _inp
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

@@ -1,6 +1,7 @@
 """BF geometry library."""
 import os
-from boundarycondition import BoundaryCondition
+from copy import deepcopy
+from .boundarycondition import BoundaryCondition
 
 
 class _BFMesh(object):
@@ -92,6 +93,10 @@ class _BFMesh(object):
         """Save BFFace to a stl file. File name will be self.name."""
         with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
             outf.write(self.toStlString())
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

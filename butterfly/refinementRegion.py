@@ -1,4 +1,5 @@
-from geometry import _BFMesh
+from copy import deepcopy
+from .geometry import _BFMesh
 
 
 class RefinementRegion(_BFMesh):
@@ -70,6 +71,10 @@ class _RefinementMode(object):
         """Return data as a dictionary."""
         return {'mode': self.__class__.__name__.lower(),
                 'levels': str(self.levels).replace(',', ' ')}
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite ToString .NET method."""

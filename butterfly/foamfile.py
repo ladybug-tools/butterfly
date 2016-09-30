@@ -170,6 +170,10 @@ class FoamFile(object):
         """Check equality."""
         return self.values == other.values
 
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()

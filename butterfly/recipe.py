@@ -1,6 +1,7 @@
 """Butterfly recipes."""
 import os
-from turbulenceProperties import TurbulenceProperties
+from copy import deepcopy
+from .turbulenceProperties import TurbulenceProperties
 
 
 class _BFRecipe(object):
@@ -54,6 +55,10 @@ class _BFRecipe(object):
     def run(self):
         """Execute the recipe."""
         raise NotImplementedError('abstractmethod.')
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

@@ -1,7 +1,8 @@
 """snappyHexMeshDict class."""
-from foamfile import FoamFile
 from collections import OrderedDict
-from helper import getSnappyHexMeshGeometryFeild, \
+
+from .foamfile import FoamFile
+from .helper import getSnappyHexMeshGeometryFeild, \
     getSnappyHexMeshRefinementSurfaces
 
 

@@ -4,11 +4,12 @@ Run manager is only useful for running OpenFOAM for Windows which runs in a
 docker container. For linux systems simply use .bash files or libraries such as
 pyFOAM.
 """
-from version import Version
-
 import os
 from subprocess import PIPE, Popen
 from collections import namedtuple
+from copy import deepcopy
+
+from .version import Version
 
 
 class RunManager(object):
@@ -209,3 +210,15 @@ class RunManager(object):
             return res(self.header() + "\n" + cmds, logfiles, errfiles)
         else:
             return res(cmds, logfiles, errfiles)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Run manager representation."""
+        return """RunManager::{}""".format(self.__projectName)

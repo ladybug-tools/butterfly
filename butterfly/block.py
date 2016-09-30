@@ -1,5 +1,6 @@
 """Butterfly Block class for blockMeshDict."""
 import math
+from copy import deepcopy
 
 
 class Block(object):
@@ -64,6 +65,10 @@ class Block(object):
         indices = tuple(vertices.index(v) if v in vertices else findIndex(v)
                         for v in self.vertices)
         return indices
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

@@ -1,4 +1,5 @@
 """Roughness values."""
+import copy
 
 
 class Z0(object):
@@ -58,6 +59,10 @@ class Z0(object):
     def __getitem__(self, index):
         """Get roughness value by index."""
         return self.__roughnessDict[index]
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return copy.deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""

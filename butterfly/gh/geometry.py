@@ -5,6 +5,7 @@ try:
 except ImportError:
     pass
 
+from copy import deepcopy
 from ..geometry import BFGeometry
 
 
@@ -75,6 +76,18 @@ class GHMesh(object):
         # indices
         self.faceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
         return triMesh
+
+    def duplicate(self):
+        """Return a copy of GHMesh."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """GHMesh."""
+        return str(self.geometry)
 
 
 class GHBFGeometry(BFGeometry):
