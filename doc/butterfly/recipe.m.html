@@ -995,6 +995,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.recipe.SteadyIncompressible.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.recipe.SteadyIncompressible.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.recipe.SteadyIncompressible.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.recipe.SteadyIncompressible.run">run</a></li>
   </ul>
 
@@ -1020,7 +1021,8 @@ table {
   <div id="source-butterfly.recipe" class="source">
     <pre><code>"""Butterfly recipes."""
 import os
-from turbulenceProperties import TurbulenceProperties
+from copy import deepcopy
+from .turbulenceProperties import TurbulenceProperties
 
 
 class _BFRecipe(object):
@@ -1074,6 +1076,10 @@ class _BFRecipe(object):
     def run(self):
         """Execute the recipe."""
         raise NotImplementedError('abstractmethod.')
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1316,6 +1322,28 @@ class SteadyIncompressible(_BFRecipe):
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.recipe.SteadyIncompressible.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.recipe.SteadyIncompressible.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.recipe.SteadyIncompressible.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

@@ -1003,7 +1003,6 @@ table {
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.addRefinementRegion">addRefinementRegion</a></li>
-    <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.getBoundingBox">getBoundingBox</a></li>
     <li class="mono"><a href="#butterfly.gh.windtunnel.GHWindTunnel.toOpenFOAMCase">toOpenFOAMCase</a></li>
   </ul>
 
@@ -1034,7 +1033,7 @@ try:
 except ImportError:
     pass
 
-from .block import Block
+from .block import GHBlock
 from .geometry import GHBFBlockGeometry
 from .core import Case
 from .unitconversion import convertDocumentUnitsToMeters
@@ -1104,11 +1103,15 @@ class GHWindTunnel(WindTunnel):
 
         self.plane = self.__calculatePlane()
 
-        self.minmax, self.dimensions, self.boundingbox = self.getBoundingBox()
-        self.__scaleBoundingBox()
+        self.minmax, self.dimensions, self.boundingbox = self._getBoundingBox()
 
-        # create block
-        block = self.block
+        # calculate number of divisions in XYZ
+        self.tunnelParameters.nDivXYZ = \
+            int(round(self.X / self.tunnelParameters.cellSizeXYZ[0])), \
+            int(round(self.Y / self.tunnelParameters.cellSizeXYZ[1])), \
+            int(round(self.Z / self.tunnelParameters.cellSizeXYZ[2]))
+
+        self.__scaleBoundingBox()
 
         # create butterfly geometries
         inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
@@ -1116,9 +1119,25 @@ class GHWindTunnel(WindTunnel):
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
+            self.BFGeometries, self.block, self.z0, globalRefLevel, self.Zref,
             convertDocumentUnitsToMeters()
         )
+
+    @property
+    def X(self):
+        """Length of wind tunnel in X direction."""
+        return self.dimensions[0] + self.dimensions[2] * (2 * self.tunnelParameters.side)
+
+    @property
+    def Y(self):
+        """Length of wind tunnel in Y direction."""
+        return self.dimensions[1] + self.dimensions[2] * \
+            (self.tunnelParameters.leeward + self.tunnelParameters.windward)
+
+    @property
+    def Z(self):
+        """Length of wind tunnel in Z direction."""
+        return self.dimensions[2] + (self.dimensions[2] * self.tunnelParameters.top)
 
     @property
     def ghBoundingGeometries(self):
@@ -1138,8 +1157,7 @@ class GHWindTunnel(WindTunnel):
     def block(self):
         """Create block for this windTunnel."""
         # create block
-        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ,
-                     self.tunnelParameters.gradXYZ)
+        return GHBlock.fromWindTunnel(self)
 
     @property
     def boundingGeometries(self):
@@ -1218,7 +1236,7 @@ class GHWindTunnel(WindTunnel):
 
         return minN.DistanceTo(maxN)
 
-    def getBoundingBox(self):
+    def _getBoundingBox(self):
         """Find boundingbox for a list of geometries.
 
         Returns:
@@ -1249,8 +1267,8 @@ class GHWindTunnel(WindTunnel):
         max = uBBox.Max
         max.Transform(plane_to_world)
 
-        xDimension = self.__getDimension(min, max, self.plane.XAxis)
-        yDimension = self.__getDimension(min, max, self.plane.YAxis)
+        xDimension = self.__getDimension(min, max, self.plane.YAxis)
+        yDimension = self.__getDimension(min, max, self.plane.XAxis)
         zDimension = max.Z - min.Z
 
         return (min, max), (xDimension, yDimension, zDimension), box
@@ -1265,10 +1283,10 @@ class GHWindTunnel(WindTunnel):
         self.plane.Origin = rc.Geometry.Point3d(*cenPt)
 
         xScale = (self.tunnelParameters.windward + self.tunnelParameters.leeward) \
-            * (self.dimensions[2] / self.dimensions[0]) + 1
+            * (self.dimensions[2] / self.dimensions[1]) + 1
 
         yScale = (2 * self.tunnelParameters.side * (self.dimensions[2] /
-                                                    self.dimensions[1])) + 1
+                                                    self.dimensions[0])) + 1
 
         zScale = self.tunnelParameters.top + 1
 
@@ -1382,11 +1400,15 @@ class GHWindTunnel(WindTunnel):
 
         self.plane = self.__calculatePlane()
 
-        self.minmax, self.dimensions, self.boundingbox = self.getBoundingBox()
-        self.__scaleBoundingBox()
+        self.minmax, self.dimensions, self.boundingbox = self._getBoundingBox()
 
-        # create block
-        block = self.block
+        # calculate number of divisions in XYZ
+        self.tunnelParameters.nDivXYZ = \
+            int(round(self.X / self.tunnelParameters.cellSizeXYZ[0])), \
+            int(round(self.Y / self.tunnelParameters.cellSizeXYZ[1])), \
+            int(round(self.Z / self.tunnelParameters.cellSizeXYZ[2]))
+
+        self.__scaleBoundingBox()
 
         # create butterfly geometries
         inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
@@ -1394,9 +1416,25 @@ class GHWindTunnel(WindTunnel):
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
+            self.BFGeometries, self.block, self.z0, globalRefLevel, self.Zref,
             convertDocumentUnitsToMeters()
         )
+
+    @property
+    def X(self):
+        """Length of wind tunnel in X direction."""
+        return self.dimensions[0] + self.dimensions[2] * (2 * self.tunnelParameters.side)
+
+    @property
+    def Y(self):
+        """Length of wind tunnel in Y direction."""
+        return self.dimensions[1] + self.dimensions[2] * \
+            (self.tunnelParameters.leeward + self.tunnelParameters.windward)
+
+    @property
+    def Z(self):
+        """Length of wind tunnel in Z direction."""
+        return self.dimensions[2] + (self.dimensions[2] * self.tunnelParameters.top)
 
     @property
     def ghBoundingGeometries(self):
@@ -1416,8 +1454,7 @@ class GHWindTunnel(WindTunnel):
     def block(self):
         """Create block for this windTunnel."""
         # create block
-        return Block(self.boundingbox, self.tunnelParameters.nDivXYZ,
-                     self.tunnelParameters.gradXYZ)
+        return GHBlock.fromWindTunnel(self)
 
     @property
     def boundingGeometries(self):
@@ -1496,7 +1533,7 @@ class GHWindTunnel(WindTunnel):
 
         return minN.DistanceTo(maxN)
 
-    def getBoundingBox(self):
+    def _getBoundingBox(self):
         """Find boundingbox for a list of geometries.
 
         Returns:
@@ -1527,8 +1564,8 @@ class GHWindTunnel(WindTunnel):
         max = uBBox.Max
         max.Transform(plane_to_world)
 
-        xDimension = self.__getDimension(min, max, self.plane.XAxis)
-        yDimension = self.__getDimension(min, max, self.plane.YAxis)
+        xDimension = self.__getDimension(min, max, self.plane.YAxis)
+        yDimension = self.__getDimension(min, max, self.plane.XAxis)
         zDimension = max.Z - min.Z
 
         return (min, max), (xDimension, yDimension, zDimension), box
@@ -1543,10 +1580,10 @@ class GHWindTunnel(WindTunnel):
         self.plane.Origin = rc.Geometry.Point3d(*cenPt)
 
         xScale = (self.tunnelParameters.windward + self.tunnelParameters.leeward) \
-            * (self.dimensions[2] / self.dimensions[0]) + 1
+            * (self.dimensions[2] / self.dimensions[1]) + 1
 
         yScale = (2 * self.tunnelParameters.side * (self.dimensions[2] /
-                                                    self.dimensions[1])) + 1
+                                                    self.dimensions[0])) + 1
 
         zScale = self.tunnelParameters.top + 1
 
@@ -1592,6 +1629,39 @@ class GHWindTunnel(WindTunnel):
 
             
   
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.X" class="name">var <span class="ident">X</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Length of wind tunnel in X direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.Y" class="name">var <span class="ident">Y</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Length of wind tunnel in Y direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.gh.windtunnel.GHWindTunnel.Z" class="name">var <span class="ident">Z</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Length of wind tunnel in Z direction.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1784,16 +1854,19 @@ class GHWindTunnel(WindTunnel):
     self.tunnelParameters = TunnelParameters() if not tunnelParameters \
         else tunnelParameters
     self.plane = self.__calculatePlane()
-    self.minmax, self.dimensions, self.boundingbox = self.getBoundingBox()
+    self.minmax, self.dimensions, self.boundingbox = self._getBoundingBox()
+    # calculate number of divisions in XYZ
+    self.tunnelParameters.nDivXYZ = \
+        int(round(self.X / self.tunnelParameters.cellSizeXYZ[0])), \
+        int(round(self.Y / self.tunnelParameters.cellSizeXYZ[1])), \
+        int(round(self.Z / self.tunnelParameters.cellSizeXYZ[2]))
     self.__scaleBoundingBox()
-    # create block
-    block = self.block
     # create butterfly geometries
     inlet, outlet, rightSide, leftSide, top, ground = self.boundingGeometries
     # init openFOAM windTunnel
     super(GHWindTunnel, self).__init__(
         self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-        self.BFGeometries, block, self.z0, globalRefLevel, self.Zref,
+        self.BFGeometries, self.block, self.z0, globalRefLevel, self.Zref,
         convertDocumentUnitsToMeters()
     )
 </code></pre>
@@ -1842,56 +1915,6 @@ class GHWindTunnel(WindTunnel):
     assert hasattr(refinementRegion, 'isRefinementRegion'), \
         "{} is not a refinement region.".format(refinementRegion)
     self.__refinementRegions.append(refinementRegion)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.gh.windtunnel.GHWindTunnel.getBoundingBox">
-    <p>def <span class="ident">getBoundingBox</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Find boundingbox for a list of geometries.</p>
-<p>Returns:
-    minmax: min and max points of boundingbox as (min, max)
-    dimensions: Dimensions of boundingbox as (xDimension, yDimension,
-        zDimension)
-    boundingBox: Boundingbox geometry as Brep</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.windtunnel.GHWindTunnel.getBoundingBox', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.windtunnel.GHWindTunnel.getBoundingBox" class="source">
-    <pre><code>def getBoundingBox(self):
-    """Find boundingbox for a list of geometries.
-    Returns:
-        minmax: min and max points of boundingbox as (min, max)
-        dimensions: Dimensions of boundingbox as (xDimension, yDimension,
-            zDimension)
-        boundingBox: Boundingbox geometry as Brep
-    """
-    geometries = tuple(bfgeo.geometry for bfgeo in self.BFGeometries)
-    world = rc.Geometry.Plane.WorldXY
-    plane_to_world = rc.Geometry.Transform.ChangeBasis(self.plane, world)
-    uBBox = geometries[0].GetBoundingBox(self.plane)
-    if len(geometries) > 1:
-        for geo in geometries[1:]:
-            bbox = geo.GetBoundingBox(self.plane)
-            uBBox.Union(bbox)
-    box = uBBox.ToBrep()
-    box.Transform(plane_to_world)
-    min = uBBox.Min
-    min.Transform(plane_to_world)
-    max = uBBox.Max
-    max.Transform(plane_to_world)
-    xDimension = self.__getDimension(min, max, self.plane.XAxis)
-    yDimension = self.__getDimension(min, max, self.plane.YAxis)
-    zDimension = max.Z - min.Z
-    return (min, max), (xDimension, yDimension, zDimension), box
 </code></pre>
   </div>
 </div>

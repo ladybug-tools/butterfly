@@ -994,6 +994,7 @@ table {
           
   <ul>
     <li class="mono"><a href="#butterfly.z0.Z0.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.z0.Z0.duplicate">duplicate</a></li>
   </ul>
 
         </li>
@@ -1017,6 +1018,7 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.z0', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.z0" class="source">
     <pre><code>"""Roughness values."""
+import copy
 
 
 class Z0(object):
@@ -1076,6 +1078,10 @@ class Z0(object):
     def __getitem__(self, index):
         """Get roughness value by index."""
         return self.__roughnessDict[index]
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return copy.deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1159,6 +1165,10 @@ class Z0(object):
     def __getitem__(self, index):
         """Get roughness value by index."""
         return self.__roughnessDict[index]
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return copy.deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1284,6 +1294,28 @@ class Z0(object):
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.z0.Z0.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.z0.Z0.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.z0.Z0.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return copy.deepcopy(self)
 </code></pre>
   </div>
 </div>

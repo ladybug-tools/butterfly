@@ -995,6 +995,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.gh.refinementRegion.GHRefinementRegion.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.gh.refinementRegion.GHRefinementRegion.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.gh.refinementRegion.GHRefinementRegion.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.gh.refinementRegion.GHRefinementRegion.toStlString">toStlString</a></li>
     <li class="mono"><a href="#butterfly.gh.refinementRegion.GHRefinementRegion.writeToStl">writeToStl</a></li>
   </ul>
@@ -1217,6 +1218,28 @@ class GHRefinementRegion(RefinementRegion):
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.refinementRegion.GHRefinementRegion.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.refinementRegion.GHRefinementRegion.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.refinementRegion.GHRefinementRegion.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

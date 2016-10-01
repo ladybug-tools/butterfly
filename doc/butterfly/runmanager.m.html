@@ -1003,7 +1003,9 @@ table {
           
   <ul>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.runmanager.RunManager.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.command">command</a></li>
+    <li class="mono"><a href="#butterfly.runmanager.RunManager.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.getContainerId">getContainerId</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.getShellinit">getShellinit</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.header">header</a></li>
@@ -1039,11 +1041,12 @@ Run manager is only useful for running OpenFOAM for Windows which runs in a
 docker container. For linux systems simply use .bash files or libraries such as
 pyFOAM.
 """
-from version import Version
-
 import os
 from subprocess import PIPE, Popen
 from collections import namedtuple
+from copy import deepcopy
+
+from .version import Version
 
 
 class RunManager(object):
@@ -1244,6 +1247,18 @@ class RunManager(object):
             return res(self.header() + "\n" + cmds, logfiles, errfiles)
         else:
             return res(cmds, logfiles, errfiles)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Run manager representation."""
+        return """RunManager::{}""".format(self.__projectName)
 </code></pre>
   </div>
 
@@ -1470,6 +1485,18 @@ class RunManager(object):
             return res(self.header() + "\n" + cmds, logfiles, errfiles)
         else:
             return res(cmds, logfiles, errfiles)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Run manager representation."""
+        return """RunManager::{}""".format(self.__projectName)
 </code></pre>
   </div>
 </div>
@@ -1550,6 +1577,28 @@ class RunManager(object):
     self.dockerPath = r'C:\Program Files\Docker Toolbox' \
         if self.isUsingDockerMachine \
         else r'C:\Program Files\Boot2Docker for Windows'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.runmanager.RunManager.ToString">
+    <p>def <span class="ident">ToString</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.runmanager.RunManager.ToString" class="source">
+    <pre><code>def ToString(self):
+    """Overwrite .NET ToString method."""
+    return self.__repr__()
 </code></pre>
   </div>
 </div>
@@ -1652,6 +1701,28 @@ class RunManager(object):
         return res(self.header() + "\n" + cmds, logfiles, errfiles)
     else:
         return res(cmds, logfiles, errfiles)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.runmanager.RunManager.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.runmanager.RunManager.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

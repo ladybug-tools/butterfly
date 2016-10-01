@@ -989,14 +989,15 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly.gh.block.Block">Block</a></span>
+        <span class="class_name"><a href="#butterfly.gh.block.GHBlock">GHBlock</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly.gh.block.Block.shiftVertices">shiftVertices</a></li>
-    <li class="mono"><a href="#butterfly.gh.block.Block.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly.gh.block.Block.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.gh.block.Block.toBlockMeshDict">toBlockMeshDict</a></li>
+    <li class="mono"><a href="#butterfly.gh.block.GHBlock.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.gh.block.GHBlock.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.gh.block.GHBlock.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.gh.block.GHBlock.fromWindTunnel">fromWindTunnel</a></li>
+    <li class="mono"><a href="#butterfly.gh.block.GHBlock.toBlockMeshDict">toBlockMeshDict</a></li>
   </ul>
 
         </li>
@@ -1021,22 +1022,53 @@ table {
   <div id="source-butterfly.gh.block" class="source">
     <pre><code>"""Butterfly Block for Grasshopper."""
 
+try:
+    import Rhino as rc
+except ImportError:
+    pass
 
-# TODO: Write Block class with no Grasshopper dependencies
-class Block(object):
+from ..block import Block
+
+
+class GHBlock(Block):
     """Block in blockMeshDict.
 
     Args:
-        geometry: A closed brep that represents block boundary.
-        nDiv: Number of divisions in (x, y, z) as a tuple.
-        grading: grading as (x, y, z).
+        box: A Box that represents block boundary.
+        cellSizeXYZ: Size of cell in X, Y and Z directions in Rhino model units
+            as a tuple.
+        grading: SimpleGrading for blockMesh (default: SimpleGrading(1, 1, 1))
     """
 
-    def __init__(self, geometry, nDiv, grading):
+    def __init__(self, box, cellSizeXYZ=None, grading=None):
         """Init Block class."""
-        self.vertices = self.__calculateVertices(geometry)
-        self.nDiv = tuple(int(v) for v in nDiv)
-        self.grading = tuple(grading)
+        self.cellSizeXYZ = tuple(cellSizeXYZ) if cellSizeXYZ else (5, 5, 5)
+
+        nDivXYZ = \
+            int(round(box.X.Length / self.cellSizeXYZ[0])), \
+            int(round(box.Y.Length / self.cellSizeXYZ[1])), \
+            int(round(box.Z.Length / self.cellSizeXYZ[2]))
+
+        vertices = self._calculateVertices(box.ToBrep())
+
+        Block.__init__(self, vertices, nDivXYZ, grading)
+
+    @classmethod
+    def fromWindTunnel(cls, windTunnel):
+        """Init Block from wind tunnel."""
+        _box = rc.Geometry.Box(windTunnel.plane, windTunnel.boundingbox)
+        _block = cls(_box, windTunnel.tunnelParameters.cellSizeXYZ,
+                     windTunnel.tunnelParameters.gradXYZ)
+
+        # re-order points for windTunnel
+        btmVer = _block.vertices[:4]
+        topVer = _block.vertices[4:]
+        _block.vertices = tuple(btmVer[-1:] + btmVer[:-1] + topVer[-1:] +
+                                topVer[:-1])
+
+        _block.nDivXYZ = windTunnel.tunnelParameters.nDivXYZ
+
+        return _block
 
     @property
     def minZ(self):
@@ -1049,18 +1081,18 @@ class Block(object):
 
         return _minZ
 
-    def __calculateVertices(self, geo):
+    def _calculateVertices(self, geo):
         # sort faces based on Z value
         faces = sorted(geo.Faces, key=lambda f: self._cenPt(f).Z)
 
         return tuple((ver.Location.X, ver.Location.Y, ver.Location.Z)
                      for verGroup in
-                     (self.shiftVertices(faces[0].ToBrep().Vertices),
+                     (self._shiftVertices(faces[0].ToBrep().Vertices),
                      faces[-1].ToBrep().Vertices)
                      for ver in verGroup)
 
     @staticmethod
-    def shiftVertices(vertices):
+    def _shiftVertices(vertices):
         """Shift vertices to match openfoam order."""
         _ver = list(vertices)
         _ver.reverse()
@@ -1071,35 +1103,6 @@ class Block(object):
         """Calculate center point for a grasshopper face."""
         return f.PointAt((f.Domain(0).Min + f.Domain(0).Max) / 2,
                          (f.Domain(1).Min + f.Domain(1).Max) / 2)
-
-    def toBlockMeshDict(self, vertices):
-        """Get blockMeshDict string.
-
-        Args:
-            vertices: list of vertices for all the geometries in the case.
-                This method should be moved under the case class.
-        """
-        _body = "   hex {} {} simpleGrading {}"
-
-        try:
-            indices = tuple(vertices.index(v) for v in self.vertices)
-        except ValueError:
-            raise ValueError("Can't find the vertex "
-                             "in the vertices:\ninput: {}\n vertices: {}"
-                             .format(self.vertices, vertices))
-
-        return _body.format(str(indices).replace(",", ""),
-                            str(self.nDiv).replace(",", ""),
-                            str(self.grading).replace(",", ""))
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """OpenFOAM boundary."""
-        return "Boundary: {} simpleGrading {}".format(
-            str(self.nDiv).replace(",", ""), str(self.grading).replace(",", ""))
 </code></pre>
   </div>
 
@@ -1111,31 +1114,57 @@ class Block(object):
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
-      <p id="butterfly.gh.block.Block" class="name">class <span class="ident">Block</span></p>
+      <p id="butterfly.gh.block.GHBlock" class="name">class <span class="ident">GHBlock</span></p>
       
   
     <div class="desc"><p>Block in blockMeshDict.</p>
 <p>Args:
-    geometry: A closed brep that represents block boundary.
-    nDiv: Number of divisions in (x, y, z) as a tuple.
-    grading: grading as (x, y, z).</p></div>
+    box: A Box that represents block boundary.
+    cellSizeXYZ: Size of cell in X, Y and Z directions in Rhino model units
+        as a tuple.
+    grading: SimpleGrading for blockMesh (default: SimpleGrading(1, 1, 1))</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.Block', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.block.Block" class="source">
-    <pre><code>class Block(object):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.GHBlock', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.block.GHBlock" class="source">
+    <pre><code>class GHBlock(Block):
     """Block in blockMeshDict.
 
     Args:
-        geometry: A closed brep that represents block boundary.
-        nDiv: Number of divisions in (x, y, z) as a tuple.
-        grading: grading as (x, y, z).
+        box: A Box that represents block boundary.
+        cellSizeXYZ: Size of cell in X, Y and Z directions in Rhino model units
+            as a tuple.
+        grading: SimpleGrading for blockMesh (default: SimpleGrading(1, 1, 1))
     """
 
-    def __init__(self, geometry, nDiv, grading):
+    def __init__(self, box, cellSizeXYZ=None, grading=None):
         """Init Block class."""
-        self.vertices = self.__calculateVertices(geometry)
-        self.nDiv = tuple(int(v) for v in nDiv)
-        self.grading = tuple(grading)
+        self.cellSizeXYZ = tuple(cellSizeXYZ) if cellSizeXYZ else (5, 5, 5)
+
+        nDivXYZ = \
+            int(round(box.X.Length / self.cellSizeXYZ[0])), \
+            int(round(box.Y.Length / self.cellSizeXYZ[1])), \
+            int(round(box.Z.Length / self.cellSizeXYZ[2]))
+
+        vertices = self._calculateVertices(box.ToBrep())
+
+        Block.__init__(self, vertices, nDivXYZ, grading)
+
+    @classmethod
+    def fromWindTunnel(cls, windTunnel):
+        """Init Block from wind tunnel."""
+        _box = rc.Geometry.Box(windTunnel.plane, windTunnel.boundingbox)
+        _block = cls(_box, windTunnel.tunnelParameters.cellSizeXYZ,
+                     windTunnel.tunnelParameters.gradXYZ)
+
+        # re-order points for windTunnel
+        btmVer = _block.vertices[:4]
+        topVer = _block.vertices[4:]
+        _block.vertices = tuple(btmVer[-1:] + btmVer[:-1] + topVer[-1:] +
+                                topVer[:-1])
+
+        _block.nDivXYZ = windTunnel.tunnelParameters.nDivXYZ
+
+        return _block
 
     @property
     def minZ(self):
@@ -1148,18 +1177,18 @@ class Block(object):
 
         return _minZ
 
-    def __calculateVertices(self, geo):
+    def _calculateVertices(self, geo):
         # sort faces based on Z value
         faces = sorted(geo.Faces, key=lambda f: self._cenPt(f).Z)
 
         return tuple((ver.Location.X, ver.Location.Y, ver.Location.Z)
                      for verGroup in
-                     (self.shiftVertices(faces[0].ToBrep().Vertices),
+                     (self._shiftVertices(faces[0].ToBrep().Vertices),
                      faces[-1].ToBrep().Vertices)
                      for ver in verGroup)
 
     @staticmethod
-    def shiftVertices(vertices):
+    def _shiftVertices(vertices):
         """Shift vertices to match openfoam order."""
         _ver = list(vertices)
         _ver.reverse()
@@ -1170,35 +1199,6 @@ class Block(object):
         """Calculate center point for a grasshopper face."""
         return f.PointAt((f.Domain(0).Min + f.Domain(0).Max) / 2,
                          (f.Domain(1).Min + f.Domain(1).Max) / 2)
-
-    def toBlockMeshDict(self, vertices):
-        """Get blockMeshDict string.
-
-        Args:
-            vertices: list of vertices for all the geometries in the case.
-                This method should be moved under the case class.
-        """
-        _body = "   hex {} {} simpleGrading {}"
-
-        try:
-            indices = tuple(vertices.index(v) for v in self.vertices)
-        except ValueError:
-            raise ValueError("Can't find the vertex "
-                             "in the vertices:\ninput: {}\n vertices: {}"
-                             .format(self.vertices, vertices))
-
-        return _body.format(str(indices).replace(",", ""),
-                            str(self.nDiv).replace(",", ""),
-                            str(self.grading).replace(",", ""))
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """OpenFOAM boundary."""
-        return "Boundary: {} simpleGrading {}".format(
-            str(self.nDiv).replace(",", ""), str(self.grading).replace(",", ""))
 </code></pre>
   </div>
 </div>
@@ -1207,38 +1207,13 @@ class Block(object):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly.gh.block.Block">Block</a></li>
+          <li><a href="#butterfly.gh.block.GHBlock">GHBlock</a></li>
+          <li>butterfly.block.Block</li>
           <li>__builtin__.object</li>
           </ul>
-          <h3>Static methods</h3>
-            
-  <div class="item">
-    <div class="name def" id="butterfly.gh.block.Block.shiftVertices">
-    <p>def <span class="ident">shiftVertices</span>(</p><p>vertices)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Shift vertices to match openfoam order.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.Block.shiftVertices', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.block.Block.shiftVertices" class="source">
-    <pre><code>@staticmethod
-def shiftVertices(vertices):
-    """Shift vertices to match openfoam order."""
-    _ver = list(vertices)
-    _ver.reverse()
-    return _ver[-1:] + _ver[:-1]
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.gh.block.Block.grading" class="name">var <span class="ident">grading</span></p>
+            <p id="butterfly.gh.block.GHBlock.cellSizeXYZ" class="name">var <span class="ident">cellSizeXYZ</span></p>
             
 
             
@@ -1248,7 +1223,7 @@ def shiftVertices(vertices):
 
             </div>
             <div class="item">
-            <p id="butterfly.gh.block.Block.minZ" class="name">var <span class="ident">minZ</span></p>
+            <p id="butterfly.gh.block.GHBlock.minZ" class="name">var <span class="ident">minZ</span></p>
             
 
             
@@ -1258,31 +1233,11 @@ def shiftVertices(vertices):
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.gh.block.Block.nDiv" class="name">var <span class="ident">nDiv</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.gh.block.Block.vertices" class="name">var <span class="ident">vertices</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly.gh.block.Block.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, geometry, nDiv, grading)</p>
+    <div class="name def" id="butterfly.gh.block.GHBlock.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, box, cellSizeXYZ=None, grading=None)</p>
     </div>
     
 
@@ -1290,13 +1245,17 @@ def shiftVertices(vertices):
   
     <div class="desc"><p>Init Block class.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.Block.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.block.Block.__init__" class="source">
-    <pre><code>def __init__(self, geometry, nDiv, grading):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.GHBlock.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.block.GHBlock.__init__" class="source">
+    <pre><code>def __init__(self, box, cellSizeXYZ=None, grading=None):
     """Init Block class."""
-    self.vertices = self.__calculateVertices(geometry)
-    self.nDiv = tuple(int(v) for v in nDiv)
-    self.grading = tuple(grading)
+    self.cellSizeXYZ = tuple(cellSizeXYZ) if cellSizeXYZ else (5, 5, 5)
+    nDivXYZ = \
+        int(round(box.X.Length / self.cellSizeXYZ[0])), \
+        int(round(box.Y.Length / self.cellSizeXYZ[1])), \
+        int(round(box.Z.Length / self.cellSizeXYZ[2]))
+    vertices = self._calculateVertices(box.ToBrep())
+    Block.__init__(self, vertices, nDivXYZ, grading)
 </code></pre>
   </div>
 </div>
@@ -1305,7 +1264,7 @@ def shiftVertices(vertices):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.gh.block.Block.ToString">
+    <div class="name def" id="butterfly.gh.block.GHBlock.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -1314,8 +1273,8 @@ def shiftVertices(vertices):
   
     <div class="desc"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.Block.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.block.Block.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.GHBlock.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.block.GHBlock.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -1327,8 +1286,62 @@ def shiftVertices(vertices):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.gh.block.Block.toBlockMeshDict">
-    <p>def <span class="ident">toBlockMeshDict</span>(</p><p>self, vertices)</p>
+    <div class="name def" id="butterfly.gh.block.GHBlock.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.GHBlock.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.block.GHBlock.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.block.GHBlock.fromWindTunnel">
+    <p>def <span class="ident">fromWindTunnel</span>(</p><p>cls, windTunnel)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Init Block from wind tunnel.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.GHBlock.fromWindTunnel', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.block.GHBlock.fromWindTunnel" class="source">
+    <pre><code>@classmethod
+def fromWindTunnel(cls, windTunnel):
+    """Init Block from wind tunnel."""
+    _box = rc.Geometry.Box(windTunnel.plane, windTunnel.boundingbox)
+    _block = cls(_box, windTunnel.tunnelParameters.cellSizeXYZ,
+                 windTunnel.tunnelParameters.gradXYZ)
+    # re-order points for windTunnel
+    btmVer = _block.vertices[:4]
+    topVer = _block.vertices[4:]
+    _block.vertices = tuple(btmVer[-1:] + btmVer[:-1] + topVer[-1:] +
+                            topVer[:-1])
+    _block.nDivXYZ = windTunnel.tunnelParameters.nDivXYZ
+    return _block
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.block.GHBlock.toBlockMeshDict">
+    <p>def <span class="ident">toBlockMeshDict</span>(</p><p>self, vertices, tolerance=0.001)</p>
     </div>
     
 
@@ -1337,26 +1350,23 @@ def shiftVertices(vertices):
     <div class="desc"><p>Get blockMeshDict string.</p>
 <p>Args:
     vertices: list of vertices for all the geometries in the case.
-        This method should be moved under the case class.</p></div>
+    tolerance: Distance tolerance between input vertices and blockMesh
+        vertices.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.Block.toBlockMeshDict', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.gh.block.Block.toBlockMeshDict" class="source">
-    <pre><code>def toBlockMeshDict(self, vertices):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.block.GHBlock.toBlockMeshDict', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.block.GHBlock.toBlockMeshDict" class="source">
+    <pre><code>def toBlockMeshDict(self, vertices, tolerance=0.001):
     """Get blockMeshDict string.
     Args:
         vertices: list of vertices for all the geometries in the case.
-            This method should be moved under the case class.
+        tolerance: Distance tolerance between input vertices and blockMesh
+            vertices.
     """
-    _body = "   hex {} {} simpleGrading {}"
-    try:
-        indices = tuple(vertices.index(v) for v in self.vertices)
-    except ValueError:
-        raise ValueError("Can't find the vertex "
-                         "in the vertices:\ninput: {}\n vertices: {}"
-                         .format(self.vertices, vertices))
+    _body = "   hex {} {} {}"
+    indices = self._findIndices(vertices, tolerance)
     return _body.format(str(indices).replace(",", ""),
-                        str(self.nDiv).replace(",", ""),
-                        str(self.grading).replace(",", ""))
+                        str(self.nDivXYZ).replace(",", ""),
+                        self.grading)
 </code></pre>
   </div>
 </div>

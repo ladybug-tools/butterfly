@@ -994,12 +994,20 @@ table {
           
   <ul>
     <li class="mono"><a href="#butterfly.version.Header.header">header</a></li>
+    <li class="mono"><a href="#butterfly.version.Header.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.version.Header.duplicate">duplicate</a></li>
   </ul>
 
         </li>
         <li class="mono">
         <span class="class_name"><a href="#butterfly.version.Version">Version</a></span>
         
+          
+  <ul>
+    <li class="mono"><a href="#butterfly.version.Version.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.version.Version.duplicate">duplicate</a></li>
+  </ul>
+
         </li>
       </ul>
     </li>
@@ -1021,6 +1029,7 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.version" class="source">
     <pre><code>"""Versions and header."""
+from copy import deepcopy
 from datetime import datetime
 
 
@@ -1032,6 +1041,18 @@ class Version(object):
     OFFullVer = "v1606+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
     lastUpdated = datetime(year=2016, month=9, day=29, hour=14, minute=00)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Version."""
+        return 'Version::Butterfly{}::OpenFOAM{}'.format(self.BFVer, self.OFVer)
 
 
 class Header(object):
@@ -1048,7 +1069,7 @@ class Header(object):
         header = "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
                  "| =========                 |                                                 |\n" + \
                  "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
-                 "|  \\\\    /   O peration     | Version:  {}                                 |\n" + \
+                 "|  \\\\    /   O peration     | Version:  {}                                |\n" + \
                  "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \
                  "|    \\\\/     M anipulation  |                                                 |\n" + \
                  "\\*---------------------------------------------------------------------------*/\n" + \
@@ -1056,6 +1077,18 @@ class Header(object):
                  "\\*---------------------------------------------------------------------------*/\n"
 
         return header.format(OpenFOAMVersion, ButterflyVersion)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Header."""
+        return self.header
 </code></pre>
   </div>
 
@@ -1090,7 +1123,7 @@ class Header(object):
         header = "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
                  "| =========                 |                                                 |\n" + \
                  "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
-                 "|  \\\\    /   O peration     | Version:  {}                                 |\n" + \
+                 "|  \\\\    /   O peration     | Version:  {}                                |\n" + \
                  "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \
                  "|    \\\\/     M anipulation  |                                                 |\n" + \
                  "\\*---------------------------------------------------------------------------*/\n" + \
@@ -1098,6 +1131,18 @@ class Header(object):
                  "\\*---------------------------------------------------------------------------*/\n"
 
         return header.format(OpenFOAMVersion, ButterflyVersion)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Header."""
+        return self.header
 </code></pre>
   </div>
 </div>
@@ -1129,13 +1174,58 @@ def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
     header = "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
              "| =========                 |                                                 |\n" + \
              "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
-             "|  \\\\    /   O peration     | Version:  {}                                 |\n" + \
+             "|  \\\\    /   O peration     | Version:  {}                                |\n" + \
              "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \
              "|    \\\\/     M anipulation  |                                                 |\n" + \
              "\\*---------------------------------------------------------------------------*/\n" + \
              "/*Generated by Butterfly {} https://github.com/mostaphaRoudsari/Butterfly *\\\n" + \
              "\\*---------------------------------------------------------------------------*/\n"
     return header.format(OpenFOAMVersion, ButterflyVersion)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.version.Header.ToString">
+    <p>def <span class="ident">ToString</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Header.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.version.Header.ToString" class="source">
+    <pre><code>def ToString(self):
+    """Overwrite .NET ToString method."""
+    return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.version.Header.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Header.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.version.Header.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>
@@ -1161,6 +1251,18 @@ def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
     OFFullVer = "v1606+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
     lastUpdated = datetime(year=2016, month=9, day=29, hour=14, minute=00)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """Version."""
+        return 'Version::Butterfly{}::OpenFOAM{}'.format(self.BFVer, self.OFVer)
 </code></pre>
   </div>
 </div>
@@ -1223,6 +1325,51 @@ def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
 </div>
 
             </div>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.version.Version.ToString">
+    <p>def <span class="ident">ToString</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Version.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.version.Version.ToString" class="source">
+    <pre><code>def ToString(self):
+    """Overwrite .NET ToString method."""
+    return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.version.Version.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Version.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.version.Version.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
       </div>
       </div>
 

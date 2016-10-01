@@ -995,6 +995,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.refinementRegion.Distance.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.Distance.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.refinementRegion.Distance.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.Distance.toOpenFOAMDict">toOpenFOAMDict</a></li>
   </ul>
 
@@ -1006,6 +1007,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.refinementRegion.Inside.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.Inside.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.refinementRegion.Inside.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.Inside.toOpenFOAMDict">toOpenFOAMDict</a></li>
   </ul>
 
@@ -1017,6 +1019,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.refinementRegion.Outside.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.Outside.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.refinementRegion.Outside.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.Outside.toOpenFOAMDict">toOpenFOAMDict</a></li>
   </ul>
 
@@ -1028,6 +1031,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.toStlString">toStlString</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.writeToStl">writeToStl</a></li>
   </ul>
@@ -1052,7 +1056,8 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.refinementRegion" class="source">
-    <pre><code>from geometry import _BFMesh
+    <pre><code>from copy import deepcopy
+from .geometry import _BFMesh
 
 
 class RefinementRegion(_BFMesh):
@@ -1124,6 +1129,10 @@ class _RefinementMode(object):
         """Return data as a dictionary."""
         return {'mode': self.__class__.__name__.lower(),
                 'levels': str(self.levels).replace(',', ' ')}
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite ToString .NET method."""
@@ -1286,6 +1295,28 @@ class Outside(Inside):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.refinementRegion.Distance.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.Distance.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.refinementRegion.Distance.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.refinementRegion.Distance.toOpenFOAMDict">
     <p>def <span class="ident">toOpenFOAMDict</span>(</p><p>self)</p>
     </div>
@@ -1413,6 +1444,28 @@ class Outside(Inside):
     <pre><code>def ToString(self):
     """Overwrite ToString .NET method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.refinementRegion.Inside.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.Inside.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.refinementRegion.Inside.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>
@@ -1558,6 +1611,32 @@ class Outside(Inside):
     <pre><code>def ToString(self):
     """Overwrite ToString .NET method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.refinementRegion.Outside.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.refinementRegion.Inside">Inside</a></code>.<code><a href="#butterfly.refinementRegion.Inside.duplicate">duplicate</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.Outside.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.refinementRegion.Outside.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>
@@ -1769,6 +1848,28 @@ class Outside(Inside):
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.refinementRegion.RefinementRegion.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.RefinementRegion.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.refinementRegion.RefinementRegion.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

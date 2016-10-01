@@ -997,6 +997,7 @@ table {
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.body">body</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.header">header</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.save">save</a></li>
@@ -1382,6 +1383,28 @@ def convertBoolValue(v=True):
     l = (line[4:] if not line.endswith('{') else self._splitLine(line)
          for line in of.split("\n")[1:-1])
     return "\n\n".join(l)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

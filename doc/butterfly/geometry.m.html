@@ -995,6 +995,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.toStlString">toStlString</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.writeToStl">writeToStl</a></li>
   </ul>
@@ -1007,6 +1008,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.geometry.BFGeometry.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.toStlString">toStlString</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.writeToStl">writeToStl</a></li>
   </ul>
@@ -1033,7 +1035,8 @@ table {
   <div id="source-butterfly.geometry" class="source">
     <pre><code>"""BF geometry library."""
 import os
-from boundarycondition import BoundaryCondition
+from copy import deepcopy
+from .boundarycondition import BoundaryCondition
 
 
 class _BFMesh(object):
@@ -1125,6 +1128,10 @@ class _BFMesh(object):
         """Save BFFace to a stl file. File name will be self.name."""
         with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
             outf.write(self.toStlString())
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1481,6 +1488,32 @@ if __name__ == '__main__':
   
             
   <div class="item">
+    <div class="name def" id="butterfly.geometry.BFBlockGeometry.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.geometry.BFGeometry">BFGeometry</a></code>.<code><a href="#butterfly.geometry.BFGeometry.duplicate">duplicate</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFBlockGeometry.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.BFBlockGeometry.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.geometry.BFBlockGeometry.toStlString">
     <p>def <span class="ident">toStlString</span>(</p><p>self)</p>
     </div>
@@ -1759,6 +1792,28 @@ print geo.toStlString()
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.geometry.BFGeometry.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFGeometry.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.BFGeometry.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

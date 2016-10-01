@@ -995,6 +995,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFBlockGeometry.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFBlockGeometry.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.gh.geometry.GHBFBlockGeometry.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFBlockGeometry.toBlockMeshDict">toBlockMeshDict</a></li>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFBlockGeometry.toStlString">toStlString</a></li>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFBlockGeometry.writeToStl">writeToStl</a></li>
@@ -1008,6 +1009,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFGeometry.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFGeometry.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.gh.geometry.GHBFGeometry.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFGeometry.toStlString">toStlString</a></li>
     <li class="mono"><a href="#butterfly.gh.geometry.GHBFGeometry.writeToStl">writeToStl</a></li>
   </ul>
@@ -1019,6 +1021,8 @@ table {
           
   <ul>
     <li class="mono"><a href="#butterfly.gh.geometry.GHMesh.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.gh.geometry.GHMesh.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.gh.geometry.GHMesh.duplicate">duplicate</a></li>
   </ul>
 
         </li>
@@ -1048,6 +1052,7 @@ try:
 except ImportError:
     pass
 
+from copy import deepcopy
 from ..geometry import BFGeometry
 
 
@@ -1118,6 +1123,18 @@ class GHMesh(object):
         # indices
         self.faceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
         return triMesh
+
+    def duplicate(self):
+        """Return a copy of GHMesh."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """GHMesh."""
+        return str(self.geometry)
 
 
 class GHBFGeometry(BFGeometry):
@@ -1561,6 +1578,32 @@ class GHBFBlockGeometry(GHBFGeometry):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.gh.geometry.GHBFBlockGeometry.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.gh.geometry.GHBFGeometry">GHBFGeometry</a></code>.<code><a href="#butterfly.gh.geometry.GHBFGeometry.duplicate">duplicate</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.geometry.GHBFBlockGeometry.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.geometry.GHBFBlockGeometry.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.gh.geometry.GHBFBlockGeometry.toBlockMeshDict">
     <p>def <span class="ident">toBlockMeshDict</span>(</p><p>self, vertices)</p>
     </div>
@@ -1886,6 +1929,28 @@ class GHBFBlockGeometry(GHBFGeometry):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.gh.geometry.GHBFGeometry.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.geometry.GHBFGeometry.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.geometry.GHBFGeometry.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.gh.geometry.GHBFGeometry.toStlString">
     <p>def <span class="ident">toStlString</span>(</p><p>self)</p>
     </div>
@@ -2037,6 +2102,18 @@ class GHBFBlockGeometry(GHBFGeometry):
         # indices
         self.faceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
         return triMesh
+
+    def duplicate(self):
+        """Return a copy of GHMesh."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """GHMesh."""
+        return str(self.geometry)
 </code></pre>
   </div>
 </div>
@@ -2079,6 +2156,50 @@ class GHBFBlockGeometry(GHBFGeometry):
         meshingParameters = rc.Geometry.MeshingParameters.Default
     self.__meshingParameters = meshingParameters
     self.geometry = geometries
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.geometry.GHMesh.ToString">
+    <p>def <span class="ident">ToString</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.geometry.GHMesh.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.geometry.GHMesh.ToString" class="source">
+    <pre><code>def ToString(self):
+    """Overwrite .NET ToString method."""
+    return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.gh.geometry.GHMesh.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of GHMesh.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.gh.geometry.GHMesh.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.gh.geometry.GHMesh.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of GHMesh."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

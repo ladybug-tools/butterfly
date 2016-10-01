@@ -995,6 +995,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.solution.Solution.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.solution.Solution.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.run">run</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.terminate">terminate</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.updateSolutionParams">updateSolutionParams</a></li>
@@ -1008,6 +1009,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.solution.SolutionParameters.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.solution.SolutionParameters.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.solution.SolutionParameters.duplicate">duplicate</a></li>
   </ul>
 
         </li>
@@ -1031,6 +1033,7 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.solution" class="source">
     <pre><code>"""Butterfly Solution."""
+from copy import deepcopy
 from .helper import checkFiles
 
 
@@ -1168,6 +1171,10 @@ class Solution(object):
         """Cancel the solution."""
         self.__process.terminate()
 
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
@@ -1191,6 +1198,10 @@ class SolutionParameters(object):
         self.controlDict = controlDict
         self.residualControl = residualControl
         self.probes = probes
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1353,6 +1364,10 @@ class SolutionParameters(object):
     def terminate(self):
         """Cancel the solution."""
         self.__process.terminate()
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1547,6 +1562,28 @@ class SolutionParameters(object):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.solution.Solution.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.Solution.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.solution.Solution.run">
     <p>def <span class="ident">run</span>(</p><p>self)</p>
     </div>
@@ -1675,6 +1712,10 @@ class SolutionParameters(object):
         self.residualControl = residualControl
         self.probes = probes
 
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
@@ -1765,6 +1806,28 @@ class SolutionParameters(object):
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.SolutionParameters.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameters.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameters.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

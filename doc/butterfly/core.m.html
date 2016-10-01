@@ -1011,6 +1011,7 @@ table {
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.checkMesh">checkMesh</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.copySnappyHexMesh">copySnappyHexMesh</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.createCaseFolders">createCaseFolders</a></li>
+    <li class="mono"><a href="#butterfly.core.OpemFOAMCase.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.fromBlocks">fromBlocks</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.fromWindTunnel">fromWindTunnel</a></li>
     <li class="mono"><a href="#butterfly.core.OpemFOAMCase.getResultFolders">getResultFolders</a></li>
@@ -1061,6 +1062,7 @@ import os
 from shutil import rmtree
 from distutils.dir_util import copy_tree
 from collections import namedtuple
+from copy import deepcopy
 
 from version import Version
 from helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes, \
@@ -1728,6 +1730,10 @@ class OpemFOAMCase(object):
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
         """
         self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -2461,6 +2467,10 @@ class OpemFOAMCase(object):
         """
         self.fvSchemes = FvSchemes.fromMeshOrthogonality(meshOrthogonality)
 
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
@@ -3059,6 +3069,28 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
         outf.close()
     self._isInit = True
     print "OpenFOAM Case is successfully exported to: %s" % os.path.normpath(self.projectDir)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.core.OpemFOAMCase.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.core.OpemFOAMCase.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.core.OpemFOAMCase.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

@@ -997,6 +997,7 @@ table {
     <li class="mono"><a href="#butterfly.foamfile.Condition.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.body">body</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.Condition.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.header">header</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.save">save</a></li>
@@ -1015,6 +1016,7 @@ table {
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.body">body</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFile.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.header">header</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.save">save</a></li>
@@ -1033,6 +1035,7 @@ table {
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.body">body</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries">fromBFGeometries</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.header">header</a></li>
@@ -1234,6 +1237,10 @@ class FoamFile(object):
     def __eq__(self, other):
         """Check equality."""
         return self.values == other.values
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1549,6 +1556,32 @@ def convertBoolValue(v=True):
     l = (line[4:] if not line.endswith('{') else self._splitLine(line)
          for line in of.split("\n")[1:-1])
     return "\n\n".join(l)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.Condition.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.duplicate">duplicate</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.Condition.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.Condition.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>
@@ -1925,6 +1958,10 @@ more information about FoamFile</p>
         """Check equality."""
         return self.values == other.values
 
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
@@ -2130,6 +2167,28 @@ def convertBoolValue(v=True):
     l = (line[4:] if not line.endswith('{') else self._splitLine(line)
          for line in of.split("\n")[1:-1])
     return "\n\n".join(l)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.FoamFile.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFile.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFile.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>
@@ -2594,6 +2653,32 @@ def convertBoolValue(v=True):
     l = (line[4:] if not line.endswith('{') else self._splitLine(line)
          for line in of.split("\n")[1:-1])
     return "\n\n".join(l)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.duplicate">duplicate</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

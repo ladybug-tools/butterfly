@@ -995,6 +995,7 @@ table {
   <ul>
     <li class="mono"><a href="#butterfly.windtunnel.TunnelParameters.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.windtunnel.TunnelParameters.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.windtunnel.TunnelParameters.duplicate">duplicate</a></li>
   </ul>
 
         </li>
@@ -1030,8 +1031,11 @@ table {
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel" class="source">
     <pre><code>"""Butterfly wind tunnel."""
-from blockMeshDict import BlockMeshDict
-from core import OpemFOAMCase
+from copy import deepcopy
+
+from .blockMeshDict import BlockMeshDict
+from .core import OpemFOAMCase
+from .grading import SimpleGrading
 
 
 class WindTunnel(object):
@@ -1160,15 +1164,17 @@ class TunnelParameters(object):
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
+    def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
                  gradXYZ=None):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
-        self.nDivXYZ = (20, 5, 10) if not nDivXYZ else tuple(nDivXYZ)
-        self.gradXYZ = (1, 1, 1) if not gradXYZ else tuple(gradXYZ)
+        self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
+        self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
+        # nDivXYZ will be calculated based on cellSize in windTunnel
+        self.nDivXYZ = None
 
     def __checkInput(self, input):
         """Check input values."""
@@ -1179,6 +1185,10 @@ class TunnelParameters(object):
         else:
             assert _inp > 0, "Value (%.2f) should be larger than 0." % _inp
             return _inp
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1224,15 +1234,17 @@ class TunnelParameters(object):
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
+    def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
                  gradXYZ=None):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
-        self.nDivXYZ = (20, 5, 10) if not nDivXYZ else tuple(nDivXYZ)
-        self.gradXYZ = (1, 1, 1) if not gradXYZ else tuple(gradXYZ)
+        self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
+        self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
+        # nDivXYZ will be calculated based on cellSize in windTunnel
+        self.nDivXYZ = None
 
     def __checkInput(self, input):
         """Check input values."""
@@ -1243,6 +1255,10 @@ class TunnelParameters(object):
         else:
             assert _inp > 0, "Value (%.2f) should be larger than 0." % _inp
             return _inp
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
 
     def ToString(self):
         """Overwrite .NET ToString method."""
@@ -1264,6 +1280,16 @@ class TunnelParameters(object):
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.windtunnel.TunnelParameters.cellSizeXYZ" class="name">var <span class="ident">cellSizeXYZ</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.windtunnel.TunnelParameters.gradXYZ" class="name">var <span class="ident">gradXYZ</span></p>
             
@@ -1328,7 +1354,7 @@ class TunnelParameters(object):
             
   <div class="item">
     <div class="name def" id="butterfly.windtunnel.TunnelParameters.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None, gradXYZ=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None, gradXYZ=None)</p>
     </div>
     
 
@@ -1338,15 +1364,17 @@ class TunnelParameters(object):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.TunnelParameters.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.TunnelParameters.__init__" class="source">
-    <pre><code>def __init__(self, windward=3, top=3, side=2, leeward=15, nDivXYZ=None,
+    <pre><code>def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
              gradXYZ=None):
     """Init wind tunnel parameters."""
     self.windward = self.__checkInput(windward)
     self.top = self.__checkInput(top)
     self.side = self.__checkInput(side)
     self.leeward = self.__checkInput(leeward)
-    self.nDivXYZ = (20, 5, 10) if not nDivXYZ else tuple(nDivXYZ)
-    self.gradXYZ = (1, 1, 1) if not gradXYZ else tuple(gradXYZ)
+    self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
+    self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
+    # nDivXYZ will be calculated based on cellSize in windTunnel
+    self.nDivXYZ = None
 </code></pre>
   </div>
 </div>
@@ -1369,6 +1397,28 @@ class TunnelParameters(object):
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.windtunnel.TunnelParameters.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.TunnelParameters.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.windtunnel.TunnelParameters.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>

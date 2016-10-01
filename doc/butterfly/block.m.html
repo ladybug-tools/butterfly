@@ -3,8 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>butterfly.controlDict API documentation</title>
-    <meta name="description" content="BlockMeshDict class." />
+    <title>butterfly.block API documentation</title>
+    <meta name="description" content="Butterfly Block class for blockMeshDict." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -989,22 +989,14 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly.controlDict.ControlDict">ControlDict</a></span>
+        <span class="class_name"><a href="#butterfly.block.Block">Block</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.convertBoolValue">convertBoolValue</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.body">body</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.getValueByParameter">getValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.header">header</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.include">include</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.save">save</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.setValueByParameter">setValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.toOpenFOAM">toOpenFOAM</a></li>
-    <li class="mono"><a href="#butterfly.controlDict.ControlDict.updateValues">updateValues</a></li>
+    <li class="mono"><a href="#butterfly.block.Block.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.block.Block.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.block.Block.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.block.Block.toBlockMeshDict">toBlockMeshDict</a></li>
   </ul>
 
         </li>
@@ -1022,100 +1014,98 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">butterfly.controlDict</span> module</h1>
-  <p>BlockMeshDict class.</p>
+  <h1 class="title"><span class="name">butterfly.block</span> module</h1>
+  <p>Butterfly Block class for blockMeshDict.</p>
   
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict" class="source">
-    <pre><code>"""BlockMeshDict class."""
-from foamfile import FoamFile
-from collections import OrderedDict
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.block', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.block" class="source">
+    <pre><code>"""Butterfly Block class for blockMeshDict."""
+import math
+from copy import deepcopy
+
+from .grading import SimpleGrading
 
 
-class ControlDict(FoamFile):
-    """Control dict class."""
+class Block(object):
+    """Block in blockMeshDict.
 
-    # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['#include'] = None
-    # application will be updated based on recipe
-    __defaultValues['application'] = None
-    __defaultValues['startFrom'] = 'latestTime'
-    __defaultValues['startTime'] = '0'
-    __defaultValues['stopAt'] = 'endTime'
-    __defaultValues['endTime'] = '1000'
-    __defaultValues['deltaT'] = '1'
-    __defaultValues['writeControl'] = 'timeStep'
-    __defaultValues['writeInterval'] = '100'
-    __defaultValues['purgeWrite'] = '0'
-    __defaultValues['writeFormat'] = 'ascii'
-    __defaultValues['writePrecision'] = '7'
-    __defaultValues['writeCompression'] = 'off'
-    __defaultValues['timeFormat'] = 'general'
-    __defaultValues['timePrecision'] = '6'
-    __defaultValues['runTimeModifiable'] = 'true'
+    Args:
+        vertices: List of ordered block vertices.
+        nDivXYZ: Number of divisions in (x, y, z) as a tuple.
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+    """
 
-    def __init__(self, values=None):
-        """Init class."""
-        FoamFile.__init__(self, name='controlDict', cls='dictionary',
-                          location='system', defaultValues=self.__defaultValues,
-                          values=values)
+    def __init__(self, vertices, nDivXYZ, grading):
+        """Init Block class."""
+        self.vertices = vertices
+        self.nDivXYZ = tuple(int(v) for v in nDivXYZ) if nDivXYZ else (5, 5, 5)
 
-    def include(self, fileName):
-        """Add include to controlDict."""
-        self.values['#include'] = '"{}"'.format(fileName.replace('"', ''))
+        # assign grading
+        self.grading = grading if grading else SimpleGrading()
+
+        assert hasattr(self.grading, 'isSimpleGrading'), \
+            'grading input ({}) is not a valid simpleGrading.'.format(grading)
 
     @property
-    def application(self):
-        """Set solver application.
+    def minZ(self):
+        """Return minimum Z value of vertices in this block."""
+        _minZ = float('inf')
 
-        (default: simpleFoam)
+        for ver in self.vertices:
+            if ver[2] < _minZ:
+                _minZ = ver[2]
+
+        return _minZ
+
+    def toBlockMeshDict(self, vertices, tolerance=0.001):
+        """Get blockMeshDict string.
+
+        Args:
+            vertices: list of vertices for all the geometries in the case.
+            tolerance: Distance tolerance between input vertices and blockMesh
+                vertices.
         """
-        return self.values['application']
+        _body = "   hex {} {} {}"
 
-    @application.setter
-    def application(self, value='simpleFoam'):
-        self.values['application'] = str(value)
+        indices = self._findIndices(vertices, tolerance)
 
-    @property
-    def startTime(self):
-        """Set start timestep (default: 0)."""
-        return self.values['startTime']
+        return _body.format(str(indices).replace(",", ""),
+                            str(self.nDivXYZ).replace(",", ""),
+                            self.grading)
 
-    @startTime.setter
-    def startTime(self, value=0):
-        self.values['startTime'] = str(int(value))
+    def _findIndices(self, vertices, tolerance=0.001):
+        """Return list of indices for input vertices.
 
-    @property
-    def endTime(self):
-        """Set end timestep (default: 1000)."""
-        return self.values['endTime']
-
-    @endTime.setter
-    def endTime(self, value=0):
-        self.values['endTime'] = str(int(value))
-
-    @property
-    def writeInterval(self):
-        """Set the number of intervals for writing the results (default: 100)."""
-        return self.values['writeInterval']
-
-    @writeInterval.setter
-    def writeInterval(self, value=100):
-        self.values['writeInterval'] = str(int(value))
-
-    @property
-    def writeCompression(self):
-        """Write results as .zip files.
-
-        Set to True to compress the results before writing to your machine
-        (default: False)
+        Args:
+            tolerance: Distance tolerance between input vertices and blockMesh
+            vertices.
         """
-        return self.values['writeCompression']
+        def distance(p1, p2):
+            return math.sqrt(sum((x - y) ** 2 for x, y in zip(p1, p2)))
 
-    @writeCompression.setter
-    def writeCompression(self, value=True):
-        self.values['writeCompression'] = self.convertBoolValue(value)
+        def findIndex(v):
+            for count, i in enumerate(vertices):
+                if distance(i, v) <= tolerance:
+                    return count
+            raise ValueError("Can't find vertex {} in input vertices: {}"
+                             .format(v, vertices))
+
+        indices = tuple(vertices.index(v) if v in vertices else findIndex(v)
+                        for v in self.vertices)
+        return indices
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """OpenFOAM blockMeshDict boundary."""
+        return "blockMeshDict::Boundary: {} simpleGrading {}".format(
+            str(self.nDivXYZ).replace(",", ""), str(self.grading).replace(",", ""))
 </code></pre>
   </div>
 
@@ -1127,97 +1117,97 @@ class ControlDict(FoamFile):
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
-      <p id="butterfly.controlDict.ControlDict" class="name">class <span class="ident">ControlDict</span></p>
+      <p id="butterfly.block.Block" class="name">class <span class="ident">Block</span></p>
       
   
-    <div class="desc"><p>Control dict class.</p></div>
+    <div class="desc"><p>Block in blockMeshDict.</p>
+<p>Args:
+    vertices: List of ordered block vertices.
+    nDivXYZ: Number of divisions in (x, y, z) as a tuple.
+    grading: A simpleGrading (default: simpleGrading(1, 1, 1)).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict" class="source">
-    <pre><code>class ControlDict(FoamFile):
-    """Control dict class."""
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.block.Block', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.block.Block" class="source">
+    <pre><code>class Block(object):
+    """Block in blockMeshDict.
 
-    # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['#include'] = None
-    # application will be updated based on recipe
-    __defaultValues['application'] = None
-    __defaultValues['startFrom'] = 'latestTime'
-    __defaultValues['startTime'] = '0'
-    __defaultValues['stopAt'] = 'endTime'
-    __defaultValues['endTime'] = '1000'
-    __defaultValues['deltaT'] = '1'
-    __defaultValues['writeControl'] = 'timeStep'
-    __defaultValues['writeInterval'] = '100'
-    __defaultValues['purgeWrite'] = '0'
-    __defaultValues['writeFormat'] = 'ascii'
-    __defaultValues['writePrecision'] = '7'
-    __defaultValues['writeCompression'] = 'off'
-    __defaultValues['timeFormat'] = 'general'
-    __defaultValues['timePrecision'] = '6'
-    __defaultValues['runTimeModifiable'] = 'true'
+    Args:
+        vertices: List of ordered block vertices.
+        nDivXYZ: Number of divisions in (x, y, z) as a tuple.
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+    """
 
-    def __init__(self, values=None):
-        """Init class."""
-        FoamFile.__init__(self, name='controlDict', cls='dictionary',
-                          location='system', defaultValues=self.__defaultValues,
-                          values=values)
+    def __init__(self, vertices, nDivXYZ, grading):
+        """Init Block class."""
+        self.vertices = vertices
+        self.nDivXYZ = tuple(int(v) for v in nDivXYZ) if nDivXYZ else (5, 5, 5)
 
-    def include(self, fileName):
-        """Add include to controlDict."""
-        self.values['#include'] = '"{}"'.format(fileName.replace('"', ''))
+        # assign grading
+        self.grading = grading if grading else SimpleGrading()
+
+        assert hasattr(self.grading, 'isSimpleGrading'), \
+            'grading input ({}) is not a valid simpleGrading.'.format(grading)
 
     @property
-    def application(self):
-        """Set solver application.
+    def minZ(self):
+        """Return minimum Z value of vertices in this block."""
+        _minZ = float('inf')
 
-        (default: simpleFoam)
+        for ver in self.vertices:
+            if ver[2] < _minZ:
+                _minZ = ver[2]
+
+        return _minZ
+
+    def toBlockMeshDict(self, vertices, tolerance=0.001):
+        """Get blockMeshDict string.
+
+        Args:
+            vertices: list of vertices for all the geometries in the case.
+            tolerance: Distance tolerance between input vertices and blockMesh
+                vertices.
         """
-        return self.values['application']
+        _body = "   hex {} {} {}"
 
-    @application.setter
-    def application(self, value='simpleFoam'):
-        self.values['application'] = str(value)
+        indices = self._findIndices(vertices, tolerance)
 
-    @property
-    def startTime(self):
-        """Set start timestep (default: 0)."""
-        return self.values['startTime']
+        return _body.format(str(indices).replace(",", ""),
+                            str(self.nDivXYZ).replace(",", ""),
+                            self.grading)
 
-    @startTime.setter
-    def startTime(self, value=0):
-        self.values['startTime'] = str(int(value))
+    def _findIndices(self, vertices, tolerance=0.001):
+        """Return list of indices for input vertices.
 
-    @property
-    def endTime(self):
-        """Set end timestep (default: 1000)."""
-        return self.values['endTime']
-
-    @endTime.setter
-    def endTime(self, value=0):
-        self.values['endTime'] = str(int(value))
-
-    @property
-    def writeInterval(self):
-        """Set the number of intervals for writing the results (default: 100)."""
-        return self.values['writeInterval']
-
-    @writeInterval.setter
-    def writeInterval(self, value=100):
-        self.values['writeInterval'] = str(int(value))
-
-    @property
-    def writeCompression(self):
-        """Write results as .zip files.
-
-        Set to True to compress the results before writing to your machine
-        (default: False)
+        Args:
+            tolerance: Distance tolerance between input vertices and blockMesh
+            vertices.
         """
-        return self.values['writeCompression']
+        def distance(p1, p2):
+            return math.sqrt(sum((x - y) ** 2 for x, y in zip(p1, p2)))
 
-    @writeCompression.setter
-    def writeCompression(self, value=True):
-        self.values['writeCompression'] = self.convertBoolValue(value)
+        def findIndex(v):
+            for count, i in enumerate(vertices):
+                if distance(i, v) <= tolerance:
+                    return count
+            raise ValueError("Can't find vertex {} in input vertices: {}"
+                             .format(v, vertices))
+
+        indices = tuple(vertices.index(v) if v in vertices else findIndex(v)
+                        for v in self.vertices)
+        return indices
+
+    def duplicate(self):
+        """Return a copy of this object."""
+        return deepcopy(self)
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
+
+    def __repr__(self):
+        """OpenFOAM blockMeshDict boundary."""
+        return "blockMeshDict::Boundary: {} simpleGrading {}".format(
+            str(self.nDivXYZ).replace(",", ""), str(self.grading).replace(",", ""))
 </code></pre>
   </div>
 </div>
@@ -1226,117 +1216,47 @@ class ControlDict(FoamFile):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly.controlDict.ControlDict">ControlDict</a></li>
-          <li>butterfly.foamfile.FoamFile</li>
+          <li><a href="#butterfly.block.Block">Block</a></li>
           <li>__builtin__.object</li>
           </ul>
-          <h3>Static methods</h3>
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.convertBoolValue">
-    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.convertBoolValue', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.convertBoolValue" class="source">
-    <pre><code>@staticmethod
-def convertBoolValue(v=True):
-    """Convert Boolean values to on/off string."""
-    _v = ('off', 'on')
-    if v in _v:
-        return v
-    if v:
-        return 'on'
-    else:
-        return 'off'
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.controlDict.ControlDict.application" class="name">var <span class="ident">application</span></p>
+            <p id="butterfly.block.Block.grading" class="name">var <span class="ident">grading</span></p>
             
 
             
   
-    <div class="desc"><p>Set solver application.</p>
-<p>(default: simpleFoam)</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.controlDict.ControlDict.endTime" class="name">var <span class="ident">endTime</span></p>
+            <p id="butterfly.block.Block.minZ" class="name">var <span class="ident">minZ</span></p>
             
 
             
   
-    <div class="desc"><p>Set end timestep (default: 1000).</p></div>
+    <div class="desc"><p>Return minimum Z value of vertices in this block.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.controlDict.ControlDict.parameters" class="name">var <span class="ident">parameters</span></p>
+            <p id="butterfly.block.Block.nDivXYZ" class="name">var <span class="ident">nDivXYZ</span></p>
             
 
             
   
-    <div class="desc"><p>Get list of parameters.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.controlDict.ControlDict.startTime" class="name">var <span class="ident">startTime</span></p>
+            <p id="butterfly.block.Block.vertices" class="name">var <span class="ident">vertices</span></p>
             
 
             
   
-    <div class="desc"><p>Set start timestep (default: 0).</p></div>
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.controlDict.ControlDict.values" class="name">var <span class="ident">values</span></p>
-            
-
-            
-  
-    <div class="desc"><p>Return values as a dictionary.</p></div>
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.controlDict.ControlDict.writeCompression" class="name">var <span class="ident">writeCompression</span></p>
-            
-
-            
-  
-    <div class="desc"><p>Write results as .zip files.</p>
-<p>Set to True to compress the results before writing to your machine
-(default: False)</p></div>
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.controlDict.ControlDict.writeInterval" class="name">var <span class="ident">writeInterval</span></p>
-            
-
-            
-  
-    <div class="desc"><p>Set the number of intervals for writing the results (default: 100).</p></div>
   <div class="source_cont">
 </div>
 
@@ -1344,22 +1264,25 @@ def convertBoolValue(v=True):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, values=None)</p>
+    <div class="name def" id="butterfly.block.Block.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, vertices, nDivXYZ, grading)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init class.</p></div>
+    <div class="desc"><p>Init Block class.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.__init__" class="source">
-    <pre><code>def __init__(self, values=None):
-    """Init class."""
-    FoamFile.__init__(self, name='controlDict', cls='dictionary',
-                      location='system', defaultValues=self.__defaultValues,
-                      values=values)
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.block.Block.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.block.Block.__init__" class="source">
+    <pre><code>def __init__(self, vertices, nDivXYZ, grading):
+    """Init Block class."""
+    self.vertices = vertices
+    self.nDivXYZ = tuple(int(v) for v in nDivXYZ) if nDivXYZ else (5, 5, 5)
+    # assign grading
+    self.grading = grading if grading else SimpleGrading()
+    assert hasattr(self.grading, 'isSimpleGrading'), \
+        'grading input ({}) is not a valid simpleGrading.'.format(grading)
 </code></pre>
   </div>
 </div>
@@ -1368,7 +1291,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.ToString">
+    <div class="name def" id="butterfly.block.Block.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -1377,8 +1300,8 @@ def convertBoolValue(v=True):
   
     <div class="desc"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.block.Block.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.block.Block.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -1390,41 +1313,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.body">
-    <p>def <span class="ident">body</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return body string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.body', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.body" class="source">
-    <pre><code>def body(self):
-    """Return body string."""
-    # remove None values
-    _values = OrderedDict()
-    for key, value in self.values.iteritems():
-        if value:
-            _values[key] = value
-    # make python dictionary look like c++ dictionary!!
-    of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
-        .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
-        .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
-    # remove first and last {} and prettify[!] the file
-    l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-         for line in of.split("\n")[1:-1])
-    return "\n\n".join(l)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.duplicate">
+    <div class="name def" id="butterfly.block.Block.duplicate">
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
@@ -1433,8 +1322,8 @@ def convertBoolValue(v=True):
   
     <div class="desc"><p>Return a copy of this object.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.duplicate" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.block.Block.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.block.Block.duplicate" class="source">
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
@@ -1446,201 +1335,33 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.getValueByParameter">
-    <p>def <span class="ident">getValueByParameter</span>(</p><p>self, parameter)</p>
+    <div class="name def" id="butterfly.block.Block.toBlockMeshDict">
+    <p>def <span class="ident">toBlockMeshDict</span>(</p><p>self, vertices, tolerance=0.001)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Get values for a given parameter by parameter name.</p>
+    <div class="desc"><p>Get blockMeshDict string.</p>
 <p>Args:
-    parameter: Name of a parameter as a string.</p></div>
+    vertices: list of vertices for all the geometries in the case.
+    tolerance: Distance tolerance between input vertices and blockMesh
+        vertices.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.getValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.getValueByParameter" class="source">
-    <pre><code>def getValueByParameter(self, parameter):
-    """Get values for a given parameter by parameter name.
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.block.Block.toBlockMeshDict', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.block.Block.toBlockMeshDict" class="source">
+    <pre><code>def toBlockMeshDict(self, vertices, tolerance=0.001):
+    """Get blockMeshDict string.
     Args:
-        parameter: Name of a parameter as a string.
+        vertices: list of vertices for all the geometries in the case.
+        tolerance: Distance tolerance between input vertices and blockMesh
+            vertices.
     """
-    try:
-        return self.values[parameter]
-    except KeyError:
-        raise KeyError('{} is not available in {}.'.format(
-            parameter, self.__class__.__name__
-        ))
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.header">
-    <p>def <span class="ident">header</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return open foam style string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.header', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.header" class="source">
-    <pre><code>def header(self):
-    """Return open foam style string."""
-    if self.location:
-        return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tlocation\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.location,
-                     self.name)
-    else:
-        return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.name)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.include">
-    <p>def <span class="ident">include</span>(</p><p>self, fileName)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Add include to controlDict.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.include', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.include" class="source">
-    <pre><code>def include(self, fileName):
-    """Add include to controlDict."""
-    self.values['#include'] = '"{}"'.format(fileName.replace('"', ''))
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.save">
-    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Save to file.</p>
-<p>Args:
-    projectFolder: Path to project folder as a string.
-    subFolder: Optional input for subFolder (default: self.location).</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.save', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.save" class="source">
-    <pre><code>def save(self, projectFolder, subFolder=None):
-    """Save to file.
-    Args:
-        projectFolder: Path to project folder as a string.
-        subFolder: Optional input for subFolder (default: self.location).
-    """
-    subFolder = self.location.replace('"', '') if not subFolder else subFolder
-    with open(os.path.join(projectFolder,
-                           subFolder, self.name), "wb") as outf:
-        outf.write(self.toOpenFOAM())
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.setValueByParameter">
-    <p>def <span class="ident">setValueByParameter</span>(</p><p>self, parameter, value)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Set value for a parameter.</p>
-<p>Args:
-    parameter: Name of a parameter as a string.
-    value: Parameter value as a string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.setValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.setValueByParameter" class="source">
-    <pre><code>def setValueByParameter(self, parameter, value):
-    """Set value for a parameter.
-    Args:
-        parameter: Name of a parameter as a string.
-        value: Parameter value as a string.
-    """
-    self.values[parameter] = value
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.toOpenFOAM">
-    <p>def <span class="ident">toOpenFOAM</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return OpenFOAM string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.toOpenFOAM', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.toOpenFOAM" class="source">
-    <pre><code>def toOpenFOAM(self):
-    """Return OpenFOAM string."""
-    return "\n".join((self.header(), self.body()))
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.controlDict.ControlDict.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Update current values from dictionat v.</p>
-<p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.controlDict.ControlDict.updateValues', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.controlDict.ControlDict.updateValues" class="source">
-    <pre><code>def updateValues(self, v):
-    """Update current values from dictionat v.
-    if key is not available in current values it will be added, if the key
-    already exists it will be updated.
-    """
-    self.__values.update(v)
+    _body = "   hex {} {} {}"
+    indices = self._findIndices(vertices, tolerance)
+    return _body.format(str(indices).replace(",", ""),
+                        str(self.nDivXYZ).replace(",", ""),
+                        self.grading)
 </code></pre>
   </div>
 </div>

@@ -997,6 +997,7 @@ table {
     <li class="mono"><a href="#butterfly.p.P.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.p.P.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.p.P.body">body</a></li>
+    <li class="mono"><a href="#butterfly.p.P.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.p.P.fromBFGeometries">fromBFGeometries</a></li>
     <li class="mono"><a href="#butterfly.p.P.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.p.P.header">header</a></li>
@@ -1224,6 +1225,28 @@ def convertBoolValue(v=True):
     l = (line[4:] if not line.endswith('{') else self._splitLine(line)
          for line in of.split("\n")[1:-1])
     return "\n\n".join(l)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.p.P.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.p.P.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.p.P.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
 </code></pre>
   </div>
 </div>
