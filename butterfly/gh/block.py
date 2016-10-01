@@ -9,7 +9,7 @@ class GHBlock(Block):
         box: A Box that represents block boundary.
         cellSizeXYZ: Size of cell in X, Y and Z directions in Rhino model units
             as a tuple.
-        grading: grading as (x, y, z) (default: (1, 1, 1))
+        grading: SimpleGrading for blockMesh (default: SimpleGrading(1, 1, 1))
     """
 
     def __init__(self, box, cellSizeXYZ=None, grading=None):

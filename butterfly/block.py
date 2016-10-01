@@ -2,6 +2,8 @@
 import math
 from copy import deepcopy
 
+from .grading import SimpleGrading
+
 
 class Block(object):
     """Block in blockMeshDict.
@@ -9,14 +11,19 @@ class Block(object):
     Args:
         vertices: List of ordered block vertices.
         nDivXYZ: Number of divisions in (x, y, z) as a tuple.
-        grading: grading as (x, y, z).
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
     """
 
     def __init__(self, vertices, nDivXYZ, grading):
         """Init Block class."""
         self.vertices = vertices
         self.nDivXYZ = tuple(int(v) for v in nDivXYZ) if nDivXYZ else (5, 5, 5)
-        self.grading = tuple(grading) if grading else (1, 1, 1)
+
+        # assign grading
+        self.grading = grading if grading else SimpleGrading()
+
+        assert hasattr(self.grading, 'isSimpleGrading'), \
+            'grading input ({}) is not a valid simpleGrading.'.format(grading)
 
     @property
     def minZ(self):
@@ -37,13 +44,13 @@ class Block(object):
             tolerance: Distance tolerance between input vertices and blockMesh
                 vertices.
         """
-        _body = "   hex {} {} simpleGrading {}"
+        _body = "   hex {} {} {}"
 
         indices = self._findIndices(vertices, tolerance)
 
         return _body.format(str(indices).replace(",", ""),
                             str(self.nDivXYZ).replace(",", ""),
-                            str(self.grading).replace(",", ""))
+                            self.grading)
 
     def _findIndices(self, vertices, tolerance=0.001):
         """Return list of indices for input vertices.

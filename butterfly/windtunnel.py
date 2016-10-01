@@ -3,6 +3,7 @@ from copy import deepcopy
 
 from .blockMeshDict import BlockMeshDict
 from .core import OpemFOAMCase
+from .grading import SimpleGrading
 
 
 class WindTunnel(object):
@@ -139,8 +140,8 @@ class TunnelParameters(object):
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
         self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
-        self.gradXYZ = (1, 1, 1) if not gradXYZ else tuple(gradXYZ)
-        # this will be calculated based on cellSize in windTunnel
+        self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
+        # nDivXYZ will be calculated based on cellSize in windTunnel
         self.nDivXYZ = None
 
     def __checkInput(self, input):

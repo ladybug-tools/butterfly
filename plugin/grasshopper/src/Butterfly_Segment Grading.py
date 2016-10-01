@@ -7,33 +7,31 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Wind tunnel parameters.
+Segment Grading.
+Use this component to create a grading for a segment of the block based on ratio
+or length.
 
 -
 
     Args:
-        _windwardX_: Multiplier value for windward extension (default: 3).
-        _topX_: Multiplier value for top extension (default: 3).
-        _sideX_: Multiplier value for side extension (default: 2).
-        _leewardX_: Multiplier value for leeward extension (default: 15).
-        _cellSizeXYZ_: Size of cell in X, Y and Z directions in Rhino model units.
-            You can use a point component to input values.
-        _gradXYZ_: Grading value for X, Y and Z. Use gradXYZ component to generate
-            grading for X, Y and Z directions.
+        _percentageLength: Percentage of length of the block.
+        _percentageCells: Percentage of cells to be included in this segment.
+        _expansionRatio_: Expansion ration in this segment (default: 1).
+        
     Returns:
-        readMe!: Reports, errors, warnings, etc.
-        tunnelPar: Tunnel Parameters
+        segmentGrading: A segment grading. Use MultiGrading component to create
+            a grading.
 """
 
-ghenv.Component.Name = "Butterfly_Wind Tunnel Parameters"
-ghenv.Component.NickName = "WindTunnelPar"
+ghenv.Component.Name = "Butterfly_Segment Grading"
+ghenv.Component.NickName = "segGrading"
 ghenv.Component.Message = 'VER 0.0.02\nSEP_30_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "00::Create"
+ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 try:
-    from butterfly.windtunnel import TunnelParameters
+    from butterfly.grading import Grading
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -43,5 +41,5 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-tunnelPar = TunnelParameters(_windwardX_, _topX_, _sidesX_, _leewardX_,
-                             _cellSizeXYZ_, _gradXYZ_)
+if _percentageLength and _percentageCells:
+    segmentGrading = Grading(_percentageLength, _percentageCells, _expansionRatio_)

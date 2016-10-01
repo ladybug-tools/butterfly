@@ -24,7 +24,7 @@ ghenv.Component.NickName = "loadMesh"
 ghenv.Component.Message = 'VER 0.0.02\nSEP_28_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
-ghenv.Component.AdditionalHelpFromDocStrings = "3"
+ghenv.Component.AdditionalHelpFromDocStrings = "4"
 
 if _case and _load:
     mesh = _case.loadMesh()

@@ -7,33 +7,28 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Wind tunnel parameters.
+MultiGrading
+Create a grading for multiple segmentGradings.
 
 -
 
     Args:
-        _windwardX_: Multiplier value for windward extension (default: 3).
-        _topX_: Multiplier value for top extension (default: 3).
-        _sideX_: Multiplier value for side extension (default: 2).
-        _leewardX_: Multiplier value for leeward extension (default: 15).
-        _cellSizeXYZ_: Size of cell in X, Y and Z directions in Rhino model units.
-            You can use a point component to input values.
-        _gradXYZ_: Grading value for X, Y and Z. Use gradXYZ component to generate
-            grading for X, Y and Z directions.
+        _segmentGradings: A list of segmentGradings.
+        
     Returns:
-        readMe!: Reports, errors, warnings, etc.
-        tunnelPar: Tunnel Parameters
+        grading: A butterfly Grading. Connect the output to gradXYZ component to
+            set the grading of blockMesh in X, Y or Z direction.
 """
 
-ghenv.Component.Name = "Butterfly_Wind Tunnel Parameters"
-ghenv.Component.NickName = "WindTunnelPar"
+ghenv.Component.Name = "Butterfly_MultiGrading"
+ghenv.Component.NickName = "multiGrading"
 ghenv.Component.Message = 'VER 0.0.02\nSEP_30_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "00::Create"
+ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 try:
-    from butterfly.windtunnel import TunnelParameters
+    from butterfly.grading import MultiGrading
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -43,5 +38,5 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-tunnelPar = TunnelParameters(_windwardX_, _topX_, _sidesX_, _leewardX_,
-                             _cellSizeXYZ_, _gradXYZ_)
+if _segmentGradings:
+    grading = MultiGrading(_segmentGradings)

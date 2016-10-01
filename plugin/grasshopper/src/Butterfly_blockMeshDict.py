@@ -17,7 +17,8 @@ Read more about snappyHexMeshDict here:
             It should be slightly bigger than the domain itself.
         _cellSizeXYZ_: Size of cell in X, Y and Z directions in Rhino model units.
             You can use a point component to input values.
-        _gradXYZ_: Grading value for X, Y and Z. You can use a point component to input values.
+        _gradXYZ_: Grading value for X, Y and Z. Use gradXYZ component to generate
+            grading for X, Y and Z directions.
     Returns:
         blockMeshDict: Butterfly blockMeshDict.
 """
