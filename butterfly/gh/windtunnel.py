@@ -129,9 +129,7 @@ class GHWindTunnel(WindTunnel):
     def block(self):
         """Create block for this windTunnel."""
         # create block
-        _box = rc.Geometry.Box(self.plane, self.boundingbox)
-        return GHBlock(_box, self.tunnelParameters.nDivXYZ,
-                       self.tunnelParameters.gradXYZ)
+        return GHBlock.fromWindTunnel(self)
 
     @property
     def boundingGeometries(self):

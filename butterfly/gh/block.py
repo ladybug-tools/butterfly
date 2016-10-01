@@ -1,4 +1,10 @@
 """Butterfly Block for Grasshopper."""
+
+try:
+    import Rhino as rc
+except ImportError:
+    pass
+
 from ..block import Block
 
 
@@ -24,6 +30,23 @@ class GHBlock(Block):
         vertices = self._calculateVertices(box.ToBrep())
 
         Block.__init__(self, vertices, nDivXYZ, grading)
+
+    @classmethod
+    def fromWindTunnel(cls, windTunnel):
+        """Init Block from wind tunnel."""
+        _box = rc.Geometry.Box(windTunnel.plane, windTunnel.boundingbox)
+        _block = cls(_box, windTunnel.tunnelParameters.cellSizeXYZ,
+                     windTunnel.tunnelParameters.gradXYZ)
+
+        # re-order points for windTunnel
+        btmVer = _block.vertices[:4]
+        topVer = _block.vertices[4:]
+        _block.vertices = tuple(btmVer[-1:] + btmVer[:-1] + topVer[-1:] +
+                                topVer[:-1])
+
+        _block.nDivXYZ = windTunnel.tunnelParameters.nDivXYZ
+
+        return _block
 
     @property
     def minZ(self):
