@@ -1,3 +1,4 @@
+# coding=utf-8
 """Unit conversion to meters for Grasshopper."""
 try:
     import scriptcontext as sc

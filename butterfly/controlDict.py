@@ -1,3 +1,4 @@
+# coding=utf-8
 """BlockMeshDict class."""
 from foamfile import FoamFile
 from collections import OrderedDict

@@ -1,3 +1,4 @@
+# coding=utf-8
 """decomposeParDict class.
 
 Decompose parameters for parallel runs.

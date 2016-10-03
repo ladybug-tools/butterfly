@@ -1,3 +1,4 @@
+# coding=utf-8
 """Foam File Class."""
 from version import Version, Header
 from helper import getBoundaryField

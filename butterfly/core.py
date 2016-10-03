@@ -1,3 +1,4 @@
+# coding=utf-8
 """Butterfly core library."""
 import os
 from shutil import rmtree

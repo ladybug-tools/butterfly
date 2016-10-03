@@ -1,3 +1,4 @@
+# coding=utf-8
 """Finite Volume Schemes class."""
 from version import Version
 from foamfile import FoamFile

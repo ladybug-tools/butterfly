@@ -1,3 +1,4 @@
+# coding=utf-8
 """A cllection of OpenFOAM functions such as Probes."""
 from foamfile import Condition
 from collections import OrderedDict

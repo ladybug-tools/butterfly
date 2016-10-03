@@ -1,3 +1,4 @@
+# coding=utf-8
 """snappyHexMeshDict class."""
 from collections import OrderedDict
 

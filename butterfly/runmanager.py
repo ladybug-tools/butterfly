@@ -1,3 +1,4 @@
+# coding=utf-8
 """Runmanager for butterfly.
 
 Run manager is only useful for running OpenFOAM for Windows which runs in a

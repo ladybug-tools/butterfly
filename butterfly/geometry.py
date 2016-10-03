@@ -1,3 +1,4 @@
+# coding=utf-8
 """BF geometry library."""
 import os
 from copy import deepcopy

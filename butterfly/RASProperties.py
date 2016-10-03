@@ -1,3 +1,4 @@
+# coding=utf-8
 """RASProperties class.
 
 Use turbulenceProperties from Version 3.0+

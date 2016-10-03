@@ -1,3 +1,4 @@
+# coding=utf-8
 """Finite Volume Solution class."""
 from foamfile import FoamFile
 from collections import OrderedDict

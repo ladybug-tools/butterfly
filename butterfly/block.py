@@ -1,3 +1,4 @@
+# coding=utf-8
 """Butterfly Block class for blockMeshDict."""
 import math
 from copy import deepcopy

@@ -1,3 +1,4 @@
+# coding=utf-8
 """ABL Conditions and initialConditions class."""
 from foamfile import Condition
 from collections import OrderedDict

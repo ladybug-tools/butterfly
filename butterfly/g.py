@@ -1,3 +1,4 @@
+# coding=utf-8
 """g[ravity] class."""
 from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict

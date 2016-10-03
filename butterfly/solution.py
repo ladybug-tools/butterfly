@@ -1,3 +1,4 @@
+# coding=utf-8
 """Butterfly Solution."""
 from copy import deepcopy
 from .helper import checkFiles

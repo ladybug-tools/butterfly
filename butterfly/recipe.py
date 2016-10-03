@@ -1,3 +1,4 @@
+# coding=utf-8
 """Butterfly recipes."""
 import os
 from copy import deepcopy

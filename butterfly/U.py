@@ -1,3 +1,4 @@
+# coding=utf-8
 """U class."""
 from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict

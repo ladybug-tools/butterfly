@@ -1,3 +1,4 @@
+# coding=utf-8
 """Butterfly wind tunnel."""
 from copy import deepcopy
 

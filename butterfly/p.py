@@ -1,3 +1,4 @@
+# coding=utf-8
 """p class."""
 from foamfile import ZeroFolderFoamFile
 from collections import OrderedDict

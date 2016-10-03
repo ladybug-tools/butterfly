@@ -1,3 +1,4 @@
+# coding=utf-8
 """Collection of OpenFOAM boundary conditions (e.g. wall, inlet, outlet)."""
 from copy import deepcopy
 from fields import AtmBoundaryLayerInletVelocity, AtmBoundaryLayerInletK, \

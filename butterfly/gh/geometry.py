@@ -1,3 +1,4 @@
+# coding=utf-8
 """BF Grasshopper geometry library."""
 try:
     import Rhino as rc

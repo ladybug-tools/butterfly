@@ -1,3 +1,4 @@
+# coding=utf-8
 """Versions and header."""
 from copy import deepcopy
 from datetime import datetime

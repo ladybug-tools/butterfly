@@ -1,3 +1,4 @@
+# coding=utf-8
 """OpemFOAM Case for Grasshopper."""
 import os
 

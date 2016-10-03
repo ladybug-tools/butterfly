@@ -1,3 +1,4 @@
+# coding=utf-8
 """OpenFOAM field values."""
 from collections import OrderedDict
 from copy import deepcopy

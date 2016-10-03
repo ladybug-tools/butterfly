@@ -1,3 +1,4 @@
+# coding=utf-8
 """turbulenceProperties class.
 
 Use turbulenceProperties for versions prior to 3.0+

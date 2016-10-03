@@ -1,3 +1,4 @@
+# coding=utf-8
 """Grasshopper post process functions."""
 import os
 try:

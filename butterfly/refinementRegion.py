@@ -1,3 +1,5 @@
+# coding=utf-8
+"""Butterfly refinement region."""
 from copy import deepcopy
 from .geometry import _BFMesh
 

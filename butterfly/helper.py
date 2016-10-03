@@ -1,3 +1,4 @@
+# coding=utf-8
 """Collection of useful methods."""
 from __future__ import print_function
 import os

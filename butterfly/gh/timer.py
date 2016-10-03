@@ -1,3 +1,4 @@
+# coding=utf-8
 """Grasshopper timer."""
 try:
     import Grasshopper as gh
