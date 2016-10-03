@@ -18,14 +18,48 @@ Create Case from wind tunnel.
         _refWindHeight_: Reference height for wind velocity (default: 10m).
         _windDirection_: Wind direction as Vector3D (default: 0, 1, 0).
         _landscape_: An integer between 0-7 to calculate z0 (roughness).
-            0 > '0.0002'  # sea
-            1 > '0.005'   # smooth
-            2 > '0.03'    # open
-            3 > '0.10'    # roughlyOpen
-            4 > '0.25'    # rough
-            5 > '0.5'     # veryRough
-            6 > '1.0'     # closed
-            7 > '2.0'     # chaotic
+            You can find full description of the landscape in Table I at this
+            link (onlinelibrary.wiley.com/doi/10.1002/met.273/pdf)
+
+            0 > '0.0002'  # sea. Open sea or lake (irrespective of wave size),
+            tidal flat, snow-covered flat plain, featureless desert, tarmac and
+            concrete, with a free fetch of several kilometres
+
+            1 > '0.005'   # smooth. Featureless land surface without any noticeable
+            obstacles and with negligible vegetation; e.g. beaches, pack ice without
+            large ridges, marsh and snow-covered or fallow open country.
+
+            2 > '0.03'    # open. Level country with low vegetation (e.g. grass)
+            and isolated obstacles with separations of at least 50 obstacle heights;
+            e.g. grazing land without wind breaks, heather, moor and tundra,
+            runway area of airports. Ice with ridges across-wind.
+
+            3 > '0.10'    # roughly open. Cultivated or natural area with low crops
+            or plant covers, or moderately open country with occasional obstacles
+            (e.g. low hedges, isolated low buildings or trees) at relative horizontal
+            distances of at least 20 obstacle heights
+
+            4 > '0.25'    # rough. Cultivated or natural area with high crops or
+            crops of varying height, and scattered obstacles at relative distances
+            of 1215 obstacle heights for porous objects (e.g. shelterbelts) or
+            812 obstacle heights for low solid objects (e.g. buildings).
+
+            5 > '0.5'     # very rough. Intensively cultivated landscape with many
+            rather large obstacle groups (large farms, clumps of forest) separated
+            by open spaces of about eight obstacle heights. Low densely planted
+            major vegetation like bush land, orchards, young forest. Also, area
+            moderately covered by low buildings with interspaces of three to
+            seven building heights and no high trees.
+
+            6 > '1.0'     # Skimming. Landscape regularly covered with similar-size
+            large obstacles, with open spaces of the same order of magnitude as
+            obstacle heights; e.g. mature regular forests, densely built-up area
+            without much building height variation.
+
+            7 > '2.0'     # chaotic. City centres with mixture of low-rise and
+            high-rise buildings, or large forests of irregular height with many
+            clearings.
+
         _globalRefLevel_: A tuple of (min, max) values for global refinment.
         _tunnelPar_: Butterfly tunnel parameters.
         _run: Create wind tunnel case from inputs.
@@ -37,7 +71,7 @@ Create Case from wind tunnel.
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_29_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_02_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -64,11 +98,11 @@ def main():
     print "Number of divisions: {}, {} and {}".format(*_tunnelPar_.nDivXYZ)
     for region in refRegions_:
         wt.addRefinementRegion(region)
-
     geo =  wt.boundingbox
     case = wt.toOpenFOAMCase()
     case.createCaseFolders()
     case.populateContents()
+    
     
     return geo, case
 
