@@ -95,18 +95,38 @@ class Solution(object):
             # if input is None return
             return
         # check input with the current and update them if there has been changes
-        if simParams.controlDict and self.controlDict != simParams.controlDict:
-            print 'Updating controlDict...'
-            self.__recipe.case.controlDict.startTime = \
-                simParams.controlDict.startTime
-            self.__recipe.case.controlDict.endTime = \
-                simParams.controlDict.endTime
-            self.__recipe.case.controlDict.writeInterval = \
-                simParams.controlDict.writeInterval
-            self.__recipe.case.controlDict.writeCompression = \
-                simParams.controlDict.writeCompression
+        if simParams.controlDict:
+            # compare the values that can be modifed via interface
+            # This can be written simply as self.controlDict != simParams.controlDict
+            # once we can load OpenFOAM dictionaries into butterfly.
+            _update = False
+            if self.__recipe.case.controlDict.startTime != \
+                    simParams.controlDict.startTime:
+                _update = True
+                self.__recipe.case.controlDict.startTime = \
+                    simParams.controlDict.startTime
 
-            self.controlDict.save(self.projectDir)
+            if self.__recipe.case.controlDict.endTime != \
+                    simParams.controlDict.endTime:
+                _update = True
+                self.__recipe.case.controlDict.endTime = \
+                    simParams.controlDict.endTime
+
+            if self.__recipe.case.controlDict.writeInterval != \
+                    simParams.controlDict.writeInterval:
+                _update = True
+                self.__recipe.case.controlDict.writeInterval = \
+                    simParams.controlDict.writeInterval
+
+            if self.__recipe.case.controlDict.writeCompression != \
+                    simParams.controlDict.writeCompression:
+                _update = True
+                self.__recipe.case.controlDict.writeCompression = \
+                    simParams.controlDict.writeCompression
+
+            if _update:
+                print 'Updating controlDict...'
+                self.controlDict.save(self.projectDir)
 
         if simParams.residualControl and \
                 self.residualControl != simParams.residualControl:
