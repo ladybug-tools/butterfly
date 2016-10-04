@@ -1,7 +1,8 @@
 # coding=utf-8
 """Foam File Class."""
-from version import Version, Header
-from helper import getBoundaryField
+from .version import Version, Header
+from .helper import getBoundaryField
+from .parser import CppDictParser
 import os
 import json
 from collections import OrderedDict
@@ -22,7 +23,7 @@ class FoamFile(object):
         fileFormat: File format (ascii / binary) (default: ascii)
     """
 
-    __locations = ("0", "system", "constant")
+    __locations = ('0', 'system', 'constant')
 
     def __init__(self, name, cls, location=None, fileFormat="ascii",
                  defaultValues=None, values=None):
@@ -34,8 +35,8 @@ class FoamFile(object):
         self.location = location  # location is optional
 
         if self.location:
-            if self.location in self.__locations:
-                self.location = '"' + self.location + '"'
+            if self.location.replace('"', '') in self.__locations:
+                self.location = '"' + self.location.replace('"', '') + '"'
             else:
                     raise ValueError(
                         '{} is not a valid OpenFOAM location: {}'.format(
@@ -51,18 +52,78 @@ class FoamFile(object):
         self.__values = deepcopy(defaultValues)
         self.updateValues(values)
 
+    @classmethod
+    def fromFile(cls, filepath, location=None):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+            location: Optional folder name for location (0, constant or system)
+        """
+        def _tryGetFoamFileValue(key):
+            try:
+                return _values['FoamFile'][key]
+            except KeyError:
+                print 'failed to find {} in file. Using default velue: {}' \
+                    .format(key, default[key])
+                return default[key]
+
+        _values = CppDictParser.fromFile(filepath).values
+        p, _name = os.path.split(filepath)
+
+        default = {
+            'object': _name,
+            'class': 'dictionary',
+            'location': None,
+            'format': 'ascii'
+        }
+
+        # set up FoamFile dictionary
+        _name = _tryGetFoamFileValue('object')
+        _cls = _tryGetFoamFileValue('class')
+        _location = _tryGetFoamFileValue('location')
+        _fileFormat = _tryGetFoamFileValue('format')
+
+        if 'FoamFile' in _values:
+            del(_values['FoamFile'])
+
+        return cls(_name, _cls, _location, _fileFormat, values=_values)
+
     @property
     def values(self):
         """Return values as a dictionary."""
         return self.__values
 
     def updateValues(self, v):
-        """Update current values from dictionat v.
+        """Update current values from dictionary v.
 
         if key is not available in current values it will be added, if the key
         already exists it will be updated.
+
+        Returns:
+            True is the dictionary is updated.
         """
-        self.__values.update(v)
+        def compare(d):
+            """compare this dictionary with the current values."""
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    compare(value)
+                if key not in self.__values:
+                    # there is a new key so dictionary has changed.
+                    return True
+                else:
+                    if str(self.__values[key]) != str(value):
+                        # there is a change in value
+                        return True
+            return False
+
+        assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+
+        if compare(v):
+            self.__values.update(v)
+            return True
+        else:
+            return False
 
     @property
     def parameters(self):
