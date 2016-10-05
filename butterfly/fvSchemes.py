@@ -29,6 +29,28 @@ class FvSchemes(FoamFile):
     __defaultValues['snGradSchemes'] = {'default': 'limited corrected 0.333'}
     __defaultValues['fluxRequired'] = {'default': 'no', 'p': ''}
 
+    # first and second order of divSchemes
+    divSchemesCollector = {
+        0:  '// first order\n'
+            'divSchemes\n'
+            '{\n'
+            '    default     none;\n'
+            '    div(phi,epsilon)       bounded Gauss upwind default;\n'
+            '    div(phi,U)      bounded Gauss upwind grad(U);\n'
+            '    div((nuEff*dev2(T(grad(U)))))   Gauss linear;\n'
+            '    div(phi,k)      bounded Gauss upwind grad(k);\n'
+            '}\n',
+        1:  '// second order\n'
+            'divSchemes\n'
+            '{\n'
+            '    default     none;\n'
+            '    div(phi,epsilon)    bounded Gauss linearUpwind grad(epsilon);\n'
+            '    div(phi,U)      bounded Gauss linearUpwind grad(U);\n'
+            '    div((nuEff*dev2(T(grad(U)))))       Gauss linear;\n'
+            '    div(phi,k)      bounded Gauss linearUpwind grad(k);\n'
+            '}'
+    }
+
     def __init__(self, values=None):
         """Init class."""
         FoamFile.__init__(self, name='fvSchemes', cls='dictionary',
