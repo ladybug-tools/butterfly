@@ -1,7 +1,9 @@
 # coding=utf-8
 """Butterfly Solution."""
 from copy import deepcopy
-from .helper import checkFiles
+from collections import namedtuple, OrderedDict
+import os
+from .helper import checkFiles, tail
 from .parser import CppDictParser
 
 
@@ -12,9 +14,11 @@ class Solution(object):
 
     Args:
         recipe: A butterfly recipe.
+        decomposeParDict: decomposeParDict for parallel run.
+        quantities: A list of quantities to be watched during the run.
     """
 
-    def __init__(self, recipe, decomposeParDict=None):
+    def __init__(self, recipe, decomposeParDict=None, quantities=None):
         """Init solution."""
         self.__recipe = recipe
         self.__decomposeParDict = decomposeParDict
@@ -23,6 +27,7 @@ class Solution(object):
         self.__process = None
         self.__logFiles = None
         self.__errFiles = None
+        self.quantities = quantities
 
     @property
     def projectName(self):
@@ -38,6 +43,25 @@ class Solution(object):
     def projectDir(self):
         """Get project directory."""
         return self.recipe.case.projectDir
+
+    @property
+    def quantities(self):
+        """Get list of quantities to be watched during the run."""
+        return self.__quantities
+
+    @quantities.setter
+    def quantities(self, q):
+        if not q:
+            self.__quantities = self.__recipe.quantities
+        else:
+            try:
+                self.__quantities = tuple(q)
+            except Exception as e:
+                print "Failed to set quantities!\n{}".format(e)
+                self.__quantities = self.__recipe.quantities
+
+        # place holder for residuals
+        self.__residualValues = OrderedDict.fromkeys(self.__quantities, 0)
 
     @property
     def controlDict(self):
@@ -89,6 +113,61 @@ class Solution(object):
             failed, err = checkFiles(self.errFiles)
 
             assert not failed, err
+
+    @property
+    def timestep(self):
+        """Get latest timestep for this solution."""
+        return self.__getLatestTime()
+
+    @property
+    def residualValues(self, latestTime=True):
+        """Get timestep and residual values as a tuple."""
+        if latestTime:
+            return self.__getInfo().residuals
+        else:
+            raise NotImplementedError()
+
+    @property
+    def info(self):
+        """Get timestep and residual values as a tuple."""
+        return self.__getInfo()
+
+    def __getInfo(self):
+        i = namedtuple('Info', 'timestep residuals')
+        # get end of the log file
+        if not os.path.isfile(self.residualFile):
+            return i(0, self.__residualValues.values())
+
+        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        # get timestep
+        try:
+            t = int(text[0])
+        except:
+            t = 0
+
+        # read residual values
+        for line in text:
+            try:
+                # quantity, Initial residual, Final residual, No Iterations
+                q, ir, fr, ni = line.split(':  Solving for ')[1].split(',')
+                # use final residual
+                self.__residualValues[q] = fr.split('= ')[-1]
+            except IndexError:
+                pass
+
+        return i(t, self.__residualValues.values())
+
+    def __getLatestTime(self):
+        # get end of the log file
+        if not os.path.isfile(self.residualFile):
+            return 0
+        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        # get timestep
+        try:
+            t = int(text[0])
+        except:
+            t = 0
+        return t
 
     def updateSolutionParams(self, solParams):
         """Update parameters.

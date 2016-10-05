@@ -13,10 +13,13 @@ Run recipes using OpenFOAM.
 
     Args:
         _recipe: A Butterfly recipe.
-        _parallelRunPar_: Parameters for parallel run. By default solution will
-            be run in serial.
+        decomposeParDict_: decomposeParDict for parallel run. By default solution
+            runs in serial.
         solutionParams_: Butterfly solutionParams. These parameters can be edited
-            while the analysis is running.
+            while the analysis is running. Ensure to use valid values. Butterfly
+            does not check the input values for accuracy.
+        residualQuantities_: Residual quantities. If empty recipe's quantities
+            will be used.
         _interval_: Time interval for updating solution in Grasshopper in seconds.
             (default: 2 seconds)
         _write_: Write changes to folder.
@@ -28,7 +31,7 @@ Run recipes using OpenFOAM.
 
 ghenv.Component.Name = "Butterfly_Solution"
 ghenv.Component.NickName = "solution"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_04_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_05_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -36,9 +39,7 @@ ghenv.Component.AdditionalHelpFromDocStrings = "1"
 from scriptcontext import sticky
 
 try:
-    import butterfly
     from butterfly.gh.timer import ghComponentTimer
-    reload(butterfly.solution)
     from butterfly.solution import Solution
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
@@ -60,7 +61,7 @@ if _recipe and _write:
             # solution hasn't been created or has been removed
             # create a new one and copy it to sticky
             solution = Solution(_recipe, decomposeParDict_)
-            
+            quantities = solution.quantities
             solution.updateSolutionParams(solutionParams_)
             
             sticky[uniqueKey] = solution
@@ -69,10 +70,13 @@ if _recipe and _write:
         else:
             # solution is there so just load it
             solution = sticky[uniqueKey]
+            quantities = solution.quantities
     
-        status = solution.isRunning
-        
-        if status:
+        isRunning = solution.isRunning
+        info = solution.info
+        timestep = info.timestep
+        residuals = info.residuals
+        if isRunning:
             print 'running...'
             # update parameters if there has been changes.
             solution.updateSolutionParams(solutionParams_)
@@ -85,13 +89,14 @@ if _recipe and _write:
             del(sticky[uniqueKey])
             
             # set run toggle to False
-            
-            
+        
+        ghenv.Component.Message = "\nTime = {}".format(timestep)
+        
     except Exception as e:
         # clean up solution in case of failure
         if uniqueKey in sticky:
             del(sticky[uniqueKey])
-        print '***{}'.format(e)
+        print '***\n{}\n***'.format(e)
         
     
     logFiles = solution.logFiles if solution.logFiles else _recipe.logFile
