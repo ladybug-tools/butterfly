@@ -21,7 +21,7 @@ Solution Parameter.
 """
 ghenv.Component.Name = "Butterfly_Solution Parameter"
 ghenv.Component.NickName = "solutionParam"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_04_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_05_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -38,4 +38,5 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _filename and _values:
-    solutionParam = SolutionParameter.fromDictionary(_filename, _values, replace_)
+    solutionParam = SolutionParameter.fromDictionary(_filename, _values,
+                                                     replace_, tRange_)

@@ -67,20 +67,21 @@ def checkFiles(files):
         hasContent: A boolean that shows if there is any contents.
         content: Files content if any
     """
-    contents = False
     _lines = []
     for f in files:
         try:
             with open(f, 'rb') as log:
                 _lines.append(' '.join(log.readlines()))
-                if len(_lines) > 0:
-                    contents = True
-
         except Exception as e:
             print('Failed to read {}:\n{}'.format(f, e))
 
-    print('\n'.join(_lines))
-    return contents, '\n'.join(_lines)
+    # check if it is just empty lines
+    _l = '\n'.join(_lines).strip()
+
+    if len(_l) > 0:
+        return True, _l
+    else:
+        return False, _l
 
 
 def tail(filePath, lines=20):

@@ -169,7 +169,7 @@ class Solution(object):
             t = 0
         return t
 
-    def updateSolutionParams(self, solParams):
+    def updateSolutionParams(self, solParams, timestep=None):
         """Update parameters.
 
         Attributes:
@@ -182,6 +182,11 @@ class Solution(object):
         for solPar in solParams:
             assert hasattr(solPar, 'isSolutionParameter'), \
                 '{} is not a solution parameter.'.format(solPar)
+
+            # check if this timestep in range of SolutionParameter time range
+            if timestep is not None and not solPar.isTimeInRange(timestep):
+                # not in time range! try the next one
+                continue
 
             try:
                 update = getattr(self.__recipe.case, solPar.filename) \
@@ -251,31 +256,41 @@ class SolutionParameter(object):
         replace: Set to True if you want the original dictionary to be replaced
             by new values. Default is False which means the original dictionary
             will be only updated by new values.
+        timeRange: Time range that this SolutioParameter is valid as a tuple
+            (default: (0, 1.0e+100)).
     """
 
     _OFFilenames = ('epsilon', 'k', 'nut', 'p', 'U', 'turbulenceProperties',
                     'transportProperties', 'blockMeshDict', 'controlDict',
                     'fvSchemes', 'fvSolution', 'snappyHexMeshDict', 'probes')
 
-    def __init__(self, OFFilename, values, replace=False):
+    def __init__(self, OFFilename, values, replace=False, timeRange=None):
         """Create solution parameter."""
         self.filename = OFFilename
         self.values = values
         self.replace = replace
 
+        try:
+            self.__t0 = int(timeRange[0])
+            self.__t1 = int(timeRange[1])
+        except:
+            self.__t0, self.__t1 = 0, 1.0e+100
+
     @classmethod
-    def fromDictionaryFile(cls, OFFilename, filepath, replace=False):
+    def fromDictionaryFile(cls, OFFilename, filepath, replace=False,
+                           timeRange=None):
         """Create from an OpenFOAM dictionary file."""
         # convert values to python dictionary
         values = CppDictParser.fromFile(filepath).values
-        return cls(OFFilename, values, replace)
+        return cls(OFFilename, values, replace, timeRange)
 
     @classmethod
-    def fromDictionary(cls, OFFilename, dictionary, replace=False):
+    def fromDictionary(cls, OFFilename, dictionary, replace=False,
+                       timeRange=None):
         """Create from an OpenFOAM dictionary."""
         # convert values to python dictionary
         values = CppDictParser(text=dictionary).values
-        return cls(OFFilename, values, replace)
+        return cls(OFFilename, values, replace, timeRange)
 
     @property
     def isSolutionParameter(self):
@@ -306,6 +321,15 @@ class SolutionParameter(object):
 
         self.__filename = f
 
+    @property
+    def timeRange(self):
+        """Get time range."""
+        return (self.__t0, self.__t1)
+
+    def isTimeInRange(self, time):
+        """Check if time is in this SolutionParameter time range."""
+        return self.__t0 <= float(time) < self.__t1
+
     def duplicate(self):
         """Return a copy of this object."""
         return deepcopy(self)
@@ -316,5 +340,6 @@ class SolutionParameter(object):
 
     def __repr__(self):
         """Class representation."""
-        return 'SolutionParameter@{}'\
-            .format('::'.join([self.filename] + self.values.keys()))
+        return 'SolutionParameter::{}@{}'\
+            .format('.'.join([self.filename] + self.values.keys()),
+                    self.timeRange)

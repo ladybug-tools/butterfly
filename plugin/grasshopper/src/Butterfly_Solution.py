@@ -60,12 +60,13 @@ if _recipe and _write:
         if uniqueKey not in sticky:
             # solution hasn't been created or has been removed
             # create a new one and copy it to sticky
-            solution = Solution(_recipe, decomposeParDict_)
+            solution = Solution(_recipe, decomposeParDict_, residualQuantities_)
             quantities = solution.quantities
-            solution.updateSolutionParams(solutionParams_)
-            
+            solution.updateSolutionParams(solutionParams_, timestep=0)
             sticky[uniqueKey] = solution
             if run_:
+                timestep = solution.timestep
+                solution.updateSolutionParams(solutionParams_, timestep)
                 solution.run()
         else:
             # solution is there so just load it
@@ -79,14 +80,15 @@ if _recipe and _write:
         if isRunning:
             print 'running...'
             # update parameters if there has been changes.
-            solution.updateSolutionParams(solutionParams_)
+            solution.updateSolutionParams(solutionParams_, timestep)
             ghComponentTimer(ghenv.Component, interval=_interval_*1000)
         else:
             # analysis is over
             print 'done!'
             solution = sticky[uniqueKey]
             # remove solution from sticky
-            del(sticky[uniqueKey])
+            if uniqueKey in sticky:
+                del(sticky[uniqueKey])
             
             # set run toggle to False
         

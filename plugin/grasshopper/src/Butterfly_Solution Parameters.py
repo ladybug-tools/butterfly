@@ -13,14 +13,14 @@ Solution Parameters.
         controlDict_: controlDict.
         residualControl_: residualControl.
         probes_: probes.
-        optionalParams_: List of solution parameters. Use solutionParameter component
-            to create solutionParams.
+        additionalParams_: List of solution parameters. Use solutionParameter
+            component to create solutionParams.
     Returns:
         solutionParams: A list of solution parameters.
 """
 ghenv.Component.Name = "Butterfly_Solution Parameters"
 ghenv.Component.NickName = "solutionParams"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_04_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_05_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -47,6 +47,6 @@ if probes_:
     probes_ = SolutionParameter.fromDictionary('probes', probes_)
 
 
-params = [controlDict_, residualControl_, probes_] + optionalParams_
+params = [controlDict_, residualControl_, probes_] + additionalParams_
 
 solutionParams = (p for p in params if p)
