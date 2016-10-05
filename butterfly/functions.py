@@ -19,10 +19,16 @@ class Probes(Condition):
 
     def __init__(self, values=None):
         """Init class."""
+        self.__count = 0
         super(Probes, self).__init__(
             name='probes', cls='dictionary', location='system',
             defaultValues=self.__defaultValues, values=values
         )
+
+    @property
+    def probesCount(self):
+        """Get number of probes."""
+        return self.__count
 
     @property
     def probeLocations(self):
@@ -31,6 +37,7 @@ class Probes(Condition):
 
     @probeLocations.setter
     def probeLocations(self, pts):
+        self.__count = len(pts)
         ptlist = (str(tuple(pt)).replace(',', ' ') for pt in pts)
         self.values['functions']['probes']['probeLocations'] = \
             '({})'.format(' '.join(ptlist))

@@ -33,6 +33,12 @@ class ControlDict(FoamFile):
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
 
+    @property
+    def include(self):
+        """Get if any file is included in controlDict."""
+        return self.values['#include']
+
+    @include.setter
     def include(self, fileName):
         """Add include to controlDict."""
         self.values['#include'] = '"{}"'.format(fileName.replace('"', ''))

@@ -3,7 +3,6 @@
 from copy import deepcopy
 from .helper import checkFiles
 from .parser import CppDictParser
-from .functions import Probes
 
 
 class Solution(object):
@@ -91,8 +90,6 @@ class Solution(object):
 
             assert not failed, err
 
-    # TODO: if parameter is in folder 0 it should be copied to processer folders
-    # TODO: probes should be re-written to work similar to other properties
     def updateSolutionParams(self, solParams):
         """Update parameters.
 
@@ -112,22 +109,28 @@ class Solution(object):
                     .updateValues(solPar.values, solPar.replace)
             except AttributeError as e:
                 # probes can be empty at start
-                if solPar.filename != 'probes':
-                    raise AttributeError(e)
-
-                if not self.__recipe.case.probes:
-                    self.__recipe.case.probes = Probes()
-
-                update = self.__recipe.case.probes \
-                    .updateValues(solPar.values, solPar.replace)
+                raise AttributeError(e)
 
             if update:
                 print 'Updating {}...'.format(solPar.filename)
+                ffile = getattr(self.__recipe.case, solPar.filename)
+                ffile.save(self.projectDir)
 
-                getattr(self.__recipe.case, solPar.filename).save(self.projectDir)
+                # This is not as simple as copying files!
+                # if ffile.isZeroFile:
+                #     # save file to processors folders if any
+                #     if self.__decomposeParDict:
+                #         for n in self.__decomposeParDict.numberOfSubdomains:
+                #             _p = os.path.join(self.projectDir, 'processer%d' % n)
+                #             if os.path.isdir(_p):
+                #                 ffile.save(_p)
+
                 # just in case probes was not there and now should be included
                 # in controlDict
-                # self.controlDict.save(self.projectDir)
+                if solPar.filename == 'probes':
+                    if not self.controlDict.include:
+                        self.controlDict.include = solPar.filename
+                        self.controlDict.save(self.projectDir)
 
     def run(self):
         """Execute the solution."""

@@ -44,17 +44,17 @@ class CppDictParser(object):
             if not isinstance(pp, list):
                 if pp.find(';') == -1:
                     # if not a list and doesn't include ';' it's a key and next item is the value
-                    d[pp] = self._convertToDict(next(itp))
+                    d[pp.strip()] = self._convertToDict(next(itp))
                 else:
                     s = pp.split(';')
                     if not pp.endswith(';'):
                         # last item is a key and next item is the value
-                        d[s[-1]] = self._convertToDict(next(itp))
+                        d[s[-1].strip()] = self._convertToDict(next(itp))
                         s = s[:-1]
                     for ppp in s:
                         ss = ppp.split()
                         if ss:
-                            d[ss[0]] = ' '.join(ss[1:])
+                            d[ss[0].strip()] = ' '.join(ss[1:]).strip()
         return d
 
     @staticmethod

@@ -6,28 +6,29 @@ from distutils.dir_util import copy_tree
 from collections import namedtuple
 from copy import deepcopy
 
-from version import Version
-from helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes, \
+from .version import Version
+from .helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes, \
     checkFiles
 # constant folder objects
-from turbulenceProperties import TurbulenceProperties
-from RASProperties import RASProperties
-from transportProperties import TransportProperties
+from .turbulenceProperties import TurbulenceProperties
+from .RASProperties import RASProperties
+from .transportProperties import TransportProperties
 
 # 0 folder objects
-from U import U
-from k import K
-from p import P
-from nut import Nut
-from epsilon import Epsilon
-from conditions import ABLConditions, InitialConditions
+from .U import U
+from .k import K
+from .p import P
+from .nut import Nut
+from .epsilon import Epsilon
+from .conditions import ABLConditions, InitialConditions
 
 # system folder objects
-from blockMeshDict import BlockMeshDict
-from controlDict import ControlDict
-from snappyHexMeshDict import SnappyHexMeshDict
-from fvSchemes import FvSchemes
-from fvSolution import FvSolution
+from .blockMeshDict import BlockMeshDict
+from .controlDict import ControlDict
+from .snappyHexMeshDict import SnappyHexMeshDict
+from .fvSchemes import FvSchemes
+from .fvSolution import FvSolution
+from .functions import Probes
 
 from runmanager import RunManager
 
@@ -87,7 +88,7 @@ class OpemFOAMCase(object):
         self.fvSolution = FvSolution()
 
         self.controlDict = ControlDict()
-        self.probes = None
+        self.probes = Probes()
 
         # if any of these files are included they should be written to 0 floder
         self.ABLConditions = None
@@ -190,14 +191,15 @@ class OpemFOAMCase(object):
     @probes.setter
     def probes(self, inp):
         if not inp:
-            self.__probes = inp
-        else:
-            assert hasattr(inp, 'probeLocations'), \
-                "Expected Probes not {}".format(type(inp))
+            return
 
-            self.__probes = inp
+        assert hasattr(inp, 'probeLocations'), \
+            "Expected Probes not {}".format(type(inp))
+
+        self.__probes = inp
+        if self.probes.probesCount > 0:
             # include probes in controlDict
-            self.controlDict.include(self.probes.filename)
+            self.controlDict.include = self.probes.filename
 
     @staticmethod
     def loadProbesFromProjectPath(projectPath, field, probesFolder='probes'):
@@ -244,7 +246,7 @@ class OpemFOAMCase(object):
 
     def loadProbes(self, field):
         """Return OpenFOAM probes results for a field."""
-        if not self.probes:
+        if self.probes.probesCount == 0:
             return []
 
         if field not in self.probes.fields:
@@ -405,6 +407,8 @@ class OpemFOAMCase(object):
         self.controlDict.save(self.projectDir)
         self.fvSchemes.save(self.projectDir)
         self.fvSolution.save(self.projectDir)
+        if self.probes.probesCount > 0:
+            self.probes.save(self.projectDir)
 
     # *************************       START       ************************* #
     # ************************* OpenFOAM Commands ************************* #

@@ -90,6 +90,27 @@ class FoamFile(object):
         return cls(_name, _cls, _location, _fileFormat, values=_values)
 
     @property
+    def isZeroFile(self):
+        """Check if the file location is folder 0."""
+        if not self.location:
+            return False
+        return self.location == "0"
+
+    @property
+    def isConstantFile(self):
+        """Check if the file location is 'constant' folder."""
+        if not self.location:
+            return False
+        return self.location == "constant"
+
+    @property
+    def isSystemFile(self):
+        """Check if the file location is 'system' folder."""
+        if not self.location:
+            return False
+        return self.location == "system"
+
+    @property
     def values(self):
         """Return values as a dictionary."""
         return self.__values
@@ -103,29 +124,56 @@ class FoamFile(object):
         Returns:
             True is the dictionary is updated.
         """
-        def compare(d):
+        def logChanges(original, new):
             """compare this dictionary with the current values."""
-            for key, value in d.items():
-                if isinstance(value, dict):
-                    compare(value)
-                if key not in self.__values:
+            for key, value in new.items():
+
+                if key not in original:
                     # there is a new key so dictionary has changed.
-                    return True
-                else:
-                    if str(self.__values[key]) != str(value):
+                    print '{} :: New values are added for {}.' \
+                        .format('.'.join(self.__parents), key)
+                    self.__hasChanged = True
+                    return
+
+                if isinstance(value, (dict, OrderedDict)):
+                    self.__parents.append(key)
+                    logChanges(original[key], value)
+                elif str(original[key]) != str(value):
                         # there is a change in value
-                        return True
-            return False
+                        print '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                        self.__hasChanged = True
+                        return
+
+        def modifyDict(original, new):
+            """Modify a dictionary based on a new dictionary."""
+            for key, value in new.items():
+                if key in original and isinstance(value, dict):
+                    if isinstance(original[key], dict):
+                        modifyDict(original[key], value)
+                    else:
+                        # the value was not a dict, replce them with the new one
+                        original[key] = value
+                else:
+                    original[key] = value
+
+            return original
 
         assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
 
-        if compare(v):
-            if replace:
-                for key in v.iterkeys():
-                    if key in self.__values:
-                        del(self.__values[key])
+        self.__parents = [self.__class__.__name__]
+        self.__hasChanged = False
+        logChanges(self.__values, v)
 
-            self.__values.update(v)
+        if self.__hasChanged:
+            if replace:
+                self.__values.update(v)
+            else:
+                self.__values = modifyDict(self.__values, v)
             return True
         else:
             return False
