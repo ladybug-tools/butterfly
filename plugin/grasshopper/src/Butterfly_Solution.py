@@ -28,7 +28,7 @@ Run recipes using OpenFOAM.
 
 ghenv.Component.Name = "Butterfly_Solution"
 ghenv.Component.NickName = "solution"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_29_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_04_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -36,8 +36,10 @@ ghenv.Component.AdditionalHelpFromDocStrings = "1"
 from scriptcontext import sticky
 
 try:
+    import butterfly
     from butterfly.gh.timer import ghComponentTimer
-    from butterfly.solution import Solution, SolutionParameters
+    reload(butterfly.solution)
+    from butterfly.solution import Solution
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -89,7 +91,7 @@ if _recipe and _write:
         # clean up solution in case of failure
         if uniqueKey in sticky:
             del(sticky[uniqueKey])
-        print str(e)
+        print '***{}'.format(e)
         
     
     logFiles = solution.logFiles if solution.logFiles else _recipe.logFile

@@ -94,7 +94,7 @@ class FoamFile(object):
         """Return values as a dictionary."""
         return self.__values
 
-    def updateValues(self, v):
+    def updateValues(self, v, replace=False):
         """Update current values from dictionary v.
 
         if key is not available in current values it will be added, if the key
@@ -120,6 +120,11 @@ class FoamFile(object):
         assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
 
         if compare(v):
+            if replace:
+                for key in v.iterkeys():
+                    if key in self.__values:
+                        del(self.__values[key])
+
             self.__values.update(v)
             return True
         else:

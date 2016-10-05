@@ -58,7 +58,7 @@ class CppDictParser(object):
         return d
 
     @staticmethod
-    def _parseNested(text, left=r'[{]', right=r'[}]', sep=r','):
+    def _parseNested(text, left=r'[{]', right=r'[}]', sep='#'):
         """Parse nested.
 
         http://stackoverflow.com/a/14715850/4394669

@@ -2,6 +2,8 @@
 """Butterfly Solution."""
 from copy import deepcopy
 from .helper import checkFiles
+from .parser import CppDictParser
+from .functions import Probes
 
 
 class Solution(object):
@@ -89,59 +91,43 @@ class Solution(object):
 
             assert not failed, err
 
-    def updateSolutionParams(self, simParams):
-        """Update parameters."""
-        if not simParams:
+    # TODO: if parameter is in folder 0 it should be copied to processer folders
+    # TODO: probes should be re-written to work similar to other properties
+    def updateSolutionParams(self, solParams):
+        """Update parameters.
+
+        Attributes:
+            solParams: A list of solution parameters.
+        """
+        if not solParams:
             # if input is None return
             return
         # check input with the current and update them if there has been changes
-        if simParams.controlDict:
-            # compare the values that can be modifed via interface
-            # This can be written simply as self.controlDict != simParams.controlDict
-            # once we can load OpenFOAM dictionaries into butterfly.
-            _update = False
-            if self.__recipe.case.controlDict.startTime != \
-                    simParams.controlDict.startTime:
-                _update = True
-                self.__recipe.case.controlDict.startTime = \
-                    simParams.controlDict.startTime
+        for solPar in solParams:
+            assert hasattr(solPar, 'isSolutionParameter'), \
+                '{} is not a solution parameter.'.format(solPar)
 
-            if self.__recipe.case.controlDict.endTime != \
-                    simParams.controlDict.endTime:
-                _update = True
-                self.__recipe.case.controlDict.endTime = \
-                    simParams.controlDict.endTime
+            try:
+                update = getattr(self.__recipe.case, solPar.filename) \
+                    .updateValues(solPar.values, solPar.replace)
+            except AttributeError as e:
+                # probes can be empty at start
+                if solPar.filename != 'probes':
+                    raise AttributeError(e)
 
-            if self.__recipe.case.controlDict.writeInterval != \
-                    simParams.controlDict.writeInterval:
-                _update = True
-                self.__recipe.case.controlDict.writeInterval = \
-                    simParams.controlDict.writeInterval
+                if not self.__recipe.case.probes:
+                    self.__recipe.case.probes = Probes()
 
-            if self.__recipe.case.controlDict.writeCompression != \
-                    simParams.controlDict.writeCompression:
-                _update = True
-                self.__recipe.case.controlDict.writeCompression = \
-                    simParams.controlDict.writeCompression
+                update = self.__recipe.case.probes \
+                    .updateValues(solPar.values, solPar.replace)
 
-            if _update:
-                print 'Updating controlDict...'
-                self.controlDict.save(self.projectDir)
+            if update:
+                print 'Updating {}...'.format(solPar.filename)
 
-        if simParams.residualControl and \
-                self.residualControl != simParams.residualControl:
-                print 'Updating residualControl...'
-                self.__recipe.case.fvSolution.residualControl = \
-                    simParams.residualControl
-                self.__recipe.case.fvSolution.save(self.projectDir)
-
-        if simParams.probes and self.probes != simParams.probes:
-            print 'Updating probes...'
-            self.__recipe.case.probes = simParams.probes
-            self.probes.save(self.projectDir)
-            # just in case probes was not there and now should be included
-            # in controlDict
-            self.controlDict.save(self.projectDir)
+                getattr(self.__recipe.case, solPar.filename).save(self.projectDir)
+                # just in case probes was not there and now should be included
+                # in controlDict
+                # self.controlDict.save(self.projectDir)
 
     def run(self):
         """Execute the solution."""
@@ -171,20 +157,72 @@ class Solution(object):
         return "{}::{}".format(self.recipe.case.projectName, self.recipe)
 
 
-class SolutionParameters(object):
-    """A collection of parameters that can be adjusted in run-time.
+class SolutionParameter(object):
+    """A solution parameter that can be changed during the solution.
+
+    Add solution parameter to to solution settings.
 
     Attributes:
-        controlDict: Control ditctionary.
-        residualControl: Residual control values.
-        probes: Butterfly probes.
+        filename: OpenFOAM filename that the values are belong to (e.g.
+            blockMeshDict, fvSchemes).
+        values: New values as a python dictionary.
+        replace: Set to True if you want the original dictionary to be replaced
+            by new values. Default is False which means the original dictionary
+            will be only updated by new values.
     """
 
-    def __init__(self, controlDict, residualControl, probes):
-        """Initiate class."""
-        self.controlDict = controlDict
-        self.residualControl = residualControl
-        self.probes = probes
+    _OFFilenames = ('epsilon', 'k', 'nut', 'p', 'U', 'turbulenceProperties',
+                    'transportProperties', 'blockMeshDict', 'controlDict',
+                    'fvSchemes', 'fvSolution', 'snappyHexMeshDict', 'probes')
+
+    def __init__(self, OFFilename, values, replace=False):
+        """Create solution parameter."""
+        self.filename = OFFilename
+        self.values = values
+        self.replace = replace
+
+    @classmethod
+    def fromDictionaryFile(cls, OFFilename, filepath, replace=False):
+        """Create from an OpenFOAM dictionary file."""
+        # convert values to python dictionary
+        values = CppDictParser.fromFile(filepath).values
+        return cls(OFFilename, values, replace)
+
+    @classmethod
+    def fromDictionary(cls, OFFilename, dictionary, replace=False):
+        """Create from an OpenFOAM dictionary."""
+        # convert values to python dictionary
+        values = CppDictParser(text=dictionary).values
+        return cls(OFFilename, values, replace)
+
+    @property
+    def isSolutionParameter(self):
+        """Return True."""
+        return True
+
+    @property
+    def values(self):
+        """Return OpenFOAM file name."""
+        return self.__values
+
+    @values.setter
+    def values(self, v):
+        assert isinstance(v, dict), 'values should be a dictionary not a {}.' \
+            .format(type(v))
+        self.__values = v
+
+    @property
+    def filename(self):
+        """Return OpenFOAM file name."""
+        return self.__filename
+
+    @filename.setter
+    def filename(self, f):
+        assert f in self._OFFilenames, '{} is not a valid OpenFOAM dictionary ' \
+            'file. Try one of the files below:\n{}.' \
+            .format(f, '\n'.join(self._OFFilenames))
+
+        self.__filename = f
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -196,4 +234,5 @@ class SolutionParameters(object):
 
     def __repr__(self):
         """Class representation."""
-        return self.__class__.__name__
+        return 'SolutionParameter@{}'\
+            .format('::'.join([self.filename] + self.values.keys()))

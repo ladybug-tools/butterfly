@@ -146,7 +146,7 @@ class RunManager(object):
         if Version.OFFullVer == 'v3.0+':
             _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat"
         else:
-            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" + \
+            _fp = r"C:\Program Files (x86)\ESI\OpenFOAM\{}\\" \
                 "Windows\Scripts\start_OF.bat".format(Version.OFFullVer[1:-1])
 
         _msg = "Failed to find container id. Do you have the OpenFOAM container running?\n" + \

@@ -7,26 +7,27 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Solution Parameters.
+Solution Parameter.
 
     Args:
-        controlDict_: controlDict.
-        residualControl_: residualControl.
-        probes_: probes.
-        optionalParams_: List of solution parameters. Use solutionParameter component
-            to create solutionParams.
+        _filename: OpenFOAM filename that the values are belong to (e.g.
+            blockMeshDict, fvSchemes).
+        _values: new values as a valid OpenFOAM (c++) dictionary.
+        replace_: Set to True if you want the original dictionary to be replaced
+            by new values. Default is False which means the original dictionary
+            will be only updated by new values.
     Returns:
-        solutionParams: A list of solution parameters.
+        solutionParam: A solution parameter.
 """
-ghenv.Component.Name = "Butterfly_Solution Parameters"
-ghenv.Component.NickName = "solutionParams"
+ghenv.Component.Name = "Butterfly_Solution Parameter"
+ghenv.Component.NickName = "solutionParam"
 ghenv.Component.Message = 'VER 0.0.02\nOCT_04_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-     from butterfly.solution import SolutionParameter
+    from butterfly.solution import SolutionParameter
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -36,17 +37,5 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if controlDict_:
-    controlDict_ = SolutionParameter.fromDictionary('controlDict', controlDict_)
-
-if residualControl_:
-    residualControl_ = SolutionParameter.fromDictionary('fvSolution',
-        'SIMPLE\n{%s}' % residualControl_)
-
-if probes_:
-    probes_ = SolutionParameter.fromDictionary('probes', probes_)
-
-
-params = [controlDict_, residualControl_, probes_] + optionalParams_
-
-solutionParams = (p for p in params if p)
+if _filename and _values:
+    solutionParam = SolutionParameter.fromDictionary(_filename, _values, replace_)

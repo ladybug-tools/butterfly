@@ -22,7 +22,7 @@ Update fvSchemes values based on mesh orthogonalities.
 
 ghenv.Component.Name = "Butterfly_Steady Incompressible Recipe"
 ghenv.Component.NickName = "SteadyIncomp"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_04_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "05::Recipe"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"

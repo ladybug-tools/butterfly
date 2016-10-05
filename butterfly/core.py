@@ -75,7 +75,7 @@ class OpemFOAMCase(object):
         self.transportProperties = TransportProperties()
 
         # 0 floder
-        self.u = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        self.U = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
         self.p = P.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
         self.k = K.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
         self.epsilon = Epsilon.fromBFGeometries(BFGeometries +
@@ -386,7 +386,7 @@ class OpemFOAMCase(object):
             self.initialConditions.save(self.projectDir)
         if self.isABLConditionsIncluded:
             self.ABLConditions.save(self.projectDir)
-        self.u.save(self.projectDir)
+        self.U.save(self.projectDir)
         self.p.save(self.projectDir)
         self.k.save(self.projectDir)
         self.epsilon.save(self.projectDir)
