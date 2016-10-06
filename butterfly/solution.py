@@ -152,7 +152,7 @@ class Solution(object):
                 q, ir, fr, ni = line.split(':  Solving for ')[1].split(',')
                 # use final residual
                 if q in self.__residualValues:
-                    self.__residualValues[q] = fr.split('= ')[-1]
+                    self.__residualValues[q] = ir.split('= ')[-1]
             except IndexError:
                 pass
 

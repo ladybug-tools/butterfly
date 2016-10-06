@@ -145,6 +145,6 @@ class ResidualControl(object):
 
     def __repr__(self):
         """Representation."""
-        return "ResidualControl\n" \
+        return "residualControl\n" \
             "{\n\tp     %s;\n\tU     %s;\t\nk     %s;\n\tepsilon     %s;\n" \
             "}" % (self.p, self.U, self.k, self.epsilon)

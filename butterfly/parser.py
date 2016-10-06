@@ -1,5 +1,6 @@
 """OpenFOAM/c++ dictionary parser."""
 import re
+from collections import OrderedDict
 
 
 class CppDictParser(object):
@@ -92,3 +93,85 @@ class CppDictParser(object):
     def __repr__(self):
         """Class representation."""
         return '{}'.format(self.values)
+
+
+class ResidualParser(object):
+    """Paeser for residual values from a log file.
+
+    Attributes:
+        filepath: Full file path to .log file.
+        parser: If ture Parser will start parsing the values once initiated.
+    """
+
+    def __init__(self, filepath, parse=True):
+        """Init residual parser."""
+        self.filepath = filepath
+        self.__residuals = OrderedDict()
+        if parse:
+            self.parse()
+
+    def parse(self):
+        """Parse the log file."""
+        # open the file
+        # try to find the first line with Time =
+        # send the file to a recursive residualParser
+        try:
+            with open(self.filepath, 'rb') as f:
+                for line in f:
+                    if line.startswith('Time ='):
+                        self.timestep = self.__getTime(line)
+                        self.__residuals[self.timestep] = {}
+                        self.__parseResiduals(f)
+        except Exception as e:
+            raise 'Failed to parse {}:\n{}'.format(f, e)
+
+    @property
+    def residuals(self):
+        """Get residuals as a dictionary."""
+        return self.__residuals
+
+    @property
+    def timeRange(self):
+        """Get time range as a tuple."""
+        _times = self.getTimes()
+        return _times[0], _times[-1]
+
+    def getTimes(self):
+        """Get time steps."""
+        return self.__residuals.keys()
+
+    def getResiduals(self, quantity, timeRange):
+        """Get residuals for a quantity."""
+        assert quantity in self.quantities, \
+            'Invalid quantity. Try from the list below:\n{}'.format(self.quantities)
+
+        if not timeRange:
+            return (v[quantity] for v in self.__residuals.itervalues())
+        else:
+            availableTimeRange = self.timeRange
+            try:
+                t0 = max(availableTimeRange[0], timeRange[0])
+                t1 = min(availableTimeRange[1], timeRange[1])
+            except IndexError as e:
+                raise ValueError('Failed to read timeRange:\n{}'.format(e))
+
+            return (self.__residuals[int(t)][quantity] for t in xrange(t0, t1))
+
+    @staticmethod
+    def __getTime(line):
+        return int(line.split('Time =')[-1])
+
+    def __parseResiduals(self, f):
+        for line in f:
+            if not line.startswith('Time ='):
+                try:
+                    # quantity, Initial residual, Final residual, No Iterations
+                    q, ir, fr, ni = line.split(':  Solving for ')[1].split(',')
+                    self.__residuals[self.timestep][q] = ir.split('= ')[-1]
+                except IndexError:
+                    pass
+            else:
+                self.timestep = self.__getTime(line)
+                self.__residuals[self.timestep] = {}
+
+        self.quantities = self.__residuals[self.timestep].keys()

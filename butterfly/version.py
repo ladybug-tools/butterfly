@@ -11,7 +11,7 @@ class Version(object):
     OFVer = "3.0"
     OFFullVer = "v1606+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
-    lastUpdated = datetime(year=2016, month=10, day=05, hour=21, minute=00)
+    lastUpdated = datetime(year=2016, month=10, day=06, hour=18, minute=35)
 
     def duplicate(self):
         """Return a copy of this object."""
