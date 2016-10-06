@@ -50,7 +50,7 @@ class FoamFile(object):
         if not defaultValues:
             defaultValues = {}
         self.__values = deepcopy(defaultValues)
-        self.updateValues(values)
+        self.updateValues(values, mute=True)
 
     @classmethod
     def fromFile(cls, filepath, location=None):
@@ -115,7 +115,7 @@ class FoamFile(object):
         """Return values as a dictionary."""
         return self.__values
 
-    def updateValues(self, v, replace=False):
+    def updateValues(self, v, replace=False, mute=False):
         """Update current values from dictionary v.
 
         if key is not available in current values it will be added, if the key
@@ -130,8 +130,9 @@ class FoamFile(object):
 
                 if key not in original:
                     # there is a new key so dictionary has changed.
-                    print '{} :: New values are added for {}.' \
-                        .format('.'.join(self.__parents), key)
+                    if not mute:
+                        print '{} :: New values are added for {}.' \
+                            .format('.'.join(self.__parents), key)
                     self.__hasChanged = True
                     return
 
@@ -140,12 +141,13 @@ class FoamFile(object):
                     logChanges(original[key], value)
                 elif str(original[key]) != str(value):
                         # there is a change in value
-                        print '{}.{} is changed from "{}" to "{}".'\
-                            .format('.'.join(self.__parents), key,
-                                    original[key] if len(str(original[key])) < 100
-                                    else '%s...' % str(original[key])[:100],
-                                    value if len(str(value)) < 100
-                                    else '%s...' % str(value)[:100])
+                        if not mute:
+                            print '{}.{} is changed from "{}" to "{}".'\
+                                .format('.'.join(self.__parents), key,
+                                        original[key] if len(str(original[key])) < 100
+                                        else '%s...' % str(original[key])[:100],
+                                        value if len(str(value)) < 100
+                                        else '%s...' % str(value)[:100])
                         self.__hasChanged = True
                         return
 

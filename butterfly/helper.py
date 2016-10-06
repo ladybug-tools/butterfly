@@ -56,7 +56,7 @@ def runbatchfile(filepath, wait=True):
     return p
 
 
-def checkFiles(files):
+def checkFiles(files, mute=False):
     """Check files for content and print them out if any.
 
     args:
@@ -79,6 +79,8 @@ def checkFiles(files):
     _l = '\n'.join(_lines).strip()
 
     if len(_l) > 0:
+        if not mute:
+            print(_l)
         return True, _l
     else:
         return False, _l

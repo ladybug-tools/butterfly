@@ -114,14 +114,18 @@ class OpemFOAMCase(object):
         _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
 
         # edit files in 0 folder
-        _case.u.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $flowVelocity'})
+        _case.U.updateValues({'#include': '"initialConditions"',
+                             'internalField': 'uniform $flowVelocity'},
+                             mute=True)
         _case.p.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $pressure'})
+                             'internalField': 'uniform $pressure'},
+                             mute=True)
         _case.k.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $turbulentKE'})
+                             'internalField': 'uniform $turbulentKE'},
+                             mute=True)
         _case.epsilon.updateValues({'#include': '"initialConditions"',
-                                    'internalField': 'uniform $turbulentEpsilon'})
+                                   'internalField': 'uniform $turbulentEpsilon'},
+                                   mute=True)
 
         if windTunnel.refinementRegions:
             for region in windTunnel.refinementRegions:
@@ -211,6 +215,10 @@ class OpemFOAMCase(object):
         """
         # find probes folder
         _basepath = os.path.join(projectPath, 'postProcessing', probesFolder)
+
+        if not os.path.isdir(_basepath):
+            print "Failed to find postProcessing folder at {}".format(_basepath)
+            return
 
         folders = [os.path.join(_basepath, f) for f in os.listdir(_basepath)
                    if (os.path.isdir(os.path.join(_basepath, f)) and
@@ -502,8 +510,8 @@ class OpemFOAMCase(object):
             if p.poll:
                 # if the analysis is over check log files and error files
                 checkFiles(logfiles)
-                success, err = checkFiles(errfiles)
-                return log(success, err, p, logfiles, errfiles)
+                hasContent, err = checkFiles(errfiles)
+                return log(not hasContent, err, p, logfiles, errfiles)
             else:
                 # analysis is still running return Popen process
                 return log(True, None, p, logfiles, errfiles)

@@ -151,7 +151,8 @@ class Solution(object):
                 # quantity, Initial residual, Final residual, No Iterations
                 q, ir, fr, ni = line.split(':  Solving for ')[1].split(',')
                 # use final residual
-                self.__residualValues[q] = fr.split('= ')[-1]
+                if q in self.__residualValues:
+                    self.__residualValues[q] = fr.split('= ')[-1]
             except IndexError:
                 pass
 
