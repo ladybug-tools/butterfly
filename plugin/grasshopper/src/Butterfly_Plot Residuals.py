@@ -152,16 +152,7 @@ def main():
         meshes = coloredMeshFromCurve(curves,  width=_lineWidth_,
                                               colors= colors)
         
-        ghenv.Component.Params.Output[3].Name = 'meshes'
-        ghenv.Component.Params.Output[3].NickName = 'meshes'
-        ghenv.Component.Params.Input[4].Name = '_lineWidth_'
-        ghenv.Component.Params.Input[4].NickName = '_lineWidth_'
         return timeRange, curves, meshes, residualLine, colors[:len(curves)]
-    
-    ghenv.Component.Params.Output[3].Name = '.'
-    ghenv.Component.Params.Output[3].NickName = '.'
-    ghenv.Component.Params.Input[4].Name = '.'
-    ghenv.Component.Params.Input[4].NickName = '.'
     
     return timeRange, curves, [], resLine, colors[:len(curves)]
     
@@ -171,3 +162,15 @@ if _recipe and _rect and _load:
     
     if output:
         timeRange, curves, meshes, residualLine, colors = output
+
+if not method_ % 2:
+    ghenv.Component.Params.Output[3].Name = 'meshes'
+    ghenv.Component.Params.Output[3].NickName = 'meshes'
+    ghenv.Component.Params.Input[4].Name = '_lineWidth_'
+    ghenv.Component.Params.Input[4].NickName = '_lineWidth_'
+else:
+    ghenv.Component.Params.Output[3].Name = '.'
+    ghenv.Component.Params.Output[3].NickName = '.'
+    ghenv.Component.Params.Input[4].Name = '.'
+    ghenv.Component.Params.Input[4].NickName = '.'
+    
