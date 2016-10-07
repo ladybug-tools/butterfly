@@ -1,0 +1,10 @@
+
+
+--> FOAM FATAL ERROR: 
+No times selected
+
+    From function int main(int, char**)
+    in file reconstructPar.C at line 215.
+
+FOAM exiting
+

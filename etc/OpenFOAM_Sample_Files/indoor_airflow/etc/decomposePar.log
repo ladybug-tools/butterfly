@@ -1,0 +1,73 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1606+                                |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : v1606+
+Exec   : decomposePar
+Date   : Oct 07 2016
+Time   : 02:21:23
+Host   : "default"
+PID    : 1607
+Case   : /home/ofuser/workingDir/butterfly/indoor_airflow
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+
+
+Decomposing mesh region0
+
+Create mesh
+
+Calculating distribution of cells
+Selecting decompositionMethod scotch
+
+Finished decomposition in 0.15 s
+
+Calculating original mesh data
+
+Distributing cells to processors
+
+Distributing faces to processors
+
+Distributing points to processors
+
+Constructing processor meshes
+Reading hexRef8 data : cellLevel
+Reading hexRef8 data : pointLevel
+Reading hexRef8 data : level0Edge
+Reading hexRef8 data : refinementHistory
+
+Processor 0
+    Number of cells = 18846
+    Number of faces shared with processor 1 = 514
+    Number of processor patches = 1
+    Number of processor faces = 514
+    Number of boundary faces = 8794
+
+Processor 1
+    Number of cells = 18587
+    Number of faces shared with processor 0 = 514
+    Number of processor patches = 1
+    Number of processor faces = 514
+    Number of boundary faces = 8932
+
+Number of processor faces = 514
+Max number of cells = 18846 (0.6919029% above average 18716.5)
+Max number of processor patches = 1 (0% above average 1)
+Max number of faces between processors = 514 (0% above average 514)
+
+Time = 0
+
+Processor 0: field transfer
+Processor 1: field transfer
+
+End
+

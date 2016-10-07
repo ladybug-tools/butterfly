@@ -1,0 +1,82 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1606+                                |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+Build  : v1606+
+Exec   : reconstructParMesh -constant
+Date   : Oct 05 2016
+Time   : 23:10:24
+Host   : "default"
+PID    : 6312
+Case   : /home/ofuser/workingDir/butterfly/indoor_airflow
+nProcs : 1
+sigFpe : Enabling floating point exception trapping (FOAM_SIGFPE).
+fileModificationChecking : Monitoring run-time modified files using timeStampMaster
+allowSystemOperations : Allowing user-supplied system call operations
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+This is an experimental tool which tries to merge individual processor
+meshes back into one master mesh. Use it if the original master mesh has
+been deleted or if the processor meshes have been modified (topology change).
+This tool will write the resulting mesh to a new time step and construct
+xxxxProcAddressing files in the processor meshes so reconstructPar can be
+used to regenerate the fields on the master mesh.
+
+Not well tested & use at your own risk!
+
+Merge tolerance : 1e-07
+Write tolerance : 1e-07
+Doing geometric matching on correct procBoundaries only.
+This assumes a correct decomposition.
+Found 2 processor directories
+
+Reading database "indoor_airflow/processor0"
+Reading database "indoor_airflow/processor1"
+Time = constant
+
+Reading points from "indoor_airflow/processor0" for time = constant
+
+Reading points from "indoor_airflow/processor1" for time = constant
+
+Overall mesh bounding box  : (1 1 0) (9 9 6)
+Relative tolerance         : 1e-07
+Absolute matching distance : 1.280625e-06
+
+Constructing empty mesh to add to.
+
+Reading mesh to add from "indoor_airflow/processor0" for time = constant
+
+Adding to master mesh
+
+
+Reading mesh to add from "indoor_airflow/processor1" for time = constant
+
+Adding to master mesh
+
+
+mergeSharedPoints : detected 0 points that are to be merged.
+
+Writing merged mesh to "/home/ofuser/workingDir/butterfly/indoor_airflow/constant"
+
+Reconstructing the addressing from the processor meshes to the newly reconstructed mesh
+
+Reading processor 0 mesh from "indoor_airflow/processor0"
+Writing pointProcAddressing to "indoor_airflow/processor0/constant/polyMesh"
+Writing faceProcAddressing to "indoor_airflow/processor0/constant/polyMesh"
+Writing cellProcAddressing to "indoor_airflow/processor0/constant/polyMesh"
+Writing boundaryProcAddressing to "indoor_airflow/processor0/constant/polyMesh"
+
+Reading processor 1 mesh from "indoor_airflow/processor1"
+Writing pointProcAddressing to "indoor_airflow/processor1/constant/polyMesh"
+Writing faceProcAddressing to "indoor_airflow/processor1/constant/polyMesh"
+Writing cellProcAddressing to "indoor_airflow/processor1/constant/polyMesh"
+Writing boundaryProcAddressing to "indoor_airflow/processor1/constant/polyMesh"
+
+
+End
+

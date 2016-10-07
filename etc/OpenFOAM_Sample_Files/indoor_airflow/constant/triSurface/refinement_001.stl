@@ -1,0 +1,86 @@
+solid OBJECT
+  facet normal -0 -1 0
+    outer loop
+      vertex 4 3 1.5
+      vertex 7 3 1.5
+      vertex 7 3 4.5
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex 4 3 1.5
+      vertex 7 3 4.5
+      vertex 4 3 4.5
+    endloop
+  endfacet
+  facet normal 1 -0 0
+    outer loop
+      vertex 7 3 1.5
+      vertex 7 7 1.5
+      vertex 7 7 4.5
+    endloop
+  endfacet
+  facet normal 1 -0 0
+    outer loop
+      vertex 7 3 1.5
+      vertex 7 7 4.5
+      vertex 7 3 4.5
+    endloop
+  endfacet
+  facet normal -0 1 -0
+    outer loop
+      vertex 7 7 1.5
+      vertex 4 7 1.5
+      vertex 4 7 4.5
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex 7 7 1.5
+      vertex 4 7 4.5
+      vertex 7 7 4.5
+    endloop
+  endfacet
+  facet normal -1 -0 -0
+    outer loop
+      vertex 4 7 1.5
+      vertex 4 3 1.5
+      vertex 4 3 4.5
+    endloop
+  endfacet
+  facet normal -1 -0 -0
+    outer loop
+      vertex 4 7 1.5
+      vertex 4 3 4.5
+      vertex 4 7 4.5
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 7 3 1.5
+      vertex 4 3 1.5
+      vertex 4 7 1.5
+    endloop
+  endfacet
+  facet normal -0 -0 -1
+    outer loop
+      vertex 4 7 1.5
+      vertex 7 7 1.5
+      vertex 7 3 1.5
+    endloop
+  endfacet
+  facet normal -0 -0 1
+    outer loop
+      vertex 7 3 4.5
+      vertex 4 7 4.5
+      vertex 4 3 4.5
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex 4 7 4.5
+      vertex 7 3 4.5
+      vertex 7 7 4.5
+    endloop
+  endfacet
+endsolid OBJECT
