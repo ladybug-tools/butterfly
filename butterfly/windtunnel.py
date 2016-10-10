@@ -72,12 +72,12 @@ class WindTunnel(object):
     @property
     def flowDir(self):
         """Get flow direction for this wind tunnel as a tuple (x, y, z)."""
-        return self.inlet.boundaryCondition.u.flowDir
+        return self.inlet.boundaryCondition.U.flowDir
 
     @property
     def flowSpeed(self):
         """Get flow speed for this wind tunnel."""
-        return self.inlet.boundaryCondition.u.Uref
+        return self.inlet.boundaryCondition.U.Uref
 
     @property
     def zGround(self):

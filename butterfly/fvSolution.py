@@ -75,6 +75,45 @@ class FvSolution(FoamFile):
             epsilon=self.values['SIMPLE']['residualControl']['epsilon']
         )
 
+    # TODO: update to pass the recipe itself and not the code!
+    @classmethod
+    def fromRecipe(cls, recipe=0):
+        """Generate fvSolution for a particular recipe.
+
+        Args:
+            recipe: 0: incompressible, 1: heat transfer.
+        """
+        _cls = cls()
+
+        if recipe == 0:
+            # steady incompressible
+            _values = {
+                'solvers': {'p_rgh': None, 'SIMPLE': {'residualControl':
+                                                      {'p_rgh': None, 'T': None}},
+                            'relaxationFactors': {'p_rgh': None, 'T': None}}
+            }
+
+        elif recipe == 1:
+            # heat transfer
+            _values = {
+                'solvers': {'p': None,
+                            'p_rgh': {'solver': 'PCG',
+                                      'preconditioner': 'DIC',
+                                      'tolerance': '1e-08',
+                                      'relTol': '0.01'},
+                            'T': {'relTol': '0.1', 'tolerance': '1e-8',
+                                  'nSweeps': '1', 'smoother': 'GaussSeidel',
+                                  'solver': 'smoothSolver'}},
+                'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-5',
+                                               'T': '1e-5'},
+                        #    'pRef': str(_cls.blockMeshDict.center).replace(',', ' '),
+                           'pRefValue': '0'},
+                'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
+
+        # update values based on the recipe.
+        _cls.updateValues(_values, mute=True)
+        return _cls
+
     @property
     def residualControl(self):
         """Get and set residual controls."""

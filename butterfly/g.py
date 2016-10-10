@@ -1,10 +1,10 @@
 # coding=utf-8
 """g[ravity] class."""
-from foamfile import ZeroFolderFoamFile
+from foamfile import FoamFile
 from collections import OrderedDict
 
 
-class G(ZeroFolderFoamFile):
+class G(FoamFile):
     """G (gravity) class."""
 
     # set default valus for this class
@@ -15,8 +15,8 @@ class G(ZeroFolderFoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        ZeroFolderFoamFile.__init__(self, name='g',
-                                    cls='uniformDimensionedVectorField',
-                                    location='constant',
-                                    defaultValues=self.__defaultValues,
-                                    values=values)
+        FoamFile.__init__(self, name='g',
+                          cls='uniformDimensionedVectorField',
+                          location='constant',
+                          defaultValues=self.__defaultValues,
+                          values=values)

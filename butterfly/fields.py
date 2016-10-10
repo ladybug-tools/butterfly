@@ -237,6 +237,42 @@ class PressureInletOutletVelocity(FixedValue):
     pass
 
 
+class AlphatJayatillekeWallFunction(FixedValue):
+    """alphatJayatillekeWallFunction."""
+
+    def __init__(self, value, isUniform=True, Prt=None):
+        """Init class."""
+        FixedValue.__init__(self, value, isUniform)
+        self.Prt = str(Prt) if Prt else '0.85'
+
+    @property
+    def valueDict(self):
+        """Get fields as a dictionary."""
+        _d = OrderedDict()
+        _d['type'] = self.type
+        _d['value'] = self.value
+        _d['Prt'] = self.Prt
+        return _d
+
+
+class FixedFluxPressure(FixedValue):
+    """FixedFluxPressure."""
+
+    def __init__(self, value, isUniform=True, rho=None):
+        """Init class."""
+        FixedValue.__init__(self, value, isUniform)
+        self.rho = rho if rho else 'rhok'
+
+    @property
+    def valueDict(self):
+        """Get fields as a dictionary."""
+        _d = OrderedDict()
+        _d['type'] = self.type
+        _d['value'] = self.value
+        _d['rho'] = self.rho
+        return _d
+
+
 class WallFunction(FixedValue):
     """WallFunction."""
 

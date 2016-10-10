@@ -25,16 +25,13 @@ Create a custom boundary.
 
 ghenv.Component.Name = "Butterfly_Boundary"
 ghenv.Component.NickName = "boundary"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_08_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly import boundarycondition
-    #import butterfly
-    #reload(butterfly)
-    #reload(butterfly.boundarycondition)
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -47,8 +44,8 @@ except ImportError as e:
 _bType_ = 'patch' if not _bType_ else _bType_
 
 boundaryFields = boundarycondition.BoundaryCondition(
-    _bType_, refLevels=_refLevels_, u=_U_, p=_p_, k=_k_, epsilon=_epsilon_,
-    nut=_nut_
+    _bType_, refLevels=_refLevels_, U=_U_, p=_p_, k=_k_, epsilon=_epsilon_,
+    nut=_nut_, alphat=_alphat_, p_rgh=_p_rgh_, T=_T_
 )
 
 boundaryFields = boundaryFields.duplicate()

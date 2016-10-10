@@ -13,6 +13,7 @@ Create an inlet boundary with uniform velocity value.
 
     Args:
         _velocityVec: Velocity vector.
+        temperature_: Temperature in degrees celsius.
         _refLevels_: A tuple of (min, max) values for refinement levels.
     Returns:
         inletBoundary: Buttefly inlet boundary.
@@ -20,7 +21,7 @@ Create an inlet boundary with uniform velocity value.
 
 ghenv.Component.Name = "Butterfly_Inlet Boundary"
 ghenv.Component.NickName = "inlet"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_08_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -28,11 +29,6 @@ ghenv.Component.AdditionalHelpFromDocStrings = "1"
 try:
     from butterfly import boundarycondition as bc
     from butterfly.fields import FixedValue
-    
-    #import butterfly
-    #reload(butterfly)
-    #reload(butterfly.boundarycondition)
-    #reload(butterfly.fields)
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -47,4 +43,10 @@ if _velocityVec:
                    if _velocityVec \
                    else None
 
-    inletBoundary = bc.FixedInletBoundaryCondition(refLevels=_refLevels_, u=_velocityVec)
+    temperature_ = FixedValue(str(temperature_ + 273.15)) \
+                   if temperature_ \
+                   else None
+                   
+    inletBoundary = bc.FixedInletBoundaryCondition(refLevels=_refLevels_,
+                                                   U=_velocityVec,
+                                                   T = temperature_)

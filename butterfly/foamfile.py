@@ -237,10 +237,19 @@ class FoamFile(object):
     def body(self):
         """Return body string."""
         # remove None values
-        _values = OrderedDict()
-        for key, value in self.values.iteritems():
-            if value:
-                _values[key] = value
+        def removeNone(d):
+            if isinstance(d, (dict, OrderedDict)):
+                return OrderedDict((k, removeNone(v))
+                                   for k, v in d.iteritems()
+                                   if v and removeNone(v))
+            elif type(d) is list:
+                return [removeNone(v) for v in d if v and removeNone(v)]
+            else:
+                return d
+            return removeNone
+
+        _values = removeNone(self.values)
+        # _values = self.values
 
         # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
@@ -321,9 +330,7 @@ class ZeroFolderFoamFile(FoamFile):
         Args:
             BFGeometries: List of Butterfly geometries.
         """
-        self.values['boundaryField'] = getBoundaryField(
-            BFGeometries, self.__class__.__name__.lower()
-        )
+        self.values['boundaryField'] = getBoundaryField(BFGeometries, self.name)
 
 
 class Condition(FoamFile):

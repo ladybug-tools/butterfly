@@ -9,10 +9,12 @@ from copy import deepcopy
 from .version import Version
 from .helper import mkdir, wfile, runbatchfile, readLastLine, loadSkippedProbes, \
     checkFiles
+
 # constant folder objects
 from .turbulenceProperties import TurbulenceProperties
 from .RASProperties import RASProperties
 from .transportProperties import TransportProperties
+from .g import G
 
 # 0 folder objects
 from .U import U
@@ -20,6 +22,9 @@ from .k import K
 from .p import P
 from .nut import Nut
 from .epsilon import Epsilon
+from .T import T
+from .alphat import Alphat
+from .p_rgh import P_rgh
 from .conditions import ABLConditions, InitialConditions
 
 # system folder objects
@@ -74,14 +79,18 @@ class OpemFOAMCase(object):
         else:
             self.turbulenceProperties = TurbulenceProperties()
         self.transportProperties = TransportProperties()
+        self.g = G()
 
         # 0 floder
-        self.U = U.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
-        self.p = P.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
-        self.k = K.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
-        self.epsilon = Epsilon.fromBFGeometries(BFGeometries +
-                                                blockMeshDict.BFBlockGeometries)
-        self.nut = Nut.fromBFGeometries(BFGeometries + blockMeshDict.BFBlockGeometries)
+        _geometries = BFGeometries + blockMeshDict.BFBlockGeometries
+        self.U = U.fromBFGeometries(_geometries)
+        self.p = P.fromBFGeometries(_geometries)
+        self.k = K.fromBFGeometries(_geometries)
+        self.epsilon = Epsilon.fromBFGeometries(_geometries)
+        self.nut = Nut.fromBFGeometries(_geometries)
+        self.T = T.fromBFGeometries(_geometries)
+        self.alphat = Alphat.fromBFGeometries(_geometries)
+        self.p_rgh = P_rgh.fromBFGeometries(_geometries)
 
         # system folder
         self.fvSchemes = FvSchemes()
@@ -459,6 +468,18 @@ class OpemFOAMCase(object):
             of success otherwise the error message as a string.
         """
         return self.__writeAndRunCommands('simpleFoam', 'simpleFoam', args,
+                                          decomposeParDict, run, wait)
+
+    def buoyantBoussinesqSimpleFoam(self, args=None, decomposeParDict=None,
+                                    run=True, wait=True):
+        """Run buoyantBoussinesqSimpleFoam command for this case.
+
+        Returns:
+            A tuple as (success, err). success is a boolen. err is None in case
+            of success otherwise the error message as a string.
+        """
+        return self.__writeAndRunCommands('buoyantBoussinesqSimpleFoam',
+                                          'buoyantBoussinesqSimpleFoam', args,
                                           decomposeParDict, run, wait)
 
     # ************************* OpenFOAM Commands ************************* #

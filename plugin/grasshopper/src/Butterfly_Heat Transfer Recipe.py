@@ -7,7 +7,7 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Update fvSchemes values based on mesh orthogonalities.
+Heat Transfer Recipe.
 
 -
 
@@ -19,15 +19,15 @@ Update fvSchemes values based on mesh orthogonalities.
         case: Butterfly case.
 """
 
-ghenv.Component.Name = "Butterfly_Steady Incompressible Recipe"
-ghenv.Component.NickName = "SteadyIncomp"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_08_2016'
+ghenv.Component.Name = "Butterfly_Heat Transfer Recipe"
+ghenv.Component.NickName = "heatTransfer"
+ghenv.Component.Message = 'VER 0.0.02\nOCT_09_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "05::Recipe"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 try:
-    from butterfly.recipe import SteadyIncompressible
+    from butterfly.recipe import HeatTransfer
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -39,4 +39,4 @@ except ImportError as e:
 
 if _case:
     # create recipe
-    recipe = SteadyIncompressible(_case, _turbulenceProp_)
+    recipe = HeatTransfer(_case, _turbulenceProp_)

@@ -3,6 +3,7 @@
 import os
 from copy import deepcopy
 from .turbulenceProperties import TurbulenceProperties
+from .fvSolution import FvSolution
 
 
 class _BFRecipe(object):
@@ -69,7 +70,57 @@ class _BFRecipe(object):
         return '{} Recipe'.format(self.__class__.__name__)
 
 
-class SteadyIncompressible(_BFRecipe):
+class _BFSingleApplicationRecipe(_BFRecipe):
+    """Recipe for recipe's with a single application (e.g. simpleFoam).
+
+    This recipe excutes application for the input case.
+
+    Attributes:
+        case: An OpenFOAM Case.
+        application: Application name for this recipe. The application will
+            be set up in controlDict.
+        turbulenceProperties: Turbulence properties.
+    """
+
+    def __init__(self, case, application, turbulenceProperties=None):
+        """Initiate recipe."""
+        if not turbulenceProperties:
+            turbulenceProperties = TurbulenceProperties.RAS()
+
+        _BFRecipe.__init__(self, case, turbulenceProperties)
+
+        self.application = application
+
+        # update application
+        case.controlDict.application = application
+        case.controlDict.save(case.projectDir)
+
+    @property
+    def residualFile(self):
+        """Return address of the residual file."""
+        return os.path.join(self.case.etcDir, '%s.log' % self.application)
+
+    @property
+    def logFile(self):
+        """Return address of the log file."""
+        return os.path.join(self.case.etcDir, '%s.log' % self.application)
+
+    @property
+    def errFile(self):
+        """Return address of the error file."""
+        return os.path.join(self.case.etcDir, '%s.err' % self.application)
+
+    @property
+    def quantities(self):
+        """Important Quantities for the recipe."""
+        return NotImplementedError()
+
+    def run(self, args=None, decomposeParDict=None, run=True, wait=True):
+        """Execute the recipe."""
+        return getattr(self.case, self.application)(args, decomposeParDict, run, wait)
+
+
+class SteadyIncompressible(_BFSingleApplicationRecipe):
     """Recipe for Steady Incompressible flows.
 
     This recipe excutes simpleFoam for the input case.
@@ -84,32 +135,49 @@ class SteadyIncompressible(_BFRecipe):
         if not turbulenceProperties:
             turbulenceProperties = TurbulenceProperties.RAS()
 
-        _BFRecipe.__init__(self, case, turbulenceProperties)
+        _BFSingleApplicationRecipe.__init__(self, case, 'simpleFoam',
+                                            turbulenceProperties)
 
-        # update application
-        case.controlDict.application = 'simpleFoam'
-        case.controlDict.save(case.projectDir)
-
-    @property
-    def residualFile(self):
-        """Return address of the residual file."""
-        return os.path.join(self.case.etcDir, 'simpleFoam.log')
-
-    @property
-    def logFile(self):
-        """Return address of the log file."""
-        return os.path.join(self.case.etcDir, 'simpleFoam.log')
-
-    @property
-    def errFile(self):
-        """Return address of the error file."""
-        return os.path.join(self.case.etcDir, 'simpleFoam.err')
+        # update fvSolution
+        self.case.fvSolution = FvSolution.fromRecipe(0)
+        self.case.fvSolution.save(self.case.projectDir)
 
     @property
     def quantities(self):
         """Important Quantities for the recipe."""
         return ('Ux', 'Uy', 'Uz', 'p', 'k', 'epsilon')
 
-    def run(self, args=None, decomposeParDict=None, run=True, wait=True):
-        """Execute the recipe."""
-        return self.case.simpleFoam(args, decomposeParDict, run, wait)
+
+class HeatTransfer(_BFSingleApplicationRecipe):
+    """Recipe for Steady Incompressible flows.
+
+    This recipe excutes simpleFoam for the input case.
+
+    Attributes:
+        case: An OpenFOAM Case.
+        turbulenceProperties: Turbulence properties.
+    """
+
+    def __init__(self, case, turbulenceProperties=None):
+        """Initiate recipe."""
+        if not turbulenceProperties:
+            turbulenceProperties = TurbulenceProperties.RAS()
+
+        _BFSingleApplicationRecipe.__init__(self, case,
+                                            'buoyantBoussinesqSimpleFoam',
+                                            turbulenceProperties)
+
+        # update fvSolution
+        self.case.fvSolution = FvSolution.fromRecipe(1)
+        self.case.fvSolution.save(self.case.projectDir)
+
+        # write g, T, p_rgh, alphat
+        self.case.g.save(self.case.projectDir)
+        self.case.T.save(self.case.projectDir)
+        self.case.p_rgh.save(self.case.projectDir)
+        self.case.alphat.save(self.case.projectDir)
+
+    @property
+    def quantities(self):
+        """Important Quantities for the recipe."""
+        return ('Ux', 'Uy', 'Uz', 'p_rgh', 'T')

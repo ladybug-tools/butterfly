@@ -214,12 +214,12 @@ def getSnappyHexMeshRefinementSurfaces(projectName, BFGeometries, globalLevels=N
     return _ref
 
 
-def getBoundaryField(BFGeometries, field='u'):
+def getBoundaryField(BFGeometries, field='U'):
     """Get data for boundaryField as a dictionary.
 
     Args:
         BFGeometries: List of Butterfly geometries.
-        parameter: One of the fileds as a string (u , p, k , epsilon, nut)
+        parameter: One of the fileds as a string (U , p, k , epsilon, nut)
 
     Returns:
         A dictionary of data that can be passed to snappyHexMeshDict.
