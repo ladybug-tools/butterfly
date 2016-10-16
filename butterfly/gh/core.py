@@ -11,8 +11,10 @@ class Case(OpemFOAMCase):
 
     def loadMesh(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
-        return loadOFMeshToRhino(os.path.join(self.constantDir, "polyMesh"))
+        return loadOFMeshToRhino(os.path.join(self.constantDir, "polyMesh"),
+                                 convertToMeters=self.blockMeshDict.convertToMeters)
 
     def loadPoints(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
-        return loadOFPointsToRhino(os.path.join(self.constantDir, "polyMesh"))
+        return loadOFPointsToRhino(os.path.join(self.constantDir, "polyMesh"),
+                                   convertToMeters=self.blockMeshDict.convertToMeters)

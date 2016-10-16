@@ -9,7 +9,7 @@ except ImportError:
 import gzip
 
 
-def loadOFMeshToRhino(polyMeshFolder):
+def loadOFMeshToRhino(polyMeshFolder, convertToMeters=1):
     """Convert OpenFOAM mesh to a Rhino Mesh."""
     def splitLine(l, t=float):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
@@ -101,10 +101,14 @@ def loadOFMeshToRhino(polyMeshFolder):
                 msg = "One of the faces has %d vertices." % len(face)
                 print msg
 
+    # scale mesh to Rhion units if not meters
+    if convertToMeters != 1:
+        mesh.Scale(1.0 / convertToMeters)
+
     return mesh
 
 
-def loadOFPointsToRhino(polyMeshFolder):
+def loadOFPointsToRhino(polyMeshFolder, convertToMeters=1):
     """Load OpenFOAM points as Rhino points."""
     def splitLine(l, t=float):
         return tuple(t(s) for s in l.split('(')[-1].replace(')', '').split())
@@ -131,7 +135,7 @@ def loadOFPointsToRhino(polyMeshFolder):
             # blockMesh
             line = ptFile.readline()
             nPoints = int(line[0])
-            pts = tuple(
+            pts = (
                 rc.Geometry.Point3d(*pt)
                 for pt in eval(line[1:].replace(" ", ", "))
             )
@@ -140,12 +144,17 @@ def loadOFPointsToRhino(polyMeshFolder):
             line = ptFile.readline()
             nPoints = int(line)
             ptFile.readline()
-            pts = tuple(
+            pts = (
                 rc.Geometry.Point3d(*splitLine(ptFile.readline()))
                 for pt in xrange(nPoints)
             )
     except Exception as e:
         raise Exception('Failed to load points file:\n{}'.format(e))
+    else:
+        if convertToMeters != 1:
+            pts = tuple(pt / convertToMeters for pt in pts)
+        else:
+            pts = tuple(pts)
     finally:
         ptFile.close()
 

@@ -32,9 +32,9 @@ class BlockMeshDict(FoamFile):
             _y += ver[1]
             _z += ver[2]
 
-        return _x / len(self.vertices), \
-            _y / len(self.vertices), \
-            _z / len(self.vertices)
+        return _x * self.convertToMeters / len(self.vertices), \
+            _y * self.convertToMeters / len(self.vertices), \
+            _z * self.convertToMeters / len(self.vertices)
 
     def toOpenFOAM(self):
         """Return OpenFOAM representation as a string."""

@@ -24,7 +24,7 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_28_2016'
+ghenv.Component.Message = 'VER 0.0.02\nOCT_15_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -34,7 +34,8 @@ if _case:
     if not _locationInMesh_:
         _locationInMesh_ = _case.blockMeshDict.center
     else:
-        _locationInMesh_ = tuple(_locationInMesh_)
+        _locationInMesh_ = tuple(c * _case.blockMeshDict.convertToMeters
+                                 for c in tuple(_locationInMesh_))
 
     if _snappyHexMeshDict_ and hasattr(_snappyHexMeshDict_, 'locationInMesh'):
         # update values for snappyHexMeshDict
