@@ -188,7 +188,7 @@ class GHWindTunnel(WindTunnel):
                                       (self.ghBoundingGeometries.rightSide.ToBrep(),),
                                       WindTunnelTopAndSidesBoundaryCondition())
 
-        leftSide = GHBFBlockGeometry('lefttSide',
+        leftSide = GHBFBlockGeometry('leftSide',
                                      (self.ghBoundingGeometries.leftSide.ToBrep(),),
                                      WindTunnelTopAndSidesBoundaryCondition())
 
