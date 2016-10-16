@@ -209,9 +209,9 @@ class GHWindTunnel(WindTunnel):
         _ABLCDict['Uref'] = str(self.windSpeed)
         _ABLCDict['Zref'] = str(self.Zref)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
-        _ABLCDict['flowDir'] = '({} {} {})'.format(self.windDirection.X,
-                                                   self.windDirection.Y,
-                                                   self.windDirection.Z)
+        _ABLCDict['flowDir'] = '({} {} {})'.format(self.windDirection.X + 0,
+                                                   self.windDirection.Y + 0,
+                                                   self.windDirection.Z + 0)
         _ABLCDict['zGround'] = 'uniform {}'.format(self.block.minZ)
 
         return _ABLCDict
@@ -223,9 +223,9 @@ class GHWindTunnel(WindTunnel):
     def __calculatePlane(self):
         """Calculate base plane based on wind direction."""
         # set XAxis to wind direction
-        xAxis = rc.Geometry.Vector3d(self.windDirection.X,
-                                     self.windDirection.Y,
-                                     self.windDirection.Z)
+        xAxis = rc.Geometry.Vector3d(self.windDirection.X + 0,
+                                     self.windDirection.Y + 0,
+                                     self.windDirection.Z + 0)
         # calculate YAxis
         yAxis = rc.Geometry.Vector3d(xAxis)
         yAxis.Rotate(PI / 2, rc.Geometry.Vector3d.ZAxis)
