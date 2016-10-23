@@ -33,7 +33,7 @@ class WindTunnel(object):
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
+                 block, roughness, globRefineLevel, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
         self.inlet = self.__checkIfBFGeometry(inlet)
@@ -44,7 +44,7 @@ class WindTunnel(object):
         self.testGeomtries = tuple(geo for geo in testGeomtries
                                    if self.__checkIfBFGeometry(geo))
         self.z0 = roughness
-        self.globalRefLevel = globalRefLevel
+        self.globRefineLevel = globRefineLevel
 
         self.Zref = float(Zref) if Zref else 10
         self.convertToMeters = convertToMeters

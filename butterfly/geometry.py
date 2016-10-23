@@ -3,6 +3,8 @@
 import os
 from copy import deepcopy
 from .boundarycondition import BoundaryCondition
+from .stl import read_ascii_string
+from .vectormath import crossProduct
 
 
 class _BFMesh(object):
@@ -15,12 +17,16 @@ class _BFMesh(object):
         normals: A flatten list of (x, y, z) for face normals.
     """
 
-    def __init__(self, name, vertices, faceIndices, normals):
+    def __init__(self, name, vertices, faceIndices, normals=None):
         """Init Butterfly mesh."""
         self.name = name
 
         self.__vertices = vertices
         self.__faceIndices = faceIndices
+
+        if not normals:
+            normals = self.__calculateNormals()
+
         self.__normals = normals
 
         assert len(self.__faceIndices) == len(self.__normals), \
@@ -59,7 +65,29 @@ class _BFMesh(object):
         """A flatten list of (x, y, z) for normals."""
         return self.__normals
 
-    def toStlString(self):
+    def __calculateNormals(self):
+        """Calculate normals from vertices."""
+        return tuple(self.__calculateNormalFromPoints(tuple(self.vertices[i]
+                                                        for i in ind))
+                     for ind in self.faceIndices)
+
+    @staticmethod
+    def __calculateNormalFromPoints(pts):
+        """Calculate normal for three points."""
+        # vector between first point and the second point on the list
+        try:
+            pt1, pt2, pt3 = pts[:3]
+        except Exception as e:
+            raise ValueError('Failed to calculate normal:\n\t{}'.format(e))
+
+        v1 = (pt2[0] - pt1[0], pt2[1] - pt1[1], pt2[2] - pt1[2])
+
+        # vector between first point and the last point in the list
+        v2 = (pt3[0] - pt1[0], pt3[1] - pt1[1], pt3[2] - pt1[2])
+
+        return crossProduct(v1, v2)
+
+    def toSTL(self):
         """Get STL definition for this geometry as a string."""
         _hea = "solid {}".format(self.name)
         _tale = "endsolid {}".format(self.name)
@@ -86,14 +114,14 @@ class _BFMesh(object):
             self.__vertices[faceInd[2]][2]
         ) for count, faceInd in enumerate(self.__faceIndices))
 
-        return "{}\n{}\n{}".format(
+        return "{}\n{}\n{}\n".format(
             _hea, "\n".join(_bodyCollector), _tale
         )
 
     def writeToStl(self, folder):
         """Save BFFace to a stl file. File name will be self.name."""
         with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-            outf.write(self.toStlString())
+            outf.write(self.toSTL())
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -129,7 +157,7 @@ class BFGeometry(_BFMesh):
         print geo.toStlString()
     """
 
-    def __init__(self, name, vertices, faceIndices, normals,
+    def __init__(self, name, vertices, faceIndices, normals=None,
                  boundaryCondition=None):
         """Init Butterfly geometry."""
         _BFMesh.__init__(self, name, vertices, faceIndices, normals)
@@ -171,10 +199,10 @@ class BFBlockGeometry(BFGeometry):
             the geometry.
     """
 
-    def __init__(self, name, vertices, faceIndices, normals, borderVertices,
+    def __init__(self, name, vertices, faceIndices, borderVertices,
                  boundaryCondition=None):
         """Create Block Geometry."""
-        BFGeometry.__init__(self, name, vertices, faceIndices, normals,
+        BFGeometry.__init__(self, name, vertices, faceIndices, None,
                             boundaryCondition)
         self.__borderVertices = borderVertices
 
@@ -189,6 +217,30 @@ class BFBlockGeometry(BFGeometry):
         return self.__borderVertices
 
 
+def bfGeometryFromStlBlock(stlBlock):
+    """Create BFGeometry from an stl block as a string."""
+    solid = read_ascii_string(stlBlock)
+
+    vertices = tuple(solid.vertices)
+    indices = tuple(tuple(vertices.index(ver) for ver in facet.vertices)
+                    for facet in solid.facets)
+    normals = tuple(facet.normal for facet in solid.facets)
+
+    return BFGeometry(solid.name, vertices, indices, normals)
+
+
+def bfGeometryFromStlFile(filepath):
+    """Return a tuple of BFGeometry from an stl file."""
+    with open(filepath, 'rb') as f:
+        l = ''.join(f.readlines())
+
+    blocks = ('\nsolid{}'.format(t) if not t.startswith('solid') else '\n{}'.format(t)
+              for t in l.split('\nsolid'))
+    del(l)
+
+    return tuple(bfGeometryFromStlBlock(b) for b in blocks)
+
+
 if __name__ == '__main__':
     vertices = ((0, 0, 0), (10, 0, 0), (10, 10, 0), (0, 10, 0))
 
@@ -196,4 +248,4 @@ if __name__ == '__main__':
                      faceIndices=((0, 1, 2), (0, 2, 3)),
                      normals=((0, 0, 1), (0, 0, 1)))
 
-    print geo.toStlString()
+    print geo.toSTL()

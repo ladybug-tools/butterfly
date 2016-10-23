@@ -1,6 +1,6 @@
 # coding=utf-8
 """TransportProperties class."""
-from foamfile import FoamFile
+from foamfile import FoamFile, foamFileFromFile
 from collections import OrderedDict
 
 
@@ -22,3 +22,12 @@ class TransportProperties(FoamFile):
         FoamFile.__init__(self, name='transportProperties', cls='dictionary',
                           location='constant', defaultValues=self.__defaultValues,
                           values=values)
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))

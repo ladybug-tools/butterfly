@@ -3,8 +3,31 @@
 from __future__ import print_function
 import os
 import sys
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from subprocess import Popen, PIPE
+
+
+def listfiles(folder, fullpath=False):
+    """list files in a folder."""
+    if not os.path.isdir(folder):
+        yield None
+
+    for f in os.listdir(folder):
+        if os.path.isfile(os.path.join(folder, f)):
+            if fullpath:
+                yield os.path.join(folder, f)
+            else:
+                yield f
+
+
+def loadCaseFiles(folder, fullpath=False):
+    """load openfoam files from a folder."""
+    files = []
+    for p in ('0', 'constant', 'system', 'constant\\triSurface'):
+        files.append(tuple(listfiles(os.path.join(folder, p), fullpath)))
+
+    Files = namedtuple('Files', 'zero constant system stl')
+    return Files(*files)
 
 
 def mkdir(directory, overwrite=True):

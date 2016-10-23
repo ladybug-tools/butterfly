@@ -1,6 +1,6 @@
 # coding=utf-8
 """Finite Volume Solution class."""
-from foamfile import FoamFile
+from foamfile import FoamFile, foamFileFromFile
 from collections import OrderedDict
 
 
@@ -74,6 +74,15 @@ class FvSolution(FoamFile):
             k=self.values['SIMPLE']['residualControl']['k'],
             epsilon=self.values['SIMPLE']['residualControl']['epsilon']
         )
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     # TODO: update to pass the recipe itself and not the code!
     @classmethod

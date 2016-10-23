@@ -6,7 +6,6 @@ try:
 except ImportError:
     pass
 
-from .block import GHBlock
 from .geometry import GHBFBlockGeometry
 from .core import Case
 from .unitconversion import convertDocumentUnitsToMeters
@@ -72,12 +71,12 @@ class GHWindTunnel(WindTunnel):
             high-rise buildings, or large forests of irregular height with many
             clearings.
 
-        globalRefLevel: A tuple of (min, max) values for global refinment.
+        globRefineLevel: A tuple of (min, max) values for global refinment.
         Zref: Reference height for wind velocity in meters (default: 10).
     """
 
     def __init__(self, name, BFGeometries, windSpeed, windDirection=None,
-                 tunnelParameters=None, landscape=1, globalRefLevel=None,
+                 tunnelParameters=None, landscape=1, globRefineLevel=None,
                  Zref=None):
         """Init grasshopper wind tunnel."""
         self.name = name
@@ -126,7 +125,7 @@ class GHWindTunnel(WindTunnel):
         # init openFOAM windTunnel
         super(GHWindTunnel, self).__init__(
             self.name, inlet, outlet, (rightSide, leftSide), top, ground,
-            self.BFGeometries, self.block, self.z0, globalRefLevel, self.Zref,
+            self.BFGeometries, self.z0, globRefineLevel, self.Zref,
             convertDocumentUnitsToMeters()
         )
 
@@ -159,12 +158,6 @@ class GHWindTunnel(WindTunnel):
         wtSrfs.ground, wtSrfs.top = _srfs[4], _srfs[5]
 
         return wtSrfs
-
-    @property
-    def block(self):
-        """Create block for this windTunnel."""
-        # create block
-        return GHBlock.fromWindTunnel(self)
 
     @property
     def boundingGeometries(self):
@@ -212,7 +205,7 @@ class GHWindTunnel(WindTunnel):
         _ABLCDict['flowDir'] = '({} {} {})'.format(self.windDirection.X + 0,
                                                    self.windDirection.Y + 0,
                                                    self.windDirection.Z + 0)
-        _ABLCDict['zGround'] = 'uniform {}'.format(self.block.minZ)
+        # _ABLCDict['zGround'] = 'uniform {}'.format(self.block.minZ)
 
         return _ABLCDict
 

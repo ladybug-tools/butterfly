@@ -41,7 +41,7 @@ from runmanager import RunManager
 class CaseFoldersNotCreatedError(Exception):
     """Exception."""
 
-    _msg = 'You need to creat folders before generating the contents.\n' + \
+    _msg = 'You need to creat the folders before generating the contents.\n' + \
            'Use `createCaseFolders` method to creat the project and try again.'
 
     def __init__(self):
@@ -52,9 +52,7 @@ class CaseFoldersNotCreatedError(Exception):
 class OpemFOAMCase(object):
     """Butterfly case."""
 
-    def __init__(self, projectName, BFGeometries, blockMeshDict,
-                 globalRefinementLevel=None, locationInMesh=None,
-                 isSnappyHexMesh=False):
+    def __init__(self, projectName, BFGeometries, meshingParameters=None):
         """Init project."""
         self.username = os.getenv("USERNAME")
         self.version = float(Version.OFVer)
@@ -68,7 +66,7 @@ class OpemFOAMCase(object):
         # meshing - system
         self.isSnappyHexMesh = isSnappyHexMesh
         self.snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
-            projectName, BFGeometries, globalRefinementLevel, locationInMesh)
+            projectName, BFGeometries, globRefineLevel, locationInMesh)
 
         # place holder for refinment regions
         self.__refinementRegions = []
@@ -113,7 +111,7 @@ class OpemFOAMCase(object):
         _locationInMesh = _blockMeshDict.center
 
         _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
-                    globalRefinementLevel=windTunnel.globalRefLevel,
+                    globRefineLevel=windTunnel.globRefineLevel,
                     locationInMesh=_locationInMesh, isSnappyHexMesh=True,
                     )
 
@@ -342,8 +340,7 @@ class OpemFOAMCase(object):
 
         # create polyMesh folder under contstant
         mkdir(os.path.join(self.constantDir, "polyMesh"))
-        if self.isSnappyHexMesh:
-            mkdir(os.path.join(self.constantDir, "triSurface"))
+        mkdir(os.path.join(self.constantDir, "triSurface"))
 
         # create system directory
         systemDir = os.path.join(self.projectDir, "system")

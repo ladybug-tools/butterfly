@@ -11,7 +11,7 @@ from ..geometry import BFGeometry
 
 
 class GHMesh(object):
-    """Base mesh class for Butterf Grasshopper.
+    """Base mesh class for Butterfly Grasshopper.
 
     Attributes:
         geometries: A list of Grasshopper meshes or Breps. All input geometries
@@ -171,37 +171,3 @@ class GHBFBlockGeometry(GHBFGeometry):
         srf = face.DuplicateFace(doc.ModelAbsoluteTolerance)
         edgesJoined = rc.Geometry.Curve.JoinCurves(srf.DuplicateEdgeCurves(True))
         return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
-
-    def toBlockMeshDict(self, vertices):
-        """Get blockMeshDict string for this geometry.
-
-        Args:
-            vertices: list of vertices for all the geometries in the case.
-        """
-        _body = "   %s\n" \
-                "   {\n" \
-                "       type %s;\n" \
-                "       faces\n" \
-                "       (\n" \
-                "%s\n" \
-                "       );\n" \
-                "   }\n"
-
-        if not self.borderVertices:
-            raise TypeError("This Butterfly geometry is created from meshes "
-                            "and can't be expoerted as blockMeshDict.")
-
-        try:
-            renumberedIndices = (tuple(vertices.index(v) for v in verGroup)
-                                 for verGroup in self.borderVertices)
-        except:
-            raise ValueError("Can't find the vertex "
-                             "in the vertices:\ninput: {}\n vertices: {}"
-                             .format(self.borderVertices, vertices))
-
-        return _body % (
-            self.name,
-            self.boundaryCondition.type,
-            "\n".join(["            " + str(indices).replace(",", "")
-                       for indices in renumberedIndices])
-        )

@@ -1,6 +1,6 @@
 # coding=utf-8
 """ABL Conditions and initialConditions class."""
-from foamfile import Condition
+from foamfile import Condition, foamFileFromFile
 from collections import OrderedDict
 import math
 
@@ -24,6 +24,15 @@ class ABLConditions(Condition):
             name='ABLConditions', cls='dictionary', location='0',
             defaultValues=self.__defaultValues, values=values
         )
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @classmethod
     def fromWindTunnel(cls, windTunnel):
@@ -70,6 +79,15 @@ class InitialConditions(Condition):
             name='initialConditions', cls='dictionary', location='0',
             defaultValues=self.__defaultValues, values=values
         )
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     def calculateKEpsilon(self, init=False):
         """Calculate turbulentKE and turbulentEpsilon.

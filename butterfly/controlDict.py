@@ -1,6 +1,6 @@
 # coding=utf-8
 """BlockMeshDict class."""
-from foamfile import FoamFile
+from foamfile import FoamFile, foamFileFromFile
 from collections import OrderedDict
 
 
@@ -32,6 +32,15 @@ class ControlDict(FoamFile):
         FoamFile.__init__(self, name='controlDict', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @property
     def include(self):

@@ -1,6 +1,6 @@
 # coding=utf-8
 """g[ravity] class."""
-from foamfile import FoamFile
+from foamfile import FoamFile, foamFileFromFile
 from collections import OrderedDict
 
 
@@ -20,3 +20,12 @@ class G(FoamFile):
                           location='constant',
                           defaultValues=self.__defaultValues,
                           values=values)
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))

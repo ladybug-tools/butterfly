@@ -2,6 +2,7 @@
 """Butterfly refinement region."""
 from copy import deepcopy
 from .geometry import _BFMesh
+from .geometry import bfGeometryFromStlFile
 
 
 class RefinementRegion(_BFMesh):
@@ -129,3 +130,32 @@ class Outside(Inside):
     """
 
     pass
+
+
+def refinementModeFromDict(d):
+    """Create a Refinement mode from a python dictionary.
+
+    The dictionary should have two keys for model and levels.
+    {'levels': '((1000000000000000.0 4) )', 'mode': 'inside'}
+    """
+    mode = d['mode']
+
+    levels = str(d['levels']).replace(', ', ' ').replace('( (', '((') \
+        .replace(') )', '))')[1:-1].split()
+
+    levels = eval(','.join(levels))
+
+    if mode == 'inside':
+        return Inside(levels[-1])
+    elif mode == 'outside':
+        return Outside(levels[-1])
+    elif mode == 'distance':
+        return Distance(levels)
+
+
+def refinementRegionsFromStlFile(filepath, refinementMode):
+    """Create a RefinementRegion form an stl file."""
+    geos = bfGeometryFromStlFile(filepath)
+    return tuple(RefinementRegion(geo.name, geo.vertices, geo.faceIndices,
+                                  geo.normals, refinementMode)
+                 for geo in geos)

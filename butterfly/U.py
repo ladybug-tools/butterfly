@@ -1,10 +1,10 @@
 # coding=utf-8
 """U class."""
-from foamfile import ZeroFolderFoamFile
+from foamfile import FoamFileZeroFolder, foamFileFromFile
 from collections import OrderedDict
 
 
-class U(ZeroFolderFoamFile):
+class U(FoamFileZeroFolder):
     """U (Speed) class."""
 
     # set default valus for this class
@@ -16,7 +16,16 @@ class U(ZeroFolderFoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        ZeroFolderFoamFile.__init__(self, name='U', cls='volVectorField',
+        FoamFileZeroFolder.__init__(self, name='U', cls='volVectorField',
                                     location='0',
                                     defaultValues=self.__defaultValues,
                                     values=values)
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))

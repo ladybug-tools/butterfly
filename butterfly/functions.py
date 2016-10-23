@@ -1,6 +1,6 @@
 # coding=utf-8
 """A cllection of OpenFOAM functions such as Probes."""
-from foamfile import Condition
+from foamfile import Condition, foamFileFromFile
 from collections import OrderedDict
 
 
@@ -24,6 +24,15 @@ class Probes(Condition):
             name='probes', cls='dictionary', location='system',
             defaultValues=self.__defaultValues, values=values
         )
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @property
     def probesCount(self):

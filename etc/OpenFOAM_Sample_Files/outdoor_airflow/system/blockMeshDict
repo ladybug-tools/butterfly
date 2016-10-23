@@ -32,8 +32,9 @@ vertices
 
 blocks
 (
-   hex (2 4 1 6 7 0 5 3) (9 10 3) 
-simpleGrading (
+   hex
+		(2 4 1 6 7 0 5 3)    
+				(9 10 3) simpleGrading (
 	1.0
 	(
 		(0.1 20.0 1.0)
@@ -48,8 +49,7 @@ edges
 (
 );
 
-boundary
-(   inlet
+boundary (   inlet
    {
        type patch;
        faces

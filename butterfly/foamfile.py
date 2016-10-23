@@ -64,9 +64,12 @@ class FoamFile(object):
             try:
                 return _values['FoamFile'][key]
             except KeyError:
-                print 'failed to find {} in file. Using default velue: {}' \
-                    .format(key, default[key])
+                print 'failed to find {} in {}.\n\tUsing the default value: {}' \
+                    .format(filepath, key, default[key])
                 return default[key]
+
+        assert not filepath.endswith('blockMeshDict'), \
+            'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
 
         _values = CppDictParser.fromFile(filepath).values
         p, _name = os.path.split(filepath)
@@ -88,6 +91,11 @@ class FoamFile(object):
             del(_values['FoamFile'])
 
         return cls(_name, _cls, _location, _fileFormat, values=_values)
+
+    @property
+    def isFoamFile(self):
+        """Return True for FoamFile."""
+        return True
 
     @property
     def isZeroFile(self):
@@ -126,6 +134,9 @@ class FoamFile(object):
         """
         def logChanges(original, new):
             """compare this dictionary with the current values."""
+            if original is None:
+                original = {}
+
             for key, value in new.items():
 
                 if key not in original:
@@ -309,11 +320,11 @@ class FoamFile(object):
         return self.toOpenFOAM()
 
 
-class ZeroFolderFoamFile(FoamFile):
+class FoamFileZeroFolder(FoamFile):
     """FoamFiles under 0 folder.
 
-    The main difference between ZeroFolderFoamFile and FoamFile is that
-    ZeroFolderFoamFile has a method to set boundary fields based on input
+    The main difference between FoamFileZeroFolder and FoamFile is that
+    FoamFileZeroFolder has a method to set boundary fields based on input
     geometry (e.g. Butterfly objects).
     """
 
@@ -343,3 +354,24 @@ class Condition(FoamFile):
     def header(self):
         """Return conditions header."""
         return Header.header()
+
+
+def foamFileFromFile(filepath, name=None, header=False):
+    """Load values from foamfile.
+
+    Args:
+        filepath: Full file path to dictionary.
+        name: An optional name for foamfile to double check.
+        header: Set to True to get FoamFile data.
+    """
+    if name:
+        p, _name = os.path.split(filepath)
+        assert _name.lower() == name.lower(), \
+            'Illegal file input {} for creating {}'.format(_name, name)
+
+    _values = CppDictParser.fromFile(filepath).values
+
+    if not header and 'FoamFile' in _values:
+        del(_values['FoamFile'])
+
+    return _values

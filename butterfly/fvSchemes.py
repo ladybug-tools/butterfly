@@ -1,7 +1,7 @@
 # coding=utf-8
 """Finite Volume Schemes class."""
 from version import Version
-from foamfile import FoamFile
+from foamfile import FoamFile, foamFileFromFile
 from collections import OrderedDict
 
 
@@ -56,6 +56,15 @@ class FvSchemes(FoamFile):
         FoamFile.__init__(self, name='fvSchemes', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @classmethod
     def fromMeshOrthogonality(cls, averageOrthogonality=45):

@@ -2,9 +2,10 @@
 """snappyHexMeshDict class."""
 from collections import OrderedDict
 
-from .foamfile import FoamFile
+from .foamfile import FoamFile, foamFileFromFile
 from .helper import getSnappyHexMeshGeometryFeild, \
     getSnappyHexMeshRefinementSurfaces
+from .refinementRegion import refinementModeFromDict
 
 
 # TODO: Move default values into a separate file.
@@ -91,14 +92,23 @@ class SnappyHexMeshDict(FoamFile):
                           values=values)
 
     @classmethod
-    def fromBFGeometries(cls, projectName, BFGeometries, globalRefinementLevel,
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        return cls(values=foamFileFromFile(filepath, cls.__name__))
+
+    @classmethod
+    def fromBFGeometries(cls, projectName, BFGeometries, globRefineLevel,
                          locationInMesh, meshingType='triSurfaceMesh',
                          values=None):
         """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
         _cls.locationInMesh = locationInMesh
         _cls.setGeometry(projectName, BFGeometries, meshingType)
-        _cls.setRefinementSurfaces(projectName, BFGeometries, globalRefinementLevel)
+        _cls.setRefinementSurfaces(projectName, BFGeometries, globRefineLevel)
         return _cls
 
     @property
@@ -159,6 +169,27 @@ class SnappyHexMeshDict(FoamFile):
     @maxGlobalCells.setter
     def maxGlobalCells(self, value=2000000):
         self.values['castellatedMeshControls']['maxGlobalCells'] = str(int(value))
+
+    @property
+    def stlFileNames(self):
+        """List of stl files if any."""
+        stlFNames = self.values['geometry'].keys()
+        return tuple(f[:-4] for f in stlFNames
+                     if not f[:-4] in self.refinementRegionNames)
+
+    @property
+    def refinementRegionNames(self):
+        """List of stl files if any."""
+        return self.values['castellatedMeshControls']['refinementRegions'].keys()
+
+    def refinementRegionMode(self, refinementRegionName):
+        """Refinement region mode for a refinement region."""
+        assert refinementRegionName in self.refinementRegionNames, \
+            'Failed to find {} in {}'.format(refinementRegionName,
+                                             self.refinementRegionNames)
+
+        mode = self.values['castellatedMeshControls']['refinementRegions'][refinementRegionName]
+        return refinementModeFromDict(mode)
 
     def setGeometry(self, projectName, BFGeometries, meshingType='triSurfaceMesh'):
         """Set geometry from BFGeometries."""
