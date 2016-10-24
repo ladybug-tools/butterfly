@@ -3,8 +3,9 @@
 from copy import deepcopy
 
 from .blockMeshDict import BlockMeshDict
-from .core import OpemFOAMCase
+from .case import Case
 from .grading import SimpleGrading
+from meshingparameters import MeshingParameters
 
 
 class WindTunnel(object):
@@ -19,7 +20,6 @@ class WindTunnel(object):
         ground: Ground face as butterfly geometry.
         testGeomtries: A list of geometries as butterfly geometries that are located
             within bounding box boundary.
-        block: A butterfly Block for windtunnel bounding box.
         roughness: z0 (roughness) value.
                 '0.0002'  # sea
                 '0.005'   # smooth
@@ -33,20 +33,20 @@ class WindTunnel(object):
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globRefineLevel, Zref=None, convertToMeters=1):
+                 roughness, meshingParameters=None, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
-        self.inlet = self.__checkIfBFGeometry(inlet)
-        self.outlet = self.__checkIfBFGeometry(outlet)
-        self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
-        self.top = self.__checkIfBFGeometry(top)
-        self.ground = self.__checkIfBFGeometry(ground)
+        self.inlet = self.__checkInputGeometry(inlet)
+        self.outlet = self.__checkInputGeometry(outlet)
+        self.sides = tuple(side for side in sides if self.__checkInputGeometry(side))
+        self.top = self.__checkInputGeometry(top)
+        self.ground = self.__checkInputGeometry(ground)
         self.testGeomtries = tuple(geo for geo in testGeomtries
-                                   if self.__checkIfBFGeometry(geo))
+                                   if self.__checkInputGeometry(geo))
         self.z0 = roughness
-        self.globRefineLevel = globRefineLevel
+        self.meshingParameters = meshingParameters or MeshingParameters()
 
-        self.Zref = float(Zref) if Zref else 10
+        self.Zref = float(Zref) or 10
         self.convertToMeters = convertToMeters
 
         # place holder for refinment regions
@@ -58,7 +58,7 @@ class WindTunnel(object):
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
 
-    def __checkIfBFGeometry(self, input):
+    def __checkInputGeometry(self, input):
         if hasattr(input, 'isBFGeometry'):
             return input
         else:
@@ -82,13 +82,15 @@ class WindTunnel(object):
     @property
     def zGround(self):
         """Minimum z value of the bounding box."""
-        return self.block.minZ
+        return self.blockMeshDict.minZ
 
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        return BlockMeshDict(self.convertToMeters, self.boundingGeometries,
-                             [self.block])
+        bmdict = BlockMeshDict.fromBFBlockGeometries(
+                self.boundingGeometries, self.convertToMeters)
+        bmdict.updateMeshingParameters(self.meshingParameters)
+        return bmdict
 
     @property
     def ABLConditionsDict(self):
@@ -109,7 +111,7 @@ class WindTunnel(object):
 
     def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""
-        return OpemFOAMCase.fromWindTunnel(self)
+        return Case.fromWindTunnel(self)
 
     def ToString(self):
         """Overwrite ToString .NET method."""
@@ -133,17 +135,12 @@ class TunnelParameters(object):
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
-                 gradXYZ=None):
+    def __init__(self, windward=3, top=3, side=2, leeward=15):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
-        self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
-        self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
-        # nDivXYZ will be calculated based on cellSize in windTunnel
-        self.nDivXYZ = None
 
     def __checkInput(self, input):
         """Check input values."""

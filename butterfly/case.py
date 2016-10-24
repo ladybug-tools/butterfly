@@ -75,15 +75,11 @@ class Case(object):
         # optional input for changing working directory
         # should not be used on OpenFOAM on Windows
         self.workingDir = os.path.join(os.path.expanduser('~'), 'butterfly')
-        self.__foamfiles = foamfiles
 
         # set foamfiles dynamically. This is flexible but makes documentation
         # tricky. also autocomplete won't work for this cases.
-        for ff in foamfiles:
-            if not ff:
-                continue
-            assert hasattr(ff, 'isFoamFile'), '{} is not a FoamFile'.format(ff)
-            setattr(self, ff.name, ff)
+        self.__foamfiles = []
+        self.addFoamFiles(foamfiles)
 
         # set butterfly geometries
         self.__geometries = self.__checkInputGeometries(geometries)
@@ -94,6 +90,7 @@ class Case(object):
         self.runmanager = RunManager(self.projectName)
 
     # TODO: Parse boundary conditions for each geometry
+    # This is a major limitation for importing outdoor studies.
     @classmethod
     def fromFolder(cls, path, name=None):
         """Create a Butterfly case from a case folder.
@@ -212,6 +209,40 @@ class Case(object):
 
         # create case
         return cls(name, foamFiles, geometries)
+
+    @classmethod
+    def fromWindTunnel(cls, windTunnel):
+        """Create case from wind tunnel."""
+        _case = cls(windTunnel.name, windTunnel.testGeomtries,
+                    windTunnel.blockMeshDict, windTunnel.meshingParameters)
+
+        initialConditions = InitialConditions(
+            Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
+
+        ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
+
+        # add initialConditions and ABLConditions to _case
+        _case.addFoamFiles((initialConditions, ABLConditions))
+
+        # include condition files in 0 folder files
+        _case.U.updateValues({'#include': '"initialConditions"',
+                             'internalField': 'uniform $flowVelocity'},
+                             mute=True)
+        _case.p.updateValues({'#include': '"initialConditions"',
+                             'internalField': 'uniform $pressure'},
+                             mute=True)
+        _case.k.updateValues({'#include': '"initialConditions"',
+                             'internalField': 'uniform $turbulentKE'},
+                             mute=True)
+        _case.epsilon.updateValues({'#include': '"initialConditions"',
+                                   'internalField': 'uniform $turbulentEpsilon'},
+                                   mute=True)
+
+        if windTunnel.refinementRegions:
+            for region in windTunnel.refinementRegions:
+                _case.addRefinementRegion(region)
+
+        return _case
 
     @property
     def projectName(self):
@@ -351,6 +382,20 @@ class Case(object):
         else:
             return tuple(f for f in self.__foamfiles
                          if f.location == '"{}"'.format(location))
+
+    def addFoamFiles(self, foamfiles):
+        """Add foamfiles to the Case."""
+        for ff in foamfiles:
+            self.addFoamFile(ff)
+
+    def addFoamFile(self, foamfile):
+        """Add a foamfile to the case."""
+        if not foamfile:
+            continue
+        assert hasattr(foamfile, 'isFoamFile'), '{} is not a FoamFile'.format(ff)
+        setattr(self, foamfile.name, foamfile)
+        self.__foamfiles.append(ff)
+
 
     def addRefinementRegions(self, refinementRegions):
         """Add a collections of refinement regions."""

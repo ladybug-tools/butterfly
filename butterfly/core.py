@@ -40,42 +40,6 @@ from runmanager import RunManager
 
 class OpemFOAMCase(object):
     """Butterfly case."""
-    @classmethod
-    def fromWindTunnel(cls, windTunnel):
-        """Create case from wind tunnel."""
-        _blockMeshDict = windTunnel.blockMeshDict
-        _locationInMesh = _blockMeshDict.center
-
-        _case = cls(windTunnel.name, windTunnel.testGeomtries, _blockMeshDict,
-                    globRefineLevel=windTunnel.globRefineLevel,
-                    locationInMesh=_locationInMesh, isSnappyHexMesh=True,
-                    )
-
-        _case.initialConditions = InitialConditions(
-            Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
-
-        _case.ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
-
-        # edit files in 0 folder
-        _case.U.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $flowVelocity'},
-                             mute=True)
-        _case.p.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $pressure'},
-                             mute=True)
-        _case.k.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $turbulentKE'},
-                             mute=True)
-        _case.epsilon.updateValues({'#include': '"initialConditions"',
-                                   'internalField': 'uniform $turbulentEpsilon'},
-                                   mute=True)
-
-        if windTunnel.refinementRegions:
-            for region in windTunnel.refinementRegions:
-                _case.addRefinementRegion(region)
-
-        return _case
-
     # goes in utilities/utility folder
     @staticmethod
     def loadProbesFromProjectPath(projectPath, field, probesFolder='probes'):
