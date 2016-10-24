@@ -47,13 +47,29 @@ def angleAnitclockwise(v1, v2):
         # this is a property of the det. If the det < 0 then B is clockwise of A
         return 360 - inner
 
-def crossProduct(v1, v2, normalize=True):
+def crossProduct(v1, v2, norm=True):
     """Calculate cross product of two 3d vector."""
     v = (v1[1] * v2[2] - v1[2] * v2[1], -v1[0] * v2[2] + v1[2] * v2[0],
          v1[0] * v2[1] - v1[1] * v2[0])
 
-    if normalize:
-        l = length(v)
-        return tuple(c / l for c in v)
+    if norm:
+        return normalize(v)
     else:
         return v
+
+def normalize(v):
+    """Normalize a vector."""
+    l = length(v)
+    return tuple(c / l for c in v)
+
+def move(p, v):
+    """move a point along a vector and return a new pt."""
+    return tuple(i + j for i, j in zip(p, v))
+
+def scale(v, s):
+    """Scale b by s."""
+    return tuple(i * s for i in v)
+
+def sums(vectors):
+    """Add up a number of vectors."""
+    return tuple(sum(v) for v in zip(*vectors))

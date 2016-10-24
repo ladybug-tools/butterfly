@@ -3,7 +3,7 @@
 from copy import deepcopy
 from collections import namedtuple, OrderedDict
 import os
-from .helper import checkFiles, tail
+from .utilities import checkFiles, tail
 from .parser import CppDictParser
 
 

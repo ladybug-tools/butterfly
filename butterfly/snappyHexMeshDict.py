@@ -1,9 +1,10 @@
 # coding=utf-8
 """snappyHexMeshDict class."""
 from collections import OrderedDict
+import re
 
 from .foamfile import FoamFile, foamFileFromFile
-from .helper import getSnappyHexMeshGeometryFeild, \
+from .utilities import getSnappyHexMeshGeometryFeild, \
     getSnappyHexMeshRefinementSurfaces
 from .refinementRegion import refinementModeFromDict
 
@@ -90,6 +91,7 @@ class SnappyHexMeshDict(FoamFile):
         FoamFile.__init__(self, name='snappyHexMeshDict', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
+        self.__geometries = None
 
     @classmethod
     def fromFile(cls, filepath):
@@ -101,15 +103,36 @@ class SnappyHexMeshDict(FoamFile):
         return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @classmethod
-    def fromBFGeometries(cls, projectName, BFGeometries, globRefineLevel,
-                         locationInMesh, meshingType='triSurfaceMesh',
-                         values=None):
+    def fromBFGeometries(cls, projectName, geometries, globRefineLevel=None,
+                         locationInMesh=None, values=None):
         """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
+        cls.projectName = projectName
+        cls.__geometries = cls.__checkInputGeometries(geometries)
         _cls.locationInMesh = locationInMesh
-        _cls.setGeometry(projectName, BFGeometries, meshingType)
-        _cls.setRefinementSurfaces(projectName, BFGeometries, globRefineLevel)
+        self.globRefineLevel = globRefineLevel
+        _cls.setGeometry()
+        _cls.setRefinementSurfaces()
         return _cls
+
+    @property
+    def projectName(self):
+        """Project name."""
+        return self.__projectName
+
+    # TODO: updating the name should update refinementSurfaces and setGeometry
+    # when happens from Case.fromFile() with no butterfly geometry.
+    @projectName.setter
+    def projectName(self, name):
+        assert re.match("^[a-zA-Z0-9_]*$", name), \
+            'Invalid project name: "{}".\n' \
+            'Do not use whitespace or special charecters.'.format(name)
+        self.__projectName = name
+
+    @property
+    def geometries(self):
+        """Butterfly geometries."""
+        return self.__geometries
 
     @property
     def locationInMesh(self):
@@ -120,13 +143,23 @@ class SnappyHexMeshDict(FoamFile):
     def locationInMesh(self, point):
         if not point:
             point = (0, 0, 0)
-
         try:
             self.values['castellatedMeshControls']['locationInMesh'] = \
                 str(tuple(eval(point))).replace(',', "")
         except:
             self.values['castellatedMeshControls']['locationInMesh'] = \
                 str(tuple(point)).replace(',', "")
+
+    @property
+    def globRefineLevel(self):
+        """A tuple of (min, max) values for global refinment."""
+        return self.__globRefineLevel
+
+    @globRefineLevel.setter
+    def globRefineLevel(self, r):
+        self.globRefineLevel = (1, 1) if not r else tuple(r)
+        if r:
+            _cls.setRefinementSurfaces()
 
     @property
     def castellatedMesh(self):
@@ -178,9 +211,28 @@ class SnappyHexMeshDict(FoamFile):
                      if not f[:-4] in self.refinementRegionNames)
 
     @property
+    def refinementRegions(self):
+        """Refinement regions."""
+        return self.values['castellatedMeshControls']['refinementRegions']
+
+    @property
     def refinementRegionNames(self):
         """List of stl files if any."""
         return self.values['castellatedMeshControls']['refinementRegions'].keys()
+
+    def updateMeshingParameters(self, meshingParameters):
+        """Update meshing parameters for blockMeshDict."""
+        if not meshingParameters:
+            return
+
+        assert hasattr(meshingParameters, 'isMeshingParameters'), \
+            'Expected MeshingParameters not {}'.format(type(meshingParameters))
+
+        if meshingParameters.locationInMesh:
+            self.locationInMesh = meshingParameters.locationInMesh
+
+        if meshingParameters.globRefineLevel:
+            self.globRefineLevel = meshingParameters.globRefineLevel
 
     def refinementRegionMode(self, refinementRegionName):
         """Refinement region mode for a refinement region."""
@@ -191,22 +243,18 @@ class SnappyHexMeshDict(FoamFile):
         mode = self.values['castellatedMeshControls']['refinementRegions'][refinementRegionName]
         return refinementModeFromDict(mode)
 
-    def setGeometry(self, projectName, BFGeometries, meshingType='triSurfaceMesh'):
+    def setGeometry(self):
         """Set geometry from BFGeometries."""
-        _geoField = getSnappyHexMeshGeometryFeild(projectName, BFGeometries,
-                                                  meshingType)
+        _geoField = getSnappyHexMeshGeometryFeild(self.projectName,
+                                                  self.geometries,
+                                                  meshingType='triSurfaceMesh')
         self.values['geometry'].update(_geoField)
 
-    def setRefinementSurfaces(self, projectName, BFGeometries, globalLevels):
-        """Set refinement values for geometries.
-
-        Args:
-            projectName: Name of OpenFOAM case.
-            BFGeometries: List of Butterfly geometries.
-            globalLevels: Default Min, max level of geometry mesh refinement.
-        """
-        _ref = getSnappyHexMeshRefinementSurfaces(projectName,
-                                                  BFGeometries, globalLevels)
+    def setRefinementSurfaces(self):
+        """Set refinement values for geometries."""
+        _ref = getSnappyHexMeshRefinementSurfaces(self.projectName,
+                                                  self.geometries,
+                                                  self.globRefineLevel)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 
@@ -234,3 +282,10 @@ class SnappyHexMeshDict(FoamFile):
               refinementRegion.refinementMode.toOpenFOAMDict()}
 
         self.values['castellatedMeshControls']['refinementRegions'].update(rg)
+
+    @staticmethod
+    def __checkInputGeometries(geos):
+        for geo in geos:
+            assert hasattr(geo, 'isBFMesh'), \
+                'Expected butterfly.Mesh not {}'.format(geo)
+        return geos

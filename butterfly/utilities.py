@@ -74,39 +74,9 @@ def runbatchfile(filepath, wait=True):
     p = Popen(filepath, shell=False, stdin=PIPE)
 
     if wait:
-        p.communicate(input='Y\n')
+        (output, err) = p.communicate(input='Y\n')
 
     return p
-
-
-def checkFiles(files, mute=False):
-    """Check files for content and print them out if any.
-
-    args:
-        files: A list of ASCII files.
-
-    returns:
-        (hasContent, content)
-        hasContent: A boolean that shows if there is any contents.
-        content: Files content if any
-    """
-    _lines = []
-    for f in files:
-        try:
-            with open(f, 'rb') as log:
-                _lines.append(' '.join(log.readlines()))
-        except Exception as e:
-            print('Failed to read {}:\n{}'.format(f, e))
-
-    # check if it is just empty lines
-    _l = '\n'.join(_lines).strip()
-
-    if len(_l) > 0:
-        if not mute:
-            print(_l)
-        return True, _l
-    else:
-        return False, _l
 
 
 def tail(filePath, lines=20):

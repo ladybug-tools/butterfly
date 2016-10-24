@@ -34,6 +34,8 @@ class _BFMesh(object):
             "should be equal to Length of normals (%d)" % (
                 len(self.__faceIndices), len(self.__normals))
 
+        self.__calculateMinMax()
+
     @property
     def name(self):
         """Butterfly geometry name."""
@@ -65,6 +67,14 @@ class _BFMesh(object):
         """A flatten list of (x, y, z) for normals."""
         return self.__normals
 
+    @property
+    def min(self):
+        return self.__min
+
+    @property
+    def max(self):
+        return self.__max
+
     def __calculateNormals(self):
         """Calculate normals from vertices."""
         return tuple(self.__calculateNormalFromPoints(tuple(self.vertices[i]
@@ -86,6 +96,21 @@ class _BFMesh(object):
         v2 = (pt3[0] - pt1[0], pt3[1] - pt1[1], pt3[2] - pt1[2])
 
         return crossProduct(v1, v2)
+
+    def __calculateMinMax(self):
+        """Calculate maximum and minimum x, y, z for this geometry."""
+        minPt = list(self.vertices[0])
+        maxPt = list(self.vertices[0])
+
+        for v in self.vertices[1:]:
+            for i in xrange(3):
+                if v[i] < minPt[i]:
+                    minPt[i] = v[i]
+                elif v[i] > maxPt[i]:
+                    maxPt[i] = v[i]
+
+        self.__min = minPt
+        self.__max = maxPt
 
     def toSTL(self):
         """Get STL definition for this geometry as a string."""
@@ -239,6 +264,22 @@ def bfGeometryFromStlFile(filepath):
     del(l)
 
     return tuple(bfGeometryFromStlBlock(b) for b in blocks)
+
+
+def calculateMinMaxFromBFGeometries(geometries):
+    """Calculate maximum and minimum x, y, z for this geometry."""
+    minPt = list(geometries[0].min)
+    maxPt = list(geometries[0].max)
+
+    for geo in geometries[1:]:
+        for i in xrange(3):
+            if geo.min[i] < minPt[i]:
+                minPt[i] = geo.min[i]
+
+            if geo.max[i] > maxPt[i]:
+                maxPt[i] = geo.max[i]
+
+    return minPt, maxPt
 
 
 if __name__ == '__main__':

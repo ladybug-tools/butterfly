@@ -12,18 +12,29 @@ class MeshingParameters(object):
 
     Attributes:
         cellSizeXYZ: Cell size in (x, y, z) as a tuple (default: length / 5).
-        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
-        locationInMesh: A tuple for the location of the mesh to be kept.
-        globRefineLevel: A tuple of (min, max) values for global refinment.
+            This value updates number of divisions in blockMeshDict.
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)). This value
+            updates grading in blockMeshDict.
+        locationInMesh: A tuple for the location of the mesh to be kept. This
+            value updates locationInMesh in snappyHexMeshDict.
+        globRefineLevel: A tuple of (min, max) values for global refinment. This
+            value updates globalRefinementLevel in snappyHexMeshDict.
     """
 
     def __init__(self, cellSizeXYZ=None, grading=None, locationInMesh=None,
                  globRefineLevel=None):
         """Init meshing parameters."""
+        # blockMeshDict
         self.cellSizeXYZ = None if not cellSizeXYZ else tuple(cellSizeXYZ)
-        self.grading = grading
-        self.locationInMesh = locationInMesh
+        self.grading = grading  # blockMeshDict
+        self.locationInMesh = locationInMesh  # snappyHexMeshDict
+        # snappyHexMeshDict
         self.globRefineLevel = None if not globRefineLevel else tuple(globRefineLevel)
+
+    @property
+    def isMeshingParameters(self):
+        """Return True."""
+        return True
 
     @property
     def grading(self):

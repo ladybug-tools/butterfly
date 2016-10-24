@@ -1,7 +1,7 @@
 # coding=utf-8
 """Foam File Class."""
 from .version import Version, Header
-from .helper import getBoundaryField
+from .utilities import getBoundaryField
 from .parser import CppDictParser
 import os
 import json
@@ -253,14 +253,18 @@ class FoamFile(object):
                 return OrderedDict((k, removeNone(v))
                                    for k, v in d.iteritems()
                                    if v and removeNone(v))
-            elif type(d) is list:
+            elif isinstance(d, (list, tuple)):
                 return [removeNone(v) for v in d if v and removeNone(v)]
             else:
                 return d
             return removeNone
 
         _values = removeNone(self.values)
-        # _values = self.values
+
+        # add an empty dict for refinementRegions
+        if 'castellatedMeshControls' in _values:
+            if 'refinementRegions' not in _values['castellatedMeshControls']:
+                _values['castellatedMeshControls']['refinementRegions'] = {}
 
         # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \

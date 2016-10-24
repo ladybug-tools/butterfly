@@ -32,7 +32,12 @@ class Probes(Condition):
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
+
+        if _cls.probeLocations:
+            _cls.__count = len(_cls.probeLocations.split(')')) - 1
+
+        return _cls
 
     @property
     def probesCount(self):
@@ -89,3 +94,9 @@ class Probes(Condition):
         if not value:
             return
         self.values['functions']['probes']['writeInterval'] = str(int(value))
+
+    def save(self, projectFolder, subFolder=None):
+        if self.probesCount == 0:
+            return
+        else:
+            super(Probes, self).save(projectFolder, subFolder)

@@ -1,25 +1,17 @@
 # coding=utf-8
 """BlockMeshDict class."""
+from .boundarycondition import BoundingBoxBoundaryCondition
 from .foamfile import FoamFile
-from .vectormath import angleAnitclockwise
+import vectormath
 from .grading import SimpleGrading, Grading, MultiGrading
 from .parser import CppDictParser
 from .geometry import BFGeometry
-from math import sqrt
+from math import sqrt, sin, cos, radians
 from collections import OrderedDict
 
 
 class BlockMeshDict(FoamFile):
-    """BlockMeshDict.
-
-    Args:
-        BFBlockGeometries: A collection of boundary surfaces for bounding box.
-        convertToMeters: Scaling factor for the vertex coordinates.
-        nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
-        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
-        xAxis: An optional tuple that indicates the xAxis direction
-            (default: (1, 0)).
-    """
+    """BlockMeshDict."""
 
     __defaultValues = OrderedDict()
     __defaultValues['convertToMeters'] = 1
@@ -32,6 +24,9 @@ class BlockMeshDict(FoamFile):
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
+
+        self.__BFBlockGeometries = None # this will be overwritten in classmethods
+        self.__vertices = None
 
     @classmethod
     def fromFile(cls, filepah):
@@ -83,10 +78,115 @@ class BlockMeshDict(FoamFile):
         return _cls
 
     @classmethod
-    def fromBFGeometries(cls, BFBlockGeometries, convertToMeters=1,
-                         nDivXYZ=None, grading=None, xAxis=None):
-        """Init BlockMeshDict."""
-        # follow snappyHexMeshDict!
+    def fromOriginAndSize(cls, origin, width, length, height, convertToMeters=1,
+                          nDivXYZ=None, grading=None, xAxis=None):
+        """Create BlockMeshDict from BFBlockGeometries.
+
+        Args:
+            origin: Minimum point of bounding box as (x, y, z).
+            width: Width in x direction.
+            length: Length in y direction.
+            height: Height in y direction.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _xAxis = vectormath.normalize((xAxis[:2] + [0]) if xAxis else (1, 0, 0))
+        _zAxis = (0, 0, 1)
+        _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+        vertices = tuple(
+            vectormath.move(origin,
+                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                            vectormath.scale(_yAxis, j *  length),
+                                            vectormath.scale(_zAxis, k *  height))
+                            ))
+            for i in range(2) for j in range(2) for k in range(2))
+
+        return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                                xAxis)
+
+    @classmethod
+    def fromMinMax(cls, minPt, maxPt, convertToMeters=1, nDivXYZ=None, grading=None,
+                   xAxis=None):
+        """Create BlockMeshDict from minimum and maximum point.
+
+        Args:
+            minPt: Minimum point of bounding box as (x, y, z).
+            maxPt: Maximum point of bounding box as (x, y, z).
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _xAxis = vectormath.normalize((xAxis[:2] + [0]) if xAxis else (1, 0, 0))
+        _zAxis = (0, 0, 1)
+        _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+        diagonal2D = tuple(i - j for i, j in zip(maxPt, minPt))[:2]
+        _angle = radians(vectormath.angleAnitclockwise(_xAxis[:2], diagonal2D))
+        width = cos(_angle) * vectormath.length(diagonal2D)
+        length = sin(_angle) * vectormath.length(diagonal2D)
+        height = maxPt[2] - minPt[2]
+
+        vertices = tuple(
+            vectormath.move(minPt,
+                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                            vectormath.scale(_yAxis, j *  length),
+                                            vectormath.scale(_zAxis, k *  height))
+                            ))
+            for i in range(2) for j in range(2) for k in range(2))
+
+        return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                                xAxis)
+
+    @classmethod
+    def fromVertices(cls, vertices, convertToMeters=1, nDivXYZ=None,
+                     grading=None, xAxis=None):
+        """Create BlockMeshDict from vertices.
+
+        Args:
+            vertices: 8 vertices to define the bounding box.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _cls = cls()
+        _cls.values['convertToMeters'] = convertToMeters
+        _cls.__rawvertices = vertices
+
+        # sort vertices
+        _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+        _cls.__vertices = _cls.__sortVertices()
+
+        # update self.values['boundary']
+        _cls.__updateBoundaryFromSortedVertices()
+
+        _cls.__order = tuple(range(7))
+
+        _cls.nDivXYZ = nDivXYZ
+
+        # assign grading
+        _cls.grading = grading
+
+        return _cls
+
+    @classmethod
+    def fromBFBlockGeometries(cls, BFBlockGeometries, convertToMeters=1,
+                              nDivXYZ=None, grading=None, xAxis=None):
+        """Create BlockMeshDict from BFBlockGeometries.
+
+        Args:
+            BFBlockGeometries: A collection of boundary surfaces for bounding box.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
         _cls = cls()
         _cls.values['convertToMeters'] = convertToMeters
         _cls.__BFBlockGeometries = BFBlockGeometries
@@ -117,7 +217,18 @@ class BlockMeshDict(FoamFile):
 
         return _cls
 
+    def __updateBoundaryFromSortedVertices(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
+        self.values['boundary']['boundingbox'] = {
+            'type': 'wall',
+            'faces': ((0, 3, 2, 1), (4, 5, 6, 7),
+                      (0, 1, 5, 4), (1, 2, 6, 5),
+                      (2, 3, 7, 6), (3, 0, 4, 7),
+                      )
+        }
+
     def __updateBoundaryFromBFBlockGeometries(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
         for geo in self.__BFBlockGeometries:
             try:
                 self.values['boundary'][geo.name] = {
@@ -168,14 +279,11 @@ class BlockMeshDict(FoamFile):
         """Get order of vertices in blocks."""
         return self.__order
 
-    def BFBlockGeometries(self):
-        """Get list of input BFBlockGeometries."""
-        return self.__BFBlockGeometries
-
     @property
     def geometry(self):
         """A tuple of BFGeometries for BoundingBox faces."""
         def __getBFGeometry(name, attr):
+            bc = BoundingBoxBoundaryCondition()
             ind = attr['faces'] if hasattr(attr['faces'][0], '__iter__') else \
                 (attr['faces'],)
 
@@ -186,10 +294,16 @@ class BlockMeshDict(FoamFile):
                                    for inx in ind)
 
             return BFGeometry(name, tuple(self.vertices[i] for i in uniuqe),
-                                    renumberedIndx)
+                                    renumberedIndx,
+                                    boundaryCondition=bc)
 
-        return tuple(__getBFGeometry(name, attr)
-                     for name, attr in self.boundary.iteritems())
+        if not self.__BFBlockGeometries:
+            self.__BFBlockGeometries = tuple(
+                __getBFGeometry(name, attr)
+                for name, attr in self.boundary.iteritems())
+
+        return self.__BFBlockGeometries
+
 
     @property
     def width(self):
@@ -246,6 +360,20 @@ class BlockMeshDict(FoamFile):
         self.nDivXYZ = int(round(self.width / x)), int(round(self.length / y)), \
             int(round(self.height / z))
 
+    def updateMeshingParameters(self, meshingParameters):
+        """Update meshing parameters for blockMeshDict."""
+        if not meshingParameters:
+            return
+
+        assert hasattr(meshingParameters, 'isMeshingParameters'), \
+            'Expected MeshingParameters not {}'.format(type(meshingParameters))
+
+        if meshingParameters.cellSizeXYZ:
+            self.nDivXYZByCellSize(meshingParameters.cellSizeXYZ)
+
+        if meshingParameters.grading:
+            self.grading = meshingParameters.grading
+
     @staticmethod
     def __distance(v1, v2):
         return sqrt(sum((x - y) ** 2 for x, y in zip(v1, v2)))
@@ -253,14 +381,14 @@ class BlockMeshDict(FoamFile):
     def __averageVerices(self):
         _x, _y, _z = 0, 0, 0
 
-        for ver in self.vertices:
+        for ver in self.__rawvertices:
             _x += ver[0]
             _y += ver[1]
             _z += ver[2]
 
-        return _x * self.__convertToMeters / len(self.vertices), \
-            _y * self.__convertToMeters / len(self.vertices), \
-            _z * self.__convertToMeters / len(self.vertices)
+        return _x * self.convertToMeters / len(self.__rawvertices), \
+            _y * self.convertToMeters / len(self.__rawvertices), \
+            _z * self.convertToMeters / len(self.__rawvertices)
 
     def __sortVertices(self):
         """sort input vertices."""
@@ -288,9 +416,9 @@ class BlockMeshDict(FoamFile):
         centerPt = self.center[:2]
         sortedPoints2d = \
             sorted(pointGroups[0],
-                   key=lambda x: angleAnitclockwise(xAxisReversed,
-                                                    tuple(c1 - c2 for c1, c2
-                                                          in zip(x, centerPt))))
+                   key=lambda x: vectormath.angleAnitclockwise(
+                       xAxisReversed, tuple(c1 - c2 for c1, c2
+                                            in zip(x, centerPt))))
 
         sortedPoints = tuple((pt[0], pt[1], z) for z in zValues
                              for pt in sortedPoints2d)
