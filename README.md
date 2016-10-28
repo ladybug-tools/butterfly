@@ -1,4 +1,4 @@
-![Screenshot](https://github.com/mostaphaRoudsari/Butterfly/blob/master/etc/graphics/icon/butterfly_100px.png)
+![Screenshot](https://github.com/mostaphaRoudsari/Butterfly/blob/master/etc/graphics/logo/butterfly_100px.png)
 
 Butterfly
 ========================================
