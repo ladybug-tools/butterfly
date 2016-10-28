@@ -4,7 +4,7 @@ import os
 from copy import deepcopy
 from .boundarycondition import BoundaryCondition
 from .stl import read_ascii_string
-from .vectormath import crossProduct
+from .vectormath import crossProduct, rotate, angleAnitclockwise
 
 
 class _BFMesh(object):
@@ -218,7 +218,6 @@ class BFBlockGeometry(BFGeometry):
         name: Name as a string (A-Z a-z 0-9 _).
         vertices: A flatten list of (x, y, z) for vertices.
         faceIndices: A flatten list of (a, b, c) for indices for each face.
-        normals: A flatten list of (x, y, z) for face normals.
         boundaryCondition: Boundary condition for this geometry.
         borderVertices: List of lists of (x, y, z) values for each quad face of
             the geometry.
@@ -266,19 +265,65 @@ def bfGeometryFromStlFile(filepath):
     return tuple(bfGeometryFromStlBlock(b) for b in blocks)
 
 
-def calculateMinMaxFromBFGeometries(geometries):
-    """Calculate maximum and minimum x, y, z for this geometry."""
-    minPt = list(geometries[0].min)
-    maxPt = list(geometries[0].max)
+def calculateMinMaxFromBFGeometries(geometries, xAxis=None):
+    """Calculate maximum and minimum x, y, z for this geometry.
 
-    for geo in geometries[1:]:
+    Returns:
+        (minPt, maxPt)
+    """
+    if not xAxis or xAxis[0] == 1 and xAxis[1] == 0:
+        minPt = list(geometries[0].min)
+        maxPt = list(geometries[0].max)
+
+        for geo in geometries[1:]:
+            for i in xrange(3):
+                if geo.min[i] < minPt[i]:
+                    minPt[i] = geo.min[i]
+
+                if geo.max[i] > maxPt[i]:
+                    maxPt[i] = geo.max[i]
+
+        return minPt, maxPt
+    else:
+        # calculate min and max for each geometry in new coordinates
+        infP = float('+inf')
+        infN = float('-inf')
+        minPt = [infP, infP, infP]
+        maxPt = [infN, infN, infN]
+
+        angle = angleAnitclockwise((1, 0, 0), xAxis)
+        vertices = tuple(pts for geo in geometries
+                          for pts in calculateMinMax(geo, angle))
+        for v in vertices:
+            for i in xrange(3):
+                if v[i] < minPt[i]:
+                    minPt[i] = v[i]
+                elif v[i] > maxPt[i]:
+                    maxPt[i] = v[i]
+
+        return rotate((0, 0, 0), minPt, angle), rotate((0, 0, 0), maxPt, angle)
+
+def calculateMinMax(geometry, angle):
+    """Calculate maximum and minimum x, y, z for input geometry.
+
+    angle: Anticlockwise rotation angle of the new coordinates system.
+    """
+    # get list of vertices in the new coordinates system
+    vertices = (rotate((0, 0, 0), v, -angle) for v in geometry.vertices)
+
+    infP = float('+inf')
+    infN = float('-inf')
+    minPt = [infP, infP, infP]
+    maxPt = [infN, infN, infN]
+
+    for v in vertices:
         for i in xrange(3):
-            if geo.min[i] < minPt[i]:
-                minPt[i] = geo.min[i]
+            if v[i] < minPt[i]:
+                minPt[i] = v[i]
+            elif v[i] > maxPt[i]:
+                maxPt[i] = v[i]
 
-            if geo.max[i] > maxPt[i]:
-                maxPt[i] = geo.max[i]
-
+    # rotate them back to XY coordinates
     return minPt, maxPt
 
 

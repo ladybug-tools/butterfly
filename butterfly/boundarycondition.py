@@ -25,7 +25,7 @@ class BoundaryCondition(object):
                  k=None, epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         self.type = bcType
-        self.T = ZeroGradient() if not T else FixedValue(T)
+        self.T = T or ZeroGradient()
         self.refLevels = (0, 0) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
         self.U = U or ZeroGradient()
@@ -97,7 +97,7 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
         k = k or KqRWallFunction('0.1')
         epsilon = epsilon or EpsilonWallFunction(0.01)
         nut = nut or NutkWallFunction(0.01)
-        T = T if T else None
+        T = T or ZeroGradient()
         alphat = alphat or AlphatJayatillekeWallFunction(
             value='0', isUniform=True, Prt='0.85')
 
@@ -165,7 +165,7 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
         k = k or ZeroGradient()
         epsilon = epsilon or ZeroGradient()
         nut = Calculated('0')
-        T = ZeroGradient() if not T else FixedValue(T)
+        T = T or ZeroGradient()
         alphat = ZeroGradient()
         p_rgh = ZeroGradient()
 
@@ -201,7 +201,7 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
         k = k or KqRWallFunction('$internalField', isUnifrom=False)
         epsilon = epsilon or EpsilonWallFunction('$internalField', isUnifrom=False)
         nut = nut or NutkWallFunction('0.0')
-        T = ZeroGradient() if not T else FixedValue(T)
+        T = T or ZeroGradient()
         super(WindTunnelWallBoundaryCondition, self).__init__(
             'wall', refLevels, T, U, p, k, epsilon, nut
         )
@@ -230,7 +230,7 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
         epsilon = epsilon or ZeroGradient()
         nut = NutkAtmRoughWallFunction.fromABLConditions(ablConditions,
                                                          'uniform 0')
-        T = ZeroGradient() if not T else FixedValue(T)
+        T = T or ZeroGradient()
 
         super(WindTunnelGroundBoundaryCondition, self).__init__(
             'wall', refLevels, T, U, p, k, epsilon, nut
@@ -259,7 +259,7 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
         epsilon = AtmBoundaryLayerInletEpsilon.fromABLConditions(ablConditions)
         p = p or ZeroGradient()
         nut = nut or Calculated('0')
-        T = ZeroGradient() if not T else FixedValue(T)
+        T = T or ZeroGradient()
 
         super(WindTunnelInletBoundaryCondition, self).__init__(
             'patch', refLevels, T, U, p, k, epsilon, nut)
@@ -293,7 +293,7 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
         k = k or InletOutlet('uniform $turbulentKE', '$internalField')
         epsilon = epsilon or InletOutlet('uniform $turbulentEpsilon', '$internalField')
         nut = nut or Calculated('0')
-        T = ZeroGradient() if not T else FixedValue(T)
+        T = T or ZeroGradient()
 
         super(WindTunnelOutletBoundaryCondition, self).__init__(
             'patch', refLevels, T, U, p, k, epsilon, nut
@@ -328,7 +328,7 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
         k = k or Slip()
         epsilon = epsilon or Slip()
         nut = Calculated('0')
-        T = ZeroGradient() if not T else FixedValue(T)
+        T = T or ZeroGradient()
 
         super(WindTunnelTopAndSidesBoundaryCondition, self).__init__(
             'patch', refLevels, T, U, p, k, epsilon, nut

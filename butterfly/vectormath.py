@@ -1,5 +1,5 @@
 """Calculate anitclockwise angle between two vectors."""
-from math import acos, sqrt, pi
+import math
 
 __all__ = ('angleAnitclockwise', 'crossProduct')
 
@@ -9,7 +9,7 @@ def length(v):
     if len(v) == 2:
         v = (v[0], v[1], 0)
 
-    return sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
+    return math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
 
 
 def dotProduct(v, w):
@@ -28,12 +28,15 @@ def innerAngle(v, w):
     modified from: http://stackoverflow.com/a/31735880
     """
     cosx = dotProduct(v, w) / (length(v) * length(w))
-    rad = acos(cosx)  # in radians
-    return rad * 180 / pi  # returns degrees
+    rad = math.acos(cosx)  # in radians
+    return rad * 180 / math.pi  # returns degrees
 
 
 def angleAnitclockwise(v1, v2):
     """Calculate clockwise angle between two 2D vectors."""
+    v1 = v1[:2]
+    v2 = v2[:2]
+
     inner = innerAngle(v1, v2)
     det = determinant(v1, v2)
 
@@ -73,3 +76,19 @@ def scale(v, s):
 def sums(vectors):
     """Add up a number of vectors."""
     return tuple(sum(v) for v in zip(*vectors))
+
+def rotate(origin, point, angle):
+    u"""
+    Rotate a point anitclockwise by a given angle around a given origin.
+    The angle should be given in degrees.
+
+    modified from: http://stackoverflow.com/a/34374437/4394669
+    """
+    angle = math.radians(angle)
+    ox, oy, oz = origin
+    px, py, pz = point
+    cosine = math.cos(angle)
+    sine = math.sin(angle)
+    qx = ox + cosine * (px - ox) - sine * (py - oy)
+    qy = oy + sine * (px - ox) + cosine * (py - oy)
+    return qx, qy, pz

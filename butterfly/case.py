@@ -184,7 +184,6 @@ class Case(object):
         blockMeshDict.updateMeshingParameters(meshingParameters)
 
         snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(name, geometries)
-        snappyHexMeshDict.updateMeshingParameters(meshingParameters)
 
         # constant folder
         if float(Version.OFVer) < 3:
@@ -211,7 +210,7 @@ class Case(object):
         controlDict = ControlDict()
         probes = Probes()
 
-        foamFiles = (blockMeshDict, SnappyHexMeshDict, turbulenceProperties,
+        foamFiles = (blockMeshDict, snappyHexMeshDict, turbulenceProperties,
                      transportProperties, g, u, p, k, epsilon, nut, t, alphat,
                      p_rgh, fvSchemes, fvSolution, controlDict, probes)
 
@@ -221,16 +220,17 @@ class Case(object):
     @classmethod
     def fromWindTunnel(cls, windTunnel):
         """Create case from wind tunnel."""
-        _case = cls(windTunnel.name, windTunnel.testGeomtries,
-                    windTunnel.blockMeshDict, windTunnel.meshingParameters)
+        _case = cls.fromBFGeometries(
+                windTunnel.name, windTunnel.testGeomtries,
+                windTunnel.blockMeshDict, windTunnel.meshingParameters)
 
         initialConditions = InitialConditions(
             Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
 
-        ABLConditions = ABLConditions.fromWindTunnel(windTunnel)
+        ablConditions = ABLConditions.fromWindTunnel(windTunnel)
 
         # add initialConditions and ABLConditions to _case
-        _case.addFoamFiles((initialConditions, ABLConditions))
+        _case.addFoamFiles((initialConditions, ablConditions))
 
         # include condition files in 0 folder files
         _case.U.updateValues({'#include': '"initialConditions"',
@@ -407,8 +407,11 @@ class Case(object):
             return
         assert hasattr(foamfile, 'isFoamFile'), \
             '{} is not a FoamFile'.format(foamfile)
-        setattr(self, foamfile.name, foamfile)
-        self.__foamfiles.append(foamfile)
+        try:
+            setattr(self, foamfile.name, foamfile)
+            self.__foamfiles.append(foamfile)
+        except AttributeError as e:
+            raise ValueError('Failed to add {}.\n\t{}'.format(foamfile, e))
 
     def addRefinementRegions(self, refinementRegions):
         """Add a collections of refinement regions."""

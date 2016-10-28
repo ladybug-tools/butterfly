@@ -93,7 +93,7 @@ class BlockMeshDict(FoamFile):
             xAxis: An optional tuple that indicates the xAxis direction
                 (default: (1, 0)).
         """
-        _xAxis = vectormath.normalize((xAxis[:2] + [0]) if xAxis else (1, 0, 0))
+        _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
         _zAxis = (0, 0, 1)
         _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
         vertices = tuple(
@@ -121,7 +121,7 @@ class BlockMeshDict(FoamFile):
             xAxis: An optional tuple that indicates the xAxis direction
                 (default: (1, 0)).
         """
-        _xAxis = vectormath.normalize((xAxis[:2] + [0]) if xAxis else (1, 0, 0))
+        _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
         _zAxis = (0, 0, 1)
         _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
         diagonal2D = tuple(i - j for i, j in zip(maxPt, minPt))[:2]
@@ -194,12 +194,12 @@ class BlockMeshDict(FoamFile):
         try:
             # collect uniqe vertices from all BFGeometries
             _cls.__rawvertices = tuple(
-                set(v for f in cls.__BFBlockGeometries
+                set(v for f in _cls.__BFBlockGeometries
                     for vgroup in f.borderVertices
                     for v in vgroup))
         except AttributeError as e:
             raise TypeError('At least one of the input geometries is not a '
-                            'Butterfly block geometry:\n{}'.format(e))
+                            'Butterfly block geometry:\n\t{}'.format(e))
 
         # sort vertices
         _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
@@ -208,7 +208,7 @@ class BlockMeshDict(FoamFile):
         # update self.values['boundary']
         _cls.__updateBoundaryFromBFBlockGeometries()
 
-        _cls.__order = tuple(range(7))
+        _cls.__order = tuple(range(8))
 
         _cls.nDivXYZ = nDivXYZ
 
@@ -233,8 +233,8 @@ class BlockMeshDict(FoamFile):
             try:
                 self.values['boundary'][geo.name] = {
                     'type': geo.boundaryCondition.type,
-                    'faces': (tuple(self.vertices.index(v) for v in verGroup)
-                              for verGroup in self.borderVertices)
+                    'faces': tuple(tuple(self.vertices.index(v) for v in verGroup)
+                              for verGroup in geo.borderVertices)
                 }
             except AttributeError as e:
                 raise TypeError('Wrong input geometry!\n{}'.format(e))
@@ -412,7 +412,7 @@ class BlockMeshDict(FoamFile):
 
         # the points in both height are identical so I just take the first group
         # and sort them
-        xAxisReversed = (-self.xAxis[0], self.xAxis[1])
+        xAxisReversed = (-self.xAxis[0], -self.xAxis[1])
         centerPt = self.center[:2]
         sortedPoints2d = \
             sorted(pointGroups[0],

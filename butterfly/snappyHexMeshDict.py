@@ -85,6 +85,7 @@ class SnappyHexMeshDict(FoamFile):
 
     __defaultValues['debug'] = '0'
     __defaultValues['mergeTolerance'] = '1E-6'
+    __globRefineLevel = (1, 1)
 
     def __init__(self, values=None):
         """Init class."""
@@ -103,14 +104,13 @@ class SnappyHexMeshDict(FoamFile):
         return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @classmethod
-    def fromBFGeometries(cls, projectName, geometries, globRefineLevel=None,
-                         locationInMesh=None, values=None):
+    def fromBFGeometries(cls, projectName, geometries, meshingParameters=None,
+                         values=None):
         """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
-        cls.projectName = projectName
-        cls.__geometries = cls.__checkInputGeometries(geometries)
-        _cls.locationInMesh = locationInMesh
-        self.globRefineLevel = globRefineLevel
+        _cls.projectName = projectName
+        _cls.__geometries = cls.__checkInputGeometries(geometries)
+        _cls.updateMeshingParameters(meshingParameters)
         _cls.setGeometry()
         _cls.setRefinementSurfaces()
         return _cls

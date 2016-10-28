@@ -35,6 +35,16 @@ class ABLConditions(Condition):
         return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @classmethod
+    def fromInputValues(cls, flowSpeed, z0, flowDir, zGround):
+        """Get ABLCondition."""
+        _ABLCDict = {}
+        _ABLCDict['Uref'] = str(flowSpeed)
+        _ABLCDict['z0'] = 'uniform {}'.format(z0)
+        _ABLCDict['flowDir'] = '({} {} {})'.format(*flowDir)
+        _ABLCDict['zGround'] = 'uniform {}'.format(zGround)
+        return cls(_ABLCDict)
+
+    @classmethod
     def fromWindTunnel(cls, windTunnel):
         """Init class from wind tunnel."""
         return cls(values=windTunnel.ABLConditionsDict)
