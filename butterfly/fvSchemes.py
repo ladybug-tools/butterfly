@@ -67,6 +67,22 @@ class FvSchemes(FoamFile):
         return cls(values=foamFileFromFile(filepath, cls.__name__))
 
     @classmethod
+    def fromRecipe(cls, recipe=0):
+        """Create an fvSchemes from recipe id.
+
+        0 > SteadyIncompressible
+        1 > HeatTransfer
+        """
+        _cls = cls()
+        if recipe == 0:
+            return _cls
+        elif recipe == 1:
+            # update divSchemes
+            _cls.values['divSchemes']['div(phi,T)'] = \
+                'bounded Gauss linearUpwind default'
+            return _cls
+
+    @classmethod
     def fromMeshOrthogonality(cls, averageOrthogonality=45):
         """Init fvSchemes based on mesh orthogonality.
 

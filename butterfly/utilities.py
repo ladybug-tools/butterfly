@@ -207,7 +207,7 @@ def getSnappyHexMeshRefinementSurfaces(projectName, BFGeometries, globalLevels=N
     return _ref
 
 
-def getBoundaryField(BFGeometries, field='U'):
+def getBoundaryFieldFromGeometries(BFGeometries, field='U'):
     """Get data for boundaryField as a dictionary.
 
     Args:

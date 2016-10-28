@@ -35,7 +35,7 @@ from .fvSchemes import FvSchemes
 from .fvSolution import FvSolution
 from .functions import Probes
 
-from runmanager import RunManager
+from .runmanager import RunManager
 
 
 class OpemFOAMCase(object):

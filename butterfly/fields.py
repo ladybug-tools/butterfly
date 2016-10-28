@@ -4,18 +4,29 @@ from collections import OrderedDict
 from copy import deepcopy
 
 
-class OpenFOAMValue(object):
+class Field(object):
     """OpenFOAM field values base class."""
 
     def __init__(self):
         """Init class."""
         self.type = self.__class__.__name__[:1].lower() + \
             self.__class__.__name__[1:]
+        self.__values = {}
+        self.__values['type'] = self.type
+
+    @classmethod
+    def fromDict(cls, d):
+        """Create a field from a dictionary."""
+        _cls = cls()
+        assert isinstance(d, (OrderedDict, dict)), \
+            'Input should be a dictionary not {}'.format(type(d))
+        _cls.__values = d
+        return _cls
 
     @property
     def valueDict(self):
         """Get fields as a dictionary."""
-        return {'type': self.type}
+        return self.__values
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -31,19 +42,19 @@ class OpenFOAMValue(object):
                          for key, value in self.valueDict.iteritems())
 
 
-class ZeroGradient(OpenFOAMValue):
+class ZeroGradient(Field):
     """ZeroGradient boundary condition."""
 
     pass
 
 
-class Slip(OpenFOAMValue):
+class Slip(Field):
     """Slip boundary condition."""
 
     pass
 
 
-class Calculated(OpenFOAMValue):
+class Calculated(Field):
     """OpenFOAM calculated value.
 
     Args:
@@ -53,7 +64,7 @@ class Calculated(OpenFOAMValue):
 
     def __init__(self, value=None, isUnifrom=True):
         """Init Calculated class."""
-        OpenFOAMValue.__init__(self)
+        Field.__init__(self)
         if value:
             self.value = 'uniform {}'.format(str(value)) if isUnifrom else str(value)
         else:
@@ -72,7 +83,7 @@ class Calculated(OpenFOAMValue):
         return _d
 
 
-class InletOutlet(OpenFOAMValue):
+class InletOutlet(Field):
     """OpenFOAM InletOutlet value.
 
     http://www.cfd-online.com/Forums/openfoam-solving/60337-questions-about
@@ -81,7 +92,7 @@ class InletOutlet(OpenFOAMValue):
 
     def __init__(self, inletValue, value):
         """Init class."""
-        OpenFOAMValue.__init__(self)
+        Field.__init__(self)
         self.inletValue = inletValue
         self.value = value
 
@@ -95,7 +106,7 @@ class InletOutlet(OpenFOAMValue):
         return _d
 
 
-class OutletInlet(OpenFOAMValue):
+class OutletInlet(Field):
     """OpenFOAM OutletInlet value.
 
     http://www.cfd-online.com/Forums/openfoam-solving/60337-questions-about
@@ -104,7 +115,7 @@ class OutletInlet(OpenFOAMValue):
 
     def __init__(self, outletValue, value):
         """Init class."""
-        OpenFOAMValue.__init__(self)
+        Field.__init__(self)
         self.outletValue = outletValue
         self.value = value
 
@@ -118,7 +129,7 @@ class OutletInlet(OpenFOAMValue):
         return _d
 
 
-class AtmBoundary(OpenFOAMValue):
+class AtmBoundary(Field):
     """OpenFOAM AtmBoundaryLayerInletVelocity.
 
     Attributes:
@@ -145,7 +156,7 @@ class AtmBoundary(OpenFOAMValue):
             zGround: Min z value of the bounding box (default: 0).
         """
         self.fromValues = fromValues
-        OpenFOAMValue.__init__(self)
+        Field.__init__(self)
         self.Uref = Uref
         self.Zref = Zref
         self.z0 = z0
@@ -209,7 +220,7 @@ class NutkAtmRoughWallFunction(AtmBoundary):
     pass
 
 
-class FixedValue(OpenFOAMValue):
+class FixedValue(Field):
     """OpenFOAM fixed value.
 
     Args:
@@ -219,7 +230,7 @@ class FixedValue(OpenFOAMValue):
 
     def __init__(self, value, isUnifrom=True):
         """Init the class."""
-        OpenFOAMValue.__init__(self)
+        Field.__init__(self)
         self.value = 'uniform {}'.format(str(value)) if isUnifrom else str(value)
 
     @property

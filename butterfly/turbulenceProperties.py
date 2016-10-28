@@ -125,3 +125,8 @@ class TurbulenceProperties(FoamFile):
             values['LES'].update({'%sCoeffs' % deltaCoeffs: deltaCoeffs})
 
         return cls(values=values)
+
+    @property
+    def isTurbulenceProperties(self):
+        """Return True."""
+        return True

@@ -5,14 +5,14 @@ from copy import deepcopy
 from .blockMeshDict import BlockMeshDict
 from .case import Case
 from .grading import SimpleGrading
-from meshingparameters import MeshingParameters
+from .meshingparameters import MeshingParameters
 
 
 class WindTunnel(object):
     """Butterfly WindTunnel.
 
     Args:
-        inlet: Inlet as a honeybee geometry. inlet boundary condition should be
+        inlet: Inlet as a butterfly geometry. inlet boundary condition should be
             ABL (atmBoundaryLayer).
         outlet: Outlet as a butterfly geometry.
         sides: Left and right side geometries as butterfly geometries.
@@ -44,6 +44,10 @@ class WindTunnel(object):
         self.testGeomtries = tuple(geo for geo in testGeomtries
                                    if self.__checkInputGeometry(geo))
         self.z0 = roughness
+
+        self.__blockMeshDict = BlockMeshDict.fromBFBlockGeometries(
+                self.boundingGeometries, self.convertToMeters)
+
         self.meshingParameters = meshingParameters or MeshingParameters()
 
         self.Zref = float(Zref) or 10
@@ -52,17 +56,33 @@ class WindTunnel(object):
         # place holder for refinment regions
         self.__refinementRegions = []
 
+    # TODO: This will simplify the process of creating windTunnel from inside
+    # from geometrical libraries such as DynamoBIM
+    @classmethod
+    def fromOriginSizeSpeedAndDirection(self):
+        """Create a windTunnel based on size, wind speed and wind direction."""
+        raise NotImplementedError()
+
+    @property
+    def width(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.width
+
+    @property
+    def height(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.height
+
+    @property
+    def length(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.length
+
     @property
     def boundingGeometries(self):
         """Return bounding geometries of wind tunnel."""
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
-
-    def __checkInputGeometry(self, input):
-        if hasattr(input, 'isBFGeometry'):
-            return input
-        else:
-            raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
     @property
     def refinementRegions(self):
@@ -87,10 +107,7 @@ class WindTunnel(object):
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        bmdict = BlockMeshDict.fromBFBlockGeometries(
-                self.boundingGeometries, self.convertToMeters)
-        bmdict.updateMeshingParameters(self.meshingParameters)
-        return bmdict
+        return self.__blockMeshDict
 
     @property
     def ABLConditionsDict(self):
@@ -102,12 +119,34 @@ class WindTunnel(object):
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
 
+    @property
+    def meshingParameters(self, meshingParameters):
+        """Meshing parameters."""
+        return self.__meshingParameters
+
+    @pmeshingPrameters.setter
+    def meshingParameters(self, mp):
+        """Update meshing parameters."""
+        if not mp:
+            return
+        assert hasattr(mp, 'isMeshingParameters'), \
+            'Excepted Meshingparameters not {}'.format(type(mp))
+        self.__meshingParameters = mp
+        self.blockMeshDict.updateMeshingParameters(mp)
+
     def addRefinementRegion(self, refinementRegion):
         """Add refinement regions to this case."""
         assert hasattr(refinementRegion, 'isRefinementRegion'), \
             "{} is not a refinement region.".format(refinementRegion)
 
         self.__refinementRegions.append(refinementRegion)
+
+    @staticmethod
+    def __checkInputGeometry(self, input):
+        if hasattr(input, 'isBFGeometry'):
+            return input
+        else:
+            raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
     def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""

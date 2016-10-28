@@ -49,14 +49,9 @@ class FvSolution(FoamFile):
 
     __defaultValues['SIMPLE'] = OrderedDict()
     __defaultValues['SIMPLE']['nNonOrthogonalCorrectors'] = '2'
-    __defaultValues['SIMPLE']['residualControl'] = {
-        'p': '1e-5',
-        'U': '1e-5',
-        'k': '1e-5',
-        'epsilon': '1e-5'
-    }
+    __defaultValues['SIMPLE']['residualControl'] = {}
 
-    __defaultValues['relaxationFactors'] = OrderedDict()
+    __defaultValues['relaxationFactors'] = {}
     __defaultValues['relaxationFactors']['p'] = '0.3'
     __defaultValues['relaxationFactors']['U'] = '0.7'
     __defaultValues['relaxationFactors']['k'] = '0.7'
@@ -67,13 +62,6 @@ class FvSolution(FoamFile):
         FoamFile.__init__(self, name='fvSolution', cls='dictionary',
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
-
-        self.__residualControl = ResidualControl(
-            p=self.values['SIMPLE']['residualControl']['p'],
-            U=self.values['SIMPLE']['residualControl']['U'],
-            k=self.values['SIMPLE']['residualControl']['k'],
-            epsilon=self.values['SIMPLE']['residualControl']['epsilon']
-        )
 
     @classmethod
     def fromFile(cls, filepath):
@@ -97,9 +85,9 @@ class FvSolution(FoamFile):
         if recipe == 0:
             # steady incompressible
             _values = {
-                'solvers': {'p_rgh': None, 'SIMPLE': {'residualControl':
-                                                      {'p_rgh': None, 'T': None}},
-                            'relaxationFactors': {'p_rgh': None, 'T': None}}
+                'solvers': {'p_rgh': None, 'T': None},
+                'SIMPLE': {'residualControl': {'p_rgh': None, 'T': None}},
+                'relaxationFactors': {'p_rgh': None, 'T': None}
             }
 
         elif recipe == 1:
@@ -113,11 +101,11 @@ class FvSolution(FoamFile):
                             'T': {'relTol': '0.1', 'tolerance': '1e-8',
                                   'nSweeps': '1', 'smoother': 'GaussSeidel',
                                   'solver': 'smoothSolver'}},
-                'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-5',
-                                               'T': '1e-5'},
-                        #    'pRef': str(_cls.blockMeshDict.center).replace(',', ' '),
-                           'pRefValue': '0'},
-                'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
+                'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-4',
+                                               'T': '1e-4'},
+                            'pRef': '(0 0 0)', 'pRefValue': '0'},
+                'relaxationFactors': {'k': None, 'epsilon':None,
+                                      'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
 
         # update values based on the recipe.
         _cls.updateValues(_values, mute=True)
@@ -126,7 +114,7 @@ class FvSolution(FoamFile):
     @property
     def residualControl(self):
         """Get and set residual controls."""
-        return self.__residualControl
+        return ResidualControl(self.values['SIMPLE']['residualControl'])
 
     @residualControl.setter
     def residualControl(self, resControl):
@@ -138,61 +126,83 @@ class FvSolution(FoamFile):
         if not resControl:
             return
 
-        self.values['SIMPLE']['residualControl']['p'] = str(resControl.p)
-        self.values['SIMPLE']['residualControl']['U'] = str(resControl.U)
-        self.values['SIMPLE']['residualControl']['k'] = str(resControl.k)
-        self.values['SIMPLE']['residualControl']['epsilon'] = str(resControl.epsilon)
-        self.__residualControl = resControl
+        self.values['SIMPLE']['residualControl'] = {}
 
-        if resControl.other:
-            for key, value in resControl.other.iteritems():
-                self.values['SIMPLE']['residualControl'][str(key)] = str(value)
+        for key, value in resControl.iteritems():
+            self.values['SIMPLE']['residualControl'][str(key)] = str(value)
+
+    @property
+    def relaxationFactors(self):
+        """Get and set residual controls."""
+        return RelaxationFactors(self.values['relaxationFactors'])
+
+    @relaxationFactors.setter
+    def relaxationFactors(self, relaxFact):
+        """Set residual control values.
+
+        Args:
+            resControl: New residual control.
+        """
+        if not relaxFact:
+            return
+
+        self.values['relaxationFactors'] = {}
+
+        for key, value in relaxFact.iteritems():
+            self.values['relaxationFactors'][str(key)] = str(value)
 
 
-class ResidualControl(object):
+class ResidualControl(dict):
     """Residual Control class.
 
     Attributes:
-        p: Residual control valeus for p (default: 1e-5)
-        U: Residual control valeus for U (default: 1e-5)
-        k: Residual control valeus for k (default: 1e-5)
-        epsilon: Residual control valeus for epsilon (default: 1e-5)
-        other: Key values as dictionary for other paramaters (e.g. {'g': 1e-5})
+        values: Values as a dictionary.
     """
 
-    __slots__ = ('p', 'U', 'k', 'epsilon', 'other')
+    __slots__ = ()
 
-    def __init__(self, p=1e-5, U=1e-5, k=1e-5, epsilon=1e-5, other=None):
+    def __init__(self, values):
         """Init ResidualControl class."""
-        self.p = str(p) if p else 1e-5
-        self.U = str(U) if U else 1e-5
-        self.k = str(k) if k else 1e-5
-        self.epsilon = str(epsilon) if epsilon else 1e-5
-        self.other = other if other else None
+        dict.__init__(self, values)
+
+    @property
+    def isResidualControl(self):
+        """Return True."""
+        return True
 
     def ToString(self):
         """Overwrite .NET ToString method."""
         return self.__repr__()
 
-    # TODO: Need to check kargs
-    def __eq__(self, other):
-        """Check equality."""
-        if not isinstance(other, self):
-            return False
+    def __repr__(self):
+        """Representation."""
+        return 'residualControl\n{\n\t%s\n}' % (
+                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
 
-        if float(self.p) != float(other.p):
-            return False
-        if float(self.U) != float(other.U):
-            return False
-        if float(self.k) != float(other.k):
-            return False
-        if float(self.epsilon) != float(other.epsilon):
-            return False
 
+class RelaxationFactors(dict):
+    """relaxationFactors class.
+
+    Attributes:
+        values: Values as a dictionary.
+    """
+
+    __slots__ = ()
+
+    def __init__(self, values):
+        """Init relaxationFactors class."""
+        dict.__init__(self, values)
+
+    @property
+    def isRelaxationFactors(self):
+        """Return True."""
         return True
+
+    def ToString(self):
+        """Overwrite .NET ToString method."""
+        return self.__repr__()
 
     def __repr__(self):
         """Representation."""
-        return "residualControl\n" \
-            "{\n\tp     %s;\n\tU     %s;\t\nk     %s;\n\tepsilon     %s;\n" \
-            "}" % (self.p, self.U, self.k, self.epsilon)
+        return 'relaxationFactors\n{\n\t%s\n}' % (
+                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))

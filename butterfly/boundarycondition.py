@@ -25,16 +25,16 @@ class BoundaryCondition(object):
                  k=None, epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         self.type = bcType
-        self.T = ZeroGradient() if not T else T
+        self.T = ZeroGradient() if not T else FixedValue(T)
         self.refLevels = (0, 0) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
-        self.U = ZeroGradient() if not U else U
-        self.p = ZeroGradient() if not p else p
-        self.k = ZeroGradient() if not k else k
-        self.epsilon = ZeroGradient() if not epsilon else epsilon
-        self.nut = ZeroGradient() if not nut else nut
-        self.alphat = ZeroGradient() if not alphat else alphat
-        self.p_rgh = ZeroGradient() if not p_rgh else p_rgh
+        self.U = U or ZeroGradient()
+        self.p = p or ZeroGradient()
+        self.k = k or ZeroGradient()
+        self.epsilon = epsilon or ZeroGradient()
+        self.nut = nut or ZeroGradient()
+        self.alphat = alphat or ZeroGradient()
+        self.p_rgh = p_rgh or ZeroGradient()
 
     def isBoundaryCondition(self):
         """Return True for boundary conditions."""
@@ -92,19 +92,16 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
     def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
                  epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
-        U = FixedValue('(0 0 0)') if not U else U
-        p = ZeroGradient() if not p else p
-        k = KqRWallFunction('0.1') if not k else k
-        epsilon = EpsilonWallFunction(0.01) \
-            if not epsilon else epsilon
-        nut = NutkWallFunction(0.01) \
-            if not nut else nut
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or KqRWallFunction('0.1')
+        epsilon = epsilon or EpsilonWallFunction(0.01)
+        nut = nut or NutkWallFunction(0.01)
         T = T if T else None
-        alphat = AlphatJayatillekeWallFunction(
-            value='0', isUniform=True, Prt='0.85') if not alphat else alphat
+        alphat = alphat or AlphatJayatillekeWallFunction(
+            value='0', isUniform=True, Prt='0.85')
 
-        p_rgh = FixedFluxPressure(value='0', isUniform=True, rho='rhok') \
-            if not p_rgh else p_rgh
+        p_rgh = p_rgh or FixedFluxPressure(value='0', isUniform=True, rho='rhok')
 
         BoundaryCondition.__init__(self, 'wall', refLevels, T, U, p,
                                    k, epsilon, nut, alphat, p_rgh)
@@ -127,10 +124,10 @@ class FixedInletBoundaryCondition(BoundaryCondition):
                  epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        U = FixedValue('(0 0 0)') if not U else U
-        p = ZeroGradient() if not p else p
-        k = FixedValue('0.1') if not k else k
-        epsilon = FixedValue('0.01') if not epsilon else epsilon
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or FixedValue('0.1')
+        epsilon = epsilon or FixedValue('0.01')
         nut = Calculated('0')
         T = T if T else None
         alphat = ZeroGradient()
@@ -163,12 +160,12 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
                  epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        U = ZeroGradient() if not U else U
-        p = FixedValue('0') if not p else p
-        k = ZeroGradient() if not k else k
-        epsilon = ZeroGradient() if not epsilon else epsilon
+        U = U or ZeroGradient()
+        p = p or FixedValue('0')
+        k = k or ZeroGradient()
+        epsilon = epsilon or ZeroGradient()
         nut = Calculated('0')
-        T = ZeroGradient() if not T else T
+        T = ZeroGradient() if not T else FixedValue(T)
         alphat = ZeroGradient()
         p_rgh = ZeroGradient()
 
@@ -199,13 +196,11 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
     def __init__(self, refLevels=None, T=None,
                  U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
-        U = FixedValue('(0 0 0)') if not U else U
-        p = ZeroGradient() if not p else p
-        k = KqRWallFunction('$internalField', isUnifrom=False) if not k else k
-        epsilon = EpsilonWallFunction('$internalField', isUnifrom=False) \
-            if not epsilon else epsilon
-        nut = NutkWallFunction('0.0') \
-            if not nut else nut
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or KqRWallFunction('$internalField', isUnifrom=False)
+        epsilon = epsilon or EpsilonWallFunction('$internalField', isUnifrom=False)
+        nut = nut or NutkWallFunction('0.0')
         T = ZeroGradient() if not T else FixedValue(T)
         super(WindTunnelWallBoundaryCondition, self).__init__(
             'wall', refLevels, T, U, p, k, epsilon, nut
@@ -229,10 +224,10 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
     def __init__(self, ablConditions, refLevels=None, T=None,
                  U=None, p=None, k=None, epsilon=None):
         """Init bounday condition."""
-        U = FixedValue('(0 0 0)') if not U else U
-        p = ZeroGradient() if not p else p
-        k = ZeroGradient() if not k else k
-        epsilon = ZeroGradient() if not epsilon else epsilon
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or ZeroGradient()
+        epsilon = epsilon or ZeroGradient()
         nut = NutkAtmRoughWallFunction.fromABLConditions(ablConditions,
                                                          'uniform 0')
         T = ZeroGradient() if not T else FixedValue(T)
@@ -262,8 +257,8 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
         U = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
         k = AtmBoundaryLayerInletK.fromABLConditions(ablConditions)
         epsilon = AtmBoundaryLayerInletEpsilon.fromABLConditions(ablConditions)
-        p = ZeroGradient() if not p else p
-        nut = Calculated('0') if not nut else nut
+        p = p or ZeroGradient()
+        nut = nut or Calculated('0')
         T = ZeroGradient() if not T else FixedValue(T)
 
         super(WindTunnelInletBoundaryCondition, self).__init__(
@@ -293,13 +288,11 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
                  U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        U = InletOutlet('uniform (0 0 0)', '$internalField') if not U else U
-        p = FixedValue('$pressure') if not p else p
-        k = InletOutlet('uniform $turbulentKE', '$internalField') \
-            if not k else k
-        epsilon = InletOutlet('uniform $turbulentEpsilon', '$internalField') \
-            if not epsilon else epsilon
-        nut = Calculated('0') if not nut else nut
+        U = U or InletOutlet('uniform (0 0 0)', '$internalField')
+        p = p or FixedValue('$pressure')
+        k = k or InletOutlet('uniform $turbulentKE', '$internalField')
+        epsilon = epsilon or InletOutlet('uniform $turbulentEpsilon', '$internalField')
+        nut = nut or Calculated('0')
         T = ZeroGradient() if not T else FixedValue(T)
 
         super(WindTunnelOutletBoundaryCondition, self).__init__(
@@ -330,10 +323,10 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
                  U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        U = Slip() if not U else U
-        p = Slip() if not p else p
-        k = Slip() if not k else k
-        epsilon = Slip() if not epsilon else epsilon
+        U = U or Slip()
+        p = p or Slip()
+        k = k or Slip()
+        epsilon = epsilon or Slip()
         nut = Calculated('0')
         T = ZeroGradient() if not T else FixedValue(T)
 

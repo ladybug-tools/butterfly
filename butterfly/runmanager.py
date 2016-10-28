@@ -147,7 +147,47 @@ class RunManager(object):
         return _base.format(self.__separator, self.dockerPath,
                             self.__separator.join(self.shellinit))
 
+    # TODO: Update controlDict.application for multiple commands
     def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
+        """
+        Get command line for an OpenFOAM command in parallel or serial.
+
+        Args:
+            cmd: An OpenFOAM command.
+            args: List of optional arguments for command. e.g. ('c', 'latestTime')
+            decomposeParDict: decomposeParDict for parallel runs (default: None).
+            includeHeader: Include header lines to set up the environment
+                (default: True).
+            tee: Include tee in command line.
+        Returns:
+            (cmd, logfiles, errorfiles)
+        """
+        if isinstance(cmd, str):
+            return self.__command(cmd, args, decomposeParDict, includeHeader)
+        elif isinstance(cmd, (list, tuple)):
+            # a list of commands
+            res = namedtuple('log', 'cmd logfiles errorfiles')
+            logs = range(len(cmd))  # create a place holder for commands
+            for count, c in enumerate(cmd):
+                if count > 0:
+                    includeHeader = False
+                if c == 'blockMesh':
+                    decomposeParDict = None
+                try:
+                    arg = args[count]
+                except:
+                    arg = args
+
+                logs[count] = self.__command(c, None, decomposeParDict,
+                                             includeHeader)
+
+            command = '&'.join(log.cmd for log in logs)
+            logfiles = tuple(ff for log in logs for ff in log.logfiles)
+            errorfiles = tuple(ff for log in logs for ff in log.errorfiles)
+
+            return res(command, logfiles, errorfiles)
+
+    def __command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
         """
         Get command line for an OpenFOAM command in parallel or serial.
 
@@ -172,19 +212,11 @@ class RunManager(object):
         if not self.containerId:
             self.getContainerId()
 
-        try:
-            assert self.containerId, _msg
-        except AssertionError:
-            # this can be tricky since it takes some time for the batch file to
-            # turn on the
-            if startOpenFOAM:
-                self.startOpenFOAM()
-                self.containerId = self.getContainerId()
-        finally:
-            assert self.containerId, _msg
+        assert self.containerId, _msg
 
         # containerId is found. put the commands together
-        _base = 'start /wait docker exec -i {} su - ofuser -c "cd /home/ofuser/workingDir/butterfly/{}; {}"'
+        _base = 'start /wait docker exec -i {} su - ofuser -c ' \
+            '"cd /home/ofuser/workingDir/butterfly/{}; {}"'
         _baseCmd = '{0} {1} > >(%s %s/{2}.log) 2> >(%s %s/{2}.err >&2)' \
             % (tee, self.logFolder, tee, self.errFolder)
 

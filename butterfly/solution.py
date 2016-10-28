@@ -3,6 +3,7 @@
 from copy import deepcopy
 from collections import namedtuple, OrderedDict
 import os
+
 from .utilities import checkFiles, tail
 from .parser import CppDictParser
 
@@ -18,8 +19,9 @@ class Solution(object):
         quantities: A list of quantities to be watched during the run.
     """
 
-    def __init__(self, recipe, decomposeParDict=None, quantities=None):
+    def __init__(self, case, recipe, decomposeParDict=None):
         """Init solution."""
+        self.__case = case
         self.__recipe = recipe
         self.__decomposeParDict = decomposeParDict
         self.__isRunStarted = False
@@ -32,7 +34,12 @@ class Solution(object):
     @property
     def projectName(self):
         """Get porject name."""
-        return self.recipe.case.projectName
+        return self.case.projectName
+
+    @property
+    def case(self):
+        """Case."""
+        return self.__case
 
     @property
     def recipe(self):
@@ -42,7 +49,7 @@ class Solution(object):
     @property
     def projectDir(self):
         """Get project directory."""
-        return self.recipe.case.projectDir
+        return self.case.projectDir
 
     @property
     def quantities(self):
@@ -66,17 +73,17 @@ class Solution(object):
     @property
     def controlDict(self):
         """Get controlDict."""
-        return self.__recipe.case.controlDict
+        return self.__case.controlDict
 
     @property
     def residualControl(self):
         """Get residualControl values for this solution."""
-        return self.__recipe.case.fvSolution.residualControl
+        return self.__case.fvSolution.residualControl
 
     @property
     def probes(self):
         """Get probes if any."""
-        return self.__recipe.case.probes
+        return self.__case.probes
 
     @property
     def residualFile(self):
@@ -107,7 +114,7 @@ class Solution(object):
             return True
         else:
             self.__isRunFinished = True
-            self.recipe.case.renameSnappyHexMeshFolders()
+            self.case.renameSnappyHexMeshFolders()
             # load errors if any
             checkFiles(self.logFiles)
             failed, err = checkFiles(self.errFiles)
@@ -190,7 +197,7 @@ class Solution(object):
                 continue
 
             try:
-                update = getattr(self.__recipe.case, solPar.filename) \
+                update = getattr(self.__case, solPar.filename) \
                     .updateValues(solPar.values, solPar.replace)
             except AttributeError as e:
                 # probes can be empty at start
@@ -198,7 +205,7 @@ class Solution(object):
 
             if update:
                 print 'Updating {}...'.format(solPar.filename)
-                ffile = getattr(self.__recipe.case, solPar.filename)
+                ffile = getattr(self.__case, solPar.filename)
                 ffile.save(self.projectDir)
 
                 # This is not as simple as copying files!
@@ -219,9 +226,12 @@ class Solution(object):
 
     def run(self):
         """Execute the solution."""
-        self.recipe.case.renameSnappyHexMeshFolders()
-        log = self.recipe.run(decomposeParDict=self.__decomposeParDict,
-                              wait=False)
+        self.case.renameSnappyHexMeshFolders()
+        log = self.case.command(
+                cmd=self.recipe.command,
+                args=self.recipe.args,
+                decomposeParDict=self.__decomposeParDict,
+                run=True, wait=False)
         self.__process = log.process
         self.__errFiles = log.errorfiles
         self.__logFiles = log.logfiles
@@ -230,7 +240,7 @@ class Solution(object):
 
     def terminate(self):
         """Cancel the solution."""
-        self.__process.terminate()
+        self.case.runmanager.terminate()
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -242,7 +252,7 @@ class Solution(object):
 
     def __repr__(self):
         """Solution representation."""
-        return "{}::{}".format(self.recipe.case.projectName, self.recipe)
+        return "{}::{}".format(self.case.projectName, self.recipe)
 
 
 class SolutionParameter(object):

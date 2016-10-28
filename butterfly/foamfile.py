@@ -1,7 +1,7 @@
 # coding=utf-8
 """Foam File Class."""
 from .version import Version, Header
-from .utilities import getBoundaryField
+from .utilities import getBoundaryFieldFromGeometries
 from .parser import CppDictParser
 import os
 import json
@@ -28,12 +28,12 @@ class FoamFile(object):
     def __init__(self, name, cls, location=None, fileFormat="ascii",
                  defaultValues=None, values=None):
         """Init foam file."""
+        self.__dict__['is{}'.format(self.__class__.__name__)] = True
         self.__version = str(Version().OFVer)
         self.format = str(fileFormat)  # ascii / binary
         self.cls = str(cls)  # dictionary or field
         self.name = str(name)
         self.location = location  # location is optional
-
         if self.location:
             if self.location.replace('"', '') in self.__locations:
                 self.location = '"' + self.location.replace('"', '') + '"'
@@ -294,17 +294,20 @@ class FoamFile(object):
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
 
-    def save(self, projectFolder, subFolder=None):
+    def save(self, projectFolder, subFolder=None, overwrite=True):
         """Save to file.
 
         Args:
             projectFolder: Path to project folder as a string.
             subFolder: Optional input for subFolder (default: self.location).
         """
-        subFolder = self.location.replace('"', '') if not subFolder else subFolder
+        subFolder = subFolder or self.location.replace('"', '')
+        fp = os.path.join(projectFolder, subFolder, self.name)
 
-        with open(os.path.join(projectFolder,
-                               subFolder, self.name), "wb") as outf:
+        if not overwrite and os.path.isfile(fp):
+            return
+
+        with open(fp, "wb") as outf:
             outf.write(self.toOpenFOAM())
 
     def __eq__(self, other):
@@ -340,12 +343,26 @@ class FoamFileZeroFolder(FoamFile):
         return _cls
 
     def setBoundaryField(self, BFGeometries):
-        """Get data for getBoundaryField as a dictionary.
+        """Set FoamFile boundaryField values from BFGeometries.
 
         Args:
             BFGeometries: List of Butterfly geometries.
         """
-        self.values['boundaryField'] = getBoundaryField(BFGeometries, self.name)
+        self.values['boundaryField'] = \
+            getBoundaryFieldFromGeometries(BFGeometries, self.name)
+
+    def getBoundaryField(self, name):
+        """Try to get boundaryField value for a geometry by name.
+
+        Args:
+            name: Geometry name.
+        Returns:
+            An OpenFOAM field if name is in boundaryFields.
+        """
+        if name in self.values['boundaryField']:
+            return self.values['boundaryField'][name]
+        else:
+            print 'Failed to find boundaryField values for {}'.format(name)
 
 
 class Condition(FoamFile):

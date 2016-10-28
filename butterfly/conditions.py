@@ -1,6 +1,6 @@
 # coding=utf-8
 """ABL Conditions and initialConditions class."""
-from foamfile import Condition, foamFileFromFile
+from .foamfile import Condition, foamFileFromFile
 from collections import OrderedDict
 import math
 

@@ -12,6 +12,7 @@ from .utilities import mkdir, wfile, runbatchfile, readLastLine, \
 from .geometry import bfGeometryFromStlFile, calculateMinMaxFromBFGeometries
 from .refinementRegion import refinementRegionsFromStlFile
 from .meshingparameters import MeshingParameters
+from .fields import Field
 
 #
 from .foamfile import FoamFile
@@ -42,7 +43,7 @@ from .fvSolution import FvSolution
 from .functions import Probes
 from .decomposeParDict import DecomposeParDict
 
-from runmanager import RunManager
+from .runmanager import RunManager
 
 
 class Case(object):
@@ -89,8 +90,6 @@ class Case(object):
         self.__refinementRegions = []
         self.runmanager = RunManager(self.projectName)
 
-    # TODO: Parse boundary conditions for each geometry
-    # This is a major limitation for importing outdoor studies.
     @classmethod
     def fromFolder(cls, path, name=None):
         """Create a Butterfly case from a case folder.
@@ -124,6 +123,15 @@ class Case(object):
                              in sHMD.stlFileNames)
 
         _case = cls(name, ff, bfGeometries)
+
+        # update each field of boundary condition for geometries
+        for ff in _case.getFoamFilesFromLocation('0'):
+            for geo in _case.geometries:
+                f = ff.getBoundaryField(geo.name)
+                if f:
+                    # set boundary condition for the field
+                    setattr(geo.boundaryCondition, ff.name,
+                            Field.fromDict(f))
 
         refinementRegions = tuple(
             ref for f in _files.stl
@@ -243,6 +251,11 @@ class Case(object):
                 _case.addRefinementRegion(region)
 
         return _case
+
+    @property
+    def isCase(self):
+        """return True."""
+        return True
 
     @property
     def projectName(self):
@@ -391,11 +404,11 @@ class Case(object):
     def addFoamFile(self, foamfile):
         """Add a foamfile to the case."""
         if not foamfile:
-            continue
-        assert hasattr(foamfile, 'isFoamFile'), '{} is not a FoamFile'.format(ff)
+            return
+        assert hasattr(foamfile, 'isFoamFile'), \
+            '{} is not a FoamFile'.format(foamfile)
         setattr(self, foamfile.name, foamfile)
-        self.__foamfiles.append(ff)
-
+        self.__foamfiles.append(foamfile)
 
     def addRefinementRegions(self, refinementRegions):
         """Add a collections of refinement regions."""
@@ -715,7 +728,7 @@ class Case(object):
             'decomposeParDict': DecomposeParDict
         }
 
-        name = os.path.split(p)[-1]
+        name = os.path.split(p)[-1].split('.')[0]
 
         if name in __foamfilescollection:
             try:
