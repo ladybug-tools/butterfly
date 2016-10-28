@@ -7,8 +7,7 @@ from collections import namedtuple
 from copy import deepcopy
 
 from .version import Version
-from .utilities import mkdir, wfile, runbatchfile, readLastLine, \
-    loadSkippedProbes, loadCaseFiles
+from .utilities import loadCaseFiles
 from .geometry import bfGeometryFromStlFile, calculateMinMaxFromBFGeometries
 from .refinementRegion import refinementRegionsFromStlFile
 from .meshingparameters import MeshingParameters
@@ -60,7 +59,11 @@ class Case(object):
     """
 
     SUBFOLDERS = ('0', 'constant', 'constant\\polyMesh',
-                    'constant\\triSurface', 'system', 'log')
+                  'constant\\triSurface', 'system', 'log')
+
+    # minimum list of files to be able to run blockMesh and snappyHexMesh
+    MINFOAMFILES = ('fvSchemes', 'fvSolution', 'controlDict', 'blockMeshDict',
+                    'snappyHexMeshDict')
 
     def __init__(self, name, foamfiles, geometries):
         """Init case."""
@@ -138,7 +141,7 @@ class Case(object):
             if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
             for ref in refinementRegionsFromStlFile(
                 f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
-            )
+        )
 
         _case.addRefinementRegions(refinementRegions)
 
@@ -183,7 +186,11 @@ class Case(object):
 
         blockMeshDict.updateMeshingParameters(meshingParameters)
 
-        snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(name, geometries)
+        if not meshingParameters.locationInMesh:
+            meshingParameters.locationInMesh = blockMeshDict.center
+
+        snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
+            name, geometries, meshingParameters)
 
         # constant folder
         if float(Version.OFVer) < 3:
@@ -221,8 +228,8 @@ class Case(object):
     def fromWindTunnel(cls, windTunnel):
         """Create case from wind tunnel."""
         _case = cls.fromBFGeometries(
-                windTunnel.name, windTunnel.testGeomtries,
-                windTunnel.blockMeshDict, windTunnel.meshingParameters)
+            windTunnel.name, windTunnel.testGeomtries, windTunnel.blockMeshDict,
+            windTunnel.meshingParameters)
 
         initialConditions = InitialConditions(
             Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
@@ -490,7 +497,7 @@ class Case(object):
             try:
                 rmtree(os.path.join(self.projectDir, f))
             except Exception as e:
-                print 'Failed to remove {}:\n{}'.format(_f, e)
+                print 'Failed to remove {}:\n{}'.format(f, e)
 
     def removeResultFolders(self):
         """Remove results folder."""
@@ -543,12 +550,17 @@ class Case(object):
         """
         raise NotImplementedError()
 
-    def save(self, overwrite=False):
+    def save(self, overwrite=False, minimum=True):
         """Save case to folder.
 
         Args:
             overwrite: If True all the current content will be overwritten
                 (default: False).
+            minimum: Write minimum necessary files for case. These files will
+                be enough for meshing the case but not running any commands.
+                Files are ('fvSchemes', 'fvSolution', 'controlDict',
+                'blockMeshDict','snappyHexMeshDict'). Rest of the files will be
+                created from a Solution.
         """
         # create folder and subfolders if they are not already created
         if overwrite and os.path.exists(self.projectDir):
@@ -565,7 +577,13 @@ class Case(object):
                     )
 
         # save foamfiles
-        for f in self.foamFiles:
+        if minimum:
+            foamFiles = (ff for ff in self.foamFiles
+                         if ff.name in self.MINFOAMFILES)
+        else:
+            foamFiles = self.foamFiles
+
+        for f in foamFiles:
             f.save(self.projectDir)
 
         # write bfgeometries to stl file
@@ -582,7 +600,7 @@ class Case(object):
         print '{} is saved to:\n{}'.format(self.projectName, self.projectDir)
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
-        u"""Run an OpenFOAM command for this case.
+        ur"""Run an OpenFOAM command for this case.
 
         This method creates a bat file under bashFolder for each command.
         The output will be logged under bash\\log as filename.log.
@@ -611,7 +629,6 @@ class Case(object):
                 logfiles: A tuple for log files.
                 errorfiles: A tuple for error files.
         """
-
         if not run:
             cmdlog = self.runmanager.command(cmd, args, decomposeParDict)
             return cmdlog

@@ -77,9 +77,8 @@ class _BFMesh(object):
 
     def __calculateNormals(self):
         """Calculate normals from vertices."""
-        return tuple(self.__calculateNormalFromPoints(tuple(self.vertices[i]
-                                                        for i in ind))
-                     for ind in self.faceIndices)
+        return tuple(self.__calculateNormalFromPoints(
+            tuple(self.vertices[i] for i in ind)) for ind in self.faceIndices)
 
     @staticmethod
     def __calculateNormalFromPoints(pts):
@@ -293,7 +292,7 @@ def calculateMinMaxFromBFGeometries(geometries, xAxis=None):
 
         angle = angleAnitclockwise((1, 0, 0), xAxis)
         vertices = tuple(pts for geo in geometries
-                          for pts in calculateMinMax(geo, angle))
+                         for pts in calculateMinMax(geo, angle))
         for v in vertices:
             for i in xrange(3):
                 if v[i] < minPt[i]:
@@ -302,6 +301,7 @@ def calculateMinMaxFromBFGeometries(geometries, xAxis=None):
                     maxPt[i] = v[i]
 
         return rotate((0, 0, 0), minPt, angle), rotate((0, 0, 0), maxPt, angle)
+
 
 def calculateMinMax(geometry, angle):
     """Calculate maximum and minimum x, y, z for input geometry.
@@ -325,13 +325,3 @@ def calculateMinMax(geometry, angle):
 
     # rotate them back to XY coordinates
     return minPt, maxPt
-
-
-if __name__ == '__main__':
-    vertices = ((0, 0, 0), (10, 0, 0), (10, 10, 0), (0, 10, 0))
-
-    geo = BFGeometry(name='square', vertices=vertices,
-                     faceIndices=((0, 1, 2), (0, 2, 3)),
-                     normals=((0, 0, 1), (0, 0, 1)))
-
-    print geo.toSTL()

@@ -4,7 +4,6 @@ from copy import deepcopy
 
 from .blockMeshDict import BlockMeshDict
 from .case import Case
-from .grading import SimpleGrading
 from .meshingparameters import MeshingParameters
 from .geometry import calculateMinMaxFromBFGeometries, BFBlockGeometry
 from .boundarycondition import WindTunnelGroundBoundaryCondition, \
@@ -52,7 +51,7 @@ class WindTunnel(object):
         self.z0 = roughness if roughness > 0 else 0.0001
 
         self.__blockMeshDict = BlockMeshDict.fromBFBlockGeometries(
-                self.boundingGeometries, convertToMeters)
+            self.boundingGeometries, convertToMeters)
 
         self.meshingParameters = meshingParameters or MeshingParameters()
 
@@ -64,12 +63,20 @@ class WindTunnel(object):
 
     @classmethod
     def fromGeometriesWindVectorAndParameters(
-            cls, name, testGeomtries, windVector, tunnelParameters, roughness,
+            cls, name, geometries, windVector, tunnelParameters, roughness,
             meshingParameters=None, Zref=None, convertToMeters=1):
         """Create a windTunnel based on size, wind speed and wind direction."""
         # butterfly geometries
-        geos = tuple(cls.__checkInputGeometry(geo) for geo in testGeomtries)
+        geos = tuple(cls.__checkInputGeometry(geo) for geo in geometries)
+
+        # update boundary condition of wall geometries
+        for bfGeometry in geometries:
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+                bfGeometry.boundaryCondition.refLevels
+            )
+
         tp = tunnelParameters
+
         # find xAxis
         zAxis = (0, 0, 1)
         xAxis = vm.crossProduct(windVector, zAxis)
@@ -97,37 +104,37 @@ class WindTunnel(object):
 
         # create inlet, outlet, etc
         ablConditions = ABLConditions.fromInputValues(
-                flowSpeed=vm.length(windVector), z0=roughness,
-                flowDir=vm.normalize(windVector), zGround=_blockMeshDict.minZ)
+            flowSpeed=vm.length(windVector), z0=roughness,
+            flowDir=vm.normalize(windVector), zGround=_blockMeshDict.minZ)
 
         _order = (range(4),)
         inlet = BFBlockGeometry(
-                'inlet', (v0, v1, v5, v4), _order, ((v0, v1, v5, v4),),
-                WindTunnelInletBoundaryCondition(ablConditions))
+            'inlet', (v0, v1, v5, v4), _order, ((v0, v1, v5, v4),),
+            WindTunnelInletBoundaryCondition(ablConditions))
 
         outlet = BFBlockGeometry(
-                'outlet', (v2, v3, v7, v6), _order, ((v2, v3, v7, v6),),
-                WindTunnelOutletBoundaryCondition())
+            'outlet', (v2, v3, v7, v6), _order, ((v2, v3, v7, v6),),
+            WindTunnelOutletBoundaryCondition())
 
         rightSide = BFBlockGeometry(
-                'rightSide', (v1, v2, v6, v5), _order, ((v1, v2, v6, v5),),
-                WindTunnelTopAndSidesBoundaryCondition())
+            'rightSide', (v1, v2, v6, v5), _order, ((v1, v2, v6, v5),),
+            WindTunnelTopAndSidesBoundaryCondition())
 
         leftSide = BFBlockGeometry(
-                'leftSide', (v3, v0, v4, v7), _order, ((v3, v0, v4, v7),),
-                WindTunnelTopAndSidesBoundaryCondition())
+            'leftSide', (v3, v0, v4, v7), _order, ((v3, v0, v4, v7),),
+            WindTunnelTopAndSidesBoundaryCondition())
 
         top = BFBlockGeometry('top', (v4, v5, v6, v7), _order,
                               ((v4, v5, v6, v7),),
                               WindTunnelTopAndSidesBoundaryCondition())
 
         ground = BFBlockGeometry(
-                'ground', (v3, v2, v1, v0), (range(4),), ((v3, v2, v1, v0),),
-                WindTunnelGroundBoundaryCondition(ablConditions))
+            'ground', (v3, v2, v1, v0), (range(4),), ((v3, v2, v1, v0),),
+            WindTunnelGroundBoundaryCondition(ablConditions))
 
         # return the class
         wt = cls(name, inlet, outlet, (rightSide, leftSide), top, ground,
-                 testGeomtries, roughness, meshingParameters, Zref,
+                 geometries, roughness, meshingParameters, Zref,
                  convertToMeters)
 
         return wt
@@ -221,7 +228,7 @@ class WindTunnel(object):
         """Return a BF case for this wind tunnel."""
         return Case.fromWindTunnel(self)
 
-    def save(self, overwrite=False):
+    def save(self, overwrite=False, minimum=True):
         """Save windTunnel to folder as an OpenFOAM case.
 
         Args:
@@ -231,7 +238,7 @@ class WindTunnel(object):
             A butterfly.Case.
         """
         _case = self.toOpenFOAMCase()
-        _case.save(overwrite)
+        _case.save(overwrite, minimum)
         return _case
 
     def ToString(self):
@@ -241,8 +248,8 @@ class WindTunnel(object):
     def __repr__(self):
         """Wind tunnel."""
         return "WindTunnel::%.2f * %.2f * %.2f::dir %s::%.3f m/s" % (
-                self.width, self.length, self.height, self.flowDir,
-                float(self.flowSpeed))
+            self.width, self.length, self.height, self.flowDir,
+            float(self.flowSpeed))
 
 
 class TunnelParameters(object):

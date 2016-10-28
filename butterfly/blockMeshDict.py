@@ -2,6 +2,7 @@
 """BlockMeshDict class."""
 from .boundarycondition import BoundingBoxBoundaryCondition
 from .foamfile import FoamFile
+from .fields import Empty
 import vectormath
 from .grading import SimpleGrading, Grading, MultiGrading
 from .parser import CppDictParser
@@ -217,48 +218,6 @@ class BlockMeshDict(FoamFile):
 
         return _cls
 
-    def __updateBoundaryFromSortedVertices(self):
-        """Update boundary dictionary based on BFBlockGeometries input."""
-        self.values['boundary']['boundingbox'] = {
-            'type': 'wall',
-            'faces': ((0, 3, 2, 1), (4, 5, 6, 7),
-                      (0, 1, 5, 4), (1, 2, 6, 5),
-                      (2, 3, 7, 6), (3, 0, 4, 7),
-                      )
-        }
-
-    def __updateBoundaryFromBFBlockGeometries(self):
-        """Update boundary dictionary based on BFBlockGeometries input."""
-        for geo in self.__BFBlockGeometries:
-            try:
-                self.values['boundary'][geo.name] = {
-                    'type': geo.boundaryCondition.type,
-                    'faces': tuple(tuple(self.vertices.index(v) for v in verGroup)
-                              for verGroup in geo.borderVertices)
-                }
-            except AttributeError as e:
-                raise TypeError('Wrong input geometry!\n{}'.format(e))
-
-    def __boundaryToOpenFOAM(self):
-        _body = "   %s\n" \
-                "   {\n" \
-                "       type %s;\n" \
-                "       faces\n" \
-                "       (" \
-                "       %s\n" \
-                "       );\n" \
-                "   }\n"
-
-        col = (_body % (name, attr['type'],
-               '\n' + '\n'.join('\t' + str(indices).replace(",", "")
-                                for indices in attr['faces']))
-               if isinstance(attr['faces'][0], tuple) else
-               _body % (name, attr['type'],
-                        '\n\t' + str(attr['faces']).replace(",", ""))
-               for name, attr in self.boundary.iteritems())
-
-        return 'boundary\n(%s);\n' % '\n'.join(col)
-
     @property
     def convertToMeters(self):
         """Get convertToMeters."""
@@ -294,8 +253,7 @@ class BlockMeshDict(FoamFile):
                                    for inx in ind)
 
             return BFGeometry(name, tuple(self.vertices[i] for i in uniuqe),
-                                    renumberedIndx,
-                                    boundaryCondition=bc)
+                              renumberedIndx, boundaryCondition=bc)
 
         if not self.__BFBlockGeometries:
             self.__BFBlockGeometries = tuple(
@@ -303,7 +261,6 @@ class BlockMeshDict(FoamFile):
                 for name, attr in self.boundary.iteritems())
 
         return self.__BFBlockGeometries
-
 
     @property
     def width(self):
@@ -354,6 +311,52 @@ class BlockMeshDict(FoamFile):
         assert hasattr(self.grading, 'isSimpleGrading'), \
             'grading input ({}) is not a valid simpleGrading.'.format(g)
 
+    def make2d(self, planeOrigin, planeNormal, width=0.1):
+        """Create a new 2D blockMeshDict from this blockMeshDict.
+
+        Args:
+            planeOrigin: Plane origin as (x, y, z).
+            planeNormal: Plane normal as (x, y, z).
+            width: width of 2d blockMeshDict (default: 01).
+        """
+        # duplicate blockMeshDict
+        bmd = self.duplicate()
+        n = vectormath.normalize(planeNormal)
+
+        # project all vertices to plane and move them in direction of normal
+        # by half of width
+        bmd.__vertices = tuple(
+            self.__calculate2dPoints(v, planeOrigin, n, width)
+            for v in bmd.vertices)
+
+        # set boundary condition to empty
+        # and number of divisions to 1 in shortest side
+        minimum = min(bmd.width, bmd.length, bmd.height)
+        if bmd.width == minimum:
+            bmd.nDivXYZ = (1, bmd.nDivXYZ[1], bmd.nDivXYZ[2])
+            # set both sides to empty
+
+        elif bmd.length == minimum:
+            bmd.nDivXYZ = (bmd.nDivXYZ[0], 1, bmd.nDivXYZ[2])
+            # set inlet and outlet to empty
+            # bmd.inlet.boundaryCondition = Empty()
+
+        elif bmd.height == minimum:
+            bmd.nDivXYZ = (bmd.nDivXYZ[0], bmd.nDivXYZ[1], 1)
+            # set top and bottom to empty
+
+        print('WARNING: make2d doesn\'t update boundary conditions to Empty.')
+        return bmd
+
+    @staticmethod
+    def __calculate2dPoints(v, o, n, w):
+        # project point
+        p = vectormath.project(v, o, n)
+        # move the projected point backwards for half of the width
+        t = vectormath.scale(vectormath.normalize(vectormath.subtract(v, p)),
+                             w / 2.0)
+        return vectormath.move(p, t)
+
     def nDivXYZByCellSize(self, cellSizeXYZ):
         """Set number of divisions by cell size."""
         x, y, z = cellSizeXYZ
@@ -373,6 +376,48 @@ class BlockMeshDict(FoamFile):
 
         if meshingParameters.grading:
             self.grading = meshingParameters.grading
+
+    def __updateBoundaryFromSortedVertices(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
+        self.values['boundary']['boundingbox'] = {
+            'type': 'wall',
+            'faces': ((0, 3, 2, 1), (4, 5, 6, 7),
+                      (0, 1, 5, 4), (1, 2, 6, 5),
+                      (2, 3, 7, 6), (3, 0, 4, 7),
+                      )
+        }
+
+    def __updateBoundaryFromBFBlockGeometries(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
+        for geo in self.__BFBlockGeometries:
+            try:
+                self.values['boundary'][geo.name] = {
+                    'type': geo.boundaryCondition.type,
+                    'faces': tuple(tuple(self.vertices.index(v) for v in verGroup)
+                                   for verGroup in geo.borderVertices)
+                }
+            except AttributeError as e:
+                raise TypeError('Wrong input geometry!\n{}'.format(e))
+
+    def __boundaryToOpenFOAM(self):
+        _body = "   %s\n" \
+                "   {\n" \
+                "       type %s;\n" \
+                "       faces\n" \
+                "       (" \
+                "       %s\n" \
+                "       );\n" \
+                "   }\n"
+
+        col = (_body % (name, attr['type'],
+               '\n' + '\n'.join('\t' + str(indices).replace(",", "")
+                                for indices in attr['faces']))
+               if isinstance(attr['faces'][0], tuple) else
+               _body % (name, attr['type'],
+                        '\n\t' + str(attr['faces']).replace(",", ""))
+               for name, attr in self.boundary.iteritems())
+
+        return 'boundary\n(%s);\n' % '\n'.join(col)
 
     @staticmethod
     def __distance(v1, v2):

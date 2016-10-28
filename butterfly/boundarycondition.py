@@ -26,7 +26,7 @@ class BoundaryCondition(object):
         """Init bounday condition."""
         self.type = bcType
         self.T = T or ZeroGradient()
-        self.refLevels = (0, 0) if not refLevels else tuple(int(v) for v in refLevels)
+        self.refLevels = (1, 1) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
         self.U = U or ZeroGradient()
         self.p = p or ZeroGradient()

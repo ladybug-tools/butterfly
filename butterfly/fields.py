@@ -53,6 +53,11 @@ class Slip(Field):
 
     pass
 
+class Empty(Field):
+    """Empty boundary condition."""
+
+    pass
+
 
 class Calculated(Field):
     """OpenFOAM calculated value.
