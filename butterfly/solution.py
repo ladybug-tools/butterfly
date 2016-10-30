@@ -4,7 +4,7 @@ from copy import deepcopy
 from collections import namedtuple, OrderedDict
 import os
 
-from .utilities import checkFiles, tail
+from .utilities import tail
 from .parser import CppDictParser
 
 
@@ -14,22 +14,33 @@ class Solution(object):
     This class creates a solution from a recipe which is ready to run and monitor.
 
     Args:
+        case: A butterfly case.
         recipe: A butterfly recipe.
-        decomposeParDict: decomposeParDict for parallel run.
-        quantities: A list of quantities to be watched during the run.
+        decomposeParDict: decomposeParDict for parallel run (default: None).
+        solutionParameter: A solutionParameter (default: None).
+        removeExtraFoamFiles: set to True if you want butterfly to remove all the
+            extra files in 0 folder once you update the recipe (default: False).
     """
 
-    def __init__(self, case, recipe, decomposeParDict=None):
+    def __init__(self, case, recipe, decomposeParDict=None, solutionParameter=None,
+                 removeExtraFoamFiles=False):
         """Init solution."""
+        self.__remove = removeExtraFoamFiles
+        assert hasattr(case, 'isCase'), \
+            'ValueError:: {} is not a Butterfly.Case'.format(case)
         self.__case = case
-        self.__recipe = recipe
-        self.__decomposeParDict = decomposeParDict
+        self.recipe = recipe
+        self.decomposeParDict = decomposeParDict
+        self.updateSolutionParams(solutionParameter)
+        # set internal properties for running the solution
+
+        # place holder for residuals
+        self.__residualValues = OrderedDict.fromkeys(self.residualFields, 0)
         self.__isRunStarted = False
         self.__isRunFinished = False
         self.__process = None
         self.__logFiles = None
         self.__errFiles = None
-        self.quantities = quantities
 
     @property
     def projectName(self):
@@ -46,29 +57,41 @@ class Solution(object):
         """Get recipe."""
         return self.__recipe
 
+    @recipe.setter
+    def recipe(self, r):
+        """set recipe."""
+        assert hasattr(r, 'isRecipe'), '{} is not a recipe.'.format(r)
+        self.__recipe = r
+        self.__recipe.prepareCase(self.case, overwrite=True,
+                                  remove=self.__remove)
+
+    @property
+    def decomposeParDict(self):
+        """DecomposeParDict."""
+        return self.__decomposeParDict
+
+    @decomposeParDict.setter
+    def decomposeParDict(self, dpd):
+        """Set decomposeParDict."""
+        if dpd:
+            assert hasattr(dpd, 'isDecomposeParDict'), \
+                '{} is not a DecomposeParDict.'.format(dpd)
+        self.__decomposeParDict = dpd
+
+    @property
+    def removeExtraFoamFiles(self):
+        """If True, solution will remove extra files everytime recipe changes."""
+        return self.__remove
+
     @property
     def projectDir(self):
         """Get project directory."""
         return self.case.projectDir
 
     @property
-    def quantities(self):
-        """Get list of quantities to be watched during the run."""
-        return self.__quantities
-
-    @quantities.setter
-    def quantities(self, q):
-        if not q:
-            self.__quantities = self.__recipe.quantities
-        else:
-            try:
-                self.__quantities = tuple(q)
-            except Exception as e:
-                print "Failed to set quantities!\n{}".format(e)
-                self.__quantities = self.__recipe.quantities
-
-        # place holder for residuals
-        self.__residualValues = OrderedDict.fromkeys(self.__quantities, 0)
+    def residualFields(self):
+        """Get list of residuals to be watched during the run."""
+        return self.recipe.residualFields
 
     @property
     def controlDict(self):
@@ -88,7 +111,7 @@ class Solution(object):
     @property
     def residualFile(self):
         """Return address of the residual file."""
-        return self.__recipe.residualFile
+        return os.path.join(self.case.logFolder, self.recipe.logFile)
 
     @property
     def logFiles(self):
@@ -98,7 +121,7 @@ class Solution(object):
     @property
     def log(self):
         """Get the log report."""
-        isContent, content = checkFiles(self.logFiles)
+        isContent, content = self.case.runmanager.checkFileContents(self.logFiles)
 
     @property
     def errFiles(self):
@@ -130,7 +153,7 @@ class Solution(object):
     def residualValues(self, latestTime=True):
         """Get timestep and residual values as a tuple."""
         if latestTime:
-            return self.__getInfo().residuals
+            return self.__getInfo().residualValues
         else:
             raise NotImplementedError()
 
@@ -140,7 +163,7 @@ class Solution(object):
         return self.__getInfo()
 
     def __getInfo(self):
-        i = namedtuple('Info', 'timestep residuals')
+        i = namedtuple('Info', 'timestep residualValues')
         # get end of the log file
         if not os.path.isfile(self.residualFile):
             return i(0, self.__residualValues.values())
@@ -177,6 +200,21 @@ class Solution(object):
             t = 0
         return t
 
+    def updateFromRecipe(self, recipe):
+        """Update solution from recipe inputs.
+
+        This method creates a SolutionParameter from each recipe property, and
+        uses updateSolutionParams to update the solution.
+        """
+        tp = SolutionParameter.fromCppDictionary('turbulenceProperties',
+                                                 str(recipe.turbulenceProperties))
+        fvSc = SolutionParameter.fromCppDictionary('fvSchemes',
+                                                 str(recipe.fvSchemes))
+        fvSol = SolutionParameter.fromCppDictionary('fvSolution',
+                                                 str(recipe.fvSolution))
+
+        self.updateSolutionParams((tp, fvSc, fvSol))
+
     def updateSolutionParams(self, solParams, timestep=None):
         """Update parameters.
 
@@ -208,15 +246,6 @@ class Solution(object):
                 ffile = getattr(self.__case, solPar.filename)
                 ffile.save(self.projectDir)
 
-                # This is not as simple as copying files!
-                # if ffile.isZeroFile:
-                #     # save file to processors folders if any
-                #     if self.__decomposeParDict:
-                #         for n in self.__decomposeParDict.numberOfSubdomains:
-                #             _p = os.path.join(self.projectDir, 'processer%d' % n)
-                #             if os.path.isdir(_p):
-                #                 ffile.save(_p)
-
                 # just in case probes was not there and now should be included
                 # in controlDict
                 if solPar.filename == 'probes':
@@ -228,8 +257,8 @@ class Solution(object):
         """Execute the solution."""
         self.case.renameSnappyHexMeshFolders()
         log = self.case.command(
-                cmd=self.recipe.command,
-                args=self.recipe.args,
+                cmd=self.recipe.application,
+                args=None,
                 decomposeParDict=self.__decomposeParDict,
                 run=True, wait=False)
         self.__process = log.process
@@ -252,7 +281,7 @@ class Solution(object):
 
     def __repr__(self):
         """Solution representation."""
-        return "{}::{}".format(self.case.projectName, self.recipe)
+        return "{}::{}".format(self.projectName, self.recipe)
 
 
 class SolutionParameter(object):
@@ -271,7 +300,7 @@ class SolutionParameter(object):
             (default: (0, 1.0e+100)).
     """
 
-    _OFFilenames = ('epsilon', 'k', 'nut', 'p', 'U', 'turbulenceProperties',
+    _OFFilenames = ('epsilon', 'k', 'nut', 'p', 'U', 'T', 'turbulenceProperties',
                     'transportProperties', 'blockMeshDict', 'controlDict',
                     'fvSchemes', 'fvSolution', 'snappyHexMeshDict', 'probes')
 
@@ -296,9 +325,9 @@ class SolutionParameter(object):
         return cls(OFFilename, values, replace, timeRange)
 
     @classmethod
-    def fromDictionary(cls, OFFilename, dictionary, replace=False,
+    def fromCppDictionary(cls, OFFilename, dictionary, replace=False,
                        timeRange=None):
-        """Create from an OpenFOAM dictionary."""
+        """Create from an OpenFOAM dictionary in text format."""
         # convert values to python dictionary
         values = CppDictParser(text=dictionary).values
         return cls(OFFilename, values, replace, timeRange)

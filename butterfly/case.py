@@ -130,8 +130,12 @@ class Case(object):
         # update each field of boundary condition for geometries
         for ff in _case.getFoamFilesFromLocation('0'):
             for geo in _case.geometries:
-                f = ff.getBoundaryField(geo.name)
-                if f:
+                try:
+                    f = ff.getBoundaryField(geo.name)
+                except AttributeError as e:
+                    if not geo.name.endswith('Conditions'):
+                        print str(e)
+                else:
                     # set boundary condition for the field
                     setattr(geo.boundaryCondition, ff.name,
                             Field.fromDict(f))
@@ -201,7 +205,11 @@ class Case(object):
         g = G()
 
         # 0 floder
-        _geometries = geometries + blockMeshDict.geometry
+        try:
+            _geometries = geometries + blockMeshDict.geometry
+        except TypeError:
+            _geometries = tuple(geometries) + blockMeshDict.geometry
+
         u = U.fromBFGeometries(_geometries)
         p = P.fromBFGeometries(_geometries)
         k = K.fromBFGeometries(_geometries)
@@ -279,6 +287,9 @@ class Case(object):
     @property
     def geometries(self):
         """Butterfly geometries."""
+        if hasattr(self, 'blockMeshDict'):
+            return self.__geometries + self.blockMeshDict.geometry
+
         return self.__geometries
 
     @property
@@ -316,8 +327,8 @@ class Case(object):
 
     @property
     def logFolder(self):
-        """bash folder fullpath."""
-        return os.path.join(self.projectDir, 'bash\\log')
+        """log folder fullpath."""
+        return os.path.join(self.projectDir, 'log')
 
     @property
     def polyMeshFolder(self):
@@ -597,13 +608,13 @@ class Case(object):
         for ref in self.refinementRegions:
             ref.writeToStl(self.triSurfaceFolder)
 
-        print '{} is saved to:\n{}'.format(self.projectName, self.projectDir)
+        print '{} is saved to: {}'.format(self.projectName, self.projectDir)
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
         ur"""Run an OpenFOAM command for this case.
 
-        This method creates a bat file under bashFolder for each command.
-        The output will be logged under bash\\log as filename.log.
+        This method creates a log and err file under logFolder for each command.
+        The output will be logged as {cmd}.log and {cmd}.err.
 
         Args:
             cmd: OpenFOAM command.
@@ -651,8 +662,8 @@ class Case(object):
 
                 return log(not hascontent, content, p, logfiles, errfiles)
             else:
-                # return namedtuple if it's all fine.
-                return log(True, None, None, logfiles, errfiles)
+                # return a namedtuple assuming that the command is running fine.
+                return log(True, None, p, logfiles, errfiles)
 
     def blockMesh(self, args=None, wait=True, overwrite=True,):
         """Run blockMesh.

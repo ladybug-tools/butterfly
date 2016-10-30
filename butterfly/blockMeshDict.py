@@ -166,7 +166,7 @@ class BlockMeshDict(FoamFile):
         # update self.values['boundary']
         _cls.__updateBoundaryFromSortedVertices()
 
-        _cls.__order = tuple(range(7))
+        _cls.__order = tuple(range(8))
 
         _cls.nDivXYZ = nDivXYZ
 

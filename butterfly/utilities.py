@@ -24,7 +24,9 @@ def loadCaseFiles(folder, fullpath=False):
     """load openfoam files from a folder."""
     files = []
     for p in ('0', 'constant', 'system', 'constant\\triSurface'):
-        files.append(tuple(listfiles(os.path.join(folder, p), fullpath)))
+        fp = os.path.join(folder, p)
+        assert os.path.isdir(fp), 'There is no such a folder:\t{}'.format(fp)
+        files.append(tuple(listfiles(fp, fullpath)))
 
     Files = namedtuple('Files', 'zero constant system stl')
     return Files(*files)
