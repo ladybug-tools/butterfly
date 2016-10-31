@@ -10,17 +10,16 @@
 Set residual control convergance values
 
     Args:
-        _p_: Residual control valeus for p (default: 1e-5)
-        _U_: Residual control valeus for U (default: 1e-5)
-        _k_: Residual control valeus for k (default: 1e-5)
-        _epsilon_: Residual control valeus for epsilon (default: 1e-5)
+        _quantities: 
+        _values_: Residual control valeus for p (default: 1e-5)
+        
     Returns:
-        residualControl: Butterfly ResidualControl.
+        residualControl: Residual Control.
 """
 
 ghenv.Component.Name = "Butterfly_residualControl"
 ghenv.Component.NickName = "residualControl"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -36,18 +35,15 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-rc = ResidualControl()
+if _quantities:
+    if not _values_:
+        _values_ = (0.0001,)
+    
+    # match length
+    l = len(_quantities)
+    values = (_values_[c] if c < len(_values_) else _values_[-1]
+        for c, q in enumerate(_quantities))
 
-if _p_ is not None:
-    rc.p = str(_p_)
-
-if _U_ is not None:
-    rc.U = str(_U_)
-
-if _k_ is not None:
-    rc.k = str(_k_)
-
-if _epsilon_ is not None:
-    rc.epsilon = str(_epsilon_)
-
-residualControl = rc
+    residualControl = ResidualControl(
+        {key: value for (key, value) in zip(_quantities, values)}
+    )

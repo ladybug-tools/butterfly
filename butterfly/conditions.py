@@ -40,7 +40,9 @@ class ABLConditions(Condition):
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(flowSpeed)
         _ABLCDict['z0'] = 'uniform {}'.format(z0)
-        _ABLCDict['flowDir'] = '({} {} {})'.format(*flowDir)
+        _ABLCDict['flowDir'] = flowDir if isinstance(flowDir, str) \
+            else '({} {} {})'.format(*flowDir)
+
         _ABLCDict['zGround'] = 'uniform {}'.format(zGround)
         return cls(_ABLCDict)
 

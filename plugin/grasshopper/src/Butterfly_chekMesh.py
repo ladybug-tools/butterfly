@@ -17,17 +17,18 @@ chekMesh
     Returns:
         readMe!: Reports, errors, warnings, etc.
         case: Butterfly case.
-        maxNonOrthogonality: Maximum mesh non-orthogonality. Use this value to update fvSchemes.
+        max: Maximum mesh non-orthogonality. Use this value to update fvSchemes.
+        average: Average mesh non-orthogonality.
+        
 """
 
 ghenv.Component.Name = "Butterfly_chekMesh"
 ghenv.Component.NickName = "chekMesh"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 if _case and _run:
-    maxNonOrthogonality, avgNonOrthogonality = _case.calculateMeshOrthogonality()
-    print "Mesh non-orthogonality max: {}, Mesh non-orthogonality average: {}".format(maxNonOrthogonality, avgNonOrthogonality)
-    case = _case
+    max, average = _case.calculateMeshOrthogonality()
+    print "Mesh non-orthogonality max: {}, Mesh non-orthogonality average: {}".format(max, average)

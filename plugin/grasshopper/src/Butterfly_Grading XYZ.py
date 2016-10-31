@@ -22,7 +22,7 @@ Create a grading for multiple segmentGradings.
 
 ghenv.Component.Name = "Butterfly_Grading XYZ"
 ghenv.Component.NickName = "gradXYZ"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"

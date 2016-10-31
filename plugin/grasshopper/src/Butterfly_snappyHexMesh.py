@@ -2,7 +2,7 @@
 # This file is part of Butterfly.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ladybug; If not, see <http://www.gnu.org/licenses/>.
+# along with Butterfly; If not, see <http://www.gnu.org/licenses/>.
 # 
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
@@ -24,7 +24,7 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_15_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -34,8 +34,7 @@ if _case:
     if not _locationInMesh_:
         _locationInMesh_ = _case.blockMeshDict.center
     else:
-        _locationInMesh_ = tuple(c * _case.blockMeshDict.convertToMeters
-                                 for c in tuple(_locationInMesh_))
+        _locationInMesh_ = tuple(_locationInMesh_)
 
     if _snappyHexMeshDict_ and hasattr(_snappyHexMeshDict_, 'locationInMesh'):
         # update values for snappyHexMeshDict
@@ -51,17 +50,19 @@ if _case:
         _case.snappyHexMeshDict.save(_case.projectDir)
         _case.removeResultFolders()
         
-        if _case.isPolyMeshSnappyHexMesh():
+        if _case.isPolyMeshSnappyHexMesh:
             # check if meshBlock has been replaced by sHM
             # remove current snappyHexMesh and re-run block mesh
             _case.removeSnappyHexMeshFolders()
             # run blockMesh
-            log = _case.blockMesh(removeContent=True)
+            log = _case.blockMesh(overwrite=True)
         
             if not log.success:
                 raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)                        
         
-        log = _case.snappyHexMesh(decomposeParDict=decomposeParDict_)
+        _case.decomposeParDict = decomposeParDict_
+        
+        log = _case.snappyHexMesh()
         
         if log.success:
             if _case.getSnappyHexMeshFolders():

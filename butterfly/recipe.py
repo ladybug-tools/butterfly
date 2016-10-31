@@ -183,6 +183,8 @@ class _Recipe(object):
             overwrite: Set to True to overwrite current files.
             remove: Set to True to remove extra files in the folder.
         """
+        print('Preparing {} for {} study...'.format(case, self.__class__.__name__))
+
         if self.fvSchemes and case.fvSchemes != self.fvSchemes:
             case.fvSchemes = self.fvSchemes
             case.fvSchemes.save(case.projectDir)
@@ -195,6 +197,9 @@ class _Recipe(object):
                 case.turbulenceProperties != self.turbulenceProperties:
             case.turbulenceProperties = self.turbulenceProperties
             case.turbulenceProperties.save(case.projectDir)
+
+        if hasattr(case, 'probes'):
+            case.probes.save(case.projectDir)
 
         if hasattr(case, 'ABLConditions'):
             case.ABLConditions.save(case.projectDir, overwrite=overwrite)

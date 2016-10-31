@@ -18,18 +18,18 @@ Create Butterfly surface.
         _meshSet_: Grasshopper mesh settings.
     Returns:
         readMe!: Reports, errors, warnings, etc.
-        BFGeo: A Buttefly geometry.
+        BFGeometries: A Buttefly geometry.
 """
 
 ghenv.Component.Name = "Butterfly_Create Butterfly Geometry"
 ghenv.Component.NickName = "createBFGeometry"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_27_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    from butterfly.gh.geometry import GHBFGeometry
+    from butterfly_grasshopper.geometry import BFGeometryGH
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -40,4 +40,4 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _geo and _name:
-    BFGeo = GHBFGeometry(_name, _geo, _boundary_, _meshSet_)
+    BFGeometries = BFGeometryGH(_name, _geo, _boundary_, _meshSet_)

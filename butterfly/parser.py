@@ -123,7 +123,7 @@ class ResidualParser(object):
                         self.__residuals[self.timestep] = {}
                         self.__parseResiduals(f)
         except Exception as e:
-            raise 'Failed to parse {}:\n{}'.format(f, e)
+            raise 'Failed to parse {}:\n\t{}'.format(self.filepath, e)
 
     @property
     def residuals(self):

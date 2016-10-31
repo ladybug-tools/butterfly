@@ -7,7 +7,7 @@ from collections import namedtuple
 from copy import deepcopy
 
 from .version import Version
-from .utilities import loadCaseFiles
+from .utilities import loadCaseFiles, loadProbeValuesFromFolder
 from .geometry import bfGeometryFromStlFile, calculateMinMaxFromBFGeometries
 from .refinementRegion import refinementRegionsFromStlFile
 from .meshingparameters import MeshingParameters
@@ -342,8 +342,13 @@ class Case(object):
 
     @property
     def postProcessingFolder(self):
-        """triSurface folder fullpath."""
+        """postProcessing folder fullpath."""
         return os.path.join(self.projectDir, 'postProcessing')
+
+    @property
+    def probesFolder(self):
+        """Fullpath to probes folder."""
+        return os.path.join(self.postProcessingFolder, 'probes')
 
     @property
     def foamFiles(self):
@@ -583,9 +588,11 @@ class Case(object):
                 try:
                     os.makedirs(p)
                 except Exception as e:
-                    raise IOError(
-                        'Butterfly failed to create {}\n{}'.format(p, e)
-                    )
+                    msg = 'Butterfly failed to create {}\n\t{}'.format(p, e)
+                    if str(e).startswith('[Error 183]'):
+                        print(msg)
+                    else:
+                        raise IOError(msg)
 
         # save foamfiles
         if minimum:
@@ -597,8 +604,9 @@ class Case(object):
         for f in foamFiles:
             f.save(self.projectDir)
 
-        # write bfgeometries to stl file
-        stlStr = (geo.toSTL() for geo in self.geometries)
+        # write bfgeometries to stl file. __geometries is geometries without
+        # blockMesh geometry
+        stlStr = (geo.toSTL() for geo in self.__geometries)
         stlName = self.__originalName or self.projectName
         with open(os.path.join(self.triSurfaceFolder,
                                '%s.stl' % stlName), 'wb') as stlf:
@@ -785,6 +793,17 @@ class Case(object):
         """Return OpenFOAM mesh as a Rhino mesh."""
         # This is a abstract property which should be implemented in subclasses
         raise NotImplementedError()
+
+    def loadProbeValues(self, field):
+        """Return OpenFOAM probes results for a field."""
+        if self.probes.probesCount == 0:
+            return ()
+
+        if field not in self.probes.fields:
+            raise ValueError("Can't find {} in {}.".format(field,
+                                                           self.probes.fields))
+
+        return loadProbeValuesFromFolder(self.probesFolder, field)
 
     def duplicate(self):
         """Return a copy of this object."""

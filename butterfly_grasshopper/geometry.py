@@ -7,10 +7,10 @@ except ImportError:
     pass
 
 from copy import deepcopy
-from ..geometry import BFGeometry
+from butterfly.geometry import BFGeometry
 
 
-class GHMesh(object):
+class MeshGH(object):
     """Base mesh class for Butterfly Grasshopper.
 
     Attributes:
@@ -91,7 +91,7 @@ class GHMesh(object):
         return str(self.geometry)
 
 
-class GHBFGeometry(BFGeometry):
+class BFGeometryGH(BFGeometry):
     """Base geometry class for Butterfly.
 
     Attributes:
@@ -107,7 +107,7 @@ class GHBFGeometry(BFGeometry):
                  meshingParameters=None):
         """Init Butterfly geometry in Grasshopper."""
         # convert input geometries to a butterfly GHMesh.
-        _mesh = GHMesh(geometries, meshingParameters)
+        _mesh = MeshGH(geometries, meshingParameters)
 
         self.__geometry = _mesh.geometry
 
@@ -120,7 +120,7 @@ class GHBFGeometry(BFGeometry):
         return self.__geometry
 
 
-class GHBFBlockGeometry(GHBFGeometry):
+class BFBlockGeometry_GH(BFGeometryGH):
     """Butterfly block geometry.
 
     Use this geometry to create geometries for blockMeshDict.
@@ -138,7 +138,7 @@ class GHBFBlockGeometry(GHBFGeometry):
     def __init__(self, name, geometries, boundaryCondition=None,
                  meshingParameters=None):
         """Init Butterfly block geometry in Grasshopper."""
-        GHBFGeometry.__init__(self, name, geometries, boundaryCondition,
+        BFGeometryGH.__init__(self, name, geometries, boundaryCondition,
                               meshingParameters)
 
         self.__calculateBlockBorderVertices(geometries)
@@ -171,3 +171,23 @@ class GHBFBlockGeometry(GHBFGeometry):
         srf = face.DuplicateFace(doc.ModelAbsoluteTolerance)
         edgesJoined = rc.Geometry.Curve.JoinCurves(srf.DuplicateEdgeCurves(True))
         return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
+
+
+def BFMeshToMesh(bfMesh, color=None):
+    """convert a BFMesh object to Grasshopper mesh."""
+    assert hasattr(bfMesh, 'vertices'), \
+        '\t{} is not a valid BFMesh.'.format(bfMesh)
+    assert hasattr(bfMesh, 'faceIndices'), \
+        '\t{} is not a valid BFMesh.'.format(bfMesh)
+
+    mesh = rc.Geometry.Mesh()
+    for v in bfMesh.vertices:
+        mesh.Vertices.Add(rc.Geometry.Point3d(*v))
+
+    for face in bfMesh.faceIndices:
+        mesh.Faces.AddFace(*face)
+
+    if color:
+        mesh.VertexColors.CreateMonotoneMesh(color)
+
+    return mesh

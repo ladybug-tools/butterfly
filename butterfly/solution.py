@@ -4,7 +4,7 @@ from copy import deepcopy
 from collections import namedtuple, OrderedDict
 import os
 
-from .utilities import tail
+from .utilities import tail, loadSkippedProbes
 from .parser import CppDictParser
 
 
@@ -139,8 +139,8 @@ class Solution(object):
             self.__isRunFinished = True
             self.case.renameSnappyHexMeshFolders()
             # load errors if any
-            checkFiles(self.logFiles)
-            failed, err = checkFiles(self.errFiles)
+            self.case.runmanager.checkFileContents(self.logFiles)
+            failed, err = self.case.runmanager.checkFileContents(self.errFiles)
 
             assert not failed, err
 
@@ -209,9 +209,9 @@ class Solution(object):
         tp = SolutionParameter.fromCppDictionary('turbulenceProperties',
                                                  str(recipe.turbulenceProperties))
         fvSc = SolutionParameter.fromCppDictionary('fvSchemes',
-                                                 str(recipe.fvSchemes))
+                                                   str(recipe.fvSchemes))
         fvSol = SolutionParameter.fromCppDictionary('fvSolution',
-                                                 str(recipe.fvSolution))
+                                                    str(recipe.fvSolution))
 
         self.updateSolutionParams((tp, fvSc, fvSol))
 
@@ -257,19 +257,37 @@ class Solution(object):
         """Execute the solution."""
         self.case.renameSnappyHexMeshFolders()
         log = self.case.command(
-                cmd=self.recipe.application,
-                args=None,
-                decomposeParDict=self.__decomposeParDict,
-                run=True, wait=False)
+            cmd=self.recipe.application,
+            args=None,
+            decomposeParDict=self.__decomposeParDict,
+            run=True, wait=False)
         self.__process = log.process
         self.__errFiles = log.errorfiles
         self.__logFiles = log.logfiles
         self.__isRunStarted = True
         self.__isRunFinished = False
 
+    def purge(self, removePolyMeshContent=True,
+              removeSnappyHexMeshFolders=True,
+              removeResultFolders=False,
+              removePostProcessingFolder=False):
+        """Purge solution's case folder."""
+        self.case.purge(
+            removePolyMeshContent, removeSnappyHexMeshFolders,
+            removeResultFolders, removePostProcessingFolder)
+
     def terminate(self):
         """Cancel the solution."""
         self.case.runmanager.terminate()
+
+    def loadProbeValues(self, field):
+        """Return OpenFOAM probes results for a given field (e.g. U)."""
+        return self.case.loadProbeValues(field)
+
+    def skippedProbes(self):
+        """Get list of probes that are skipped from the solution."""
+        return loadSkippedProbes(os.path.join(self.case.logFolder,
+                                              self.recipe.logFile))
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -326,10 +344,14 @@ class SolutionParameter(object):
 
     @classmethod
     def fromCppDictionary(cls, OFFilename, dictionary, replace=False,
-                       timeRange=None):
+                          timeRange=None, header=False):
         """Create from an OpenFOAM dictionary in text format."""
         # convert values to python dictionary
         values = CppDictParser(text=dictionary).values
+
+        if not header and 'FoamFile' in values:
+            del(values['FoamFile'])
+
         return cls(OFFilename, values, replace, timeRange)
 
     @property

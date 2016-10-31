@@ -19,7 +19,6 @@ class Probes(Condition):
 
     def __init__(self, values=None):
         """Init class."""
-        self.__count = 0
         super(Probes, self).__init__(
             name='probes', cls='dictionary', location='system',
             defaultValues=self.__defaultValues, values=values
@@ -33,16 +32,15 @@ class Probes(Condition):
             filepath: Full file path to dictionary.
         """
         _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
-
-        if _cls.probeLocations:
-            _cls.__count = len(_cls.probeLocations.split(')')) - 1
-
         return _cls
 
     @property
     def probesCount(self):
         """Get number of probes."""
-        return self.__count
+        if not self.probeLocations:
+            return 0
+        else:
+            return len(self.probeLocations[1:-1].split(')')) - 1
 
     @property
     def probeLocations(self):
@@ -51,7 +49,6 @@ class Probes(Condition):
 
     @probeLocations.setter
     def probeLocations(self, pts):
-        self.__count = len(pts)
         ptlist = (str(tuple(pt)).replace(',', ' ') for pt in pts)
         self.values['functions']['probes']['probeLocations'] = \
             '({})'.format(' '.join(ptlist))

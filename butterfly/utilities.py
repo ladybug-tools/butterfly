@@ -240,3 +240,46 @@ def loadSkippedProbes(logFile):
             line = inf.readline()
 
     return _pts
+
+
+def loadProbeValuesFromFolder(probesFolder, field):
+    """Return OpenFOAM probe values for a field for the last timestep.
+
+    Args:
+        field: Probes field (e.g. U, p, T).
+    """
+    if not os.path.isdir(probesFolder):
+        raise ValueError(
+            'Failed to find probes folder folder at {}'.format(probesFolder))
+
+    folders = [os.path.join(probesFolder, f) for f in os.listdir(probesFolder)
+               if (os.path.isdir(os.path.join(probesFolder, f)) and
+                   f.isdigit())]
+
+    # sort based on last modified
+    folders = sorted(folders, key=lambda folder:
+                     max(tuple(os.stat(os.path.join(folder, f)).st_mtime
+                               for f in os.listdir(folder))))
+
+    # load the last line in the file
+    _f = os.path.join(probesFolder, str(folders[-1]), field)
+
+    assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
+    _res = readLastLine(_f).split()[1:]
+
+    # convert values to tuple or number
+    _rawres = tuple(d.strip() for d in readLastLine(_f).split()
+                    if d.strip())[1:]
+
+    try:
+        # it's a number
+        _res = tuple(float(r) for r in _rawres)
+    except ValueError:
+        try:
+            # it's a vector
+            _res = tuple(eval(','.join(_rawres[3 * i: 3 * (i + 1)]))
+                         for i in range(int(len(_rawres) / 3)))
+        except Exception as e:
+            raise Exception('\nFailed to load probes:\n{}'.format(e))
+
+    return _res

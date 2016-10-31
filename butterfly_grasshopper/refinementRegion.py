@@ -1,6 +1,6 @@
 # coding=utf-8
 """RefinementRegion for Grasshopper."""
-from ..refinementRegion import RefinementRegion
+from butterfly.refinementRegion import RefinementRegion
 from .geometry import GHMesh
 
 

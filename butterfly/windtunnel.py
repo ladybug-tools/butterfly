@@ -191,7 +191,8 @@ class WindTunnel(object):
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(self.flowSpeed)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
-        _ABLCDict['flowDir'] = '({} {} {})'.format(*self.flowDir)
+        _ABLCDict['flowDir'] = self.flowDir if isinstance(self.flowDir, str) \
+            else '({} {} {})'.format(*self.flowDir)
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
 

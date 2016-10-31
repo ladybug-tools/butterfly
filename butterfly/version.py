@@ -7,11 +7,11 @@ from datetime import datetime
 class Version(object):
     """Version class."""
 
-    BFVer = "0.0.2"
+    BFVer = "0.0.3"
     OFVer = "3.0"
     OFFullVer = "v1606+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
-    lastUpdated = datetime(year=2016, month=10, day=06, hour=18, minute=35)
+    lastUpdated = datetime(year=2016, month=10, day=30, hour=21, minute=10)
 
     def duplicate(self):
         """Return a copy of this object."""

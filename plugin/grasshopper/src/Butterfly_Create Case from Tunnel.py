@@ -14,9 +14,7 @@ Create Case from wind tunnel.
     Args:
         _name: Project name.
         _BFGeometries: List of butterfly geometries that will be inside the tunnel.
-        _windSpeed: Wind speed in m/s at a the reference height (_refWindHeight_).
         _refWindHeight_: Reference height for wind velocity (default: 10m).
-        _windDirection_: Wind direction as Vector3D (default: 0, 1, 0).
         _landscape_: An integer between 0-7 to calculate z0 (roughness).
             You can find full description of the landscape in Table I at this
             link (onlinelibrary.wiley.com/doi/10.1002/met.273/pdf)
@@ -60,24 +58,24 @@ Create Case from wind tunnel.
             high-rise buildings, or large forests of irregular height with many
             clearings.
 
-        _globalRefLevel_: A tuple of (min, max) values for global refinment.
         _tunnelPar_: Butterfly tunnel parameters.
         _run: Create wind tunnel case from inputs.
     Returns:
         readMe!: Reports, errors, warnings, etc.
-        geo: Wind tunnel geometry for visualization.
+        pts: Wind tunnel corners for visualization. Use Polyline component or box
+            component to create the box.
         case: Butterfly case.
 """
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_02_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 try:
-    import butterfly.gh.windtunnel
+    from butterfly_grasshopper.windtunnel import WindTunnelGH
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -86,25 +84,24 @@ except ImportError as e:
             ' https://github.com/mostaphaRoudsari/Butterfly/issues'
         
     raise ImportError('{}\n{}'.format(msg, e))
-
-import sys
-import types
+    
+import Rhino as rc
 
 def main():
-    wt = butterfly.gh.windtunnel.GHWindTunnel(_name, _BFGeometries, _windSpeed,
-        _windDirection_, _tunnelPar_, _landscape_, _globalRefLevel_, _refWindHeight_)
-    
-    print "Wind tunnel dimensions: {}, {} and {}".format(wt.X, wt.Y, wt.Z)
-    print "Number of divisions: {}, {} and {}".format(*_tunnelPar_.nDivXYZ)
+    wt = WindTunnelGH.fromGeometriesWindVectorAndParameters(
+        _name, _BFGeometries, _windVector, _tunnelPar_, _landscape_, _meshParams_,
+        _refWindHeight_)
+        
+    print "Wind tunnel dimensions: {}, {} and {}".format(wt.width, wt.length, wt.height)
+    print "Number of divisions: {}, {} and {}".format(*wt.blockMeshDict.nDivXYZ)
     for region in refRegions_:
         wt.addRefinementRegion(region)
-    geo =  wt.boundingbox
-    case = wt.toOpenFOAMCase()
-    case.createCaseFolders()
-    case.populateContents()
+    pts = (rc.Geometry.Point3d(*v) for v in wt.blockMeshDict.vertices)
     
-    
-    return geo, case
+    # save with overwrite set to False. User can clean the folder using purge if they need to.
+    case = wt.save(overwrite=(_run + 1) % 2)
 
-if _run and _name and _BFGeometries and _windSpeed:
-        geo, case = main()
+    return wt, pts, case
+
+if _run and _name and _BFGeometries and _windVector:
+        tunnel, pts, case = main()

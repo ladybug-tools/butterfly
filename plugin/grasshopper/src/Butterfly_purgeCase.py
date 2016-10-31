@@ -21,7 +21,7 @@ Purge case folder.
 
 ghenv.Component.Name = "Butterfly_purgeCase"
 ghenv.Component.NickName = "purgeCase"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "07::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

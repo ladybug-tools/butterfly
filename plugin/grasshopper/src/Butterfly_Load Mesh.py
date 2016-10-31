@@ -21,7 +21,7 @@ Load mesh from the case for preview.
 
 ghenv.Component.Name = "Butterfly_Load Mesh"
 ghenv.Component.NickName = "loadMesh"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_28_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "4"

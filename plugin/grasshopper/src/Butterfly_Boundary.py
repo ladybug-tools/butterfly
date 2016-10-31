@@ -25,7 +25,7 @@ Create a custom boundary.
 
 ghenv.Component.Name = "Butterfly_Boundary"
 ghenv.Component.NickName = "boundary"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_08_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

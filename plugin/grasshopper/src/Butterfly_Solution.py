@@ -12,6 +12,7 @@ Run recipes using OpenFOAM.
 -
 
     Args:
+        _case: A Butterfly case.
         _recipe: A Butterfly recipe.
         decomposeParDict_: decomposeParDict for parallel run. By default solution
             runs in serial.
@@ -31,15 +32,18 @@ Run recipes using OpenFOAM.
 
 ghenv.Component.Name = "Butterfly_Solution"
 ghenv.Component.NickName = "solution"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_05_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 from scriptcontext import sticky
+import os
 
 try:
-    from butterfly.gh.timer import ghComponentTimer
+#    import butterfly
+#    reload(butterfly.solution)
+    from butterfly_grasshopper.timer import ghComponentTimer
     from butterfly.solution import Solution
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
@@ -55,14 +59,14 @@ uniqueKey = str(ghenv.Component.InstanceGuid)
 if not _interval_:
     _interval_ = 2
 
-if _recipe and _write: 
+if _case and _recipe and _write: 
     try:
         if uniqueKey not in sticky:
             # solution hasn't been created or has been removed
             # create a new one and copy it to sticky
-            solution = Solution(_recipe, decomposeParDict_, residualQuantities_)
-            quantities = solution.quantities
-            solution.updateSolutionParams(solutionParams_, timestep=0)
+            solution = Solution(_case, _recipe, decomposeParDict_, solutionParams_)
+            residualFields = solution.residualFields
+            # pass solution parameter to __init__
             sticky[uniqueKey] = solution
             if run_:
                 timestep = solution.timestep
@@ -71,15 +75,16 @@ if _recipe and _write:
         else:
             # solution is there so just load it
             solution = sticky[uniqueKey]
-            quantities = solution.quantities
+            residualFields = solution.residualFields
     
         isRunning = solution.isRunning
         info = solution.info
         timestep = info.timestep
-        residuals = info.residuals
+        residualValues = info.residualValues
         if isRunning:
             print 'running...'
             # update parameters if there has been changes.
+            solution.updateFromRecipe(_recipe)
             solution.updateSolutionParams(solutionParams_, timestep)
             ghComponentTimer(ghenv.Component, interval=_interval_*1000)
         else:
@@ -96,9 +101,11 @@ if _recipe and _write:
         
     except Exception as e:
         # clean up solution in case of failure
+        solution.terminate()
         if uniqueKey in sticky:
             del(sticky[uniqueKey])
         print '***\n{}\n***'.format(e)
-        
     
-    logFiles = solution.logFiles if solution.logFiles else _recipe.logFile
+    if solution:
+        logFiles = solution.logFiles or os.path.join(_case.projectDir,
+                                                     _recipe.logFile)

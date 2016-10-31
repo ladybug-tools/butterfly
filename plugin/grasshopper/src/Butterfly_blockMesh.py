@@ -13,7 +13,11 @@ blockMesh
 
     Args:
         _case: Butterfly case.
-        _purge_: Remove current snappyHexMesh folders from the case if any (default: False). 
+        _cellSizeXYZ_: Cell size in (x, y, z) as a tuple (default: length / 5).
+            This value updates number of divisions in blockMeshDict.
+        _gradXYZ_: A simpleGrading (default: simpleGrading(1, 1, 1)). This value
+            updates grading in blockMeshDict.
+        _overwrite_: Remove current snappyHexMesh folders from the case if any (default: True). 
         _run: run blockMesh.
     Returns:
         readMe!: Reports, errors, warnings, etc.
@@ -22,18 +26,25 @@ blockMesh
 
 ghenv.Component.Name = "Butterfly_blockMesh"
 ghenv.Component.NickName = "blockMesh"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_28_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 if _case and _run:
     # remove current snappyHexMeshFolders
-    if _purge_:
+    if _overwrite_:
         _case.removeSnappyHexMeshFolders()
     # run blockMesh
-    log = _case.blockMesh(removeContent=True)
+    if _cellSizeXYZ_:
+        _case.blockMeshDict.nDivXYZByCellSize(_cellSizeXYZ_)
+    if _gradXYZ_:
+        _case.blockMeshDict.grading = _gradXYZ_
+    if _cellSizeXYZ_ or _gradXYZ_:
+        _case.blockMeshDict.save(_case.projectDir)
+    
+    log = _case.blockMesh(overwrite=True)
     if log.success:
         case = _case
     else:
-        raise Exception(" --> Butterfly failed to run OpenFOAM command!\n%s" % log.error)
+        raise Exception("\n\n\nButterfly failed to run OpenFOAM command!\n%s" % log.error)

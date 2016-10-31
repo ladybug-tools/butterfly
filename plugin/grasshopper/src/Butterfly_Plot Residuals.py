@@ -14,11 +14,11 @@ Load residual values for a case.
     Args:
         _recipe: A Butterfly recipe.
         _rect: A rectangle for boundary chart.
-        _quants_: Residual quantities. If empty recipe's quantities will be used.
+        _fields_: Residual fields. If empty solution's fields will be used.
         _targetRes_: Residential number that will be added to the graph as a black line.
             (default: 1e-4).
         timeRange_: timeRange for loading residuals as a domain.
-        method_: Method of ploting the values (0..1). 0: Colored mesh, 1: Curves
+        method_: Method of ploting the values (0..1). 0: Curves, 1: Colored mesh
             If you're updating the values frequently use method 1 which is the
             quicker method.
         _plot: Set to True to plot the chart.
@@ -33,10 +33,10 @@ Load residual values for a case.
 
 ghenv.Component.Name = "Butterfly_Plot Residuals"
 ghenv.Component.NickName = "plotResiduals"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_06_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "07::Etc"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
+ghenv.Component.SubCategory = "06::Solution"
+ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 import Rhino as rc
 import scriptcontext as sc
@@ -97,29 +97,28 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 def main():
-    try:
-        p = ResidualParser(_recipe.logFile)
-    except AttributeError:
-        p = ResidualParser(_recipe.residualFile)
-        
-    if not _quants_:
+    
+    assert hasattr(_solution, 'residualFile'), \
+        '{} is not a valid Solution.'.format(_solution)
+    
+    p = ResidualParser(_solution.residualFile)
+    
+    if not _fields_:
         try:
-            quants = p.quantities
+            fields = _solution.residualFields
         except:
-            return
-            
-    if not quants:
-        print 'No residual is loaded! try loading again.'
-        return
-        
-    for q in quants:
-        print q
+            raise ValueError('Failed to load fields from solution {}.'.format(_solution))
+    else:
+        fields = _fields_
+    
+    for f in fields:
+        print f
     
     timeRange = '{} To {}'.format(*p.timeRange)
     
     # calculate curves
     crvs = tuple(rc.Geometry.PolylineCurve(rc.Geometry.Point3d(c, float(i), 0)
-    for c, i in enumerate(p.getResiduals(quantity, timeRange_))) for quantity in quants)
+    for c, i in enumerate(p.getResiduals(field, timeRange_))) for field in fields)
         
     # find bounding box for curves
     bbox = crvs[0].GetBoundingBox(True)
@@ -145,7 +144,7 @@ def main():
        (166,216,84), (255,217,47), (229,196,148))
     colors = tuple(Color.FromArgb(*rgb) for rgb in cs3)
 
-    if not method_ % 2:
+    if method_ % 2:
         residualLine = coloredMeshFromCurve(resLine, width=_lineWidth_,
                                             colors=[Color.Black])
         
@@ -155,15 +154,15 @@ def main():
         return timeRange, curves, meshes, residualLine, colors[:len(curves)]
     
     return timeRange, curves, [], resLine, colors[:len(curves)]
-    
-if _recipe and _rect and _load:
+
+if _solution and _rect and _load:
     
     output = main()
     
     if output:
         timeRange, curves, meshes, residualLine, colors = output
 
-if not method_ % 2:
+if method_ % 2:
     ghenv.Component.Params.Output[3].Name = 'meshes'
     ghenv.Component.Params.Output[3].NickName = 'meshes'
     ghenv.Component.Params.Input[4].Name = '_lineWidth_'

@@ -20,7 +20,7 @@ Create a wall boundary.
 
 ghenv.Component.Name = "Butterfly_Wall Boundary"
 ghenv.Component.NickName = "wall"
-ghenv.Component.Message = 'VER 0.0.02\nOCT_08_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"

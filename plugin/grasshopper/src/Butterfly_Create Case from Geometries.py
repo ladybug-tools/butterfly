@@ -26,13 +26,13 @@ Create an OpenFOAM Case from geometries.
 
 ghenv.Component.Name = "Butterfly_Create Case from Geometries"
 ghenv.Component.NickName = "caseFromGeos"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_27_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    from butterfly.gh.core import Case
+    from butterfly_grasshopper.case import Case
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -42,13 +42,11 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _run and _name and _BFGeometries and _blockMeshDict: 
+if _run and _name and _BFGeometries: 
     # create OpenFoam Case
-    case = Case(_name, _BFGeometries, _blockMeshDict, _globalRefLevel_,
-                _blockMeshDict.center, isSnappyHexMesh=True)
+    case = Case.fromBFGeometries(_name, tuple(_BFGeometries), meshingParameters=_meshParams_)
     
     for reg in refRegions_:
         case.addRefinementRegion(reg)
     
-    case.createCaseFolders()
-    case.populateContents()
+    case.save(overwrite=(_run + 1) % 2)

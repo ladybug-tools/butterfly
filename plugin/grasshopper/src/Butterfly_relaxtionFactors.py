@@ -7,29 +7,25 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Load results for a field in probes.
-
--
+Set relaxtionFactors values
 
     Args:
-        _name: Butterfly project name.
-        _field: Probes' filed as a string (e.g. p, U).
+        _quantities: 
+        _values_: relaxtionValues
         
     Returns:
-        skippedPoints: List of points that are skipped during the solution.
-        values: List of values for the last timestep.
+        relaxationFactors: Relaxation factors.
 """
 
-ghenv.Component.Name = "Butterfly_Load Probes"
-ghenv.Component.NickName = "loadProbes"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Name = "Butterfly_relaxtionFactors"
+ghenv.Component.NickName = "relaxtionFactors"
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "07::Etc"
-ghenv.Component.AdditionalHelpFromDocStrings = "1"
-
+ghenv.Component.SubCategory = "06::Solution"
+ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    from butterfly.gh.core import Case
+    from butterfly.fvSolution import ResidualControl
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -39,15 +35,19 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-from Rhino.Geometry import Point3d, Vector3d
-import os
-
-
-if _name and _field:
-    projectPath = 'c:/users/{}/butterfly/{}'.format(os.getenv("USERNAME"), _name)
+if _quantities and _values:
+    rc = ResidualControl()
     
-    rawValues = Case.loadProbesFromProjectPath(projectPath, _field)
-    try:
-        values = tuple(Vector3d(*v) for v in rawValues)
-    except:
-        values = rawValues
+    if _p_ is not None:
+        rc.p = str(_p_)
+    
+    if _U_ is not None:
+        rc.U = str(_U_)
+    
+    if _k_ is not None:
+        rc.k = str(_k_)
+    
+    if _epsilon_ is not None:
+        rc.epsilon = str(_epsilon_)
+    
+    residualControl = rc

@@ -22,7 +22,7 @@ Inside/Ouside region refinement.
 
 ghenv.Component.Name = "Butterfly_DistanceRefinementMode"
 ghenv.Component.NickName = "distRefMode"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_23_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "5"

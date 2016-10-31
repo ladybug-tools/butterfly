@@ -16,10 +16,6 @@ Wind tunnel parameters.
         _topX_: Multiplier value for top extension (default: 3).
         _sideX_: Multiplier value for side extension (default: 2).
         _leewardX_: Multiplier value for leeward extension (default: 15).
-        _cellSizeXYZ_: Size of cell in X, Y and Z directions in Rhino model units.
-            You can use a point component to input values.
-        _gradXYZ_: Grading value for X, Y and Z. Use gradXYZ component to generate
-            grading for X, Y and Z directions.
     Returns:
         readMe!: Reports, errors, warnings, etc.
         tunnelPar: Tunnel Parameters
@@ -27,7 +23,7 @@ Wind tunnel parameters.
 
 ghenv.Component.Name = "Butterfly_Wind Tunnel Parameters"
 ghenv.Component.NickName = "WindTunnelPar"
-ghenv.Component.Message = 'VER 0.0.02\nSEP_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -43,5 +39,4 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-tunnelPar = TunnelParameters(_windwardX_, _topX_, _sidesX_, _leewardX_,
-                             _cellSizeXYZ_, _gradXYZ_)
+tunnelPar = TunnelParameters(_windwardX_, _topX_, _sidesX_, _leewardX_)
