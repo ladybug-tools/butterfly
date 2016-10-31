@@ -1007,6 +1007,8 @@ table {
     <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.addRefinementRegion">addRefinementRegion</a></li>
+    <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.fromGeometriesWindVectorAndParameters">fromGeometriesWindVectorAndParameters</a></li>
+    <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.save">save</a></li>
     <li class="mono"><a href="#butterfly.windtunnel.WindTunnel.toOpenFOAMCase">toOpenFOAMCase</a></li>
   </ul>
 
@@ -1030,19 +1032,26 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel" class="source">
-    <pre><code>"""Butterfly wind tunnel."""
+    <pre><code># coding=utf-8
+"""Butterfly wind tunnel."""
 from copy import deepcopy
 
 from .blockMeshDict import BlockMeshDict
-from .core import OpemFOAMCase
-from .grading import SimpleGrading
+from .case import Case
+from .meshingparameters import MeshingParameters
+from .geometry import calculateMinMaxFromBFGeometries, BFBlockGeometry
+from .boundarycondition import WindTunnelGroundBoundaryCondition, \
+    WindTunnelInletBoundaryCondition, WindTunnelOutletBoundaryCondition, \
+    WindTunnelTopAndSidesBoundaryCondition, WindTunnelWallBoundaryCondition
+from .conditions import ABLConditions
+import vectormath as vm
 
 
 class WindTunnel(object):
     """Butterfly WindTunnel.
 
     Args:
-        inlet: Inlet as a honeybee geometry. inlet boundary condition should be
+        inlet: Inlet as a butterfly geometry. inlet boundary condition should be
             ABL (atmBoundaryLayer).
         outlet: Outlet as a butterfly geometry.
         sides: Left and right side geometries as butterfly geometries.
@@ -1050,7 +1059,6 @@ class WindTunnel(object):
         ground: Ground face as butterfly geometry.
         testGeomtries: A list of geometries as butterfly geometries that are located
             within bounding box boundary.
-        block: A butterfly Block for windtunnel bounding box.
         roughness: z0 (roughness) value.
                 '0.0002'  # sea
                 '0.005'   # smooth
@@ -1064,18 +1072,22 @@ class WindTunnel(object):
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
+                 roughness, meshingParameters=None, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
-        self.inlet = self.__checkIfBFGeometry(inlet)
-        self.outlet = self.__checkIfBFGeometry(outlet)
-        self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
-        self.top = self.__checkIfBFGeometry(top)
-        self.ground = self.__checkIfBFGeometry(ground)
+        self.inlet = self.__checkInputGeometry(inlet)
+        self.outlet = self.__checkInputGeometry(outlet)
+        self.sides = tuple(side for side in sides if self.__checkInputGeometry(side))
+        self.top = self.__checkInputGeometry(top)
+        self.ground = self.__checkInputGeometry(ground)
         self.testGeomtries = tuple(geo for geo in testGeomtries
-                                   if self.__checkIfBFGeometry(geo))
-        self.z0 = roughness
-        self.globalRefLevel = globalRefLevel
+                                   if self.__checkInputGeometry(geo))
+        self.z0 = roughness if roughness > 0 else 0.0001
+
+        self.__blockMeshDict = BlockMeshDict.fromBFBlockGeometries(
+            self.boundingGeometries, convertToMeters)
+
+        self.meshingParameters = meshingParameters or MeshingParameters()
 
         self.Zref = float(Zref) if Zref else 10
         self.convertToMeters = convertToMeters
@@ -1083,17 +1095,104 @@ class WindTunnel(object):
         # place holder for refinment regions
         self.__refinementRegions = []
 
+    @classmethod
+    def fromGeometriesWindVectorAndParameters(
+            cls, name, geometries, windVector, tunnelParameters, roughness,
+            meshingParameters=None, Zref=None, convertToMeters=1):
+        """Create a windTunnel based on size, wind speed and wind direction."""
+        # butterfly geometries
+        geos = tuple(cls.__checkInputGeometry(geo) for geo in geometries)
+
+        # update boundary condition of wall geometries
+        for bfGeometry in geometries:
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+                bfGeometry.boundaryCondition.refLevels
+            )
+
+        tp = tunnelParameters
+
+        # find xAxis
+        zAxis = (0, 0, 1)
+        xAxis = vm.crossProduct(windVector, zAxis)
+        yAxis = vm.normalize(windVector)
+
+        # get size of bounding box from blockMeshDict
+        minPt, maxPt = calculateMinMaxFromBFGeometries(geos, xAxis)
+        _blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters,
+                                                  xAxis=xAxis)
+        # scale based on wind tunnel parameters
+        ver = _blockMeshDict.vertices
+        height = _blockMeshDict.height
+        v0 = vm.move(ver[0], vm.scale(yAxis, -tp.windward * height))
+        v0 = vm.move(v0, vm.scale(xAxis, -tp.side * height))
+        v1 = vm.move(ver[1], vm.scale(yAxis, -tp.windward * height))
+        v1 = vm.move(v1, vm.scale(xAxis, tp.side * height))
+        v2 = vm.move(ver[2], vm.scale(yAxis, tp.leeward * height))
+        v2 = vm.move(v2, vm.scale(xAxis, tp.side * height))
+        v3 = vm.move(ver[3], vm.scale(yAxis, tp.leeward * height))
+        v3 = vm.move(v3, vm.scale(xAxis, -tp.side * height))
+        v4 = vm.move(v0, vm.scale(zAxis, tp.top * height))
+        v5 = vm.move(v1, vm.scale(zAxis, tp.top * height))
+        v6 = vm.move(v2, vm.scale(zAxis, tp.top * height))
+        v7 = vm.move(v3, vm.scale(zAxis, tp.top * height))
+
+        # create inlet, outlet, etc
+        ablConditions = ABLConditions.fromInputValues(
+            flowSpeed=vm.length(windVector), z0=roughness,
+            flowDir=vm.normalize(windVector), zGround=_blockMeshDict.minZ)
+
+        _order = (range(4),)
+        inlet = BFBlockGeometry(
+            'inlet', (v0, v1, v5, v4), _order, ((v0, v1, v5, v4),),
+            WindTunnelInletBoundaryCondition(ablConditions))
+
+        outlet = BFBlockGeometry(
+            'outlet', (v2, v3, v7, v6), _order, ((v2, v3, v7, v6),),
+            WindTunnelOutletBoundaryCondition())
+
+        rightSide = BFBlockGeometry(
+            'rightSide', (v1, v2, v6, v5), _order, ((v1, v2, v6, v5),),
+            WindTunnelTopAndSidesBoundaryCondition())
+
+        leftSide = BFBlockGeometry(
+            'leftSide', (v3, v0, v4, v7), _order, ((v3, v0, v4, v7),),
+            WindTunnelTopAndSidesBoundaryCondition())
+
+        top = BFBlockGeometry('top', (v4, v5, v6, v7), _order,
+                              ((v4, v5, v6, v7),),
+                              WindTunnelTopAndSidesBoundaryCondition())
+
+        ground = BFBlockGeometry(
+            'ground', (v3, v2, v1, v0), (range(4),), ((v3, v2, v1, v0),),
+            WindTunnelGroundBoundaryCondition(ablConditions))
+
+        # return the class
+        wt = cls(name, inlet, outlet, (rightSide, leftSide), top, ground,
+                 geometries, roughness, meshingParameters, Zref,
+                 convertToMeters)
+
+        return wt
+
+    @property
+    def width(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.width
+
+    @property
+    def height(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.height
+
+    @property
+    def length(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.length
+
     @property
     def boundingGeometries(self):
         """Return bounding geometries of wind tunnel."""
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
-
-    def __checkIfBFGeometry(self, input):
-        if hasattr(input, 'isBFGeometry'):
-            return input
-        else:
-            raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
     @property
     def refinementRegions(self):
@@ -1103,23 +1202,22 @@ class WindTunnel(object):
     @property
     def flowDir(self):
         """Get flow direction for this wind tunnel as a tuple (x, y, z)."""
-        return self.inlet.boundaryCondition.u.flowDir
+        return self.inlet.boundaryCondition.U.flowDir
 
     @property
     def flowSpeed(self):
         """Get flow speed for this wind tunnel."""
-        return self.inlet.boundaryCondition.u.Uref
+        return self.inlet.boundaryCondition.U.Uref
 
     @property
     def zGround(self):
         """Minimum z value of the bounding box."""
-        return self.block.minZ
+        return self.blockMeshDict.minZ
 
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        return BlockMeshDict(self.convertToMeters, self.boundingGeometries,
-                             [self.block])
+        return self.__blockMeshDict
 
     @property
     def ABLConditionsDict(self):
@@ -1127,9 +1225,25 @@ class WindTunnel(object):
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(self.flowSpeed)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
-        _ABLCDict['flowDir'] = '({} {} {})'.format(*self.flowDir)
+        _ABLCDict['flowDir'] = self.flowDir if isinstance(self.flowDir, str) \
+            else '({} {} {})'.format(*self.flowDir)
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
+
+    @property
+    def meshingParameters(self):
+        """Meshing parameters."""
+        return self.__meshingParameters
+
+    @meshingParameters.setter
+    def meshingParameters(self, mp):
+        """Update meshing parameters."""
+        if not mp:
+            return
+        assert hasattr(mp, 'isMeshingParameters'), \
+            'Excepted Meshingparameters not {}'.format(type(mp))
+        self.__meshingParameters = mp
+        self.blockMeshDict.updateMeshingParameters(mp)
 
     def addRefinementRegion(self, refinementRegion):
         """Add refinement regions to this case."""
@@ -1138,9 +1252,29 @@ class WindTunnel(object):
 
         self.__refinementRegions.append(refinementRegion)
 
+    @staticmethod
+    def __checkInputGeometry(input):
+        if hasattr(input, 'isBFGeometry'):
+            return input
+        else:
+            raise ValueError('{} is not a Butterfly geometry.'.format(input))
+
     def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""
-        return OpemFOAMCase.fromWindTunnel(self)
+        return Case.fromWindTunnel(self)
+
+    def save(self, overwrite=False, minimum=True):
+        """Save windTunnel to folder as an OpenFOAM case.
+
+        Args:
+            overwrite: If True all the current content will be overwritten
+                (default: False).
+        Returns:
+            A butterfly.Case.
+        """
+        _case = self.toOpenFOAMCase()
+        _case.save(overwrite, minimum)
+        return _case
 
     def ToString(self):
         """Overwrite ToString .NET method."""
@@ -1148,8 +1282,9 @@ class WindTunnel(object):
 
     def __repr__(self):
         """Wind tunnel."""
-        return "WindTunnel :: dir {} :: {} m/s".format(self.flowDir,
-                                                       self.flowSpeed)
+        return "WindTunnel::%.2f * %.2f * %.2f::dir %s::%.3f m/s" % (
+            self.width, self.length, self.height, self.flowDir,
+            float(self.flowSpeed))
 
 
 class TunnelParameters(object):
@@ -1164,19 +1299,15 @@ class TunnelParameters(object):
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
-                 gradXYZ=None):
+    def __init__(self, windward=3, top=3, side=2, leeward=15):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
-        self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
-        self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
-        # nDivXYZ will be calculated based on cellSize in windTunnel
-        self.nDivXYZ = None
 
-    def __checkInput(self, input):
+    @staticmethod
+    def __checkInput(input):
         """Check input values."""
         try:
             _inp = float(input)
@@ -1234,19 +1365,15 @@ class TunnelParameters(object):
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
-                 gradXYZ=None):
+    def __init__(self, windward=3, top=3, side=2, leeward=15):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)
         self.side = self.__checkInput(side)
         self.leeward = self.__checkInput(leeward)
-        self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
-        self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
-        # nDivXYZ will be calculated based on cellSize in windTunnel
-        self.nDivXYZ = None
 
-    def __checkInput(self, input):
+    @staticmethod
+    def __checkInput(input):
         """Check input values."""
         try:
             _inp = float(input)
@@ -1281,37 +1408,7 @@ class TunnelParameters(object):
           </ul>
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.windtunnel.TunnelParameters.cellSizeXYZ" class="name">var <span class="ident">cellSizeXYZ</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.windtunnel.TunnelParameters.gradXYZ" class="name">var <span class="ident">gradXYZ</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
             <p id="butterfly.windtunnel.TunnelParameters.leeward" class="name">var <span class="ident">leeward</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.windtunnel.TunnelParameters.nDivXYZ" class="name">var <span class="ident">nDivXYZ</span></p>
             
 
             
@@ -1354,7 +1451,7 @@ class TunnelParameters(object):
             
   <div class="item">
     <div class="name def" id="butterfly.windtunnel.TunnelParameters.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None, gradXYZ=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, windward=3, top=3, side=2, leeward=15)</p>
     </div>
     
 
@@ -1364,17 +1461,12 @@ class TunnelParameters(object):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.TunnelParameters.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.TunnelParameters.__init__" class="source">
-    <pre><code>def __init__(self, windward=3, top=3, side=2, leeward=15, cellSizeXYZ=None,
-             gradXYZ=None):
+    <pre><code>def __init__(self, windward=3, top=3, side=2, leeward=15):
     """Init wind tunnel parameters."""
     self.windward = self.__checkInput(windward)
     self.top = self.__checkInput(top)
     self.side = self.__checkInput(side)
     self.leeward = self.__checkInput(leeward)
-    self.cellSizeXYZ = (5, 5, 5) if not cellSizeXYZ else tuple(cellSizeXYZ)
-    self.gradXYZ = SimpleGrading() if not gradXYZ else gradXYZ
-    # nDivXYZ will be calculated based on cellSize in windTunnel
-    self.nDivXYZ = None
 </code></pre>
   </div>
 </div>
@@ -1434,7 +1526,7 @@ class TunnelParameters(object):
   
     <div class="desc"><p>Butterfly WindTunnel.</p>
 <p>Args:
-    inlet: Inlet as a honeybee geometry. inlet boundary condition should be
+    inlet: Inlet as a butterfly geometry. inlet boundary condition should be
         ABL (atmBoundaryLayer).
     outlet: Outlet as a butterfly geometry.
     sides: Left and right side geometries as butterfly geometries.
@@ -1442,7 +1534,6 @@ class TunnelParameters(object):
     ground: Ground face as butterfly geometry.
     testGeomtries: A list of geometries as butterfly geometries that are located
         within bounding box boundary.
-    block: A butterfly Block for windtunnel bounding box.
     roughness: z0 (roughness) value.
             '0.0002'  # sea
             '0.005'   # smooth
@@ -1460,7 +1551,7 @@ class TunnelParameters(object):
     """Butterfly WindTunnel.
 
     Args:
-        inlet: Inlet as a honeybee geometry. inlet boundary condition should be
+        inlet: Inlet as a butterfly geometry. inlet boundary condition should be
             ABL (atmBoundaryLayer).
         outlet: Outlet as a butterfly geometry.
         sides: Left and right side geometries as butterfly geometries.
@@ -1468,7 +1559,6 @@ class TunnelParameters(object):
         ground: Ground face as butterfly geometry.
         testGeomtries: A list of geometries as butterfly geometries that are located
             within bounding box boundary.
-        block: A butterfly Block for windtunnel bounding box.
         roughness: z0 (roughness) value.
                 '0.0002'  # sea
                 '0.005'   # smooth
@@ -1482,18 +1572,22 @@ class TunnelParameters(object):
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
+                 roughness, meshingParameters=None, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
-        self.inlet = self.__checkIfBFGeometry(inlet)
-        self.outlet = self.__checkIfBFGeometry(outlet)
-        self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
-        self.top = self.__checkIfBFGeometry(top)
-        self.ground = self.__checkIfBFGeometry(ground)
+        self.inlet = self.__checkInputGeometry(inlet)
+        self.outlet = self.__checkInputGeometry(outlet)
+        self.sides = tuple(side for side in sides if self.__checkInputGeometry(side))
+        self.top = self.__checkInputGeometry(top)
+        self.ground = self.__checkInputGeometry(ground)
         self.testGeomtries = tuple(geo for geo in testGeomtries
-                                   if self.__checkIfBFGeometry(geo))
-        self.z0 = roughness
-        self.globalRefLevel = globalRefLevel
+                                   if self.__checkInputGeometry(geo))
+        self.z0 = roughness if roughness > 0 else 0.0001
+
+        self.__blockMeshDict = BlockMeshDict.fromBFBlockGeometries(
+            self.boundingGeometries, convertToMeters)
+
+        self.meshingParameters = meshingParameters or MeshingParameters()
 
         self.Zref = float(Zref) if Zref else 10
         self.convertToMeters = convertToMeters
@@ -1501,17 +1595,104 @@ class TunnelParameters(object):
         # place holder for refinment regions
         self.__refinementRegions = []
 
+    @classmethod
+    def fromGeometriesWindVectorAndParameters(
+            cls, name, geometries, windVector, tunnelParameters, roughness,
+            meshingParameters=None, Zref=None, convertToMeters=1):
+        """Create a windTunnel based on size, wind speed and wind direction."""
+        # butterfly geometries
+        geos = tuple(cls.__checkInputGeometry(geo) for geo in geometries)
+
+        # update boundary condition of wall geometries
+        for bfGeometry in geometries:
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+                bfGeometry.boundaryCondition.refLevels
+            )
+
+        tp = tunnelParameters
+
+        # find xAxis
+        zAxis = (0, 0, 1)
+        xAxis = vm.crossProduct(windVector, zAxis)
+        yAxis = vm.normalize(windVector)
+
+        # get size of bounding box from blockMeshDict
+        minPt, maxPt = calculateMinMaxFromBFGeometries(geos, xAxis)
+        _blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters,
+                                                  xAxis=xAxis)
+        # scale based on wind tunnel parameters
+        ver = _blockMeshDict.vertices
+        height = _blockMeshDict.height
+        v0 = vm.move(ver[0], vm.scale(yAxis, -tp.windward * height))
+        v0 = vm.move(v0, vm.scale(xAxis, -tp.side * height))
+        v1 = vm.move(ver[1], vm.scale(yAxis, -tp.windward * height))
+        v1 = vm.move(v1, vm.scale(xAxis, tp.side * height))
+        v2 = vm.move(ver[2], vm.scale(yAxis, tp.leeward * height))
+        v2 = vm.move(v2, vm.scale(xAxis, tp.side * height))
+        v3 = vm.move(ver[3], vm.scale(yAxis, tp.leeward * height))
+        v3 = vm.move(v3, vm.scale(xAxis, -tp.side * height))
+        v4 = vm.move(v0, vm.scale(zAxis, tp.top * height))
+        v5 = vm.move(v1, vm.scale(zAxis, tp.top * height))
+        v6 = vm.move(v2, vm.scale(zAxis, tp.top * height))
+        v7 = vm.move(v3, vm.scale(zAxis, tp.top * height))
+
+        # create inlet, outlet, etc
+        ablConditions = ABLConditions.fromInputValues(
+            flowSpeed=vm.length(windVector), z0=roughness,
+            flowDir=vm.normalize(windVector), zGround=_blockMeshDict.minZ)
+
+        _order = (range(4),)
+        inlet = BFBlockGeometry(
+            'inlet', (v0, v1, v5, v4), _order, ((v0, v1, v5, v4),),
+            WindTunnelInletBoundaryCondition(ablConditions))
+
+        outlet = BFBlockGeometry(
+            'outlet', (v2, v3, v7, v6), _order, ((v2, v3, v7, v6),),
+            WindTunnelOutletBoundaryCondition())
+
+        rightSide = BFBlockGeometry(
+            'rightSide', (v1, v2, v6, v5), _order, ((v1, v2, v6, v5),),
+            WindTunnelTopAndSidesBoundaryCondition())
+
+        leftSide = BFBlockGeometry(
+            'leftSide', (v3, v0, v4, v7), _order, ((v3, v0, v4, v7),),
+            WindTunnelTopAndSidesBoundaryCondition())
+
+        top = BFBlockGeometry('top', (v4, v5, v6, v7), _order,
+                              ((v4, v5, v6, v7),),
+                              WindTunnelTopAndSidesBoundaryCondition())
+
+        ground = BFBlockGeometry(
+            'ground', (v3, v2, v1, v0), (range(4),), ((v3, v2, v1, v0),),
+            WindTunnelGroundBoundaryCondition(ablConditions))
+
+        # return the class
+        wt = cls(name, inlet, outlet, (rightSide, leftSide), top, ground,
+                 geometries, roughness, meshingParameters, Zref,
+                 convertToMeters)
+
+        return wt
+
+    @property
+    def width(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.width
+
+    @property
+    def height(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.height
+
+    @property
+    def length(self):
+        """Get width in x direction."""
+        return self.blockMeshDict.length
+
     @property
     def boundingGeometries(self):
         """Return bounding geometries of wind tunnel."""
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
-
-    def __checkIfBFGeometry(self, input):
-        if hasattr(input, 'isBFGeometry'):
-            return input
-        else:
-            raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
     @property
     def refinementRegions(self):
@@ -1521,23 +1702,22 @@ class TunnelParameters(object):
     @property
     def flowDir(self):
         """Get flow direction for this wind tunnel as a tuple (x, y, z)."""
-        return self.inlet.boundaryCondition.u.flowDir
+        return self.inlet.boundaryCondition.U.flowDir
 
     @property
     def flowSpeed(self):
         """Get flow speed for this wind tunnel."""
-        return self.inlet.boundaryCondition.u.Uref
+        return self.inlet.boundaryCondition.U.Uref
 
     @property
     def zGround(self):
         """Minimum z value of the bounding box."""
-        return self.block.minZ
+        return self.blockMeshDict.minZ
 
     @property
     def blockMeshDict(self):
         """Wind tunnel blockMeshDict."""
-        return BlockMeshDict(self.convertToMeters, self.boundingGeometries,
-                             [self.block])
+        return self.__blockMeshDict
 
     @property
     def ABLConditionsDict(self):
@@ -1545,9 +1725,25 @@ class TunnelParameters(object):
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(self.flowSpeed)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
-        _ABLCDict['flowDir'] = '({} {} {})'.format(*self.flowDir)
+        _ABLCDict['flowDir'] = self.flowDir if isinstance(self.flowDir, str) \
+            else '({} {} {})'.format(*self.flowDir)
         _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
+
+    @property
+    def meshingParameters(self):
+        """Meshing parameters."""
+        return self.__meshingParameters
+
+    @meshingParameters.setter
+    def meshingParameters(self, mp):
+        """Update meshing parameters."""
+        if not mp:
+            return
+        assert hasattr(mp, 'isMeshingParameters'), \
+            'Excepted Meshingparameters not {}'.format(type(mp))
+        self.__meshingParameters = mp
+        self.blockMeshDict.updateMeshingParameters(mp)
 
     def addRefinementRegion(self, refinementRegion):
         """Add refinement regions to this case."""
@@ -1556,9 +1752,29 @@ class TunnelParameters(object):
 
         self.__refinementRegions.append(refinementRegion)
 
+    @staticmethod
+    def __checkInputGeometry(input):
+        if hasattr(input, 'isBFGeometry'):
+            return input
+        else:
+            raise ValueError('{} is not a Butterfly geometry.'.format(input))
+
     def toOpenFOAMCase(self):
         """Return a BF case for this wind tunnel."""
-        return OpemFOAMCase.fromWindTunnel(self)
+        return Case.fromWindTunnel(self)
+
+    def save(self, overwrite=False, minimum=True):
+        """Save windTunnel to folder as an OpenFOAM case.
+
+        Args:
+            overwrite: If True all the current content will be overwritten
+                (default: False).
+        Returns:
+            A butterfly.Case.
+        """
+        _case = self.toOpenFOAMCase()
+        _case.save(overwrite, minimum)
+        return _case
 
     def ToString(self):
         """Overwrite ToString .NET method."""
@@ -1566,8 +1782,9 @@ class TunnelParameters(object):
 
     def __repr__(self):
         """Wind tunnel."""
-        return "WindTunnel :: dir {} :: {} m/s".format(self.flowDir,
-                                                       self.flowSpeed)
+        return "WindTunnel::%.2f * %.2f * %.2f::dir %s::%.3f m/s" % (
+            self.width, self.length, self.height, self.flowDir,
+            float(self.flowSpeed))
 </code></pre>
   </div>
 </div>
@@ -1656,16 +1873,6 @@ class TunnelParameters(object):
 
             </div>
             <div class="item">
-            <p id="butterfly.windtunnel.WindTunnel.globalRefLevel" class="name">var <span class="ident">globalRefLevel</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
             <p id="butterfly.windtunnel.WindTunnel.ground" class="name">var <span class="ident">ground</span></p>
             
 
@@ -1676,7 +1883,39 @@ class TunnelParameters(object):
 
             </div>
             <div class="item">
+            <p id="butterfly.windtunnel.WindTunnel.height" class="name">var <span class="ident">height</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get width in x direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.windtunnel.WindTunnel.inlet" class="name">var <span class="ident">inlet</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.windtunnel.WindTunnel.length" class="name">var <span class="ident">length</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get width in x direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.windtunnel.WindTunnel.meshingParameters" class="name">var <span class="ident">meshingParameters</span></p>
             
 
             
@@ -1747,6 +1986,17 @@ class TunnelParameters(object):
 
             </div>
             <div class="item">
+            <p id="butterfly.windtunnel.WindTunnel.width" class="name">var <span class="ident">width</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get width in x direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.windtunnel.WindTunnel.z0" class="name">var <span class="ident">z0</span></p>
             
 
@@ -1771,7 +2021,7 @@ class TunnelParameters(object):
             
   <div class="item">
     <div class="name def" id="butterfly.windtunnel.WindTunnel.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, inlet, outlet, sides, top, ground, testGeomtries, block, roughness, globalRefLevel, Zref=None, convertToMeters=1)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, inlet, outlet, sides, top, ground, testGeomtries, roughness, meshingParameters=None, Zref=None, convertToMeters=1)</p>
     </div>
     
 
@@ -1782,18 +2032,20 @@ class TunnelParameters(object):
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.WindTunnel.__init__" class="source">
     <pre><code>def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-             block, roughness, globalRefLevel, Zref=None, convertToMeters=1):
+             roughness, meshingParameters=None, Zref=None, convertToMeters=1):
     """Init wind tunnel."""
     self.name = str(name)
-    self.inlet = self.__checkIfBFGeometry(inlet)
-    self.outlet = self.__checkIfBFGeometry(outlet)
-    self.sides = tuple(side for side in sides if self.__checkIfBFGeometry(side))
-    self.top = self.__checkIfBFGeometry(top)
-    self.ground = self.__checkIfBFGeometry(ground)
+    self.inlet = self.__checkInputGeometry(inlet)
+    self.outlet = self.__checkInputGeometry(outlet)
+    self.sides = tuple(side for side in sides if self.__checkInputGeometry(side))
+    self.top = self.__checkInputGeometry(top)
+    self.ground = self.__checkInputGeometry(ground)
     self.testGeomtries = tuple(geo for geo in testGeomtries
-                               if self.__checkIfBFGeometry(geo))
-    self.z0 = roughness
-    self.globalRefLevel = globalRefLevel
+                               if self.__checkInputGeometry(geo))
+    self.z0 = roughness if roughness > 0 else 0.0001
+    self.__blockMeshDict = BlockMeshDict.fromBFBlockGeometries(
+        self.boundingGeometries, convertToMeters)
+    self.meshingParameters = meshingParameters or MeshingParameters()
     self.Zref = float(Zref) if Zref else 10
     self.convertToMeters = convertToMeters
     # place holder for refinment regions
@@ -1852,6 +2104,124 @@ class TunnelParameters(object):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.windtunnel.WindTunnel.fromGeometriesWindVectorAndParameters">
+    <p>def <span class="ident">fromGeometriesWindVectorAndParameters</span>(</p><p>cls, name, geometries, windVector, tunnelParameters, roughness, meshingParameters=None, Zref=None, convertToMeters=1)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a windTunnel based on size, wind speed and wind direction.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel.fromGeometriesWindVectorAndParameters', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.windtunnel.WindTunnel.fromGeometriesWindVectorAndParameters" class="source">
+    <pre><code>@classmethod
+def fromGeometriesWindVectorAndParameters(
+        cls, name, geometries, windVector, tunnelParameters, roughness,
+        meshingParameters=None, Zref=None, convertToMeters=1):
+    """Create a windTunnel based on size, wind speed and wind direction."""
+    # butterfly geometries
+    geos = tuple(cls.__checkInputGeometry(geo) for geo in geometries)
+    # update boundary condition of wall geometries
+    for bfGeometry in geometries:
+        bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
+            bfGeometry.boundaryCondition.refLevels
+        )
+    tp = tunnelParameters
+    # find xAxis
+    zAxis = (0, 0, 1)
+    xAxis = vm.crossProduct(windVector, zAxis)
+    yAxis = vm.normalize(windVector)
+    # get size of bounding box from blockMeshDict
+    minPt, maxPt = calculateMinMaxFromBFGeometries(geos, xAxis)
+    _blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters,
+                                              xAxis=xAxis)
+    # scale based on wind tunnel parameters
+    ver = _blockMeshDict.vertices
+    height = _blockMeshDict.height
+    v0 = vm.move(ver[0], vm.scale(yAxis, -tp.windward * height))
+    v0 = vm.move(v0, vm.scale(xAxis, -tp.side * height))
+    v1 = vm.move(ver[1], vm.scale(yAxis, -tp.windward * height))
+    v1 = vm.move(v1, vm.scale(xAxis, tp.side * height))
+    v2 = vm.move(ver[2], vm.scale(yAxis, tp.leeward * height))
+    v2 = vm.move(v2, vm.scale(xAxis, tp.side * height))
+    v3 = vm.move(ver[3], vm.scale(yAxis, tp.leeward * height))
+    v3 = vm.move(v3, vm.scale(xAxis, -tp.side * height))
+    v4 = vm.move(v0, vm.scale(zAxis, tp.top * height))
+    v5 = vm.move(v1, vm.scale(zAxis, tp.top * height))
+    v6 = vm.move(v2, vm.scale(zAxis, tp.top * height))
+    v7 = vm.move(v3, vm.scale(zAxis, tp.top * height))
+    # create inlet, outlet, etc
+    ablConditions = ABLConditions.fromInputValues(
+        flowSpeed=vm.length(windVector), z0=roughness,
+        flowDir=vm.normalize(windVector), zGround=_blockMeshDict.minZ)
+    _order = (range(4),)
+    inlet = BFBlockGeometry(
+        'inlet', (v0, v1, v5, v4), _order, ((v0, v1, v5, v4),),
+        WindTunnelInletBoundaryCondition(ablConditions))
+    outlet = BFBlockGeometry(
+        'outlet', (v2, v3, v7, v6), _order, ((v2, v3, v7, v6),),
+        WindTunnelOutletBoundaryCondition())
+    rightSide = BFBlockGeometry(
+        'rightSide', (v1, v2, v6, v5), _order, ((v1, v2, v6, v5),),
+        WindTunnelTopAndSidesBoundaryCondition())
+    leftSide = BFBlockGeometry(
+        'leftSide', (v3, v0, v4, v7), _order, ((v3, v0, v4, v7),),
+        WindTunnelTopAndSidesBoundaryCondition())
+    top = BFBlockGeometry('top', (v4, v5, v6, v7), _order,
+                          ((v4, v5, v6, v7),),
+                          WindTunnelTopAndSidesBoundaryCondition())
+    ground = BFBlockGeometry(
+        'ground', (v3, v2, v1, v0), (range(4),), ((v3, v2, v1, v0),),
+        WindTunnelGroundBoundaryCondition(ablConditions))
+    # return the class
+    wt = cls(name, inlet, outlet, (rightSide, leftSide), top, ground,
+             geometries, roughness, meshingParameters, Zref,
+             convertToMeters)
+    return wt
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.windtunnel.WindTunnel.save">
+    <p>def <span class="ident">save</span>(</p><p>self, overwrite=False, minimum=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Save windTunnel to folder as an OpenFOAM case.</p>
+<p>Args:
+    overwrite: If True all the current content will be overwritten
+        (default: False).
+Returns:
+    A butterfly.Case.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel.save', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.windtunnel.WindTunnel.save" class="source">
+    <pre><code>def save(self, overwrite=False, minimum=True):
+    """Save windTunnel to folder as an OpenFOAM case.
+    Args:
+        overwrite: If True all the current content will be overwritten
+            (default: False).
+    Returns:
+        A butterfly.Case.
+    """
+    _case = self.toOpenFOAMCase()
+    _case.save(overwrite, minimum)
+    return _case
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.windtunnel.WindTunnel.toOpenFOAMCase">
     <p>def <span class="ident">toOpenFOAMCase</span>(</p><p>self)</p>
     </div>
@@ -1865,7 +2235,7 @@ class TunnelParameters(object):
   <div id="source-butterfly.windtunnel.WindTunnel.toOpenFOAMCase" class="source">
     <pre><code>def toOpenFOAMCase(self):
     """Return a BF case for this wind tunnel."""
-    return OpemFOAMCase.fromWindTunnel(self)
+    return Case.fromWindTunnel(self)
 </code></pre>
   </div>
 </div>

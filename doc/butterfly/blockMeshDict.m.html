@@ -998,11 +998,19 @@ table {
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.body">body</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.fromBFBlockGeometries">fromBFBlockGeometries</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.fromFile">fromFile</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.fromMinMax">fromMinMax</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.fromOriginAndSize">fromOriginAndSize</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.fromVertices">fromVertices</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.header">header</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.make2d">make2d</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.nDivXYZByCellSize">nDivXYZByCellSize</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.save">save</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.setValueByParameter">setValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.toOpenFOAM">toOpenFOAM</a></li>
+    <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.updateMeshingParameters">updateMeshingParameters</a></li>
     <li class="mono"><a href="#butterfly.blockMeshDict.BlockMeshDict.updateValues">updateValues</a></li>
   </ul>
 
@@ -1026,42 +1034,476 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.blockMeshDict" class="source">
-    <pre><code>"""BlockMeshDict class."""
-from foamfile import FoamFile
+    <pre><code># coding=utf-8
+"""BlockMeshDict class."""
+from .boundarycondition import BoundingBoxBoundaryCondition
+from .foamfile import FoamFile
+from .fields import Empty
+import vectormath
+from .grading import SimpleGrading, Grading, MultiGrading
+from .parser import CppDictParser
+from .geometry import BFGeometry
+from math import sqrt, sin, cos, radians
+from collections import OrderedDict
 
 
 class BlockMeshDict(FoamFile):
     """BlockMeshDict."""
 
-    def __init__(self, convertToMeters, BFBlockGeometries, blocks):
-        """Init BlockMeshDict."""
+    __defaultValues = OrderedDict()
+    __defaultValues['convertToMeters'] = 1
+    __defaultValues['vertices'] = None
+    __defaultValues['blocks'] = None
+    __defaultValues['boundary'] = {}
+
+    def __init__(self, values=None):
+        """Init class."""
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
-                          location='system')
-        self.convertToMeters = convertToMeters
-        self.blocks = blocks
-        self.BFBlockGeometries = BFBlockGeometries
+                          location='system', defaultValues=self.__defaultValues,
+                          values=values)
+
+        self.__BFBlockGeometries = None # this will be overwritten in classmethods
+        self.__vertices = None
+
+    @classmethod
+    def fromFile(cls, filepah):
+        """Create a blockMeshDict from file."""
+        _cls = cls()
+
+        with open(filepah, 'rb') as bf:
+            lines = CppDictParser._removeComments(bf.read())
+            bmd = ' '.join(lines.replace('\r\n', ' ').replace('\n', ' ').split())
+
+        _cls.values['convertToMeters'] = \
+            float(bmd.split('convertToMeters')[-1].split(';')[0])
+
+        # find vertices
+        _cls.__vertices = eval(','.join(bmd.split('vertices')[-1]
+                                        .split(';')[0]
+                                        .strip()[1:-1]
+                                        .split()))
+
+        # get blocks, order of vertices, nDivXYZ, grading
+        blocks = bmd.split('blocks')[-1].split(';')[0].strip()
+        xyz, simpleGrading = blocks.split('simpleGrading')
+
+        _cls.__order, _cls.nDivXYZ = eval(','.join(xyz.split('hex')[-1].split()))
+
+        simpleGrading = eval(','.join(simpleGrading.strip()[:-1]
+                                      .replace('( ', '(')
+                                      .replace(' )', ')')
+                                      .split()))
+
+        _cls.grading = SimpleGrading(
+            *(MultiGrading(tuple(Grading(*i) for i in g))
+              if isinstance(g, tuple) else Grading(g)
+              for g in simpleGrading))
+
+        # recreate boundary faces
+        boundaryString = bmd.replace(' (', '(').replace(' )', ')') \
+            .split('boundary(')[-1].strip().replace('});', '}') \
+            .replace('));', ');').replace('((', ' (').replace(')(', ') (')
+
+        _cls.values['boundary'] = {}
+        for key, values in CppDictParser(boundaryString).values.iteritems():
+            if isinstance(values, dict) and 'type' in values and 'faces' in values:
+                values['faces'] = eval(str(values['faces']).replace(' ', ','))
+
+                _cls.values['boundary'][key] = values
+
+        del((lines, bmd))
+        return _cls
+
+    @classmethod
+    def fromOriginAndSize(cls, origin, width, length, height, convertToMeters=1,
+                          nDivXYZ=None, grading=None, xAxis=None):
+        """Create BlockMeshDict from BFBlockGeometries.
+
+        Args:
+            origin: Minimum point of bounding box as (x, y, z).
+            width: Width in x direction.
+            length: Length in y direction.
+            height: Height in y direction.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
+        _zAxis = (0, 0, 1)
+        _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+        vertices = tuple(
+            vectormath.move(origin,
+                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                            vectormath.scale(_yAxis, j *  length),
+                                            vectormath.scale(_zAxis, k *  height))
+                            ))
+            for i in range(2) for j in range(2) for k in range(2))
+
+        return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                                xAxis)
+
+    @classmethod
+    def fromMinMax(cls, minPt, maxPt, convertToMeters=1, nDivXYZ=None, grading=None,
+                   xAxis=None):
+        """Create BlockMeshDict from minimum and maximum point.
+
+        Args:
+            minPt: Minimum point of bounding box as (x, y, z).
+            maxPt: Maximum point of bounding box as (x, y, z).
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
+        _zAxis = (0, 0, 1)
+        _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+        diagonal2D = tuple(i - j for i, j in zip(maxPt, minPt))[:2]
+        _angle = radians(vectormath.angleAnitclockwise(_xAxis[:2], diagonal2D))
+        width = cos(_angle) * vectormath.length(diagonal2D)
+        length = sin(_angle) * vectormath.length(diagonal2D)
+        height = maxPt[2] - minPt[2]
+
+        vertices = tuple(
+            vectormath.move(minPt,
+                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                            vectormath.scale(_yAxis, j *  length),
+                                            vectormath.scale(_zAxis, k *  height))
+                            ))
+            for i in range(2) for j in range(2) for k in range(2))
+
+        return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                                xAxis)
+
+    @classmethod
+    def fromVertices(cls, vertices, convertToMeters=1, nDivXYZ=None,
+                     grading=None, xAxis=None):
+        """Create BlockMeshDict from vertices.
+
+        Args:
+            vertices: 8 vertices to define the bounding box.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _cls = cls()
+        _cls.values['convertToMeters'] = convertToMeters
+        _cls.__rawvertices = vertices
+
+        # sort vertices
+        _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+        _cls.__vertices = _cls.__sortVertices()
+
+        # update self.values['boundary']
+        _cls.__updateBoundaryFromSortedVertices()
+
+        _cls.__order = tuple(range(8))
+
+        _cls.nDivXYZ = nDivXYZ
+
+        # assign grading
+        _cls.grading = grading
+
+        return _cls
+
+    @classmethod
+    def fromBFBlockGeometries(cls, BFBlockGeometries, convertToMeters=1,
+                              nDivXYZ=None, grading=None, xAxis=None):
+        """Create BlockMeshDict from BFBlockGeometries.
+
+        Args:
+            BFBlockGeometries: A collection of boundary surfaces for bounding box.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _cls = cls()
+        _cls.values['convertToMeters'] = convertToMeters
+        _cls.__BFBlockGeometries = BFBlockGeometries
+
         try:
             # collect uniqe vertices from all BFGeometries
-            self.vertices = tuple(set(v for f in self.BFBlockGeometries
-                                      for vgroup in f.borderVertices
-                                      for v in vgroup))
+            _cls.__rawvertices = tuple(
+                set(v for f in _cls.__BFBlockGeometries
+                    for vgroup in f.borderVertices
+                    for v in vgroup))
         except AttributeError as e:
             raise TypeError('At least one of the input geometries is not a '
-                            'Butterfly block geometry:\n{}'.format(e))
+                            'Butterfly block geometry:\n\t{}'.format(e))
 
-        self.center = self.__averageVerices()
+        # sort vertices
+        _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+        _cls.__vertices = _cls.__sortVertices()
+
+        # update self.values['boundary']
+        _cls.__updateBoundaryFromBFBlockGeometries()
+
+        _cls.__order = tuple(range(8))
+
+        _cls.nDivXYZ = nDivXYZ
+
+        # assign grading
+        _cls.grading = grading
+
+        return _cls
+
+    @property
+    def convertToMeters(self):
+        """Get convertToMeters."""
+        return self.values['convertToMeters']
+
+    @property
+    def boundary(self):
+        """Get boundaries and a dictionary."""
+        return self.values['boundary']
+
+    @property
+    def vertices(self):
+        """Get the sorted list of vertices."""
+        return self.__vertices
+
+    @property
+    def verticesOrder(self):
+        """Get order of vertices in blocks."""
+        return self.__order
+
+    @property
+    def geometry(self):
+        """A tuple of BFGeometries for BoundingBox faces."""
+        def __getBFGeometry(name, attr):
+            bc = BoundingBoxBoundaryCondition()
+            ind = attr['faces'] if hasattr(attr['faces'][0], '__iter__') else \
+                (attr['faces'],)
+
+            # unique indecies
+            uniuqe = tuple(set(i for inx in ind for i in inx))
+
+            renumberedIndx = tuple(tuple(uniuqe.index(i) for i in inx)
+                                   for inx in ind)
+
+            return BFGeometry(name, tuple(self.vertices[i] for i in uniuqe),
+                              renumberedIndx, boundaryCondition=bc)
+
+        if not self.__BFBlockGeometries:
+            self.__BFBlockGeometries = tuple(
+                __getBFGeometry(name, attr)
+                for name, attr in self.boundary.iteritems())
+
+        return self.__BFBlockGeometries
+
+    @property
+    def width(self):
+        """Length of block in X direction."""
+        return self.__distance(self.vertices[self.verticesOrder[0]],
+                               self.vertices[self.verticesOrder[1]])
+
+    @property
+    def length(self):
+        """Length of block in Y direction."""
+        return self.__distance(self.vertices[self.verticesOrder[0]],
+                               self.vertices[self.verticesOrder[3]])
+
+    @property
+    def height(self):
+        """Length of block in Z direction."""
+        return self.__distance(self.vertices[self.verticesOrder[0]],
+                               self.vertices[self.verticesOrder[4]])
+
+    @property
+    def center(self):
+        """Get center of the block."""
+        return self.__averageVerices()
+
+    @property
+    def minZ(self):
+        """Return minimum Z value of vertices in this block."""
+        return self.vertices[self.verticesOrder[0]][2]
+
+    @property
+    def nDivXYZ(self):
+        """Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5)."""
+        return self.__nDivXYZ
+
+    @nDivXYZ.setter
+    def nDivXYZ(self, dXYZ):
+        self.__nDivXYZ = tuple(int(v) for v in dXYZ) if dXYZ else (5, 5, 5)
+
+    @property
+    def grading(self):
+        """A simpleGrading (default: simpleGrading(1, 1, 1))."""
+        return self.__grading
+
+    @grading.setter
+    def grading(self, g):
+        self.__grading = g if g else SimpleGrading()
+
+        assert hasattr(self.grading, 'isSimpleGrading'), \
+            'grading input ({}) is not a valid simpleGrading.'.format(g)
+
+    def make2d(self, planeOrigin, planeNormal, width=0.1):
+        """Create a new 2D blockMeshDict from this blockMeshDict.
+
+        Args:
+            planeOrigin: Plane origin as (x, y, z).
+            planeNormal: Plane normal as (x, y, z).
+            width: width of 2d blockMeshDict (default: 01).
+        """
+        # duplicate blockMeshDict
+        bmd = self.duplicate()
+        n = vectormath.normalize(planeNormal)
+
+        # project all vertices to plane and move them in direction of normal
+        # by half of width
+        bmd.__vertices = tuple(
+            self.__calculate2dPoints(v, planeOrigin, n, width)
+            for v in bmd.vertices)
+
+        # set boundary condition to empty
+        # and number of divisions to 1 in shortest side
+        minimum = min(bmd.width, bmd.length, bmd.height)
+        if bmd.width == minimum:
+            bmd.nDivXYZ = (1, bmd.nDivXYZ[1], bmd.nDivXYZ[2])
+            # set both sides to empty
+
+        elif bmd.length == minimum:
+            bmd.nDivXYZ = (bmd.nDivXYZ[0], 1, bmd.nDivXYZ[2])
+            # set inlet and outlet to empty
+            # bmd.inlet.boundaryCondition = Empty()
+
+        elif bmd.height == minimum:
+            bmd.nDivXYZ = (bmd.nDivXYZ[0], bmd.nDivXYZ[1], 1)
+            # set top and bottom to empty
+
+        print('WARNING: make2d doesn\'t update boundary conditions to Empty.')
+        return bmd
+
+    @staticmethod
+    def __calculate2dPoints(v, o, n, w):
+        # project point
+        p = vectormath.project(v, o, n)
+        # move the projected point backwards for half of the width
+        t = vectormath.scale(vectormath.normalize(vectormath.subtract(v, p)),
+                             w / 2.0)
+        return vectormath.move(p, t)
+
+    def nDivXYZByCellSize(self, cellSizeXYZ):
+        """Set number of divisions by cell size."""
+        x, y, z = cellSizeXYZ
+        self.nDivXYZ = int(round(self.width / x)), int(round(self.length / y)), \
+            int(round(self.height / z))
+
+    def updateMeshingParameters(self, meshingParameters):
+        """Update meshing parameters for blockMeshDict."""
+        if not meshingParameters:
+            return
+
+        assert hasattr(meshingParameters, 'isMeshingParameters'), \
+            'Expected MeshingParameters not {}'.format(type(meshingParameters))
+
+        if meshingParameters.cellSizeXYZ:
+            self.nDivXYZByCellSize(meshingParameters.cellSizeXYZ)
+
+        if meshingParameters.grading:
+            self.grading = meshingParameters.grading
+
+    def __updateBoundaryFromSortedVertices(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
+        self.values['boundary']['boundingbox'] = {
+            'type': 'wall',
+            'faces': ((0, 3, 2, 1), (4, 5, 6, 7),
+                      (0, 1, 5, 4), (1, 2, 6, 5),
+                      (2, 3, 7, 6), (3, 0, 4, 7),
+                      )
+        }
+
+    def __updateBoundaryFromBFBlockGeometries(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
+        for geo in self.__BFBlockGeometries:
+            try:
+                self.values['boundary'][geo.name] = {
+                    'type': geo.boundaryCondition.type,
+                    'faces': tuple(tuple(self.vertices.index(v) for v in verGroup)
+                                   for verGroup in geo.borderVertices)
+                }
+            except AttributeError as e:
+                raise TypeError('Wrong input geometry!\n{}'.format(e))
+
+    def __boundaryToOpenFOAM(self):
+        _body = "   %s\n" \
+                "   {\n" \
+                "       type %s;\n" \
+                "       faces\n" \
+                "       (" \
+                "       %s\n" \
+                "       );\n" \
+                "   }\n"
+
+        col = (_body % (name, attr['type'],
+               '\n' + '\n'.join('\t' + str(indices).replace(",", "")
+                                for indices in attr['faces']))
+               if isinstance(attr['faces'][0], tuple) else
+               _body % (name, attr['type'],
+                        '\n\t' + str(attr['faces']).replace(",", ""))
+               for name, attr in self.boundary.iteritems())
+
+        return 'boundary\n(%s);\n' % '\n'.join(col)
+
+    @staticmethod
+    def __distance(v1, v2):
+        return sqrt(sum((x - y) ** 2 for x, y in zip(v1, v2)))
 
     def __averageVerices(self):
         _x, _y, _z = 0, 0, 0
 
-        for ver in self.vertices:
+        for ver in self.__rawvertices:
             _x += ver[0]
             _y += ver[1]
             _z += ver[2]
 
-        return _x / len(self.vertices), \
-            _y / len(self.vertices), \
-            _z / len(self.vertices)
+        return _x * self.convertToMeters / len(self.__rawvertices), \
+            _y * self.convertToMeters / len(self.__rawvertices), \
+            _z * self.convertToMeters / len(self.__rawvertices)
+
+    def __sortVertices(self):
+        """sort input vertices."""
+        groups = {}
+        for p in self.__rawvertices:
+            if p[2] not in groups:
+                groups[p[2]] = []
+
+            groups[p[2]].append((p[0], p[1]))
+
+        zValues = groups.keys()
+        zValues.sort()
+        pointGroups = groups.values()
+
+        assert len(zValues) == 2, \
+            'Number of Z values must be 2 not {}: {}.'.format(len(zValues),
+                                                              zValues)
+
+        for g in pointGroups:
+            assert len(g) == 4
+
+        # the points in both height are identical so I just take the first group
+        # and sort them
+        xAxisReversed = (-self.xAxis[0], -self.xAxis[1])
+        centerPt = self.center[:2]
+        sortedPoints2d = \
+            sorted(pointGroups[0],
+                   key=lambda x: vectormath.angleAnitclockwise(
+                       xAxisReversed, tuple(c1 - c2 for c1, c2
+                                            in zip(x, centerPt))))
+
+        sortedPoints = tuple((pt[0], pt[1], z) for z in zValues
+                             for pt in sortedPoints2d)
+        return sortedPoints
 
     def toOpenFOAM(self):
         """Return OpenFOAM representation as a string."""
@@ -1069,16 +1511,15 @@ class BlockMeshDict(FoamFile):
         _body = "\nconvertToMeters %.4f;\n" \
                 "\n" \
                 "vertices\n" \
-                "(\n%s\n);\n" \
+                "(\n\t%s\n);\n" \
                 "\n" \
                 "blocks\n" \
-                "(\n%s\n);\n" \
+                "(\nhex %s %s %s\n);\n" \
                 "\n" \
                 "edges\n" \
                 "(%s);\n" \
                 "\n" \
-                "boundary\n" \
-                "(%s);\n" \
+                "%s" \
                 "\n" \
                 "mergePatchPair\n" \
                 "(%s);\n"
@@ -1086,13 +1527,13 @@ class BlockMeshDict(FoamFile):
         return _hea + \
             _body % (
                 self.convertToMeters,
-                "\n".join(tuple(str(ver).replace(",", "")
-                          for ver in self.vertices)),
-                "\n".join(block.toBlockMeshDict(self.vertices)
-                          for block in self.blocks),  # blocks
+                "\n\t".join(tuple(str(ver).replace(",", "")
+                                  for ver in self.vertices)),
+                str(self.verticesOrder).replace(",", ""),
+                str(self.nDivXYZ).replace(",", ""),
+                self.grading,  # blocks
                 "\n",  # edges
-                "\n".join(srf.toBlockMeshDict(self.vertices)
-                          for srf in self.BFBlockGeometries),
+                self.__boundaryToOpenFOAM(),  # boundary
                 "\n")  # merge patch pair
 
     def ToString(self):
@@ -1101,7 +1542,7 @@ class BlockMeshDict(FoamFile):
 
     def __repr__(self):
         """BlockMeshDict representation."""
-        return "Butterfly::%s" % self.__class__.__name__
+        return self.toOpenFOAM()
 </code></pre>
   </div>
 
@@ -1123,35 +1564,460 @@ class BlockMeshDict(FoamFile):
     <pre><code>class BlockMeshDict(FoamFile):
     """BlockMeshDict."""
 
-    def __init__(self, convertToMeters, BFBlockGeometries, blocks):
-        """Init BlockMeshDict."""
+    __defaultValues = OrderedDict()
+    __defaultValues['convertToMeters'] = 1
+    __defaultValues['vertices'] = None
+    __defaultValues['blocks'] = None
+    __defaultValues['boundary'] = {}
+
+    def __init__(self, values=None):
+        """Init class."""
         FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
-                          location='system')
-        self.convertToMeters = convertToMeters
-        self.blocks = blocks
-        self.BFBlockGeometries = BFBlockGeometries
+                          location='system', defaultValues=self.__defaultValues,
+                          values=values)
+
+        self.__BFBlockGeometries = None # this will be overwritten in classmethods
+        self.__vertices = None
+
+    @classmethod
+    def fromFile(cls, filepah):
+        """Create a blockMeshDict from file."""
+        _cls = cls()
+
+        with open(filepah, 'rb') as bf:
+            lines = CppDictParser._removeComments(bf.read())
+            bmd = ' '.join(lines.replace('\r\n', ' ').replace('\n', ' ').split())
+
+        _cls.values['convertToMeters'] = \
+            float(bmd.split('convertToMeters')[-1].split(';')[0])
+
+        # find vertices
+        _cls.__vertices = eval(','.join(bmd.split('vertices')[-1]
+                                        .split(';')[0]
+                                        .strip()[1:-1]
+                                        .split()))
+
+        # get blocks, order of vertices, nDivXYZ, grading
+        blocks = bmd.split('blocks')[-1].split(';')[0].strip()
+        xyz, simpleGrading = blocks.split('simpleGrading')
+
+        _cls.__order, _cls.nDivXYZ = eval(','.join(xyz.split('hex')[-1].split()))
+
+        simpleGrading = eval(','.join(simpleGrading.strip()[:-1]
+                                      .replace('( ', '(')
+                                      .replace(' )', ')')
+                                      .split()))
+
+        _cls.grading = SimpleGrading(
+            *(MultiGrading(tuple(Grading(*i) for i in g))
+              if isinstance(g, tuple) else Grading(g)
+              for g in simpleGrading))
+
+        # recreate boundary faces
+        boundaryString = bmd.replace(' (', '(').replace(' )', ')') \
+            .split('boundary(')[-1].strip().replace('});', '}') \
+            .replace('));', ');').replace('((', ' (').replace(')(', ') (')
+
+        _cls.values['boundary'] = {}
+        for key, values in CppDictParser(boundaryString).values.iteritems():
+            if isinstance(values, dict) and 'type' in values and 'faces' in values:
+                values['faces'] = eval(str(values['faces']).replace(' ', ','))
+
+                _cls.values['boundary'][key] = values
+
+        del((lines, bmd))
+        return _cls
+
+    @classmethod
+    def fromOriginAndSize(cls, origin, width, length, height, convertToMeters=1,
+                          nDivXYZ=None, grading=None, xAxis=None):
+        """Create BlockMeshDict from BFBlockGeometries.
+
+        Args:
+            origin: Minimum point of bounding box as (x, y, z).
+            width: Width in x direction.
+            length: Length in y direction.
+            height: Height in y direction.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
+        _zAxis = (0, 0, 1)
+        _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+        vertices = tuple(
+            vectormath.move(origin,
+                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                            vectormath.scale(_yAxis, j *  length),
+                                            vectormath.scale(_zAxis, k *  height))
+                            ))
+            for i in range(2) for j in range(2) for k in range(2))
+
+        return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                                xAxis)
+
+    @classmethod
+    def fromMinMax(cls, minPt, maxPt, convertToMeters=1, nDivXYZ=None, grading=None,
+                   xAxis=None):
+        """Create BlockMeshDict from minimum and maximum point.
+
+        Args:
+            minPt: Minimum point of bounding box as (x, y, z).
+            maxPt: Maximum point of bounding box as (x, y, z).
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
+        _zAxis = (0, 0, 1)
+        _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+        diagonal2D = tuple(i - j for i, j in zip(maxPt, minPt))[:2]
+        _angle = radians(vectormath.angleAnitclockwise(_xAxis[:2], diagonal2D))
+        width = cos(_angle) * vectormath.length(diagonal2D)
+        length = sin(_angle) * vectormath.length(diagonal2D)
+        height = maxPt[2] - minPt[2]
+
+        vertices = tuple(
+            vectormath.move(minPt,
+                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                            vectormath.scale(_yAxis, j *  length),
+                                            vectormath.scale(_zAxis, k *  height))
+                            ))
+            for i in range(2) for j in range(2) for k in range(2))
+
+        return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                                xAxis)
+
+    @classmethod
+    def fromVertices(cls, vertices, convertToMeters=1, nDivXYZ=None,
+                     grading=None, xAxis=None):
+        """Create BlockMeshDict from vertices.
+
+        Args:
+            vertices: 8 vertices to define the bounding box.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _cls = cls()
+        _cls.values['convertToMeters'] = convertToMeters
+        _cls.__rawvertices = vertices
+
+        # sort vertices
+        _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+        _cls.__vertices = _cls.__sortVertices()
+
+        # update self.values['boundary']
+        _cls.__updateBoundaryFromSortedVertices()
+
+        _cls.__order = tuple(range(8))
+
+        _cls.nDivXYZ = nDivXYZ
+
+        # assign grading
+        _cls.grading = grading
+
+        return _cls
+
+    @classmethod
+    def fromBFBlockGeometries(cls, BFBlockGeometries, convertToMeters=1,
+                              nDivXYZ=None, grading=None, xAxis=None):
+        """Create BlockMeshDict from BFBlockGeometries.
+
+        Args:
+            BFBlockGeometries: A collection of boundary surfaces for bounding box.
+            convertToMeters: Scaling factor for the vertex coordinates.
+            nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+            xAxis: An optional tuple that indicates the xAxis direction
+                (default: (1, 0)).
+        """
+        _cls = cls()
+        _cls.values['convertToMeters'] = convertToMeters
+        _cls.__BFBlockGeometries = BFBlockGeometries
+
         try:
             # collect uniqe vertices from all BFGeometries
-            self.vertices = tuple(set(v for f in self.BFBlockGeometries
-                                      for vgroup in f.borderVertices
-                                      for v in vgroup))
+            _cls.__rawvertices = tuple(
+                set(v for f in _cls.__BFBlockGeometries
+                    for vgroup in f.borderVertices
+                    for v in vgroup))
         except AttributeError as e:
             raise TypeError('At least one of the input geometries is not a '
-                            'Butterfly block geometry:\n{}'.format(e))
+                            'Butterfly block geometry:\n\t{}'.format(e))
 
-        self.center = self.__averageVerices()
+        # sort vertices
+        _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+        _cls.__vertices = _cls.__sortVertices()
+
+        # update self.values['boundary']
+        _cls.__updateBoundaryFromBFBlockGeometries()
+
+        _cls.__order = tuple(range(8))
+
+        _cls.nDivXYZ = nDivXYZ
+
+        # assign grading
+        _cls.grading = grading
+
+        return _cls
+
+    @property
+    def convertToMeters(self):
+        """Get convertToMeters."""
+        return self.values['convertToMeters']
+
+    @property
+    def boundary(self):
+        """Get boundaries and a dictionary."""
+        return self.values['boundary']
+
+    @property
+    def vertices(self):
+        """Get the sorted list of vertices."""
+        return self.__vertices
+
+    @property
+    def verticesOrder(self):
+        """Get order of vertices in blocks."""
+        return self.__order
+
+    @property
+    def geometry(self):
+        """A tuple of BFGeometries for BoundingBox faces."""
+        def __getBFGeometry(name, attr):
+            bc = BoundingBoxBoundaryCondition()
+            ind = attr['faces'] if hasattr(attr['faces'][0], '__iter__') else \
+                (attr['faces'],)
+
+            # unique indecies
+            uniuqe = tuple(set(i for inx in ind for i in inx))
+
+            renumberedIndx = tuple(tuple(uniuqe.index(i) for i in inx)
+                                   for inx in ind)
+
+            return BFGeometry(name, tuple(self.vertices[i] for i in uniuqe),
+                              renumberedIndx, boundaryCondition=bc)
+
+        if not self.__BFBlockGeometries:
+            self.__BFBlockGeometries = tuple(
+                __getBFGeometry(name, attr)
+                for name, attr in self.boundary.iteritems())
+
+        return self.__BFBlockGeometries
+
+    @property
+    def width(self):
+        """Length of block in X direction."""
+        return self.__distance(self.vertices[self.verticesOrder[0]],
+                               self.vertices[self.verticesOrder[1]])
+
+    @property
+    def length(self):
+        """Length of block in Y direction."""
+        return self.__distance(self.vertices[self.verticesOrder[0]],
+                               self.vertices[self.verticesOrder[3]])
+
+    @property
+    def height(self):
+        """Length of block in Z direction."""
+        return self.__distance(self.vertices[self.verticesOrder[0]],
+                               self.vertices[self.verticesOrder[4]])
+
+    @property
+    def center(self):
+        """Get center of the block."""
+        return self.__averageVerices()
+
+    @property
+    def minZ(self):
+        """Return minimum Z value of vertices in this block."""
+        return self.vertices[self.verticesOrder[0]][2]
+
+    @property
+    def nDivXYZ(self):
+        """Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5)."""
+        return self.__nDivXYZ
+
+    @nDivXYZ.setter
+    def nDivXYZ(self, dXYZ):
+        self.__nDivXYZ = tuple(int(v) for v in dXYZ) if dXYZ else (5, 5, 5)
+
+    @property
+    def grading(self):
+        """A simpleGrading (default: simpleGrading(1, 1, 1))."""
+        return self.__grading
+
+    @grading.setter
+    def grading(self, g):
+        self.__grading = g if g else SimpleGrading()
+
+        assert hasattr(self.grading, 'isSimpleGrading'), \
+            'grading input ({}) is not a valid simpleGrading.'.format(g)
+
+    def make2d(self, planeOrigin, planeNormal, width=0.1):
+        """Create a new 2D blockMeshDict from this blockMeshDict.
+
+        Args:
+            planeOrigin: Plane origin as (x, y, z).
+            planeNormal: Plane normal as (x, y, z).
+            width: width of 2d blockMeshDict (default: 01).
+        """
+        # duplicate blockMeshDict
+        bmd = self.duplicate()
+        n = vectormath.normalize(planeNormal)
+
+        # project all vertices to plane and move them in direction of normal
+        # by half of width
+        bmd.__vertices = tuple(
+            self.__calculate2dPoints(v, planeOrigin, n, width)
+            for v in bmd.vertices)
+
+        # set boundary condition to empty
+        # and number of divisions to 1 in shortest side
+        minimum = min(bmd.width, bmd.length, bmd.height)
+        if bmd.width == minimum:
+            bmd.nDivXYZ = (1, bmd.nDivXYZ[1], bmd.nDivXYZ[2])
+            # set both sides to empty
+
+        elif bmd.length == minimum:
+            bmd.nDivXYZ = (bmd.nDivXYZ[0], 1, bmd.nDivXYZ[2])
+            # set inlet and outlet to empty
+            # bmd.inlet.boundaryCondition = Empty()
+
+        elif bmd.height == minimum:
+            bmd.nDivXYZ = (bmd.nDivXYZ[0], bmd.nDivXYZ[1], 1)
+            # set top and bottom to empty
+
+        print('WARNING: make2d doesn\'t update boundary conditions to Empty.')
+        return bmd
+
+    @staticmethod
+    def __calculate2dPoints(v, o, n, w):
+        # project point
+        p = vectormath.project(v, o, n)
+        # move the projected point backwards for half of the width
+        t = vectormath.scale(vectormath.normalize(vectormath.subtract(v, p)),
+                             w / 2.0)
+        return vectormath.move(p, t)
+
+    def nDivXYZByCellSize(self, cellSizeXYZ):
+        """Set number of divisions by cell size."""
+        x, y, z = cellSizeXYZ
+        self.nDivXYZ = int(round(self.width / x)), int(round(self.length / y)), \
+            int(round(self.height / z))
+
+    def updateMeshingParameters(self, meshingParameters):
+        """Update meshing parameters for blockMeshDict."""
+        if not meshingParameters:
+            return
+
+        assert hasattr(meshingParameters, 'isMeshingParameters'), \
+            'Expected MeshingParameters not {}'.format(type(meshingParameters))
+
+        if meshingParameters.cellSizeXYZ:
+            self.nDivXYZByCellSize(meshingParameters.cellSizeXYZ)
+
+        if meshingParameters.grading:
+            self.grading = meshingParameters.grading
+
+    def __updateBoundaryFromSortedVertices(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
+        self.values['boundary']['boundingbox'] = {
+            'type': 'wall',
+            'faces': ((0, 3, 2, 1), (4, 5, 6, 7),
+                      (0, 1, 5, 4), (1, 2, 6, 5),
+                      (2, 3, 7, 6), (3, 0, 4, 7),
+                      )
+        }
+
+    def __updateBoundaryFromBFBlockGeometries(self):
+        """Update boundary dictionary based on BFBlockGeometries input."""
+        for geo in self.__BFBlockGeometries:
+            try:
+                self.values['boundary'][geo.name] = {
+                    'type': geo.boundaryCondition.type,
+                    'faces': tuple(tuple(self.vertices.index(v) for v in verGroup)
+                                   for verGroup in geo.borderVertices)
+                }
+            except AttributeError as e:
+                raise TypeError('Wrong input geometry!\n{}'.format(e))
+
+    def __boundaryToOpenFOAM(self):
+        _body = "   %s\n" \
+                "   {\n" \
+                "       type %s;\n" \
+                "       faces\n" \
+                "       (" \
+                "       %s\n" \
+                "       );\n" \
+                "   }\n"
+
+        col = (_body % (name, attr['type'],
+               '\n' + '\n'.join('\t' + str(indices).replace(",", "")
+                                for indices in attr['faces']))
+               if isinstance(attr['faces'][0], tuple) else
+               _body % (name, attr['type'],
+                        '\n\t' + str(attr['faces']).replace(",", ""))
+               for name, attr in self.boundary.iteritems())
+
+        return 'boundary\n(%s);\n' % '\n'.join(col)
+
+    @staticmethod
+    def __distance(v1, v2):
+        return sqrt(sum((x - y) ** 2 for x, y in zip(v1, v2)))
 
     def __averageVerices(self):
         _x, _y, _z = 0, 0, 0
 
-        for ver in self.vertices:
+        for ver in self.__rawvertices:
             _x += ver[0]
             _y += ver[1]
             _z += ver[2]
 
-        return _x / len(self.vertices), \
-            _y / len(self.vertices), \
-            _z / len(self.vertices)
+        return _x * self.convertToMeters / len(self.__rawvertices), \
+            _y * self.convertToMeters / len(self.__rawvertices), \
+            _z * self.convertToMeters / len(self.__rawvertices)
+
+    def __sortVertices(self):
+        """sort input vertices."""
+        groups = {}
+        for p in self.__rawvertices:
+            if p[2] not in groups:
+                groups[p[2]] = []
+
+            groups[p[2]].append((p[0], p[1]))
+
+        zValues = groups.keys()
+        zValues.sort()
+        pointGroups = groups.values()
+
+        assert len(zValues) == 2, \
+            'Number of Z values must be 2 not {}: {}.'.format(len(zValues),
+                                                              zValues)
+
+        for g in pointGroups:
+            assert len(g) == 4
+
+        # the points in both height are identical so I just take the first group
+        # and sort them
+        xAxisReversed = (-self.xAxis[0], -self.xAxis[1])
+        centerPt = self.center[:2]
+        sortedPoints2d = \
+            sorted(pointGroups[0],
+                   key=lambda x: vectormath.angleAnitclockwise(
+                       xAxisReversed, tuple(c1 - c2 for c1, c2
+                                            in zip(x, centerPt))))
+
+        sortedPoints = tuple((pt[0], pt[1], z) for z in zValues
+                             for pt in sortedPoints2d)
+        return sortedPoints
 
     def toOpenFOAM(self):
         """Return OpenFOAM representation as a string."""
@@ -1159,16 +2025,15 @@ class BlockMeshDict(FoamFile):
         _body = "\nconvertToMeters %.4f;\n" \
                 "\n" \
                 "vertices\n" \
-                "(\n%s\n);\n" \
+                "(\n\t%s\n);\n" \
                 "\n" \
                 "blocks\n" \
-                "(\n%s\n);\n" \
+                "(\nhex %s %s %s\n);\n" \
                 "\n" \
                 "edges\n" \
                 "(%s);\n" \
                 "\n" \
-                "boundary\n" \
-                "(%s);\n" \
+                "%s" \
                 "\n" \
                 "mergePatchPair\n" \
                 "(%s);\n"
@@ -1176,13 +2041,13 @@ class BlockMeshDict(FoamFile):
         return _hea + \
             _body % (
                 self.convertToMeters,
-                "\n".join(tuple(str(ver).replace(",", "")
-                          for ver in self.vertices)),
-                "\n".join(block.toBlockMeshDict(self.vertices)
-                          for block in self.blocks),  # blocks
+                "\n\t".join(tuple(str(ver).replace(",", "")
+                                  for ver in self.vertices)),
+                str(self.verticesOrder).replace(",", ""),
+                str(self.nDivXYZ).replace(",", ""),
+                self.grading,  # blocks
                 "\n",  # edges
-                "\n".join(srf.toBlockMeshDict(self.vertices)
-                          for srf in self.BFBlockGeometries),
+                self.__boundaryToOpenFOAM(),  # boundary
                 "\n")  # merge patch pair
 
     def ToString(self):
@@ -1191,7 +2056,7 @@ class BlockMeshDict(FoamFile):
 
     def __repr__(self):
         """BlockMeshDict representation."""
-        return "Butterfly::%s" % self.__class__.__name__
+        return self.toOpenFOAM()
 </code></pre>
   </div>
 </div>
@@ -1236,21 +2101,12 @@ def convertBoolValue(v=True):
   
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.blockMeshDict.BlockMeshDict.BFBlockGeometries" class="name">var <span class="ident">BFBlockGeometries</span></p>
+            <p id="butterfly.blockMeshDict.BlockMeshDict.boundary" class="name">var <span class="ident">boundary</span></p>
             
 
             
   
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.blockMeshDict.BlockMeshDict.blocks" class="name">var <span class="ident">blocks</span></p>
-            
-
-            
-  
+    <div class="desc"><p>Get boundaries and a dictionary.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1261,6 +2117,7 @@ def convertBoolValue(v=True):
 
             
   
+    <div class="desc"><p>Get center of the block.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1271,6 +2128,117 @@ def convertBoolValue(v=True):
 
             
   
+    <div class="desc"><p>Get convertToMeters.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.geometry" class="name">var <span class="ident">geometry</span></p>
+            
+
+            
+  
+    <div class="desc"><p>A tuple of BFGeometries for BoundingBox faces.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.grading" class="name">var <span class="ident">grading</span></p>
+            
+
+            
+  
+    <div class="desc"><p>A simpleGrading (default: simpleGrading(1, 1, 1)).</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.height" class="name">var <span class="ident">height</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Length of block in Z direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'constant' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return True for FoamFile.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'system' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is folder 0.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.length" class="name">var <span class="ident">length</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Length of block in Y direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.minZ" class="name">var <span class="ident">minZ</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return minimum Z value of vertices in this block.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.nDivXYZ" class="name">var <span class="ident">nDivXYZ</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).</p></div>
   <div class="source_cont">
 </div>
 
@@ -1297,36 +2265,60 @@ def convertBoolValue(v=True):
 </div>
 
             </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.vertices" class="name">var <span class="ident">vertices</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get the sorted list of vertices.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.verticesOrder" class="name">var <span class="ident">verticesOrder</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get order of vertices in blocks.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.blockMeshDict.BlockMeshDict.width" class="name">var <span class="ident">width</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Length of block in X direction.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, convertToMeters, BFBlockGeometries, blocks)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, values=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init BlockMeshDict.</p></div>
+    <div class="desc"><p>Init class.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.blockMeshDict.BlockMeshDict.__init__" class="source">
-    <pre><code>def __init__(self, convertToMeters, BFBlockGeometries, blocks):
-    """Init BlockMeshDict."""
+    <pre><code>def __init__(self, values=None):
+    """Init class."""
     FoamFile.__init__(self, name='blockMeshDict', cls='dictionary',
-                      location='system')
-    self.convertToMeters = convertToMeters
-    self.blocks = blocks
-    self.BFBlockGeometries = BFBlockGeometries
-    try:
-        # collect uniqe vertices from all BFGeometries
-        self.vertices = tuple(set(v for f in self.BFBlockGeometries
-                                  for vgroup in f.borderVertices
-                                  for v in vgroup))
-    except AttributeError as e:
-        raise TypeError('At least one of the input geometries is not a '
-                        'Butterfly block geometry:\n{}'.format(e))
-    self.center = self.__averageVerices()
+                      location='system', defaultValues=self.__defaultValues,
+                      values=values)
+    self.__BFBlockGeometries = None # this will be overwritten in classmethods
+    self.__vertices = None
 </code></pre>
   </div>
 </div>
@@ -1371,10 +2363,21 @@ def convertBoolValue(v=True):
     <pre><code>def body(self):
     """Return body string."""
     # remove None values
-    _values = OrderedDict()
-    for key, value in self.values.iteritems():
-        if value:
-            _values[key] = value
+    def removeNone(d):
+        if isinstance(d, (dict, OrderedDict)):
+            return OrderedDict((k, removeNone(v))
+                               for k, v in d.iteritems()
+                               if v and removeNone(v))
+        elif isinstance(d, (list, tuple)):
+            return [removeNone(v) for v in d if v and removeNone(v)]
+        else:
+            return d
+        return removeNone
+    _values = removeNone(self.values)
+    # add an empty dict for refinementRegions
+    if 'castellatedMeshControls' in _values:
+        if 'refinementRegions' not in _values['castellatedMeshControls']:
+            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
@@ -1405,6 +2408,286 @@ def convertBoolValue(v=True):
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.fromBFBlockGeometries">
+    <p>def <span class="ident">fromBFBlockGeometries</span>(</p><p>cls, BFBlockGeometries, convertToMeters=1, nDivXYZ=None, grading=None, xAxis=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create BlockMeshDict from BFBlockGeometries.</p>
+<p>Args:
+    BFBlockGeometries: A collection of boundary surfaces for bounding box.
+    convertToMeters: Scaling factor for the vertex coordinates.
+    nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+    grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+    xAxis: An optional tuple that indicates the xAxis direction
+        (default: (1, 0)).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.fromBFBlockGeometries', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.fromBFBlockGeometries" class="source">
+    <pre><code>@classmethod
+def fromBFBlockGeometries(cls, BFBlockGeometries, convertToMeters=1,
+                          nDivXYZ=None, grading=None, xAxis=None):
+    """Create BlockMeshDict from BFBlockGeometries.
+    Args:
+        BFBlockGeometries: A collection of boundary surfaces for bounding box.
+        convertToMeters: Scaling factor for the vertex coordinates.
+        nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+        xAxis: An optional tuple that indicates the xAxis direction
+            (default: (1, 0)).
+    """
+    _cls = cls()
+    _cls.values['convertToMeters'] = convertToMeters
+    _cls.__BFBlockGeometries = BFBlockGeometries
+    try:
+        # collect uniqe vertices from all BFGeometries
+        _cls.__rawvertices = tuple(
+            set(v for f in _cls.__BFBlockGeometries
+                for vgroup in f.borderVertices
+                for v in vgroup))
+    except AttributeError as e:
+        raise TypeError('At least one of the input geometries is not a '
+                        'Butterfly block geometry:\n\t{}'.format(e))
+    # sort vertices
+    _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+    _cls.__vertices = _cls.__sortVertices()
+    # update self.values['boundary']
+    _cls.__updateBoundaryFromBFBlockGeometries()
+    _cls.__order = tuple(range(8))
+    _cls.nDivXYZ = nDivXYZ
+    # assign grading
+    _cls.grading = grading
+    return _cls
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.fromFile">
+    <p>def <span class="ident">fromFile</span>(</p><p>cls, filepah)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a blockMeshDict from file.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.fromFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.fromFile" class="source">
+    <pre><code>@classmethod
+def fromFile(cls, filepah):
+    """Create a blockMeshDict from file."""
+    _cls = cls()
+    with open(filepah, 'rb') as bf:
+        lines = CppDictParser._removeComments(bf.read())
+        bmd = ' '.join(lines.replace('\r\n', ' ').replace('\n', ' ').split())
+    _cls.values['convertToMeters'] = \
+        float(bmd.split('convertToMeters')[-1].split(';')[0])
+    # find vertices
+    _cls.__vertices = eval(','.join(bmd.split('vertices')[-1]
+                                    .split(';')[0]
+                                    .strip()[1:-1]
+                                    .split()))
+    # get blocks, order of vertices, nDivXYZ, grading
+    blocks = bmd.split('blocks')[-1].split(';')[0].strip()
+    xyz, simpleGrading = blocks.split('simpleGrading')
+    _cls.__order, _cls.nDivXYZ = eval(','.join(xyz.split('hex')[-1].split()))
+    simpleGrading = eval(','.join(simpleGrading.strip()[:-1]
+                                  .replace('( ', '(')
+                                  .replace(' )', ')')
+                                  .split()))
+    _cls.grading = SimpleGrading(
+        *(MultiGrading(tuple(Grading(*i) for i in g))
+          if isinstance(g, tuple) else Grading(g)
+          for g in simpleGrading))
+    # recreate boundary faces
+    boundaryString = bmd.replace(' (', '(').replace(' )', ')') \
+        .split('boundary(')[-1].strip().replace('});', '}') \
+        .replace('));', ');').replace('((', ' (').replace(')(', ') (')
+    _cls.values['boundary'] = {}
+    for key, values in CppDictParser(boundaryString).values.iteritems():
+        if isinstance(values, dict) and 'type' in values and 'faces' in values:
+            values['faces'] = eval(str(values['faces']).replace(' ', ','))
+            _cls.values['boundary'][key] = values
+    del((lines, bmd))
+    return _cls
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.fromMinMax">
+    <p>def <span class="ident">fromMinMax</span>(</p><p>cls, minPt, maxPt, convertToMeters=1, nDivXYZ=None, grading=None, xAxis=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create BlockMeshDict from minimum and maximum point.</p>
+<p>Args:
+    minPt: Minimum point of bounding box as (x, y, z).
+    maxPt: Maximum point of bounding box as (x, y, z).
+    convertToMeters: Scaling factor for the vertex coordinates.
+    nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+    grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+    xAxis: An optional tuple that indicates the xAxis direction
+        (default: (1, 0)).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.fromMinMax', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.fromMinMax" class="source">
+    <pre><code>@classmethod
+def fromMinMax(cls, minPt, maxPt, convertToMeters=1, nDivXYZ=None, grading=None,
+               xAxis=None):
+    """Create BlockMeshDict from minimum and maximum point.
+    Args:
+        minPt: Minimum point of bounding box as (x, y, z).
+        maxPt: Maximum point of bounding box as (x, y, z).
+        convertToMeters: Scaling factor for the vertex coordinates.
+        nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+        xAxis: An optional tuple that indicates the xAxis direction
+            (default: (1, 0)).
+    """
+    _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
+    _zAxis = (0, 0, 1)
+    _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+    diagonal2D = tuple(i - j for i, j in zip(maxPt, minPt))[:2]
+    _angle = radians(vectormath.angleAnitclockwise(_xAxis[:2], diagonal2D))
+    width = cos(_angle) * vectormath.length(diagonal2D)
+    length = sin(_angle) * vectormath.length(diagonal2D)
+    height = maxPt[2] - minPt[2]
+    vertices = tuple(
+        vectormath.move(minPt,
+                        vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                        vectormath.scale(_yAxis, j *  length),
+                                        vectormath.scale(_zAxis, k *  height))
+                        ))
+        for i in range(2) for j in range(2) for k in range(2))
+    return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                            xAxis)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.fromOriginAndSize">
+    <p>def <span class="ident">fromOriginAndSize</span>(</p><p>cls, origin, width, length, height, convertToMeters=1, nDivXYZ=None, grading=None, xAxis=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create BlockMeshDict from BFBlockGeometries.</p>
+<p>Args:
+    origin: Minimum point of bounding box as (x, y, z).
+    width: Width in x direction.
+    length: Length in y direction.
+    height: Height in y direction.
+    convertToMeters: Scaling factor for the vertex coordinates.
+    nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+    grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+    xAxis: An optional tuple that indicates the xAxis direction
+        (default: (1, 0)).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.fromOriginAndSize', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.fromOriginAndSize" class="source">
+    <pre><code>@classmethod
+def fromOriginAndSize(cls, origin, width, length, height, convertToMeters=1,
+                      nDivXYZ=None, grading=None, xAxis=None):
+    """Create BlockMeshDict from BFBlockGeometries.
+    Args:
+        origin: Minimum point of bounding box as (x, y, z).
+        width: Width in x direction.
+        length: Length in y direction.
+        height: Height in y direction.
+        convertToMeters: Scaling factor for the vertex coordinates.
+        nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+        xAxis: An optional tuple that indicates the xAxis direction
+            (default: (1, 0)).
+    """
+    _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
+    _zAxis = (0, 0, 1)
+    _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
+    vertices = tuple(
+        vectormath.move(origin,
+                        vectormath.sums((vectormath.scale(_xAxis, i *  width),
+                                        vectormath.scale(_yAxis, j *  length),
+                                        vectormath.scale(_zAxis, k *  height))
+                        ))
+        for i in range(2) for j in range(2) for k in range(2))
+    return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
+                            xAxis)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.fromVertices">
+    <p>def <span class="ident">fromVertices</span>(</p><p>cls, vertices, convertToMeters=1, nDivXYZ=None, grading=None, xAxis=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create BlockMeshDict from vertices.</p>
+<p>Args:
+    vertices: 8 vertices to define the bounding box.
+    convertToMeters: Scaling factor for the vertex coordinates.
+    nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+    grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+    xAxis: An optional tuple that indicates the xAxis direction
+        (default: (1, 0)).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.fromVertices', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.fromVertices" class="source">
+    <pre><code>@classmethod
+def fromVertices(cls, vertices, convertToMeters=1, nDivXYZ=None,
+                 grading=None, xAxis=None):
+    """Create BlockMeshDict from vertices.
+    Args:
+        vertices: 8 vertices to define the bounding box.
+        convertToMeters: Scaling factor for the vertex coordinates.
+        nDivXYZ: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
+        xAxis: An optional tuple that indicates the xAxis direction
+            (default: (1, 0)).
+    """
+    _cls = cls()
+    _cls.values['convertToMeters'] = convertToMeters
+    _cls.__rawvertices = vertices
+    # sort vertices
+    _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+    _cls.__vertices = _cls.__sortVertices()
+    # update self.values['boundary']
+    _cls.__updateBoundaryFromSortedVertices()
+    _cls.__order = tuple(range(8))
+    _cls.nDivXYZ = nDivXYZ
+    # assign grading
+    _cls.grading = grading
+    return _cls
 </code></pre>
   </div>
 </div>
@@ -1484,8 +2767,85 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.make2d">
+    <p>def <span class="ident">make2d</span>(</p><p>self, planeOrigin, planeNormal, width=0.1)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a new 2D blockMeshDict from this blockMeshDict.</p>
+<p>Args:
+    planeOrigin: Plane origin as (x, y, z).
+    planeNormal: Plane normal as (x, y, z).
+    width: width of 2d blockMeshDict (default: 01).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.make2d', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.make2d" class="source">
+    <pre><code>def make2d(self, planeOrigin, planeNormal, width=0.1):
+    """Create a new 2D blockMeshDict from this blockMeshDict.
+    Args:
+        planeOrigin: Plane origin as (x, y, z).
+        planeNormal: Plane normal as (x, y, z).
+        width: width of 2d blockMeshDict (default: 01).
+    """
+    # duplicate blockMeshDict
+    bmd = self.duplicate()
+    n = vectormath.normalize(planeNormal)
+    # project all vertices to plane and move them in direction of normal
+    # by half of width
+    bmd.__vertices = tuple(
+        self.__calculate2dPoints(v, planeOrigin, n, width)
+        for v in bmd.vertices)
+    # set boundary condition to empty
+    # and number of divisions to 1 in shortest side
+    minimum = min(bmd.width, bmd.length, bmd.height)
+    if bmd.width == minimum:
+        bmd.nDivXYZ = (1, bmd.nDivXYZ[1], bmd.nDivXYZ[2])
+        # set both sides to empty
+    elif bmd.length == minimum:
+        bmd.nDivXYZ = (bmd.nDivXYZ[0], 1, bmd.nDivXYZ[2])
+        # set inlet and outlet to empty
+        # bmd.inlet.boundaryCondition = Empty()
+    elif bmd.height == minimum:
+        bmd.nDivXYZ = (bmd.nDivXYZ[0], bmd.nDivXYZ[1], 1)
+        # set top and bottom to empty
+    print('WARNING: make2d doesn\'t update boundary conditions to Empty.')
+    return bmd
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.nDivXYZByCellSize">
+    <p>def <span class="ident">nDivXYZByCellSize</span>(</p><p>self, cellSizeXYZ)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Set number of divisions by cell size.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.nDivXYZByCellSize', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.nDivXYZByCellSize" class="source">
+    <pre><code>def nDivXYZByCellSize(self, cellSizeXYZ):
+    """Set number of divisions by cell size."""
+    x, y, z = cellSizeXYZ
+    self.nDivXYZ = int(round(self.width / x)), int(round(self.length / y)), \
+        int(round(self.height / z))
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.save">
-    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None)</p>
+    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None, overwrite=True)</p>
     </div>
     
 
@@ -1498,15 +2858,17 @@ def convertBoolValue(v=True):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.save', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.blockMeshDict.BlockMeshDict.save" class="source">
-    <pre><code>def save(self, projectFolder, subFolder=None):
+    <pre><code>def save(self, projectFolder, subFolder=None, overwrite=True):
     """Save to file.
     Args:
         projectFolder: Path to project folder as a string.
         subFolder: Optional input for subFolder (default: self.location).
     """
-    subFolder = self.location.replace('"', '') if not subFolder else subFolder
-    with open(os.path.join(projectFolder,
-                           subFolder, self.name), "wb") as outf:
+    subFolder = subFolder or self.location.replace('"', '')
+    fp = os.path.join(projectFolder, subFolder, self.name)
+    if not overwrite and os.path.isfile(fp):
+        return
+    with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
 </code></pre>
   </div>
@@ -1562,29 +2924,28 @@ def convertBoolValue(v=True):
     _body = "\nconvertToMeters %.4f;\n" \
             "\n" \
             "vertices\n" \
-            "(\n%s\n);\n" \
+            "(\n\t%s\n);\n" \
             "\n" \
             "blocks\n" \
-            "(\n%s\n);\n" \
+            "(\nhex %s %s %s\n);\n" \
             "\n" \
             "edges\n" \
             "(%s);\n" \
             "\n" \
-            "boundary\n" \
-            "(%s);\n" \
+            "%s" \
             "\n" \
             "mergePatchPair\n" \
             "(%s);\n"
     return _hea + \
         _body % (
             self.convertToMeters,
-            "\n".join(tuple(str(ver).replace(",", "")
-                      for ver in self.vertices)),
-            "\n".join(block.toBlockMeshDict(self.vertices)
-                      for block in self.blocks),  # blocks
+            "\n\t".join(tuple(str(ver).replace(",", "")
+                              for ver in self.vertices)),
+            str(self.verticesOrder).replace(",", ""),
+            str(self.nDivXYZ).replace(",", ""),
+            self.grading,  # blocks
             "\n",  # edges
-            "\n".join(srf.toBlockMeshDict(self.vertices)
-                      for srf in self.BFBlockGeometries),
+            self.__boundaryToOpenFOAM(),  # boundary
             "\n")  # merge patch pair
 </code></pre>
   </div>
@@ -1594,25 +2955,107 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v)</p>
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.updateMeshingParameters">
+    <p>def <span class="ident">updateMeshingParameters</span>(</p><p>self, meshingParameters)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Update current values from dictionat v.</p>
+    <div class="desc"><p>Update meshing parameters for blockMeshDict.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.updateMeshingParameters', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.blockMeshDict.BlockMeshDict.updateMeshingParameters" class="source">
+    <pre><code>def updateMeshingParameters(self, meshingParameters):
+    """Update meshing parameters for blockMeshDict."""
+    if not meshingParameters:
+        return
+    assert hasattr(meshingParameters, 'isMeshingParameters'), \
+        'Expected MeshingParameters not {}'.format(type(meshingParameters))
+    if meshingParameters.cellSizeXYZ:
+        self.nDivXYZByCellSize(meshingParameters.cellSizeXYZ)
+    if meshingParameters.grading:
+        self.grading = meshingParameters.grading
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.blockMeshDict.BlockMeshDict.updateValues">
+    <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Update current values from dictionary v.</p>
 <p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p></div>
+already exists it will be updated.</p>
+<p>Returns:
+    True is the dictionary is updated.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.blockMeshDict.BlockMeshDict.updateValues', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.blockMeshDict.BlockMeshDict.updateValues" class="source">
-    <pre><code>def updateValues(self, v):
-    """Update current values from dictionat v.
+    <pre><code>def updateValues(self, v, replace=False, mute=False):
+    """Update current values from dictionary v.
     if key is not available in current values it will be added, if the key
     already exists it will be updated.
+    Returns:
+        True is the dictionary is updated.
     """
-    self.__values.update(v)
+    def logChanges(original, new):
+        """compare this dictionary with the current values."""
+        if original is None:
+            original = {}
+        for key, value in new.items():
+            if key not in original:
+                # there is a new key so dictionary has changed.
+                if not mute:
+                    print '{} :: New values are added for {}.' \
+                        .format('.'.join(self.__parents), key)
+                self.__hasChanged = True
+                return
+            if isinstance(value, (dict, OrderedDict)):
+                self.__parents.append(key)
+                logChanges(original[key], value)
+            elif str(original[key]) != str(value):
+                    # there is a change in value
+                    if not mute:
+                        print '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                    self.__hasChanged = True
+                    return
+    def modifyDict(original, new):
+        """Modify a dictionary based on a new dictionary."""
+        for key, value in new.items():
+            if key in original and isinstance(value, dict):
+                if isinstance(original[key], dict):
+                    modifyDict(original[key], value)
+                else:
+                    # the value was not a dict, replce them with the new one
+                    original[key] = value
+            else:
+                original[key] = value
+        return original
+    assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+    self.__parents = [self.__class__.__name__]
+    self.__hasChanged = False
+    logChanges(self.__values, v)
+    if self.__hasChanged:
+        if replace:
+            self.__values.update(v)
+        else:
+            self.__values = modifyDict(self.__values, v)
+        return True
+    else:
+        return False
 </code></pre>
   </div>
 </div>

@@ -2,12 +2,17 @@
 
 Butterfly
 ========================================
-A light python API for creating [OpenFoam](http://www.openfoam.org/) cases for CFD simulation.
+A light python API for creating and running [OpenFoam](http://www.openfoam.org/) cases for CFD simulation.
 
-[API documentation](http://mostapharoudsari.github.io/Butterfly/doc/).
+API documentation
+========================================
+[Butterfly](http://mostapharoudsari.github.io/Butterfly/doc/buterfly).
+[Butterfly_Grasshopper](http://mostapharoudsari.github.io/Butterfly/doc/buterfly_grasshopper).
 
-### Read [here](https://github.com/mostaphaRoudsari/Butterfly/wiki/Getting-Started-with-butterfly) on how to get started with butterfly Grasshopper plugin.
 
-We will release butterfly plugins for DynamoBIM soon.
+Wiki
+========================================
+Chekc [Wiki](https://github.com/mostaphaRoudsari/Butterfly/wiki) to get started with butterfly and butterfly plugin for Grasshopper. We will release butterfly plugin for DynamoBIM soon.
+
 
 @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>

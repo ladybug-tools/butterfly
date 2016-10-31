@@ -1,20 +1,3 @@
-solid west_window
-   facet normal -1.0 -0.0 0.0
-     outer loop
-       vertex 1.0 8.0 2.0
-       vertex 1.0 8.0 1.0
-       vertex 1.0 2.0 1.0
-     endloop
-   endfacet
-   facet normal -1.0 0.0 0.0
-     outer loop
-       vertex 1.0 8.0 2.0
-       vertex 1.0 2.0 1.0
-       vertex 1.0 2.0 2.0
-     endloop
-   endfacet
-endsolid west_window
-
 solid room
    facet normal 1.0 0.0 0.0
      outer loop
@@ -227,7 +210,6 @@ solid room
      endloop
    endfacet
 endsolid room
-
 solid east_window
    facet normal 1.0 0.0 0.0
      outer loop
@@ -258,3 +240,19 @@ solid east_window
      endloop
    endfacet
 endsolid east_window
+solid west_window
+   facet normal -1.0 -0.0 0.0
+     outer loop
+       vertex 1.0 8.0 2.0
+       vertex 1.0 8.0 1.0
+       vertex 1.0 2.0 1.0
+     endloop
+   endfacet
+   facet normal -1.0 0.0 0.0
+     outer loop
+       vertex 1.0 8.0 2.0
+       vertex 1.0 2.0 1.0
+       vertex 1.0 2.0 2.0
+     endloop
+   endfacet
+endsolid west_window

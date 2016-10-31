@@ -4,7 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
     <title>butterfly.refinementRegion API documentation</title>
-    <meta name="description" content="" />
+    <meta name="description" content="Butterfly refinement region." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -985,6 +985,14 @@ table {
     <h1>Index</h1>
     <ul id="index">
 
+    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
+      
+  <ul>
+    <li class="mono"><a href="#butterfly.refinementRegion.refinementModeFromDict">refinementModeFromDict</a></li>
+    <li class="mono"><a href="#butterfly.refinementRegion.refinementRegionsFromStlFile">refinementRegionsFromStlFile</a></li>
+  </ul>
+
+    </li>
 
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
@@ -1032,7 +1040,7 @@ table {
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.toStlString">toStlString</a></li>
+    <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.toSTL">toSTL</a></li>
     <li class="mono"><a href="#butterfly.refinementRegion.RefinementRegion.writeToStl">writeToStl</a></li>
   </ul>
 
@@ -1052,12 +1060,15 @@ table {
 
   <header id="section-intro">
   <h1 class="title"><span class="name">butterfly.refinementRegion</span> module</h1>
-  
+  <p>Butterfly refinement region.</p>
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.refinementRegion" class="source">
-    <pre><code>from copy import deepcopy
+    <pre><code># coding=utf-8
+"""Butterfly refinement region."""
+from copy import deepcopy
 from .geometry import _BFMesh
+from .geometry import bfGeometryFromStlFile
 
 
 class RefinementRegion(_BFMesh):
@@ -1185,6 +1196,35 @@ class Outside(Inside):
     """
 
     pass
+
+
+def refinementModeFromDict(d):
+    """Create a Refinement mode from a python dictionary.
+
+    The dictionary should have two keys for model and levels.
+    {'levels': '((1000000000000000.0 4) )', 'mode': 'inside'}
+    """
+    mode = d['mode']
+
+    levels = str(d['levels']).replace(', ', ' ').replace('( (', '((') \
+        .replace(') )', '))')[1:-1].split()
+
+    levels = eval(','.join(levels))
+
+    if mode == 'inside':
+        return Inside(levels[-1])
+    elif mode == 'outside':
+        return Outside(levels[-1])
+    elif mode == 'distance':
+        return Distance(levels)
+
+
+def refinementRegionsFromStlFile(filepath, refinementMode):
+    """Create a RefinementRegion form an stl file."""
+    geos = bfGeometryFromStlFile(filepath)
+    return tuple(RefinementRegion(geo.name, geo.vertices, geo.faceIndices,
+                                  geo.normals, refinementMode)
+                 for geo in geos)
 </code></pre>
   </div>
 
@@ -1192,6 +1232,72 @@ class Outside(Inside):
 
   <section id="section-items">
 
+    <h2 class="section-title" id="header-functions">Functions</h2>
+      
+  <div class="item">
+    <div class="name def" id="butterfly.refinementRegion.refinementModeFromDict">
+    <p>def <span class="ident">refinementModeFromDict</span>(</p><p>d)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a Refinement mode from a python dictionary.</p>
+<p>The dictionary should have two keys for model and levels.
+{'levels': '((1000000000000000.0 4) )', 'mode': 'inside'}</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.refinementModeFromDict', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.refinementRegion.refinementModeFromDict" class="source">
+    <pre><code>def refinementModeFromDict(d):
+    """Create a Refinement mode from a python dictionary.
+
+    The dictionary should have two keys for model and levels.
+    {'levels': '((1000000000000000.0 4) )', 'mode': 'inside'}
+    """
+    mode = d['mode']
+
+    levels = str(d['levels']).replace(', ', ' ').replace('( (', '((') \
+        .replace(') )', '))')[1:-1].split()
+
+    levels = eval(','.join(levels))
+
+    if mode == 'inside':
+        return Inside(levels[-1])
+    elif mode == 'outside':
+        return Outside(levels[-1])
+    elif mode == 'distance':
+        return Distance(levels)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="butterfly.refinementRegion.refinementRegionsFromStlFile">
+    <p>def <span class="ident">refinementRegionsFromStlFile</span>(</p><p>filepath, refinementMode)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a RefinementRegion form an stl file.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.refinementRegionsFromStlFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.refinementRegion.refinementRegionsFromStlFile" class="source">
+    <pre><code>def refinementRegionsFromStlFile(filepath, refinementMode):
+    """Create a RefinementRegion form an stl file."""
+    geos = bfGeometryFromStlFile(filepath)
+    return tuple(RefinementRegion(geo.name, geo.vertices, geo.faceIndices,
+                                  geo.normals, refinementMode)
+                 for geo in geos)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
 
     <h2 class="section-title" id="header-classes">Classes</h2>
       
@@ -1766,6 +1872,26 @@ class Outside(Inside):
 
             </div>
             <div class="item">
+            <p id="butterfly.refinementRegion.RefinementRegion.max" class="name">var <span class="ident">max</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.refinementRegion.RefinementRegion.min" class="name">var <span class="ident">min</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.refinementRegion.RefinementRegion.name" class="name">var <span class="ident">name</span></p>
             
 
@@ -1878,8 +2004,8 @@ class Outside(Inside):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.refinementRegion.RefinementRegion.toStlString">
-    <p>def <span class="ident">toStlString</span>(</p><p>self)</p>
+    <div class="name def" id="butterfly.refinementRegion.RefinementRegion.toSTL">
+    <p>def <span class="ident">toSTL</span>(</p><p>self)</p>
     </div>
     
 
@@ -1887,9 +2013,9 @@ class Outside(Inside):
   
     <div class="desc"><p>Get STL definition for this geometry as a string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.RefinementRegion.toStlString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.refinementRegion.RefinementRegion.toStlString" class="source">
-    <pre><code>def toStlString(self):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.refinementRegion.RefinementRegion.toSTL', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.refinementRegion.RefinementRegion.toSTL" class="source">
+    <pre><code>def toSTL(self):
     """Get STL definition for this geometry as a string."""
     _hea = "solid {}".format(self.name)
     _tale = "endsolid {}".format(self.name)
@@ -1914,7 +2040,7 @@ class Outside(Inside):
         self.__vertices[faceInd[2]][1],
         self.__vertices[faceInd[2]][2]
     ) for count, faceInd in enumerate(self.__faceIndices))
-    return "{}\n{}\n{}".format(
+    return "{}\n{}\n{}\n".format(
         _hea, "\n".join(_bodyCollector), _tale
     )
 </code></pre>
@@ -1939,7 +2065,7 @@ class Outside(Inside):
     <pre><code>def writeToStl(self, folder):
     """Save BFFace to a stl file. File name will be self.name."""
     with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-        outf.write(self.toStlString())
+        outf.write(self.toSTL())
 </code></pre>
   </div>
 </div>

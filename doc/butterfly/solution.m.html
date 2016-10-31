@@ -996,20 +996,27 @@ table {
     <li class="mono"><a href="#butterfly.solution.Solution.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.solution.Solution.loadProbeValues">loadProbeValues</a></li>
+    <li class="mono"><a href="#butterfly.solution.Solution.purge">purge</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.run">run</a></li>
+    <li class="mono"><a href="#butterfly.solution.Solution.skippedProbes">skippedProbes</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.terminate">terminate</a></li>
+    <li class="mono"><a href="#butterfly.solution.Solution.updateFromRecipe">updateFromRecipe</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.updateSolutionParams">updateSolutionParams</a></li>
   </ul>
 
         </li>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly.solution.SolutionParameters">SolutionParameters</a></span>
+        <span class="class_name"><a href="#butterfly.solution.SolutionParameter">SolutionParameter</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly.solution.SolutionParameters.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly.solution.SolutionParameters.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.solution.SolutionParameters.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.solution.SolutionParameter.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.solution.SolutionParameter.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.solution.SolutionParameter.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.solution.SolutionParameter.fromCppDictionary">fromCppDictionary</a></li>
+    <li class="mono"><a href="#butterfly.solution.SolutionParameter.fromDictionaryFile">fromDictionaryFile</a></li>
+    <li class="mono"><a href="#butterfly.solution.SolutionParameter.isTimeInRange">isTimeInRange</a></li>
   </ul>
 
         </li>
@@ -1032,9 +1039,14 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.solution" class="source">
-    <pre><code>"""Butterfly Solution."""
+    <pre><code># coding=utf-8
+"""Butterfly Solution."""
 from copy import deepcopy
-from .helper import checkFiles
+from collections import namedtuple, OrderedDict
+import os
+
+from .utilities import tail, loadSkippedProbes
+from .parser import CppDictParser
 
 
 class Solution(object):
@@ -1043,13 +1055,31 @@ class Solution(object):
     This class creates a solution from a recipe which is ready to run and monitor.
 
     Args:
+        case: A butterfly case.
         recipe: A butterfly recipe.
+        decomposeParDict: decomposeParDict for parallel run (default: None).
+        solutionParameter: A solutionParameter (default: None).
+        removeExtraFoamFiles: set to True if you want butterfly to remove all the
+            extra files in 0 folder once you update the recipe (default: False).
     """
 
-    def __init__(self, recipe, decomposeParDict=None):
+    def __init__(self, case, recipe, decomposeParDict=None, solutionParameter=None,
+                 removeExtraFoamFiles=False):
         """Init solution."""
-        self.__recipe = recipe
-        self.__decomposeParDict = decomposeParDict
+        self.__remove = removeExtraFoamFiles
+        assert hasattr(case, 'isCase'), \
+            'ValueError:: {} is not a Butterfly.Case'.format(case)
+        self.decomposeParDict = decomposeParDict
+
+        self.__case = case
+        self.case.decomposeParDict = self.decomposeParDict
+
+        self.recipe = recipe
+        self.updateSolutionParams(solutionParameter)
+        # set internal properties for running the solution
+
+        # place holder for residuals
+        self.__residualValues = OrderedDict.fromkeys(self.residualFields, 0)
         self.__isRunStarted = False
         self.__isRunFinished = False
         self.__process = None
@@ -1059,37 +1089,73 @@ class Solution(object):
     @property
     def projectName(self):
         """Get porject name."""
-        return self.recipe.case.projectName
+        return self.case.projectName
+
+    @property
+    def case(self):
+        """Case."""
+        return self.__case
 
     @property
     def recipe(self):
         """Get recipe."""
         return self.__recipe
 
+    @recipe.setter
+    def recipe(self, r):
+        """set recipe."""
+        assert hasattr(r, 'isRecipe'), '{} is not a recipe.'.format(r)
+        self.__recipe = r
+        self.__recipe.prepareCase(self.case, overwrite=True,
+                                  remove=self.__remove)
+
+    @property
+    def decomposeParDict(self):
+        """DecomposeParDict."""
+        return self.__decomposeParDict
+
+    @decomposeParDict.setter
+    def decomposeParDict(self, dpd):
+        """Set decomposeParDict."""
+        if dpd:
+            assert hasattr(dpd, 'isDecomposeParDict'), \
+                '{} is not a DecomposeParDict.'.format(dpd)
+        self.__decomposeParDict = dpd
+
+    @property
+    def removeExtraFoamFiles(self):
+        """If True, solution will remove extra files everytime recipe changes."""
+        return self.__remove
+
     @property
     def projectDir(self):
         """Get project directory."""
-        return self.recipe.case.projectDir
+        return self.case.projectDir
+
+    @property
+    def residualFields(self):
+        """Get list of residuals to be watched during the run."""
+        return self.recipe.residualFields
 
     @property
     def controlDict(self):
         """Get controlDict."""
-        return self.__recipe.case.controlDict
+        return self.__case.controlDict
 
     @property
     def residualControl(self):
         """Get residualControl values for this solution."""
-        return self.__recipe.case.fvSolution.residualControl
+        return self.__case.fvSolution.residualControl
 
     @property
     def probes(self):
         """Get probes if any."""
-        return self.__recipe.case.probes
+        return self.__case.probes
 
     @property
     def residualFile(self):
         """Return address of the residual file."""
-        return self.__recipe.residualFile
+        return os.path.join(self.case.logFolder, self.recipe.logFile)
 
     @property
     def logFiles(self):
@@ -1099,7 +1165,7 @@ class Solution(object):
     @property
     def log(self):
         """Get the log report."""
-        isContent, content = checkFiles(self.logFiles)
+        isContent, content = self.case.runmanager.checkFileContents(self.logFiles)
 
     @property
     def errFiles(self):
@@ -1115,61 +1181,157 @@ class Solution(object):
             return True
         else:
             self.__isRunFinished = True
-            self.recipe.case.renameSnappyHexMeshFolders()
+            self.case.renameSnappyHexMeshFolders()
             # load errors if any
-            checkFiles(self.logFiles)
-            failed, err = checkFiles(self.errFiles)
+            self.case.runmanager.checkFileContents(self.logFiles)
+            failed, err = self.case.runmanager.checkFileContents(self.errFiles)
 
             assert not failed, err
 
-    def updateSolutionParams(self, simParams):
-        """Update parameters."""
-        if not simParams:
+    @property
+    def timestep(self):
+        """Get latest timestep for this solution."""
+        return self.__getLatestTime()
+
+    @property
+    def residualValues(self, latestTime=True):
+        """Get timestep and residual values as a tuple."""
+        if latestTime:
+            return self.__getInfo().residualValues
+        else:
+            raise NotImplementedError()
+
+    @property
+    def info(self):
+        """Get timestep and residual values as a tuple."""
+        return self.__getInfo()
+
+    def __getInfo(self):
+        i = namedtuple('Info', 'timestep residualValues')
+        # get end of the log file
+        if not os.path.isfile(self.residualFile):
+            return i(0, self.__residualValues.values())
+
+        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        # get timestep
+        try:
+            t = int(text[0])
+        except:
+            t = 0
+
+        # read residual values
+        for line in text:
+            try:
+                # quantity, Initial residual, Final residual, No Iterations
+                q, ir, fr, ni = line.split(':  Solving for ')[1].split(',')
+                # use final residual
+                if q in self.__residualValues:
+                    self.__residualValues[q] = ir.split('= ')[-1]
+            except IndexError:
+                pass
+
+        return i(t, self.__residualValues.values())
+
+    def __getLatestTime(self):
+        # get end of the log file
+        if not os.path.isfile(self.residualFile):
+            return 0
+        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        # get timestep
+        try:
+            t = int(text[0])
+        except:
+            t = 0
+        return t
+
+    def updateFromRecipe(self, recipe):
+        """Update solution from recipe inputs.
+
+        This method creates a SolutionParameter from each recipe property, and
+        uses updateSolutionParams to update the solution.
+        """
+        tp = SolutionParameter.fromCppDictionary('turbulenceProperties',
+                                                 str(recipe.turbulenceProperties))
+        fvSc = SolutionParameter.fromCppDictionary('fvSchemes',
+                                                   str(recipe.fvSchemes))
+        fvSol = SolutionParameter.fromCppDictionary('fvSolution',
+                                                    str(recipe.fvSolution))
+
+        self.updateSolutionParams((tp, fvSc, fvSol))
+
+    def updateSolutionParams(self, solParams, timestep=None):
+        """Update parameters.
+
+        Attributes:
+            solParams: A list of solution parameters.
+        """
+        if not solParams:
             # if input is None return
             return
         # check input with the current and update them if there has been changes
-        if simParams.controlDict and self.controlDict != simParams.controlDict:
-            print 'Updating controlDict...'
-            self.__recipe.case.controlDict.startTime = \
-                simParams.controlDict.startTime
-            self.__recipe.case.controlDict.endTime = \
-                simParams.controlDict.endTime
-            self.__recipe.case.controlDict.writeInterval = \
-                simParams.controlDict.writeInterval
-            self.__recipe.case.controlDict.writeCompression = \
-                simParams.controlDict.writeCompression
+        for solPar in solParams:
+            assert hasattr(solPar, 'isSolutionParameter'), \
+                '{} is not a solution parameter.'.format(solPar)
 
-            self.controlDict.save(self.projectDir)
+            # check if this timestep in range of SolutionParameter time range
+            if timestep is not None and not solPar.isTimeInRange(timestep):
+                # not in time range! try the next one
+                continue
 
-        if simParams.residualControl and \
-                self.residualControl != simParams.residualControl:
-                print 'Updating residualControl...'
-                self.__recipe.case.fvSolution.residualControl = \
-                    simParams.residualControl
-                self.__recipe.case.fvSolution.save(self.projectDir)
+            try:
+                update = getattr(self.__case, solPar.filename) \
+                    .updateValues(solPar.values, solPar.replace)
+            except AttributeError as e:
+                # probes can be empty at start
+                raise AttributeError(e)
 
-        if simParams.probes and self.probes != simParams.probes:
-            print 'Updating probes...'
-            self.__recipe.case.probes = simParams.probes
-            self.probes.save(self.projectDir)
-            # just in case probes was not there and now should be included
-            # in controlDict
-            self.controlDict.save(self.projectDir)
+            if update:
+                print 'Updating {}...'.format(solPar.filename)
+                ffile = getattr(self.__case, solPar.filename)
+                ffile.save(self.projectDir)
+
+                # just in case probes was not there and now should be included
+                # in controlDict
+                if solPar.filename == 'probes':
+                    if not self.controlDict.include:
+                        self.controlDict.include = solPar.filename
+                        self.controlDict.save(self.projectDir)
 
     def run(self):
         """Execute the solution."""
-        self.recipe.case.renameSnappyHexMeshFolders()
-        log = self.recipe.run(decomposeParDict=self.__decomposeParDict,
-                              wait=False)
+        self.case.renameSnappyHexMeshFolders()
+        log = self.case.command(
+            cmd=self.recipe.application,
+            args=None,
+            decomposeParDict=self.__decomposeParDict,
+            run=True, wait=False)
         self.__process = log.process
         self.__errFiles = log.errorfiles
         self.__logFiles = log.logfiles
         self.__isRunStarted = True
         self.__isRunFinished = False
 
+    def purge(self, removePolyMeshContent=True,
+              removeSnappyHexMeshFolders=True,
+              removeResultFolders=False,
+              removePostProcessingFolder=False):
+        """Purge solution's case folder."""
+        self.case.purge(
+            removePolyMeshContent, removeSnappyHexMeshFolders,
+            removeResultFolders, removePostProcessingFolder)
+
     def terminate(self):
         """Cancel the solution."""
-        self.__process.terminate()
+        self.case.runmanager.terminate()
+
+    def loadProbeValues(self, field):
+        """Return OpenFOAM probes results for a given field (e.g. U)."""
+        return self.case.loadProbeValues(field)
+
+    def skippedProbes(self):
+        """Get list of probes that are skipped from the solution."""
+        return loadSkippedProbes(os.path.join(self.case.logFolder,
+                                              self.recipe.logFile))
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1181,23 +1343,98 @@ class Solution(object):
 
     def __repr__(self):
         """Solution representation."""
-        return "{}::{}".format(self.recipe.case.projectName, self.recipe)
+        return "{}::{}".format(self.projectName, self.recipe)
 
 
-class SolutionParameters(object):
-    """A collection of parameters that can be adjusted in run-time.
+class SolutionParameter(object):
+    """A solution parameter that can be changed during the solution.
+
+    Add solution parameter to to solution settings.
 
     Attributes:
-        controlDict: Control ditctionary.
-        residualControl: Residual control values.
-        probes: Butterfly probes.
+        filename: OpenFOAM filename that the values are belong to (e.g.
+            blockMeshDict, fvSchemes).
+        values: New values as a python dictionary.
+        replace: Set to True if you want the original dictionary to be replaced
+            by new values. Default is False which means the original dictionary
+            will be only updated by new values.
+        timeRange: Time range that this SolutioParameter is valid as a tuple
+            (default: (0, 1.0e+100)).
     """
 
-    def __init__(self, controlDict, residualControl, probes):
-        """Initiate class."""
-        self.controlDict = controlDict
-        self.residualControl = residualControl
-        self.probes = probes
+    _OFFilenames = ('epsilon', 'k', 'nut', 'p', 'U', 'T', 'turbulenceProperties',
+                    'transportProperties', 'blockMeshDict', 'controlDict',
+                    'fvSchemes', 'fvSolution', 'snappyHexMeshDict', 'probes')
+
+    def __init__(self, OFFilename, values, replace=False, timeRange=None):
+        """Create solution parameter."""
+        self.filename = OFFilename
+        self.values = values
+        self.replace = replace
+
+        try:
+            self.__t0 = int(timeRange[0])
+            self.__t1 = int(timeRange[1])
+        except:
+            self.__t0, self.__t1 = 0, 1.0e+100
+
+    @classmethod
+    def fromDictionaryFile(cls, OFFilename, filepath, replace=False,
+                           timeRange=None):
+        """Create from an OpenFOAM dictionary file."""
+        # convert values to python dictionary
+        values = CppDictParser.fromFile(filepath).values
+        return cls(OFFilename, values, replace, timeRange)
+
+    @classmethod
+    def fromCppDictionary(cls, OFFilename, dictionary, replace=False,
+                          timeRange=None, header=False):
+        """Create from an OpenFOAM dictionary in text format."""
+        # convert values to python dictionary
+        values = CppDictParser(text=dictionary).values
+
+        if not header and 'FoamFile' in values:
+            del(values['FoamFile'])
+
+        return cls(OFFilename, values, replace, timeRange)
+
+    @property
+    def isSolutionParameter(self):
+        """Return True."""
+        return True
+
+    @property
+    def values(self):
+        """Return OpenFOAM file name."""
+        return self.__values
+
+    @values.setter
+    def values(self, v):
+        assert isinstance(v, dict), 'values should be a dictionary not a {}.' \
+            .format(type(v))
+        self.__values = v
+
+    @property
+    def filename(self):
+        """Return OpenFOAM file name."""
+        return self.__filename
+
+    @filename.setter
+    def filename(self, f):
+        assert f in self._OFFilenames, '{} is not a valid OpenFOAM dictionary ' \
+            'file. Try one of the files below:\n{}.' \
+            .format(f, '\n'.join(self._OFFilenames))
+
+        self.__filename = f
+
+    @property
+    def timeRange(self):
+        """Get time range."""
+        return (self.__t0, self.__t1)
+
+    def isTimeInRange(self, time):
+        """Check if time is in this SolutionParameter time range."""
+        return self.__t0 <= float(time) < self.__t1
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1209,7 +1446,9 @@ class SolutionParameters(object):
 
     def __repr__(self):
         """Class representation."""
-        return self.__class__.__name__
+        return 'SolutionParameter::{}@{}'\
+            .format('.'.join([self.filename] + self.values.keys()),
+                    self.timeRange)
 </code></pre>
   </div>
 
@@ -1227,7 +1466,12 @@ class SolutionParameters(object):
     <div class="desc"><p>Butterfly Solution.</p>
 <p>This class creates a solution from a recipe which is ready to run and monitor.</p>
 <p>Args:
-    recipe: A butterfly recipe.</p></div>
+    case: A butterfly case.
+    recipe: A butterfly recipe.
+    decomposeParDict: decomposeParDict for parallel run (default: None).
+    solutionParameter: A solutionParameter (default: None).
+    removeExtraFoamFiles: set to True if you want butterfly to remove all the
+        extra files in 0 folder once you update the recipe (default: False).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.solution.Solution" class="source">
@@ -1237,13 +1481,31 @@ class SolutionParameters(object):
     This class creates a solution from a recipe which is ready to run and monitor.
 
     Args:
+        case: A butterfly case.
         recipe: A butterfly recipe.
+        decomposeParDict: decomposeParDict for parallel run (default: None).
+        solutionParameter: A solutionParameter (default: None).
+        removeExtraFoamFiles: set to True if you want butterfly to remove all the
+            extra files in 0 folder once you update the recipe (default: False).
     """
 
-    def __init__(self, recipe, decomposeParDict=None):
+    def __init__(self, case, recipe, decomposeParDict=None, solutionParameter=None,
+                 removeExtraFoamFiles=False):
         """Init solution."""
-        self.__recipe = recipe
-        self.__decomposeParDict = decomposeParDict
+        self.__remove = removeExtraFoamFiles
+        assert hasattr(case, 'isCase'), \
+            'ValueError:: {} is not a Butterfly.Case'.format(case)
+        self.decomposeParDict = decomposeParDict
+
+        self.__case = case
+        self.case.decomposeParDict = self.decomposeParDict
+
+        self.recipe = recipe
+        self.updateSolutionParams(solutionParameter)
+        # set internal properties for running the solution
+
+        # place holder for residuals
+        self.__residualValues = OrderedDict.fromkeys(self.residualFields, 0)
         self.__isRunStarted = False
         self.__isRunFinished = False
         self.__process = None
@@ -1253,37 +1515,73 @@ class SolutionParameters(object):
     @property
     def projectName(self):
         """Get porject name."""
-        return self.recipe.case.projectName
+        return self.case.projectName
+
+    @property
+    def case(self):
+        """Case."""
+        return self.__case
 
     @property
     def recipe(self):
         """Get recipe."""
         return self.__recipe
 
+    @recipe.setter
+    def recipe(self, r):
+        """set recipe."""
+        assert hasattr(r, 'isRecipe'), '{} is not a recipe.'.format(r)
+        self.__recipe = r
+        self.__recipe.prepareCase(self.case, overwrite=True,
+                                  remove=self.__remove)
+
+    @property
+    def decomposeParDict(self):
+        """DecomposeParDict."""
+        return self.__decomposeParDict
+
+    @decomposeParDict.setter
+    def decomposeParDict(self, dpd):
+        """Set decomposeParDict."""
+        if dpd:
+            assert hasattr(dpd, 'isDecomposeParDict'), \
+                '{} is not a DecomposeParDict.'.format(dpd)
+        self.__decomposeParDict = dpd
+
+    @property
+    def removeExtraFoamFiles(self):
+        """If True, solution will remove extra files everytime recipe changes."""
+        return self.__remove
+
     @property
     def projectDir(self):
         """Get project directory."""
-        return self.recipe.case.projectDir
+        return self.case.projectDir
+
+    @property
+    def residualFields(self):
+        """Get list of residuals to be watched during the run."""
+        return self.recipe.residualFields
 
     @property
     def controlDict(self):
         """Get controlDict."""
-        return self.__recipe.case.controlDict
+        return self.__case.controlDict
 
     @property
     def residualControl(self):
         """Get residualControl values for this solution."""
-        return self.__recipe.case.fvSolution.residualControl
+        return self.__case.fvSolution.residualControl
 
     @property
     def probes(self):
         """Get probes if any."""
-        return self.__recipe.case.probes
+        return self.__case.probes
 
     @property
     def residualFile(self):
         """Return address of the residual file."""
-        return self.__recipe.residualFile
+        return os.path.join(self.case.logFolder, self.recipe.logFile)
 
     @property
     def logFiles(self):
@@ -1293,7 +1591,7 @@ class SolutionParameters(object):
     @property
     def log(self):
         """Get the log report."""
-        isContent, content = checkFiles(self.logFiles)
+        isContent, content = self.case.runmanager.checkFileContents(self.logFiles)
 
     @property
     def errFiles(self):
@@ -1309,61 +1607,157 @@ class SolutionParameters(object):
             return True
         else:
             self.__isRunFinished = True
-            self.recipe.case.renameSnappyHexMeshFolders()
+            self.case.renameSnappyHexMeshFolders()
             # load errors if any
-            checkFiles(self.logFiles)
-            failed, err = checkFiles(self.errFiles)
+            self.case.runmanager.checkFileContents(self.logFiles)
+            failed, err = self.case.runmanager.checkFileContents(self.errFiles)
 
             assert not failed, err
 
-    def updateSolutionParams(self, simParams):
-        """Update parameters."""
-        if not simParams:
+    @property
+    def timestep(self):
+        """Get latest timestep for this solution."""
+        return self.__getLatestTime()
+
+    @property
+    def residualValues(self, latestTime=True):
+        """Get timestep and residual values as a tuple."""
+        if latestTime:
+            return self.__getInfo().residualValues
+        else:
+            raise NotImplementedError()
+
+    @property
+    def info(self):
+        """Get timestep and residual values as a tuple."""
+        return self.__getInfo()
+
+    def __getInfo(self):
+        i = namedtuple('Info', 'timestep residualValues')
+        # get end of the log file
+        if not os.path.isfile(self.residualFile):
+            return i(0, self.__residualValues.values())
+
+        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        # get timestep
+        try:
+            t = int(text[0])
+        except:
+            t = 0
+
+        # read residual values
+        for line in text:
+            try:
+                # quantity, Initial residual, Final residual, No Iterations
+                q, ir, fr, ni = line.split(':  Solving for ')[1].split(',')
+                # use final residual
+                if q in self.__residualValues:
+                    self.__residualValues[q] = ir.split('= ')[-1]
+            except IndexError:
+                pass
+
+        return i(t, self.__residualValues.values())
+
+    def __getLatestTime(self):
+        # get end of the log file
+        if not os.path.isfile(self.residualFile):
+            return 0
+        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        # get timestep
+        try:
+            t = int(text[0])
+        except:
+            t = 0
+        return t
+
+    def updateFromRecipe(self, recipe):
+        """Update solution from recipe inputs.
+
+        This method creates a SolutionParameter from each recipe property, and
+        uses updateSolutionParams to update the solution.
+        """
+        tp = SolutionParameter.fromCppDictionary('turbulenceProperties',
+                                                 str(recipe.turbulenceProperties))
+        fvSc = SolutionParameter.fromCppDictionary('fvSchemes',
+                                                   str(recipe.fvSchemes))
+        fvSol = SolutionParameter.fromCppDictionary('fvSolution',
+                                                    str(recipe.fvSolution))
+
+        self.updateSolutionParams((tp, fvSc, fvSol))
+
+    def updateSolutionParams(self, solParams, timestep=None):
+        """Update parameters.
+
+        Attributes:
+            solParams: A list of solution parameters.
+        """
+        if not solParams:
             # if input is None return
             return
         # check input with the current and update them if there has been changes
-        if simParams.controlDict and self.controlDict != simParams.controlDict:
-            print 'Updating controlDict...'
-            self.__recipe.case.controlDict.startTime = \
-                simParams.controlDict.startTime
-            self.__recipe.case.controlDict.endTime = \
-                simParams.controlDict.endTime
-            self.__recipe.case.controlDict.writeInterval = \
-                simParams.controlDict.writeInterval
-            self.__recipe.case.controlDict.writeCompression = \
-                simParams.controlDict.writeCompression
+        for solPar in solParams:
+            assert hasattr(solPar, 'isSolutionParameter'), \
+                '{} is not a solution parameter.'.format(solPar)
 
-            self.controlDict.save(self.projectDir)
+            # check if this timestep in range of SolutionParameter time range
+            if timestep is not None and not solPar.isTimeInRange(timestep):
+                # not in time range! try the next one
+                continue
 
-        if simParams.residualControl and \
-                self.residualControl != simParams.residualControl:
-                print 'Updating residualControl...'
-                self.__recipe.case.fvSolution.residualControl = \
-                    simParams.residualControl
-                self.__recipe.case.fvSolution.save(self.projectDir)
+            try:
+                update = getattr(self.__case, solPar.filename) \
+                    .updateValues(solPar.values, solPar.replace)
+            except AttributeError as e:
+                # probes can be empty at start
+                raise AttributeError(e)
 
-        if simParams.probes and self.probes != simParams.probes:
-            print 'Updating probes...'
-            self.__recipe.case.probes = simParams.probes
-            self.probes.save(self.projectDir)
-            # just in case probes was not there and now should be included
-            # in controlDict
-            self.controlDict.save(self.projectDir)
+            if update:
+                print 'Updating {}...'.format(solPar.filename)
+                ffile = getattr(self.__case, solPar.filename)
+                ffile.save(self.projectDir)
+
+                # just in case probes was not there and now should be included
+                # in controlDict
+                if solPar.filename == 'probes':
+                    if not self.controlDict.include:
+                        self.controlDict.include = solPar.filename
+                        self.controlDict.save(self.projectDir)
 
     def run(self):
         """Execute the solution."""
-        self.recipe.case.renameSnappyHexMeshFolders()
-        log = self.recipe.run(decomposeParDict=self.__decomposeParDict,
-                              wait=False)
+        self.case.renameSnappyHexMeshFolders()
+        log = self.case.command(
+            cmd=self.recipe.application,
+            args=None,
+            decomposeParDict=self.__decomposeParDict,
+            run=True, wait=False)
         self.__process = log.process
         self.__errFiles = log.errorfiles
         self.__logFiles = log.logfiles
         self.__isRunStarted = True
         self.__isRunFinished = False
 
+    def purge(self, removePolyMeshContent=True,
+              removeSnappyHexMeshFolders=True,
+              removeResultFolders=False,
+              removePostProcessingFolder=False):
+        """Purge solution's case folder."""
+        self.case.purge(
+            removePolyMeshContent, removeSnappyHexMeshFolders,
+            removeResultFolders, removePostProcessingFolder)
+
     def terminate(self):
         """Cancel the solution."""
-        self.__process.terminate()
+        self.case.runmanager.terminate()
+
+    def loadProbeValues(self, field):
+        """Return OpenFOAM probes results for a given field (e.g. U)."""
+        return self.case.loadProbeValues(field)
+
+    def skippedProbes(self):
+        """Get list of probes that are skipped from the solution."""
+        return loadSkippedProbes(os.path.join(self.case.logFolder,
+                                              self.recipe.logFile))
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1375,7 +1769,7 @@ class SolutionParameters(object):
 
     def __repr__(self):
         """Solution representation."""
-        return "{}::{}".format(self.recipe.case.projectName, self.recipe)
+        return "{}::{}".format(self.projectName, self.recipe)
 </code></pre>
   </div>
 </div>
@@ -1389,6 +1783,17 @@ class SolutionParameters(object):
           </ul>
           <h3>Instance variables</h3>
             <div class="item">
+            <p id="butterfly.solution.Solution.case" class="name">var <span class="ident">case</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Case.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.solution.Solution.controlDict" class="name">var <span class="ident">controlDict</span></p>
             
 
@@ -1400,12 +1805,33 @@ class SolutionParameters(object):
 
             </div>
             <div class="item">
+            <p id="butterfly.solution.Solution.decomposeParDict" class="name">var <span class="ident">decomposeParDict</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.solution.Solution.errFiles" class="name">var <span class="ident">errFiles</span></p>
             
 
             
   
     <div class="desc"><p>Get full path to error files.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.solution.Solution.info" class="name">var <span class="ident">info</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get timestep and residual values as a tuple.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1482,7 +1908,17 @@ class SolutionParameters(object):
 
             
   
-    <div class="desc"><p>Get recipe.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.solution.Solution.removeExtraFoamFiles" class="name">var <span class="ident">removeExtraFoamFiles</span></p>
+            
+
+            
+  
+    <div class="desc"><p>If True, solution will remove extra files everytime recipe changes.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1499,6 +1935,17 @@ class SolutionParameters(object):
 
             </div>
             <div class="item">
+            <p id="butterfly.solution.Solution.residualFields" class="name">var <span class="ident">residualFields</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get list of residuals to be watched during the run.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.solution.Solution.residualFile" class="name">var <span class="ident">residualFile</span></p>
             
 
@@ -1509,11 +1956,33 @@ class SolutionParameters(object):
 </div>
 
             </div>
+            <div class="item">
+            <p id="butterfly.solution.Solution.residualValues" class="name">var <span class="ident">residualValues</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get timestep and residual values as a tuple.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.solution.Solution.timestep" class="name">var <span class="ident">timestep</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get latest timestep for this solution.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.solution.Solution.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, recipe, decomposeParDict=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, case, recipe, decomposeParDict=None, solutionParameter=None, removeExtraFoamFiles=False)</p>
     </div>
     
 
@@ -1523,10 +1992,20 @@ class SolutionParameters(object):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.solution.Solution.__init__" class="source">
-    <pre><code>def __init__(self, recipe, decomposeParDict=None):
+    <pre><code>def __init__(self, case, recipe, decomposeParDict=None, solutionParameter=None,
+             removeExtraFoamFiles=False):
     """Init solution."""
-    self.__recipe = recipe
-    self.__decomposeParDict = decomposeParDict
+    self.__remove = removeExtraFoamFiles
+    assert hasattr(case, 'isCase'), \
+        'ValueError:: {} is not a Butterfly.Case'.format(case)
+    self.decomposeParDict = decomposeParDict
+    self.__case = case
+    self.case.decomposeParDict = self.decomposeParDict
+    self.recipe = recipe
+    self.updateSolutionParams(solutionParameter)
+    # set internal properties for running the solution
+    # place holder for residuals
+    self.__residualValues = OrderedDict.fromkeys(self.residualFields, 0)
     self.__isRunStarted = False
     self.__isRunFinished = False
     self.__process = None
@@ -1584,6 +2063,55 @@ class SolutionParameters(object):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.solution.Solution.loadProbeValues">
+    <p>def <span class="ident">loadProbeValues</span>(</p><p>self, field)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return OpenFOAM probes results for a given field (e.g. U).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.loadProbeValues', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.Solution.loadProbeValues" class="source">
+    <pre><code>def loadProbeValues(self, field):
+    """Return OpenFOAM probes results for a given field (e.g. U)."""
+    return self.case.loadProbeValues(field)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.Solution.purge">
+    <p>def <span class="ident">purge</span>(</p><p>self, removePolyMeshContent=True, removeSnappyHexMeshFolders=True, removeResultFolders=False, removePostProcessingFolder=False)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Purge solution's case folder.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.purge', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.Solution.purge" class="source">
+    <pre><code>def purge(self, removePolyMeshContent=True,
+          removeSnappyHexMeshFolders=True,
+          removeResultFolders=False,
+          removePostProcessingFolder=False):
+    """Purge solution's case folder."""
+    self.case.purge(
+        removePolyMeshContent, removeSnappyHexMeshFolders,
+        removeResultFolders, removePostProcessingFolder)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.solution.Solution.run">
     <p>def <span class="ident">run</span>(</p><p>self)</p>
     </div>
@@ -1597,14 +2125,40 @@ class SolutionParameters(object):
   <div id="source-butterfly.solution.Solution.run" class="source">
     <pre><code>def run(self):
     """Execute the solution."""
-    self.recipe.case.renameSnappyHexMeshFolders()
-    log = self.recipe.run(decomposeParDict=self.__decomposeParDict,
-                          wait=False)
+    self.case.renameSnappyHexMeshFolders()
+    log = self.case.command(
+        cmd=self.recipe.application,
+        args=None,
+        decomposeParDict=self.__decomposeParDict,
+        run=True, wait=False)
     self.__process = log.process
     self.__errFiles = log.errorfiles
     self.__logFiles = log.logfiles
     self.__isRunStarted = True
     self.__isRunFinished = False
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.Solution.skippedProbes">
+    <p>def <span class="ident">skippedProbes</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Get list of probes that are skipped from the solution.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.skippedProbes', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.Solution.skippedProbes" class="source">
+    <pre><code>def skippedProbes(self):
+    """Get list of probes that are skipped from the solution."""
+    return loadSkippedProbes(os.path.join(self.case.logFolder,
+                                          self.recipe.logFile))
 </code></pre>
   </div>
 </div>
@@ -1626,7 +2180,40 @@ class SolutionParameters(object):
   <div id="source-butterfly.solution.Solution.terminate" class="source">
     <pre><code>def terminate(self):
     """Cancel the solution."""
-    self.__process.terminate()
+    self.case.runmanager.terminate()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.Solution.updateFromRecipe">
+    <p>def <span class="ident">updateFromRecipe</span>(</p><p>self, recipe)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Update solution from recipe inputs.</p>
+<p>This method creates a SolutionParameter from each recipe property, and
+uses updateSolutionParams to update the solution.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.updateFromRecipe', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.Solution.updateFromRecipe" class="source">
+    <pre><code>def updateFromRecipe(self, recipe):
+    """Update solution from recipe inputs.
+    This method creates a SolutionParameter from each recipe property, and
+    uses updateSolutionParams to update the solution.
+    """
+    tp = SolutionParameter.fromCppDictionary('turbulenceProperties',
+                                             str(recipe.turbulenceProperties))
+    fvSc = SolutionParameter.fromCppDictionary('fvSchemes',
+                                               str(recipe.fvSchemes))
+    fvSol = SolutionParameter.fromCppDictionary('fvSolution',
+                                                str(recipe.fvSolution))
+    self.updateSolutionParams((tp, fvSc, fvSol))
 </code></pre>
   </div>
 </div>
@@ -1636,46 +2223,50 @@ class SolutionParameters(object):
             
   <div class="item">
     <div class="name def" id="butterfly.solution.Solution.updateSolutionParams">
-    <p>def <span class="ident">updateSolutionParams</span>(</p><p>self, simParams)</p>
+    <p>def <span class="ident">updateSolutionParams</span>(</p><p>self, solParams, timestep=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Update parameters.</p></div>
+    <div class="desc"><p>Update parameters.</p>
+<p>Attributes:
+    solParams: A list of solution parameters.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.updateSolutionParams', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.solution.Solution.updateSolutionParams" class="source">
-    <pre><code>def updateSolutionParams(self, simParams):
-    """Update parameters."""
-    if not simParams:
+    <pre><code>def updateSolutionParams(self, solParams, timestep=None):
+    """Update parameters.
+    Attributes:
+        solParams: A list of solution parameters.
+    """
+    if not solParams:
         # if input is None return
         return
     # check input with the current and update them if there has been changes
-    if simParams.controlDict and self.controlDict != simParams.controlDict:
-        print 'Updating controlDict...'
-        self.__recipe.case.controlDict.startTime = \
-            simParams.controlDict.startTime
-        self.__recipe.case.controlDict.endTime = \
-            simParams.controlDict.endTime
-        self.__recipe.case.controlDict.writeInterval = \
-            simParams.controlDict.writeInterval
-        self.__recipe.case.controlDict.writeCompression = \
-            simParams.controlDict.writeCompression
-        self.controlDict.save(self.projectDir)
-    if simParams.residualControl and \
-            self.residualControl != simParams.residualControl:
-            print 'Updating residualControl...'
-            self.__recipe.case.fvSolution.residualControl = \
-                simParams.residualControl
-            self.__recipe.case.fvSolution.save(self.projectDir)
-    if simParams.probes and self.probes != simParams.probes:
-        print 'Updating probes...'
-        self.__recipe.case.probes = simParams.probes
-        self.probes.save(self.projectDir)
-        # just in case probes was not there and now should be included
-        # in controlDict
-        self.controlDict.save(self.projectDir)
+    for solPar in solParams:
+        assert hasattr(solPar, 'isSolutionParameter'), \
+            '{} is not a solution parameter.'.format(solPar)
+        # check if this timestep in range of SolutionParameter time range
+        if timestep is not None and not solPar.isTimeInRange(timestep):
+            # not in time range! try the next one
+            continue
+        try:
+            update = getattr(self.__case, solPar.filename) \
+                .updateValues(solPar.values, solPar.replace)
+        except AttributeError as e:
+            # probes can be empty at start
+            raise AttributeError(e)
+        if update:
+            print 'Updating {}...'.format(solPar.filename)
+            ffile = getattr(self.__case, solPar.filename)
+            ffile.save(self.projectDir)
+            # just in case probes was not there and now should be included
+            # in controlDict
+            if solPar.filename == 'probes':
+                if not self.controlDict.include:
+                    self.controlDict.include = solPar.filename
+                    self.controlDict.save(self.projectDir)
 </code></pre>
   </div>
 </div>
@@ -1686,31 +2277,112 @@ class SolutionParameters(object):
       </div>
       
       <div class="item">
-      <p id="butterfly.solution.SolutionParameters" class="name">class <span class="ident">SolutionParameters</span></p>
+      <p id="butterfly.solution.SolutionParameter" class="name">class <span class="ident">SolutionParameter</span></p>
       
   
-    <div class="desc"><p>A collection of parameters that can be adjusted in run-time.</p>
+    <div class="desc"><p>A solution parameter that can be changed during the solution.</p>
+<p>Add solution parameter to to solution settings.</p>
 <p>Attributes:
-    controlDict: Control ditctionary.
-    residualControl: Residual control values.
-    probes: Butterfly probes.</p></div>
+    filename: OpenFOAM filename that the values are belong to (e.g.
+        blockMeshDict, fvSchemes).
+    values: New values as a python dictionary.
+    replace: Set to True if you want the original dictionary to be replaced
+        by new values. Default is False which means the original dictionary
+        will be only updated by new values.
+    timeRange: Time range that this SolutioParameter is valid as a tuple
+        (default: (0, 1.0e+100)).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameters', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.solution.SolutionParameters" class="source">
-    <pre><code>class SolutionParameters(object):
-    """A collection of parameters that can be adjusted in run-time.
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameter', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameter" class="source">
+    <pre><code>class SolutionParameter(object):
+    """A solution parameter that can be changed during the solution.
+
+    Add solution parameter to to solution settings.
 
     Attributes:
-        controlDict: Control ditctionary.
-        residualControl: Residual control values.
-        probes: Butterfly probes.
+        filename: OpenFOAM filename that the values are belong to (e.g.
+            blockMeshDict, fvSchemes).
+        values: New values as a python dictionary.
+        replace: Set to True if you want the original dictionary to be replaced
+            by new values. Default is False which means the original dictionary
+            will be only updated by new values.
+        timeRange: Time range that this SolutioParameter is valid as a tuple
+            (default: (0, 1.0e+100)).
     """
 
-    def __init__(self, controlDict, residualControl, probes):
-        """Initiate class."""
-        self.controlDict = controlDict
-        self.residualControl = residualControl
-        self.probes = probes
+    _OFFilenames = ('epsilon', 'k', 'nut', 'p', 'U', 'T', 'turbulenceProperties',
+                    'transportProperties', 'blockMeshDict', 'controlDict',
+                    'fvSchemes', 'fvSolution', 'snappyHexMeshDict', 'probes')
+
+    def __init__(self, OFFilename, values, replace=False, timeRange=None):
+        """Create solution parameter."""
+        self.filename = OFFilename
+        self.values = values
+        self.replace = replace
+
+        try:
+            self.__t0 = int(timeRange[0])
+            self.__t1 = int(timeRange[1])
+        except:
+            self.__t0, self.__t1 = 0, 1.0e+100
+
+    @classmethod
+    def fromDictionaryFile(cls, OFFilename, filepath, replace=False,
+                           timeRange=None):
+        """Create from an OpenFOAM dictionary file."""
+        # convert values to python dictionary
+        values = CppDictParser.fromFile(filepath).values
+        return cls(OFFilename, values, replace, timeRange)
+
+    @classmethod
+    def fromCppDictionary(cls, OFFilename, dictionary, replace=False,
+                          timeRange=None, header=False):
+        """Create from an OpenFOAM dictionary in text format."""
+        # convert values to python dictionary
+        values = CppDictParser(text=dictionary).values
+
+        if not header and 'FoamFile' in values:
+            del(values['FoamFile'])
+
+        return cls(OFFilename, values, replace, timeRange)
+
+    @property
+    def isSolutionParameter(self):
+        """Return True."""
+        return True
+
+    @property
+    def values(self):
+        """Return OpenFOAM file name."""
+        return self.__values
+
+    @values.setter
+    def values(self, v):
+        assert isinstance(v, dict), 'values should be a dictionary not a {}.' \
+            .format(type(v))
+        self.__values = v
+
+    @property
+    def filename(self):
+        """Return OpenFOAM file name."""
+        return self.__filename
+
+    @filename.setter
+    def filename(self, f):
+        assert f in self._OFFilenames, '{} is not a valid OpenFOAM dictionary ' \
+            'file. Try one of the files below:\n{}.' \
+            .format(f, '\n'.join(self._OFFilenames))
+
+        self.__filename = f
+
+    @property
+    def timeRange(self):
+        """Get time range."""
+        return (self.__t0, self.__t1)
+
+    def isTimeInRange(self, time):
+        """Check if time is in this SolutionParameter time range."""
+        return self.__t0 <= float(time) < self.__t1
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1722,7 +2394,9 @@ class SolutionParameters(object):
 
     def __repr__(self):
         """Class representation."""
-        return self.__class__.__name__
+        return 'SolutionParameter::{}@{}'\
+            .format('.'.join([self.filename] + self.values.keys()),
+                    self.timeRange)
 </code></pre>
   </div>
 </div>
@@ -1731,12 +2405,12 @@ class SolutionParameters(object):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly.solution.SolutionParameters">SolutionParameters</a></li>
+          <li><a href="#butterfly.solution.SolutionParameter">SolutionParameter</a></li>
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.solution.SolutionParameters.controlDict" class="name">var <span class="ident">controlDict</span></p>
+            <p id="butterfly.solution.SolutionParameter.filename" class="name">var <span class="ident">filename</span></p>
             
 
             
@@ -1746,7 +2420,18 @@ class SolutionParameters(object):
 
             </div>
             <div class="item">
-            <p id="butterfly.solution.SolutionParameters.probes" class="name">var <span class="ident">probes</span></p>
+            <p id="butterfly.solution.SolutionParameter.isSolutionParameter" class="name">var <span class="ident">isSolutionParameter</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return True.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.solution.SolutionParameter.replace" class="name">var <span class="ident">replace</span></p>
             
 
             
@@ -1756,7 +2441,18 @@ class SolutionParameters(object):
 
             </div>
             <div class="item">
-            <p id="butterfly.solution.SolutionParameters.residualControl" class="name">var <span class="ident">residualControl</span></p>
+            <p id="butterfly.solution.SolutionParameter.timeRange" class="name">var <span class="ident">timeRange</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get time range.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.solution.SolutionParameter.values" class="name">var <span class="ident">values</span></p>
             
 
             
@@ -1768,22 +2464,27 @@ class SolutionParameters(object):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly.solution.SolutionParameters.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, controlDict, residualControl, probes)</p>
+    <div class="name def" id="butterfly.solution.SolutionParameter.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, OFFilename, values, replace=False, timeRange=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Initiate class.</p></div>
+    <div class="desc"><p>Create solution parameter.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameters.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.solution.SolutionParameters.__init__" class="source">
-    <pre><code>def __init__(self, controlDict, residualControl, probes):
-    """Initiate class."""
-    self.controlDict = controlDict
-    self.residualControl = residualControl
-    self.probes = probes
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameter.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameter.__init__" class="source">
+    <pre><code>def __init__(self, OFFilename, values, replace=False, timeRange=None):
+    """Create solution parameter."""
+    self.filename = OFFilename
+    self.values = values
+    self.replace = replace
+    try:
+        self.__t0 = int(timeRange[0])
+        self.__t1 = int(timeRange[1])
+    except:
+        self.__t0, self.__t1 = 0, 1.0e+100
 </code></pre>
   </div>
 </div>
@@ -1792,7 +2493,7 @@ class SolutionParameters(object):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.solution.SolutionParameters.ToString">
+    <div class="name def" id="butterfly.solution.SolutionParameter.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -1801,8 +2502,8 @@ class SolutionParameters(object):
   
     <div class="desc"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameters.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.solution.SolutionParameters.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameter.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameter.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -1814,7 +2515,7 @@ class SolutionParameters(object):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.solution.SolutionParameters.duplicate">
+    <div class="name def" id="butterfly.solution.SolutionParameter.duplicate">
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
@@ -1823,11 +2524,87 @@ class SolutionParameters(object):
   
     <div class="desc"><p>Return a copy of this object.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameters.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.solution.SolutionParameters.duplicate" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameter.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameter.duplicate" class="source">
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.SolutionParameter.fromCppDictionary">
+    <p>def <span class="ident">fromCppDictionary</span>(</p><p>cls, OFFilename, dictionary, replace=False, timeRange=None, header=False)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create from an OpenFOAM dictionary in text format.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameter.fromCppDictionary', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameter.fromCppDictionary" class="source">
+    <pre><code>@classmethod
+def fromCppDictionary(cls, OFFilename, dictionary, replace=False,
+                      timeRange=None, header=False):
+    """Create from an OpenFOAM dictionary in text format."""
+    # convert values to python dictionary
+    values = CppDictParser(text=dictionary).values
+    if not header and 'FoamFile' in values:
+        del(values['FoamFile'])
+    return cls(OFFilename, values, replace, timeRange)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.SolutionParameter.fromDictionaryFile">
+    <p>def <span class="ident">fromDictionaryFile</span>(</p><p>cls, OFFilename, filepath, replace=False, timeRange=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create from an OpenFOAM dictionary file.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameter.fromDictionaryFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameter.fromDictionaryFile" class="source">
+    <pre><code>@classmethod
+def fromDictionaryFile(cls, OFFilename, filepath, replace=False,
+                       timeRange=None):
+    """Create from an OpenFOAM dictionary file."""
+    # convert values to python dictionary
+    values = CppDictParser.fromFile(filepath).values
+    return cls(OFFilename, values, replace, timeRange)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.SolutionParameter.isTimeInRange">
+    <p>def <span class="ident">isTimeInRange</span>(</p><p>self, time)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Check if time is in this SolutionParameter time range.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.SolutionParameter.isTimeInRange', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.SolutionParameter.isTimeInRange" class="source">
+    <pre><code>def isTimeInRange(self, time):
+    """Check if time is in this SolutionParameter time range."""
+    return self.__t0 <= float(time) < self.__t1
 </code></pre>
   </div>
 </div>

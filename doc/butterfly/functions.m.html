@@ -998,6 +998,7 @@ table {
     <li class="mono"><a href="#butterfly.functions.Probes.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.body">body</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.functions.Probes.fromFile">fromFile</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.header">header</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.save">save</a></li>
@@ -1026,8 +1027,9 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions" class="source">
-    <pre><code>"""A cllection of OpenFOAM functions such as Probes."""
-from foamfile import Condition
+    <pre><code># coding=utf-8
+"""A cllection of OpenFOAM functions such as Probes."""
+from foamfile import Condition, foamFileFromFile
 from collections import OrderedDict
 
 
@@ -1050,6 +1052,24 @@ class Probes(Condition):
             name='probes', cls='dictionary', location='system',
             defaultValues=self.__defaultValues, values=values
         )
+
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
+        return _cls
+
+    @property
+    def probesCount(self):
+        """Get number of probes."""
+        if not self.probeLocations:
+            return 0
+        else:
+            return len(self.probeLocations[1:-1].split(')')) - 1
 
     @property
     def probeLocations(self):
@@ -1100,6 +1120,12 @@ class Probes(Condition):
         if not value:
             return
         self.values['functions']['probes']['writeInterval'] = str(int(value))
+
+    def save(self, projectFolder, subFolder=None):
+        if self.probesCount == 0:
+            return
+        else:
+            super(Probes, self).save(projectFolder, subFolder)
 </code></pre>
   </div>
 
@@ -1138,6 +1164,24 @@ class Probes(Condition):
             defaultValues=self.__defaultValues, values=values
         )
 
+    @classmethod
+    def fromFile(cls, filepath):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+        """
+        _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
+        return _cls
+
+    @property
+    def probesCount(self):
+        """Get number of probes."""
+        if not self.probeLocations:
+            return 0
+        else:
+            return len(self.probeLocations[1:-1].split(')')) - 1
+
     @property
     def probeLocations(self):
         """Get and set probe locations from list of tuples."""
@@ -1187,6 +1231,12 @@ class Probes(Condition):
         if not value:
             return
         self.values['functions']['probes']['writeInterval'] = str(int(value))
+
+    def save(self, projectFolder, subFolder=None):
+        if self.probesCount == 0:
+            return
+        else:
+            super(Probes, self).save(projectFolder, subFolder)
 </code></pre>
   </div>
 </div>
@@ -1254,6 +1304,50 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
+            <p id="butterfly.functions.Probes.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'constant' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Probes.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return True for FoamFile.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Probes.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'system' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Probes.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is folder 0.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.functions.Probes.parameters" class="name">var <span class="ident">parameters</span></p>
             
 
@@ -1271,6 +1365,17 @@ def convertBoolValue(v=True):
             
   
     <div class="desc"><p>Get and set probe locations from list of tuples.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Probes.probesCount" class="name">var <span class="ident">probesCount</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get number of probes.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1361,10 +1466,21 @@ def convertBoolValue(v=True):
     <pre><code>def body(self):
     """Return body string."""
     # remove None values
-    _values = OrderedDict()
-    for key, value in self.values.iteritems():
-        if value:
-            _values[key] = value
+    def removeNone(d):
+        if isinstance(d, (dict, OrderedDict)):
+            return OrderedDict((k, removeNone(v))
+                               for k, v in d.iteritems()
+                               if v and removeNone(v))
+        elif isinstance(d, (list, tuple)):
+            return [removeNone(v) for v in d if v and removeNone(v)]
+        else:
+            return d
+        return removeNone
+    _values = removeNone(self.values)
+    # add an empty dict for refinementRegions
+    if 'castellatedMeshControls' in _values:
+        if 'refinementRegions' not in _values['castellatedMeshControls']:
+            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
@@ -1395,6 +1511,35 @@ def convertBoolValue(v=True):
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Probes.fromFile">
+    <p>def <span class="ident">fromFile</span>(</p><p>cls, filepath)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a FoamFile from a file.</p>
+<p>Args:
+    filepath: Full file path to dictionary.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.fromFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Probes.fromFile" class="source">
+    <pre><code>@classmethod
+def fromFile(cls, filepath):
+    """Create a FoamFile from a file.
+    Args:
+        filepath: Full file path to dictionary.
+    """
+    _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
+    return _cls
 </code></pre>
   </div>
 </div>
@@ -1464,23 +1609,14 @@ def convertBoolValue(v=True):
 
     
   
-    <div class="desc"><p>Save to file.</p>
-<p>Args:
-    projectFolder: Path to project folder as a string.
-    subFolder: Optional input for subFolder (default: self.location).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.save', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.save" class="source">
     <pre><code>def save(self, projectFolder, subFolder=None):
-    """Save to file.
-    Args:
-        projectFolder: Path to project folder as a string.
-        subFolder: Optional input for subFolder (default: self.location).
-    """
-    subFolder = self.location.replace('"', '') if not subFolder else subFolder
-    with open(os.path.join(projectFolder,
-                           subFolder, self.name), "wb") as outf:
-        outf.write(self.toOpenFOAM())
+    if self.probesCount == 0:
+        return
+    else:
+        super(Probes, self).save(projectFolder, subFolder)
 </code></pre>
   </div>
 </div>
@@ -1541,24 +1677,77 @@ def convertBoolValue(v=True):
             
   <div class="item">
     <div class="name def" id="butterfly.functions.Probes.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v)</p>
+    <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Update current values from dictionat v.</p>
+    <div class="desc"><p>Update current values from dictionary v.</p>
 <p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p></div>
+already exists it will be updated.</p>
+<p>Returns:
+    True is the dictionary is updated.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.updateValues', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.updateValues" class="source">
-    <pre><code>def updateValues(self, v):
-    """Update current values from dictionat v.
+    <pre><code>def updateValues(self, v, replace=False, mute=False):
+    """Update current values from dictionary v.
     if key is not available in current values it will be added, if the key
     already exists it will be updated.
+    Returns:
+        True is the dictionary is updated.
     """
-    self.__values.update(v)
+    def logChanges(original, new):
+        """compare this dictionary with the current values."""
+        if original is None:
+            original = {}
+        for key, value in new.items():
+            if key not in original:
+                # there is a new key so dictionary has changed.
+                if not mute:
+                    print '{} :: New values are added for {}.' \
+                        .format('.'.join(self.__parents), key)
+                self.__hasChanged = True
+                return
+            if isinstance(value, (dict, OrderedDict)):
+                self.__parents.append(key)
+                logChanges(original[key], value)
+            elif str(original[key]) != str(value):
+                    # there is a change in value
+                    if not mute:
+                        print '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                    self.__hasChanged = True
+                    return
+    def modifyDict(original, new):
+        """Modify a dictionary based on a new dictionary."""
+        for key, value in new.items():
+            if key in original and isinstance(value, dict):
+                if isinstance(original[key], dict):
+                    modifyDict(original[key], value)
+                else:
+                    # the value was not a dict, replce them with the new one
+                    original[key] = value
+            else:
+                original[key] = value
+        return original
+    assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+    self.__parents = [self.__class__.__name__]
+    self.__hasChanged = False
+    logChanges(self.__values, v)
+    if self.__hasChanged:
+        if replace:
+            self.__values.update(v)
+        else:
+            self.__values = modifyDict(self.__values, v)
+        return True
+    else:
+        return False
 </code></pre>
   </div>
 </div>

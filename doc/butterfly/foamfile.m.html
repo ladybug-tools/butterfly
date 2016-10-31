@@ -985,6 +985,13 @@ table {
     <h1>Index</h1>
     <ul id="index">
 
+    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
+      
+  <ul>
+    <li class="mono"><a href="#butterfly.foamfile.foamFileFromFile">foamFileFromFile</a></li>
+  </ul>
+
+    </li>
 
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
@@ -998,6 +1005,7 @@ table {
     <li class="mono"><a href="#butterfly.foamfile.Condition.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.body">body</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.Condition.fromFile">fromFile</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.header">header</a></li>
     <li class="mono"><a href="#butterfly.foamfile.Condition.save">save</a></li>
@@ -1017,6 +1025,7 @@ table {
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.body">body</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFile.fromFile">fromFile</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.header">header</a></li>
     <li class="mono"><a href="#butterfly.foamfile.FoamFile.save">save</a></li>
@@ -1027,23 +1036,25 @@ table {
 
         </li>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly.foamfile.ZeroFolderFoamFile">ZeroFolderFoamFile</a></span>
+        <span class="class_name"><a href="#butterfly.foamfile.FoamFileZeroFolder">FoamFileZeroFolder</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue">convertBoolValue</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.body">body</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries">fromBFGeometries</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.getValueByParameter">getValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.header">header</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.save">save</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.setBoundaryField">setBoundaryField</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.setValueByParameter">setValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.toOpenFOAM">toOpenFOAM</a></li>
-    <li class="mono"><a href="#butterfly.foamfile.ZeroFolderFoamFile.updateValues">updateValues</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.convertBoolValue">convertBoolValue</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.body">body</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.fromBFGeometries">fromBFGeometries</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.fromFile">fromFile</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.getBoundaryField">getBoundaryField</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.getValueByParameter">getValueByParameter</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.header">header</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.save">save</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.setBoundaryField">setBoundaryField</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.setValueByParameter">setValueByParameter</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.toOpenFOAM">toOpenFOAM</a></li>
+    <li class="mono"><a href="#butterfly.foamfile.FoamFileZeroFolder.updateValues">updateValues</a></li>
   </ul>
 
         </li>
@@ -1066,9 +1077,11 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.foamfile" class="source">
-    <pre><code>"""Foam File Class."""
-from version import Version, Header
-from helper import getBoundaryField
+    <pre><code># coding=utf-8
+"""Foam File Class."""
+from .version import Version, Header
+from .utilities import getBoundaryFieldFromGeometries
+from .parser import CppDictParser
 import os
 import json
 from collections import OrderedDict
@@ -1089,20 +1102,20 @@ class FoamFile(object):
         fileFormat: File format (ascii / binary) (default: ascii)
     """
 
-    __locations = ("0", "system", "constant")
+    __locations = ('0', 'system', 'constant')
 
     def __init__(self, name, cls, location=None, fileFormat="ascii",
                  defaultValues=None, values=None):
         """Init foam file."""
+        self.__dict__['is{}'.format(self.__class__.__name__)] = True
         self.__version = str(Version().OFVer)
         self.format = str(fileFormat)  # ascii / binary
         self.cls = str(cls)  # dictionary or field
         self.name = str(name)
         self.location = location  # location is optional
-
         if self.location:
-            if self.location in self.__locations:
-                self.location = '"' + self.location + '"'
+            if self.location.replace('"', '') in self.__locations:
+                self.location = '"' + self.location.replace('"', '') + '"'
             else:
                     raise ValueError(
                         '{} is not a valid OpenFOAM location: {}'.format(
@@ -1116,20 +1129,146 @@ class FoamFile(object):
         if not defaultValues:
             defaultValues = {}
         self.__values = deepcopy(defaultValues)
-        self.updateValues(values)
+        self.updateValues(values, mute=True)
+
+    @classmethod
+    def fromFile(cls, filepath, location=None):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+            location: Optional folder name for location (0, constant or system)
+        """
+        def _tryGetFoamFileValue(key):
+            try:
+                return _values['FoamFile'][key]
+            except KeyError:
+                print 'failed to find {} in {}.\n\tUsing the default value: {}' \
+                    .format(filepath, key, default[key])
+                return default[key]
+
+        assert not filepath.endswith('blockMeshDict'), \
+            'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
+
+        _values = CppDictParser.fromFile(filepath).values
+        p, _name = os.path.split(filepath)
+
+        default = {
+            'object': _name,
+            'class': 'dictionary',
+            'location': None,
+            'format': 'ascii'
+        }
+
+        # set up FoamFile dictionary
+        _name = _tryGetFoamFileValue('object')
+        _cls = _tryGetFoamFileValue('class')
+        _location = _tryGetFoamFileValue('location')
+        _fileFormat = _tryGetFoamFileValue('format')
+
+        if 'FoamFile' in _values:
+            del(_values['FoamFile'])
+
+        return cls(_name, _cls, _location, _fileFormat, values=_values)
+
+    @property
+    def isFoamFile(self):
+        """Return True for FoamFile."""
+        return True
+
+    @property
+    def isZeroFile(self):
+        """Check if the file location is folder 0."""
+        if not self.location:
+            return False
+        return self.location == "0"
+
+    @property
+    def isConstantFile(self):
+        """Check if the file location is 'constant' folder."""
+        if not self.location:
+            return False
+        return self.location == "constant"
+
+    @property
+    def isSystemFile(self):
+        """Check if the file location is 'system' folder."""
+        if not self.location:
+            return False
+        return self.location == "system"
 
     @property
     def values(self):
         """Return values as a dictionary."""
         return self.__values
 
-    def updateValues(self, v):
-        """Update current values from dictionat v.
+    def updateValues(self, v, replace=False, mute=False):
+        """Update current values from dictionary v.
 
         if key is not available in current values it will be added, if the key
         already exists it will be updated.
+
+        Returns:
+            True is the dictionary is updated.
         """
-        self.__values.update(v)
+        def logChanges(original, new):
+            """compare this dictionary with the current values."""
+            if original is None:
+                original = {}
+
+            for key, value in new.items():
+
+                if key not in original:
+                    # there is a new key so dictionary has changed.
+                    if not mute:
+                        print '{} :: New values are added for {}.' \
+                            .format('.'.join(self.__parents), key)
+                    self.__hasChanged = True
+                    return
+
+                if isinstance(value, (dict, OrderedDict)):
+                    self.__parents.append(key)
+                    logChanges(original[key], value)
+                elif str(original[key]) != str(value):
+                        # there is a change in value
+                        if not mute:
+                            print '{}.{} is changed from "{}" to "{}".'\
+                                .format('.'.join(self.__parents), key,
+                                        original[key] if len(str(original[key])) < 100
+                                        else '%s...' % str(original[key])[:100],
+                                        value if len(str(value)) < 100
+                                        else '%s...' % str(value)[:100])
+                        self.__hasChanged = True
+                        return
+
+        def modifyDict(original, new):
+            """Modify a dictionary based on a new dictionary."""
+            for key, value in new.items():
+                if key in original and isinstance(value, dict):
+                    if isinstance(original[key], dict):
+                        modifyDict(original[key], value)
+                    else:
+                        # the value was not a dict, replce them with the new one
+                        original[key] = value
+                else:
+                    original[key] = value
+
+            return original
+
+        assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+
+        self.__parents = [self.__class__.__name__]
+        self.__hasChanged = False
+        logChanges(self.__values, v)
+
+        if self.__hasChanged:
+            if replace:
+                self.__values.update(v)
+            else:
+                self.__values = modifyDict(self.__values, v)
+            return True
+        else:
+            return False
 
     @property
     def parameters(self):
@@ -1188,10 +1327,23 @@ class FoamFile(object):
     def body(self):
         """Return body string."""
         # remove None values
-        _values = OrderedDict()
-        for key, value in self.values.iteritems():
-            if value:
-                _values[key] = value
+        def removeNone(d):
+            if isinstance(d, (dict, OrderedDict)):
+                return OrderedDict((k, removeNone(v))
+                                   for k, v in d.iteritems()
+                                   if v and removeNone(v))
+            elif isinstance(d, (list, tuple)):
+                return [removeNone(v) for v in d if v and removeNone(v)]
+            else:
+                return d
+            return removeNone
+
+        _values = removeNone(self.values)
+
+        # add an empty dict for refinementRegions
+        if 'castellatedMeshControls' in _values:
+            if 'refinementRegions' not in _values['castellatedMeshControls']:
+                _values['castellatedMeshControls']['refinementRegions'] = {}
 
         # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
@@ -1221,17 +1373,20 @@ class FoamFile(object):
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
 
-    def save(self, projectFolder, subFolder=None):
+    def save(self, projectFolder, subFolder=None, overwrite=True):
         """Save to file.
 
         Args:
             projectFolder: Path to project folder as a string.
             subFolder: Optional input for subFolder (default: self.location).
         """
-        subFolder = self.location.replace('"', '') if not subFolder else subFolder
+        subFolder = subFolder or self.location.replace('"', '')
+        fp = os.path.join(projectFolder, subFolder, self.name)
 
-        with open(os.path.join(projectFolder,
-                               subFolder, self.name), "wb") as outf:
+        if not overwrite and os.path.isfile(fp):
+            return
+
+        with open(fp, "wb") as outf:
             outf.write(self.toOpenFOAM())
 
     def __eq__(self, other):
@@ -1251,11 +1406,11 @@ class FoamFile(object):
         return self.toOpenFOAM()
 
 
-class ZeroFolderFoamFile(FoamFile):
+class FoamFileZeroFolder(FoamFile):
     """FoamFiles under 0 folder.
 
-    The main difference between ZeroFolderFoamFile and FoamFile is that
-    ZeroFolderFoamFile has a method to set boundary fields based on input
+    The main difference between FoamFileZeroFolder and FoamFile is that
+    FoamFileZeroFolder has a method to set boundary fields based on input
     geometry (e.g. Butterfly objects).
     """
 
@@ -1267,14 +1422,26 @@ class ZeroFolderFoamFile(FoamFile):
         return _cls
 
     def setBoundaryField(self, BFGeometries):
-        """Get data for getBoundaryField as a dictionary.
+        """Set FoamFile boundaryField values from BFGeometries.
 
         Args:
             BFGeometries: List of Butterfly geometries.
         """
-        self.values['boundaryField'] = getBoundaryField(
-            BFGeometries, self.__class__.__name__.lower()
-        )
+        self.values['boundaryField'] = \
+            getBoundaryFieldFromGeometries(BFGeometries, self.name)
+
+    def getBoundaryField(self, name):
+        """Try to get boundaryField value for a geometry by name.
+
+        Args:
+            name: Geometry name.
+        Returns:
+            An OpenFOAM field if name is in boundaryFields.
+        """
+        if name in self.values['boundaryField']:
+            return self.values['boundaryField'][name]
+        else:
+            print 'Failed to find boundaryField values for {}'.format(name)
 
 
 class Condition(FoamFile):
@@ -1287,6 +1454,27 @@ class Condition(FoamFile):
     def header(self):
         """Return conditions header."""
         return Header.header()
+
+
+def foamFileFromFile(filepath, name=None, header=False):
+    """Load values from foamfile.
+
+    Args:
+        filepath: Full file path to dictionary.
+        name: An optional name for foamfile to double check.
+        header: Set to True to get FoamFile data.
+    """
+    if name:
+        p, _name = os.path.split(filepath)
+        assert _name.lower() == name.lower(), \
+            'Illegal file input {} for creating {}'.format(_name, name)
+
+    _values = CppDictParser.fromFile(filepath).values
+
+    if not header and 'FoamFile' in _values:
+        del(_values['FoamFile'])
+
+    return _values
 </code></pre>
   </div>
 
@@ -1294,6 +1482,49 @@ class Condition(FoamFile):
 
   <section id="section-items">
 
+    <h2 class="section-title" id="header-functions">Functions</h2>
+      
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.foamFileFromFile">
+    <p>def <span class="ident">foamFileFromFile</span>(</p><p>filepath, name=None, header=False)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Load values from foamfile.</p>
+<p>Args:
+    filepath: Full file path to dictionary.
+    name: An optional name for foamfile to double check.
+    header: Set to True to get FoamFile data.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.foamFileFromFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.foamFileFromFile" class="source">
+    <pre><code>def foamFileFromFile(filepath, name=None, header=False):
+    """Load values from foamfile.
+
+    Args:
+        filepath: Full file path to dictionary.
+        name: An optional name for foamfile to double check.
+        header: Set to True to get FoamFile data.
+    """
+    if name:
+        p, _name = os.path.split(filepath)
+        assert _name.lower() == name.lower(), \
+            'Illegal file input {} for creating {}'.format(_name, name)
+
+    _values = CppDictParser.fromFile(filepath).values
+
+    if not header and 'FoamFile' in _values:
+        del(_values['FoamFile'])
+
+    return _values
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
 
     <h2 class="section-title" id="header-classes">Classes</h2>
       
@@ -1393,6 +1624,66 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
+            <p id="butterfly.foamfile.Condition.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isConstantFile">isConstantFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Check if the file location is 'constant' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.Condition.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isFoamFile">isFoamFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Return True for FoamFile.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.Condition.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isSystemFile">isSystemFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Check if the file location is 'system' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.Condition.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isZeroFile">isZeroFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Check if the file location is folder 0.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.foamfile.Condition.location" class="name">var <span class="ident">location</span></p>
             
     <p class="inheritance">
@@ -1471,14 +1762,15 @@ def convertBoolValue(v=True):
     <pre><code>def __init__(self, name, cls, location=None, fileFormat="ascii",
              defaultValues=None, values=None):
     """Init foam file."""
+    self.__dict__['is{}'.format(self.__class__.__name__)] = True
     self.__version = str(Version().OFVer)
     self.format = str(fileFormat)  # ascii / binary
     self.cls = str(cls)  # dictionary or field
     self.name = str(name)
     self.location = location  # location is optional
     if self.location:
-        if self.location in self.__locations:
-            self.location = '"' + self.location + '"'
+        if self.location.replace('"', '') in self.__locations:
+            self.location = '"' + self.location.replace('"', '') + '"'
         else:
                 raise ValueError(
                     '{} is not a valid OpenFOAM location: {}'.format(
@@ -1491,7 +1783,7 @@ def convertBoolValue(v=True):
     if not defaultValues:
         defaultValues = {}
     self.__values = deepcopy(defaultValues)
-    self.updateValues(values)
+    self.updateValues(values, mute=True)
 </code></pre>
   </div>
 </div>
@@ -1544,10 +1836,21 @@ def convertBoolValue(v=True):
     <pre><code>def body(self):
     """Return body string."""
     # remove None values
-    _values = OrderedDict()
-    for key, value in self.values.iteritems():
-        if value:
-            _values[key] = value
+    def removeNone(d):
+        if isinstance(d, (dict, OrderedDict)):
+            return OrderedDict((k, removeNone(v))
+                               for k, v in d.iteritems()
+                               if v and removeNone(v))
+        elif isinstance(d, (list, tuple)):
+            return [removeNone(v) for v in d if v and removeNone(v)]
+        else:
+            return d
+        return removeNone
+    _values = removeNone(self.values)
+    # add an empty dict for refinementRegions
+    if 'castellatedMeshControls' in _values:
+        if 'refinementRegions' not in _values['castellatedMeshControls']:
+            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
@@ -1582,6 +1885,64 @@ def convertBoolValue(v=True):
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.Condition.fromFile">
+    <p>def <span class="ident">fromFile</span>(</p><p>cls, filepath, location=None)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.fromFile">fromFile</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Create a FoamFile from a file.</p>
+<p>Args:
+    filepath: Full file path to dictionary.
+    location: Optional folder name for location (0, constant or system)</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.Condition.fromFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.Condition.fromFile" class="source">
+    <pre><code>@classmethod
+def fromFile(cls, filepath, location=None):
+    """Create a FoamFile from a file.
+    Args:
+        filepath: Full file path to dictionary.
+        location: Optional folder name for location (0, constant or system)
+    """
+    def _tryGetFoamFileValue(key):
+        try:
+            return _values['FoamFile'][key]
+        except KeyError:
+            print 'failed to find {} in {}.\n\tUsing the default value: {}' \
+                .format(filepath, key, default[key])
+            return default[key]
+    assert not filepath.endswith('blockMeshDict'), \
+        'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
+    _values = CppDictParser.fromFile(filepath).values
+    p, _name = os.path.split(filepath)
+    default = {
+        'object': _name,
+        'class': 'dictionary',
+        'location': None,
+        'format': 'ascii'
+    }
+    # set up FoamFile dictionary
+    _name = _tryGetFoamFileValue('object')
+    _cls = _tryGetFoamFileValue('class')
+    _location = _tryGetFoamFileValue('location')
+    _fileFormat = _tryGetFoamFileValue('format')
+    if 'FoamFile' in _values:
+        del(_values['FoamFile'])
+    return cls(_name, _cls, _location, _fileFormat, values=_values)
 </code></pre>
   </div>
 </div>
@@ -1653,7 +2014,7 @@ def convertBoolValue(v=True):
             
   <div class="item">
     <div class="name def" id="butterfly.foamfile.Condition.save">
-    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None)</p>
+    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None, overwrite=True)</p>
     </div>
     
     <p class="inheritance">
@@ -1670,15 +2031,17 @@ def convertBoolValue(v=True):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.Condition.save', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.foamfile.Condition.save" class="source">
-    <pre><code>def save(self, projectFolder, subFolder=None):
+    <pre><code>def save(self, projectFolder, subFolder=None, overwrite=True):
     """Save to file.
     Args:
         projectFolder: Path to project folder as a string.
         subFolder: Optional input for subFolder (default: self.location).
     """
-    subFolder = self.location.replace('"', '') if not subFolder else subFolder
-    with open(os.path.join(projectFolder,
-                           subFolder, self.name), "wb") as outf:
+    subFolder = subFolder or self.location.replace('"', '')
+    fp = os.path.join(projectFolder, subFolder, self.name)
+    if not overwrite and os.path.isfile(fp):
+        return
+    with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
 </code></pre>
   </div>
@@ -1748,7 +2111,7 @@ def convertBoolValue(v=True):
             
   <div class="item">
     <div class="name def" id="butterfly.foamfile.Condition.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v)</p>
+    <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
     </div>
     
     <p class="inheritance">
@@ -1758,18 +2121,71 @@ def convertBoolValue(v=True):
 
     
   
-    <div class="desc inherited"><p>Update current values from dictionat v.</p>
+    <div class="desc inherited"><p>Update current values from dictionary v.</p>
 <p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p></div>
+already exists it will be updated.</p>
+<p>Returns:
+    True is the dictionary is updated.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.Condition.updateValues', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.foamfile.Condition.updateValues" class="source">
-    <pre><code>def updateValues(self, v):
-    """Update current values from dictionat v.
+    <pre><code>def updateValues(self, v, replace=False, mute=False):
+    """Update current values from dictionary v.
     if key is not available in current values it will be added, if the key
     already exists it will be updated.
+    Returns:
+        True is the dictionary is updated.
     """
-    self.__values.update(v)
+    def logChanges(original, new):
+        """compare this dictionary with the current values."""
+        if original is None:
+            original = {}
+        for key, value in new.items():
+            if key not in original:
+                # there is a new key so dictionary has changed.
+                if not mute:
+                    print '{} :: New values are added for {}.' \
+                        .format('.'.join(self.__parents), key)
+                self.__hasChanged = True
+                return
+            if isinstance(value, (dict, OrderedDict)):
+                self.__parents.append(key)
+                logChanges(original[key], value)
+            elif str(original[key]) != str(value):
+                    # there is a change in value
+                    if not mute:
+                        print '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                    self.__hasChanged = True
+                    return
+    def modifyDict(original, new):
+        """Modify a dictionary based on a new dictionary."""
+        for key, value in new.items():
+            if key in original and isinstance(value, dict):
+                if isinstance(original[key], dict):
+                    modifyDict(original[key], value)
+                else:
+                    # the value was not a dict, replce them with the new one
+                    original[key] = value
+            else:
+                original[key] = value
+        return original
+    assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+    self.__parents = [self.__class__.__name__]
+    self.__hasChanged = False
+    logChanges(self.__values, v)
+    if self.__hasChanged:
+        if replace:
+            self.__values.update(v)
+        else:
+            self.__values = modifyDict(self.__values, v)
+        return True
+    else:
+        return False
 </code></pre>
   </div>
 </div>
@@ -1809,20 +2225,20 @@ more information about FoamFile</p>
         fileFormat: File format (ascii / binary) (default: ascii)
     """
 
-    __locations = ("0", "system", "constant")
+    __locations = ('0', 'system', 'constant')
 
     def __init__(self, name, cls, location=None, fileFormat="ascii",
                  defaultValues=None, values=None):
         """Init foam file."""
+        self.__dict__['is{}'.format(self.__class__.__name__)] = True
         self.__version = str(Version().OFVer)
         self.format = str(fileFormat)  # ascii / binary
         self.cls = str(cls)  # dictionary or field
         self.name = str(name)
         self.location = location  # location is optional
-
         if self.location:
-            if self.location in self.__locations:
-                self.location = '"' + self.location + '"'
+            if self.location.replace('"', '') in self.__locations:
+                self.location = '"' + self.location.replace('"', '') + '"'
             else:
                     raise ValueError(
                         '{} is not a valid OpenFOAM location: {}'.format(
@@ -1836,20 +2252,146 @@ more information about FoamFile</p>
         if not defaultValues:
             defaultValues = {}
         self.__values = deepcopy(defaultValues)
-        self.updateValues(values)
+        self.updateValues(values, mute=True)
+
+    @classmethod
+    def fromFile(cls, filepath, location=None):
+        """Create a FoamFile from a file.
+
+        Args:
+            filepath: Full file path to dictionary.
+            location: Optional folder name for location (0, constant or system)
+        """
+        def _tryGetFoamFileValue(key):
+            try:
+                return _values['FoamFile'][key]
+            except KeyError:
+                print 'failed to find {} in {}.\n\tUsing the default value: {}' \
+                    .format(filepath, key, default[key])
+                return default[key]
+
+        assert not filepath.endswith('blockMeshDict'), \
+            'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
+
+        _values = CppDictParser.fromFile(filepath).values
+        p, _name = os.path.split(filepath)
+
+        default = {
+            'object': _name,
+            'class': 'dictionary',
+            'location': None,
+            'format': 'ascii'
+        }
+
+        # set up FoamFile dictionary
+        _name = _tryGetFoamFileValue('object')
+        _cls = _tryGetFoamFileValue('class')
+        _location = _tryGetFoamFileValue('location')
+        _fileFormat = _tryGetFoamFileValue('format')
+
+        if 'FoamFile' in _values:
+            del(_values['FoamFile'])
+
+        return cls(_name, _cls, _location, _fileFormat, values=_values)
+
+    @property
+    def isFoamFile(self):
+        """Return True for FoamFile."""
+        return True
+
+    @property
+    def isZeroFile(self):
+        """Check if the file location is folder 0."""
+        if not self.location:
+            return False
+        return self.location == "0"
+
+    @property
+    def isConstantFile(self):
+        """Check if the file location is 'constant' folder."""
+        if not self.location:
+            return False
+        return self.location == "constant"
+
+    @property
+    def isSystemFile(self):
+        """Check if the file location is 'system' folder."""
+        if not self.location:
+            return False
+        return self.location == "system"
 
     @property
     def values(self):
         """Return values as a dictionary."""
         return self.__values
 
-    def updateValues(self, v):
-        """Update current values from dictionat v.
+    def updateValues(self, v, replace=False, mute=False):
+        """Update current values from dictionary v.
 
         if key is not available in current values it will be added, if the key
         already exists it will be updated.
+
+        Returns:
+            True is the dictionary is updated.
         """
-        self.__values.update(v)
+        def logChanges(original, new):
+            """compare this dictionary with the current values."""
+            if original is None:
+                original = {}
+
+            for key, value in new.items():
+
+                if key not in original:
+                    # there is a new key so dictionary has changed.
+                    if not mute:
+                        print '{} :: New values are added for {}.' \
+                            .format('.'.join(self.__parents), key)
+                    self.__hasChanged = True
+                    return
+
+                if isinstance(value, (dict, OrderedDict)):
+                    self.__parents.append(key)
+                    logChanges(original[key], value)
+                elif str(original[key]) != str(value):
+                        # there is a change in value
+                        if not mute:
+                            print '{}.{} is changed from "{}" to "{}".'\
+                                .format('.'.join(self.__parents), key,
+                                        original[key] if len(str(original[key])) < 100
+                                        else '%s...' % str(original[key])[:100],
+                                        value if len(str(value)) < 100
+                                        else '%s...' % str(value)[:100])
+                        self.__hasChanged = True
+                        return
+
+        def modifyDict(original, new):
+            """Modify a dictionary based on a new dictionary."""
+            for key, value in new.items():
+                if key in original and isinstance(value, dict):
+                    if isinstance(original[key], dict):
+                        modifyDict(original[key], value)
+                    else:
+                        # the value was not a dict, replce them with the new one
+                        original[key] = value
+                else:
+                    original[key] = value
+
+            return original
+
+        assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+
+        self.__parents = [self.__class__.__name__]
+        self.__hasChanged = False
+        logChanges(self.__values, v)
+
+        if self.__hasChanged:
+            if replace:
+                self.__values.update(v)
+            else:
+                self.__values = modifyDict(self.__values, v)
+            return True
+        else:
+            return False
 
     @property
     def parameters(self):
@@ -1908,10 +2450,23 @@ more information about FoamFile</p>
     def body(self):
         """Return body string."""
         # remove None values
-        _values = OrderedDict()
-        for key, value in self.values.iteritems():
-            if value:
-                _values[key] = value
+        def removeNone(d):
+            if isinstance(d, (dict, OrderedDict)):
+                return OrderedDict((k, removeNone(v))
+                                   for k, v in d.iteritems()
+                                   if v and removeNone(v))
+            elif isinstance(d, (list, tuple)):
+                return [removeNone(v) for v in d if v and removeNone(v)]
+            else:
+                return d
+            return removeNone
+
+        _values = removeNone(self.values)
+
+        # add an empty dict for refinementRegions
+        if 'castellatedMeshControls' in _values:
+            if 'refinementRegions' not in _values['castellatedMeshControls']:
+                _values['castellatedMeshControls']['refinementRegions'] = {}
 
         # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
@@ -1941,17 +2496,20 @@ more information about FoamFile</p>
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
 
-    def save(self, projectFolder, subFolder=None):
+    def save(self, projectFolder, subFolder=None, overwrite=True):
         """Save to file.
 
         Args:
             projectFolder: Path to project folder as a string.
             subFolder: Optional input for subFolder (default: self.location).
         """
-        subFolder = self.location.replace('"', '') if not subFolder else subFolder
+        subFolder = subFolder or self.location.replace('"', '')
+        fp = os.path.join(projectFolder, subFolder, self.name)
 
-        with open(os.path.join(projectFolder,
-                               subFolder, self.name), "wb") as outf:
+        if not overwrite and os.path.isfile(fp):
+            return
+
+        with open(fp, "wb") as outf:
             outf.write(self.toOpenFOAM())
 
     def __eq__(self, other):
@@ -2032,6 +2590,50 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
+            <p id="butterfly.foamfile.FoamFile.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'constant' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.FoamFile.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return True for FoamFile.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.FoamFile.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'system' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.FoamFile.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is folder 0.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.foamfile.FoamFile.location" class="name">var <span class="ident">location</span></p>
             
 
@@ -2090,14 +2692,15 @@ def convertBoolValue(v=True):
     <pre><code>def __init__(self, name, cls, location=None, fileFormat="ascii",
              defaultValues=None, values=None):
     """Init foam file."""
+    self.__dict__['is{}'.format(self.__class__.__name__)] = True
     self.__version = str(Version().OFVer)
     self.format = str(fileFormat)  # ascii / binary
     self.cls = str(cls)  # dictionary or field
     self.name = str(name)
     self.location = location  # location is optional
     if self.location:
-        if self.location in self.__locations:
-            self.location = '"' + self.location + '"'
+        if self.location.replace('"', '') in self.__locations:
+            self.location = '"' + self.location.replace('"', '') + '"'
         else:
                 raise ValueError(
                     '{} is not a valid OpenFOAM location: {}'.format(
@@ -2110,7 +2713,7 @@ def convertBoolValue(v=True):
     if not defaultValues:
         defaultValues = {}
     self.__values = deepcopy(defaultValues)
-    self.updateValues(values)
+    self.updateValues(values, mute=True)
 </code></pre>
   </div>
 </div>
@@ -2155,10 +2758,21 @@ def convertBoolValue(v=True):
     <pre><code>def body(self):
     """Return body string."""
     # remove None values
-    _values = OrderedDict()
-    for key, value in self.values.iteritems():
-        if value:
-            _values[key] = value
+    def removeNone(d):
+        if isinstance(d, (dict, OrderedDict)):
+            return OrderedDict((k, removeNone(v))
+                               for k, v in d.iteritems()
+                               if v and removeNone(v))
+        elif isinstance(d, (list, tuple)):
+            return [removeNone(v) for v in d if v and removeNone(v)]
+        else:
+            return d
+        return removeNone
+    _values = removeNone(self.values)
+    # add an empty dict for refinementRegions
+    if 'castellatedMeshControls' in _values:
+        if 'refinementRegions' not in _values['castellatedMeshControls']:
+            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
@@ -2189,6 +2803,60 @@ def convertBoolValue(v=True):
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.FoamFile.fromFile">
+    <p>def <span class="ident">fromFile</span>(</p><p>cls, filepath, location=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a FoamFile from a file.</p>
+<p>Args:
+    filepath: Full file path to dictionary.
+    location: Optional folder name for location (0, constant or system)</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFile.fromFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFile.fromFile" class="source">
+    <pre><code>@classmethod
+def fromFile(cls, filepath, location=None):
+    """Create a FoamFile from a file.
+    Args:
+        filepath: Full file path to dictionary.
+        location: Optional folder name for location (0, constant or system)
+    """
+    def _tryGetFoamFileValue(key):
+        try:
+            return _values['FoamFile'][key]
+        except KeyError:
+            print 'failed to find {} in {}.\n\tUsing the default value: {}' \
+                .format(filepath, key, default[key])
+            return default[key]
+    assert not filepath.endswith('blockMeshDict'), \
+        'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
+    _values = CppDictParser.fromFile(filepath).values
+    p, _name = os.path.split(filepath)
+    default = {
+        'object': _name,
+        'class': 'dictionary',
+        'location': None,
+        'format': 'ascii'
+    }
+    # set up FoamFile dictionary
+    _name = _tryGetFoamFileValue('object')
+    _cls = _tryGetFoamFileValue('class')
+    _location = _tryGetFoamFileValue('location')
+    _fileFormat = _tryGetFoamFileValue('format')
+    if 'FoamFile' in _values:
+        del(_values['FoamFile'])
+    return cls(_name, _cls, _location, _fileFormat, values=_values)
 </code></pre>
   </div>
 </div>
@@ -2269,7 +2937,7 @@ def convertBoolValue(v=True):
             
   <div class="item">
     <div class="name def" id="butterfly.foamfile.FoamFile.save">
-    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None)</p>
+    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None, overwrite=True)</p>
     </div>
     
 
@@ -2282,15 +2950,17 @@ def convertBoolValue(v=True):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFile.save', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.foamfile.FoamFile.save" class="source">
-    <pre><code>def save(self, projectFolder, subFolder=None):
+    <pre><code>def save(self, projectFolder, subFolder=None, overwrite=True):
     """Save to file.
     Args:
         projectFolder: Path to project folder as a string.
         subFolder: Optional input for subFolder (default: self.location).
     """
-    subFolder = self.location.replace('"', '') if not subFolder else subFolder
-    with open(os.path.join(projectFolder,
-                           subFolder, self.name), "wb") as outf:
+    subFolder = subFolder or self.location.replace('"', '')
+    fp = os.path.join(projectFolder, subFolder, self.name)
+    if not overwrite and os.path.isfile(fp):
+        return
+    with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
 </code></pre>
   </div>
@@ -2352,24 +3022,77 @@ def convertBoolValue(v=True):
             
   <div class="item">
     <div class="name def" id="butterfly.foamfile.FoamFile.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v)</p>
+    <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Update current values from dictionat v.</p>
+    <div class="desc"><p>Update current values from dictionary v.</p>
 <p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p></div>
+already exists it will be updated.</p>
+<p>Returns:
+    True is the dictionary is updated.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFile.updateValues', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.foamfile.FoamFile.updateValues" class="source">
-    <pre><code>def updateValues(self, v):
-    """Update current values from dictionat v.
+    <pre><code>def updateValues(self, v, replace=False, mute=False):
+    """Update current values from dictionary v.
     if key is not available in current values it will be added, if the key
     already exists it will be updated.
+    Returns:
+        True is the dictionary is updated.
     """
-    self.__values.update(v)
+    def logChanges(original, new):
+        """compare this dictionary with the current values."""
+        if original is None:
+            original = {}
+        for key, value in new.items():
+            if key not in original:
+                # there is a new key so dictionary has changed.
+                if not mute:
+                    print '{} :: New values are added for {}.' \
+                        .format('.'.join(self.__parents), key)
+                self.__hasChanged = True
+                return
+            if isinstance(value, (dict, OrderedDict)):
+                self.__parents.append(key)
+                logChanges(original[key], value)
+            elif str(original[key]) != str(value):
+                    # there is a change in value
+                    if not mute:
+                        print '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                    self.__hasChanged = True
+                    return
+    def modifyDict(original, new):
+        """Modify a dictionary based on a new dictionary."""
+        for key, value in new.items():
+            if key in original and isinstance(value, dict):
+                if isinstance(original[key], dict):
+                    modifyDict(original[key], value)
+                else:
+                    # the value was not a dict, replce them with the new one
+                    original[key] = value
+            else:
+                original[key] = value
+        return original
+    assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+    self.__parents = [self.__class__.__name__]
+    self.__hasChanged = False
+    logChanges(self.__values, v)
+    if self.__hasChanged:
+        if replace:
+            self.__values.update(v)
+        else:
+            self.__values = modifyDict(self.__values, v)
+        return True
+    else:
+        return False
 </code></pre>
   </div>
 </div>
@@ -2380,21 +3103,21 @@ already exists it will be updated.</p></div>
       </div>
       
       <div class="item">
-      <p id="butterfly.foamfile.ZeroFolderFoamFile" class="name">class <span class="ident">ZeroFolderFoamFile</span></p>
+      <p id="butterfly.foamfile.FoamFileZeroFolder" class="name">class <span class="ident">FoamFileZeroFolder</span></p>
       
   
     <div class="desc"><p>FoamFiles under 0 folder.</p>
-<p>The main difference between ZeroFolderFoamFile and FoamFile is that
-ZeroFolderFoamFile has a method to set boundary fields based on input
+<p>The main difference between FoamFileZeroFolder and FoamFile is that
+FoamFileZeroFolder has a method to set boundary fields based on input
 geometry (e.g. Butterfly objects).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile" class="source">
-    <pre><code>class ZeroFolderFoamFile(FoamFile):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder" class="source">
+    <pre><code>class FoamFileZeroFolder(FoamFile):
     """FoamFiles under 0 folder.
 
-    The main difference between ZeroFolderFoamFile and FoamFile is that
-    ZeroFolderFoamFile has a method to set boundary fields based on input
+    The main difference between FoamFileZeroFolder and FoamFile is that
+    FoamFileZeroFolder has a method to set boundary fields based on input
     geometry (e.g. Butterfly objects).
     """
 
@@ -2406,14 +3129,26 @@ geometry (e.g. Butterfly objects).</p></div>
         return _cls
 
     def setBoundaryField(self, BFGeometries):
-        """Get data for getBoundaryField as a dictionary.
+        """Set FoamFile boundaryField values from BFGeometries.
 
         Args:
             BFGeometries: List of Butterfly geometries.
         """
-        self.values['boundaryField'] = getBoundaryField(
-            BFGeometries, self.__class__.__name__.lower()
-        )
+        self.values['boundaryField'] = \
+            getBoundaryFieldFromGeometries(BFGeometries, self.name)
+
+    def getBoundaryField(self, name):
+        """Try to get boundaryField value for a geometry by name.
+
+        Args:
+            name: Geometry name.
+        Returns:
+            An OpenFOAM field if name is in boundaryFields.
+        """
+        if name in self.values['boundaryField']:
+            return self.values['boundaryField'][name]
+        else:
+            print 'Failed to find boundaryField values for {}'.format(name)
 </code></pre>
   </div>
 </div>
@@ -2422,14 +3157,14 @@ geometry (e.g. Butterfly objects).</p></div>
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly.foamfile.ZeroFolderFoamFile">ZeroFolderFoamFile</a></li>
+          <li><a href="#butterfly.foamfile.FoamFileZeroFolder">FoamFileZeroFolder</a></li>
           <li><a href="#butterfly.foamfile.FoamFile">FoamFile</a></li>
           <li>__builtin__.object</li>
           </ul>
           <h3>Static methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.convertBoolValue">
     <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
     </div>
     
@@ -2442,8 +3177,8 @@ geometry (e.g. Butterfly objects).</p></div>
   
     <div class="desc inherited"><p>Convert Boolean values to on/off string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.convertBoolValue" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.convertBoolValue" class="source">
     <pre><code>@staticmethod
 def convertBoolValue(v=True):
     """Convert Boolean values to on/off string."""
@@ -2462,7 +3197,7 @@ def convertBoolValue(v=True):
   
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.foamfile.ZeroFolderFoamFile.cls" class="name">var <span class="ident">cls</span></p>
+            <p id="butterfly.foamfile.FoamFileZeroFolder.cls" class="name">var <span class="ident">cls</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
@@ -2476,7 +3211,7 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
-            <p id="butterfly.foamfile.ZeroFolderFoamFile.format" class="name">var <span class="ident">format</span></p>
+            <p id="butterfly.foamfile.FoamFileZeroFolder.format" class="name">var <span class="ident">format</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
@@ -2490,7 +3225,67 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
-            <p id="butterfly.foamfile.ZeroFolderFoamFile.location" class="name">var <span class="ident">location</span></p>
+            <p id="butterfly.foamfile.FoamFileZeroFolder.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isConstantFile">isConstantFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Check if the file location is 'constant' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.FoamFileZeroFolder.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isFoamFile">isFoamFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Return True for FoamFile.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.FoamFileZeroFolder.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isSystemFile">isSystemFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Check if the file location is 'system' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.FoamFileZeroFolder.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.isZeroFile">isZeroFile</a></code>
+    </p>
+
+            
+  
+    <div class="desc inherited"><p>Check if the file location is folder 0.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.foamfile.FoamFileZeroFolder.location" class="name">var <span class="ident">location</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
@@ -2504,7 +3299,7 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
-            <p id="butterfly.foamfile.ZeroFolderFoamFile.name" class="name">var <span class="ident">name</span></p>
+            <p id="butterfly.foamfile.FoamFileZeroFolder.name" class="name">var <span class="ident">name</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
@@ -2518,7 +3313,7 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
-            <p id="butterfly.foamfile.ZeroFolderFoamFile.parameters" class="name">var <span class="ident">parameters</span></p>
+            <p id="butterfly.foamfile.FoamFileZeroFolder.parameters" class="name">var <span class="ident">parameters</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
@@ -2533,7 +3328,7 @@ def convertBoolValue(v=True):
 
             </div>
             <div class="item">
-            <p id="butterfly.foamfile.ZeroFolderFoamFile.values" class="name">var <span class="ident">values</span></p>
+            <p id="butterfly.foamfile.FoamFileZeroFolder.values" class="name">var <span class="ident">values</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
@@ -2550,7 +3345,7 @@ def convertBoolValue(v=True):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.__init__">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.__init__">
     <p>def <span class="ident">__init__</span>(</p><p>self, name, cls, location=None, fileFormat=&#39;ascii&#39;, defaultValues=None, values=None)</p>
     </div>
     
@@ -2563,19 +3358,20 @@ def convertBoolValue(v=True):
   
     <div class="desc inherited"><p>Init foam file.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.__init__" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.__init__" class="source">
     <pre><code>def __init__(self, name, cls, location=None, fileFormat="ascii",
              defaultValues=None, values=None):
     """Init foam file."""
+    self.__dict__['is{}'.format(self.__class__.__name__)] = True
     self.__version = str(Version().OFVer)
     self.format = str(fileFormat)  # ascii / binary
     self.cls = str(cls)  # dictionary or field
     self.name = str(name)
     self.location = location  # location is optional
     if self.location:
-        if self.location in self.__locations:
-            self.location = '"' + self.location + '"'
+        if self.location.replace('"', '') in self.__locations:
+            self.location = '"' + self.location.replace('"', '') + '"'
         else:
                 raise ValueError(
                     '{} is not a valid OpenFOAM location: {}'.format(
@@ -2588,7 +3384,7 @@ def convertBoolValue(v=True):
     if not defaultValues:
         defaultValues = {}
     self.__values = deepcopy(defaultValues)
-    self.updateValues(values)
+    self.updateValues(values, mute=True)
 </code></pre>
   </div>
 </div>
@@ -2597,7 +3393,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.ToString">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -2610,8 +3406,8 @@ def convertBoolValue(v=True):
   
     <div class="desc inherited"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -2623,7 +3419,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.body">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.body">
     <p>def <span class="ident">body</span>(</p><p>self)</p>
     </div>
     
@@ -2636,15 +3432,26 @@ def convertBoolValue(v=True):
   
     <div class="desc inherited"><p>Return body string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.body', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.body" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.body', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.body" class="source">
     <pre><code>def body(self):
     """Return body string."""
     # remove None values
-    _values = OrderedDict()
-    for key, value in self.values.iteritems():
-        if value:
-            _values[key] = value
+    def removeNone(d):
+        if isinstance(d, (dict, OrderedDict)):
+            return OrderedDict((k, removeNone(v))
+                               for k, v in d.iteritems()
+                               if v and removeNone(v))
+        elif isinstance(d, (list, tuple)):
+            return [removeNone(v) for v in d if v and removeNone(v)]
+        else:
+            return d
+        return removeNone
+    _values = removeNone(self.values)
+    # add an empty dict for refinementRegions
+    if 'castellatedMeshControls' in _values:
+        if 'refinementRegions' not in _values['castellatedMeshControls']:
+            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
@@ -2661,7 +3468,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.duplicate">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.duplicate">
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
@@ -2674,8 +3481,8 @@ def convertBoolValue(v=True):
   
     <div class="desc inherited"><p>Return a copy of this object.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.duplicate" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.duplicate" class="source">
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
@@ -2687,7 +3494,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.fromBFGeometries">
     <p>def <span class="ident">fromBFGeometries</span>(</p><p>cls, BFGeometries, values=None)</p>
     </div>
     
@@ -2696,8 +3503,8 @@ def convertBoolValue(v=True):
   
     <div class="desc"><p>Init class by BFGeometries.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.fromBFGeometries" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.fromBFGeometries', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.fromBFGeometries" class="source">
     <pre><code>@classmethod
 def fromBFGeometries(cls, BFGeometries, values=None):
     """Init class by BFGeometries."""
@@ -2712,7 +3519,99 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.getValueByParameter">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.fromFile">
+    <p>def <span class="ident">fromFile</span>(</p><p>cls, filepath, location=None)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.foamfile.FoamFile">FoamFile</a></code>.<code><a href="#butterfly.foamfile.FoamFile.fromFile">fromFile</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Create a FoamFile from a file.</p>
+<p>Args:
+    filepath: Full file path to dictionary.
+    location: Optional folder name for location (0, constant or system)</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.fromFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.fromFile" class="source">
+    <pre><code>@classmethod
+def fromFile(cls, filepath, location=None):
+    """Create a FoamFile from a file.
+    Args:
+        filepath: Full file path to dictionary.
+        location: Optional folder name for location (0, constant or system)
+    """
+    def _tryGetFoamFileValue(key):
+        try:
+            return _values['FoamFile'][key]
+        except KeyError:
+            print 'failed to find {} in {}.\n\tUsing the default value: {}' \
+                .format(filepath, key, default[key])
+            return default[key]
+    assert not filepath.endswith('blockMeshDict'), \
+        'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
+    _values = CppDictParser.fromFile(filepath).values
+    p, _name = os.path.split(filepath)
+    default = {
+        'object': _name,
+        'class': 'dictionary',
+        'location': None,
+        'format': 'ascii'
+    }
+    # set up FoamFile dictionary
+    _name = _tryGetFoamFileValue('object')
+    _cls = _tryGetFoamFileValue('class')
+    _location = _tryGetFoamFileValue('location')
+    _fileFormat = _tryGetFoamFileValue('format')
+    if 'FoamFile' in _values:
+        del(_values['FoamFile'])
+    return cls(_name, _cls, _location, _fileFormat, values=_values)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.getBoundaryField">
+    <p>def <span class="ident">getBoundaryField</span>(</p><p>self, name)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Try to get boundaryField value for a geometry by name.</p>
+<p>Args:
+    name: Geometry name.
+Returns:
+    An OpenFOAM field if name is in boundaryFields.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.getBoundaryField', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.getBoundaryField" class="source">
+    <pre><code>def getBoundaryField(self, name):
+    """Try to get boundaryField value for a geometry by name.
+    Args:
+        name: Geometry name.
+    Returns:
+        An OpenFOAM field if name is in boundaryFields.
+    """
+    if name in self.values['boundaryField']:
+        return self.values['boundaryField'][name]
+    else:
+        print 'Failed to find boundaryField values for {}'.format(name)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.getValueByParameter">
     <p>def <span class="ident">getValueByParameter</span>(</p><p>self, parameter)</p>
     </div>
     
@@ -2727,8 +3626,8 @@ def fromBFGeometries(cls, BFGeometries, values=None):
 <p>Args:
     parameter: Name of a parameter as a string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.getValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.getValueByParameter" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.getValueByParameter', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.getValueByParameter" class="source">
     <pre><code>def getValueByParameter(self, parameter):
     """Get values for a given parameter by parameter name.
     Args:
@@ -2748,7 +3647,7 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.header">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.header">
     <p>def <span class="ident">header</span>(</p><p>self)</p>
     </div>
     
@@ -2761,8 +3660,8 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
     <div class="desc inherited"><p>Return open foam style string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.header', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.header" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.header', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.header" class="source">
     <pre><code>def header(self):
     """Return open foam style string."""
     if self.location:
@@ -2791,8 +3690,8 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.save">
-    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None)</p>
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.save">
+    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None, overwrite=True)</p>
     </div>
     
     <p class="inheritance">
@@ -2807,17 +3706,19 @@ def fromBFGeometries(cls, BFGeometries, values=None):
     projectFolder: Path to project folder as a string.
     subFolder: Optional input for subFolder (default: self.location).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.save', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.save" class="source">
-    <pre><code>def save(self, projectFolder, subFolder=None):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.save', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.save" class="source">
+    <pre><code>def save(self, projectFolder, subFolder=None, overwrite=True):
     """Save to file.
     Args:
         projectFolder: Path to project folder as a string.
         subFolder: Optional input for subFolder (default: self.location).
     """
-    subFolder = self.location.replace('"', '') if not subFolder else subFolder
-    with open(os.path.join(projectFolder,
-                           subFolder, self.name), "wb") as outf:
+    subFolder = subFolder or self.location.replace('"', '')
+    fp = os.path.join(projectFolder, subFolder, self.name)
+    if not overwrite and os.path.isfile(fp):
+        return
+    with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
 </code></pre>
   </div>
@@ -2827,27 +3728,26 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.setBoundaryField">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.setBoundaryField">
     <p>def <span class="ident">setBoundaryField</span>(</p><p>self, BFGeometries)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Get data for getBoundaryField as a dictionary.</p>
+    <div class="desc"><p>Set FoamFile boundaryField values from BFGeometries.</p>
 <p>Args:
     BFGeometries: List of Butterfly geometries.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.setBoundaryField', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.setBoundaryField" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.setBoundaryField', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.setBoundaryField" class="source">
     <pre><code>def setBoundaryField(self, BFGeometries):
-    """Get data for getBoundaryField as a dictionary.
+    """Set FoamFile boundaryField values from BFGeometries.
     Args:
         BFGeometries: List of Butterfly geometries.
     """
-    self.values['boundaryField'] = getBoundaryField(
-        BFGeometries, self.__class__.__name__.lower()
-    )
+    self.values['boundaryField'] = \
+        getBoundaryFieldFromGeometries(BFGeometries, self.name)
 </code></pre>
   </div>
 </div>
@@ -2856,7 +3756,7 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.setValueByParameter">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.setValueByParameter">
     <p>def <span class="ident">setValueByParameter</span>(</p><p>self, parameter, value)</p>
     </div>
     
@@ -2872,8 +3772,8 @@ def fromBFGeometries(cls, BFGeometries, values=None):
     parameter: Name of a parameter as a string.
     value: Parameter value as a string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.setValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.setValueByParameter" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.setValueByParameter', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.setValueByParameter" class="source">
     <pre><code>def setValueByParameter(self, parameter, value):
     """Set value for a parameter.
     Args:
@@ -2889,7 +3789,7 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.toOpenFOAM">
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.toOpenFOAM">
     <p>def <span class="ident">toOpenFOAM</span>(</p><p>self)</p>
     </div>
     
@@ -2902,8 +3802,8 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
     <div class="desc inherited"><p>Return OpenFOAM string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.toOpenFOAM', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.toOpenFOAM" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.toOpenFOAM', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.toOpenFOAM" class="source">
     <pre><code>def toOpenFOAM(self):
     """Return OpenFOAM string."""
     return "\n".join((self.header(), self.body()))
@@ -2915,8 +3815,8 @@ def fromBFGeometries(cls, BFGeometries, values=None):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.foamfile.ZeroFolderFoamFile.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v)</p>
+    <div class="name def" id="butterfly.foamfile.FoamFileZeroFolder.updateValues">
+    <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
     </div>
     
     <p class="inheritance">
@@ -2926,18 +3826,71 @@ def fromBFGeometries(cls, BFGeometries, values=None):
 
     
   
-    <div class="desc inherited"><p>Update current values from dictionat v.</p>
+    <div class="desc inherited"><p>Update current values from dictionary v.</p>
 <p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p></div>
+already exists it will be updated.</p>
+<p>Returns:
+    True is the dictionary is updated.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.ZeroFolderFoamFile.updateValues', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.foamfile.ZeroFolderFoamFile.updateValues" class="source">
-    <pre><code>def updateValues(self, v):
-    """Update current values from dictionat v.
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.foamfile.FoamFileZeroFolder.updateValues', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.foamfile.FoamFileZeroFolder.updateValues" class="source">
+    <pre><code>def updateValues(self, v, replace=False, mute=False):
+    """Update current values from dictionary v.
     if key is not available in current values it will be added, if the key
     already exists it will be updated.
+    Returns:
+        True is the dictionary is updated.
     """
-    self.__values.update(v)
+    def logChanges(original, new):
+        """compare this dictionary with the current values."""
+        if original is None:
+            original = {}
+        for key, value in new.items():
+            if key not in original:
+                # there is a new key so dictionary has changed.
+                if not mute:
+                    print '{} :: New values are added for {}.' \
+                        .format('.'.join(self.__parents), key)
+                self.__hasChanged = True
+                return
+            if isinstance(value, (dict, OrderedDict)):
+                self.__parents.append(key)
+                logChanges(original[key], value)
+            elif str(original[key]) != str(value):
+                    # there is a change in value
+                    if not mute:
+                        print '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                    self.__hasChanged = True
+                    return
+    def modifyDict(original, new):
+        """Modify a dictionary based on a new dictionary."""
+        for key, value in new.items():
+            if key in original and isinstance(value, dict):
+                if isinstance(original[key], dict):
+                    modifyDict(original[key], value)
+                else:
+                    # the value was not a dict, replce them with the new one
+                    original[key] = value
+            else:
+                original[key] = value
+        return original
+    assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+    self.__parents = [self.__class__.__name__]
+    self.__hasChanged = False
+    logChanges(self.__values, v)
+    if self.__hasChanged:
+        if replace:
+            self.__values.update(v)
+        else:
+            self.__values = modifyDict(self.__values, v)
+        return True
+    else:
+        return False
 </code></pre>
   </div>
 </div>

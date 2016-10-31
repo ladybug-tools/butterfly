@@ -985,6 +985,16 @@ table {
     <h1>Index</h1>
     <ul id="index">
 
+    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
+      
+  <ul>
+    <li class="mono"><a href="#butterfly.geometry.bfGeometryFromStlBlock">bfGeometryFromStlBlock</a></li>
+    <li class="mono"><a href="#butterfly.geometry.bfGeometryFromStlFile">bfGeometryFromStlFile</a></li>
+    <li class="mono"><a href="#butterfly.geometry.calculateMinMax">calculateMinMax</a></li>
+    <li class="mono"><a href="#butterfly.geometry.calculateMinMaxFromBFGeometries">calculateMinMaxFromBFGeometries</a></li>
+  </ul>
+
+    </li>
 
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
@@ -996,7 +1006,7 @@ table {
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.toStlString">toStlString</a></li>
+    <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.toSTL">toSTL</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFBlockGeometry.writeToStl">writeToStl</a></li>
   </ul>
 
@@ -1009,7 +1019,7 @@ table {
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.__init__">__init__</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly.geometry.BFGeometry.toStlString">toStlString</a></li>
+    <li class="mono"><a href="#butterfly.geometry.BFGeometry.toSTL">toSTL</a></li>
     <li class="mono"><a href="#butterfly.geometry.BFGeometry.writeToStl">writeToStl</a></li>
   </ul>
 
@@ -1033,10 +1043,13 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry" class="source">
-    <pre><code>"""BF geometry library."""
+    <pre><code># coding=utf-8
+"""BF geometry library."""
 import os
 from copy import deepcopy
 from .boundarycondition import BoundaryCondition
+from .stl import read_ascii_string
+from .vectormath import crossProduct, rotate, angleAnitclockwise
 
 
 class _BFMesh(object):
@@ -1049,18 +1062,24 @@ class _BFMesh(object):
         normals: A flatten list of (x, y, z) for face normals.
     """
 
-    def __init__(self, name, vertices, faceIndices, normals):
+    def __init__(self, name, vertices, faceIndices, normals=None):
         """Init Butterfly mesh."""
         self.name = name
 
         self.__vertices = vertices
         self.__faceIndices = faceIndices
+
+        if not normals:
+            normals = self.__calculateNormals()
+
         self.__normals = normals
 
         assert len(self.__faceIndices) == len(self.__normals), \
             "Length of faceIndices (%d) " \
             "should be equal to Length of normals (%d)" % (
                 len(self.__faceIndices), len(self.__normals))
+
+        self.__calculateMinMax()
 
     @property
     def name(self):
@@ -1093,7 +1112,51 @@ class _BFMesh(object):
         """A flatten list of (x, y, z) for normals."""
         return self.__normals
 
-    def toStlString(self):
+    @property
+    def min(self):
+        return self.__min
+
+    @property
+    def max(self):
+        return self.__max
+
+    def __calculateNormals(self):
+        """Calculate normals from vertices."""
+        return tuple(self.__calculateNormalFromPoints(
+            tuple(self.vertices[i] for i in ind)) for ind in self.faceIndices)
+
+    @staticmethod
+    def __calculateNormalFromPoints(pts):
+        """Calculate normal for three points."""
+        # vector between first point and the second point on the list
+        try:
+            pt1, pt2, pt3 = pts[:3]
+        except Exception as e:
+            raise ValueError('Failed to calculate normal:\n\t{}'.format(e))
+
+        v1 = (pt2[0] - pt1[0], pt2[1] - pt1[1], pt2[2] - pt1[2])
+
+        # vector between first point and the last point in the list
+        v2 = (pt3[0] - pt1[0], pt3[1] - pt1[1], pt3[2] - pt1[2])
+
+        return crossProduct(v1, v2)
+
+    def __calculateMinMax(self):
+        """Calculate maximum and minimum x, y, z for this geometry."""
+        minPt = list(self.vertices[0])
+        maxPt = list(self.vertices[0])
+
+        for v in self.vertices[1:]:
+            for i in xrange(3):
+                if v[i] < minPt[i]:
+                    minPt[i] = v[i]
+                elif v[i] > maxPt[i]:
+                    maxPt[i] = v[i]
+
+        self.__min = minPt
+        self.__max = maxPt
+
+    def toSTL(self):
         """Get STL definition for this geometry as a string."""
         _hea = "solid {}".format(self.name)
         _tale = "endsolid {}".format(self.name)
@@ -1120,14 +1183,14 @@ class _BFMesh(object):
             self.__vertices[faceInd[2]][2]
         ) for count, faceInd in enumerate(self.__faceIndices))
 
-        return "{}\n{}\n{}".format(
+        return "{}\n{}\n{}\n".format(
             _hea, "\n".join(_bodyCollector), _tale
         )
 
     def writeToStl(self, folder):
         """Save BFFace to a stl file. File name will be self.name."""
         with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-            outf.write(self.toStlString())
+            outf.write(self.toSTL())
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1163,7 +1226,7 @@ class BFGeometry(_BFMesh):
         print geo.toStlString()
     """
 
-    def __init__(self, name, vertices, faceIndices, normals,
+    def __init__(self, name, vertices, faceIndices, normals=None,
                  boundaryCondition=None):
         """Init Butterfly geometry."""
         _BFMesh.__init__(self, name, vertices, faceIndices, normals)
@@ -1199,16 +1262,15 @@ class BFBlockGeometry(BFGeometry):
         name: Name as a string (A-Z a-z 0-9 _).
         vertices: A flatten list of (x, y, z) for vertices.
         faceIndices: A flatten list of (a, b, c) for indices for each face.
-        normals: A flatten list of (x, y, z) for face normals.
         boundaryCondition: Boundary condition for this geometry.
         borderVertices: List of lists of (x, y, z) values for each quad face of
             the geometry.
     """
 
-    def __init__(self, name, vertices, faceIndices, normals, borderVertices,
+    def __init__(self, name, vertices, faceIndices, borderVertices,
                  boundaryCondition=None):
         """Create Block Geometry."""
-        BFGeometry.__init__(self, name, vertices, faceIndices, normals,
+        BFGeometry.__init__(self, name, vertices, faceIndices, None,
                             boundaryCondition)
         self.__borderVertices = borderVertices
 
@@ -1223,14 +1285,91 @@ class BFBlockGeometry(BFGeometry):
         return self.__borderVertices
 
 
-if __name__ == '__main__':
-    vertices = ((0, 0, 0), (10, 0, 0), (10, 10, 0), (0, 10, 0))
+def bfGeometryFromStlBlock(stlBlock):
+    """Create BFGeometry from an stl block as a string."""
+    solid = read_ascii_string(stlBlock)
 
-    geo = BFGeometry(name='square', vertices=vertices,
-                     faceIndices=((0, 1, 2), (0, 2, 3)),
-                     normals=((0, 0, 1), (0, 0, 1)))
+    vertices = tuple(solid.vertices)
+    indices = tuple(tuple(vertices.index(ver) for ver in facet.vertices)
+                    for facet in solid.facets)
+    normals = tuple(facet.normal for facet in solid.facets)
 
-    print geo.toStlString()
+    return BFGeometry(solid.name, vertices, indices, normals)
+
+
+def bfGeometryFromStlFile(filepath):
+    """Return a tuple of BFGeometry from an stl file."""
+    with open(filepath, 'rb') as f:
+        l = ''.join(f.readlines())
+
+    blocks = ('\nsolid{}'.format(t) if not t.startswith('solid') else '\n{}'.format(t)
+              for t in l.split('\nsolid'))
+    del(l)
+
+    return tuple(bfGeometryFromStlBlock(b) for b in blocks)
+
+
+def calculateMinMaxFromBFGeometries(geometries, xAxis=None):
+    """Calculate maximum and minimum x, y, z for this geometry.
+
+    Returns:
+        (minPt, maxPt)
+    """
+    if not xAxis or xAxis[0] == 1 and xAxis[1] == 0:
+        minPt = list(geometries[0].min)
+        maxPt = list(geometries[0].max)
+
+        for geo in geometries[1:]:
+            for i in xrange(3):
+                if geo.min[i] < minPt[i]:
+                    minPt[i] = geo.min[i]
+
+                if geo.max[i] > maxPt[i]:
+                    maxPt[i] = geo.max[i]
+
+        return minPt, maxPt
+    else:
+        # calculate min and max for each geometry in new coordinates
+        infP = float('+inf')
+        infN = float('-inf')
+        minPt = [infP, infP, infP]
+        maxPt = [infN, infN, infN]
+
+        angle = angleAnitclockwise((1, 0, 0), xAxis)
+        vertices = tuple(pts for geo in geometries
+                         for pts in calculateMinMax(geo, angle))
+        for v in vertices:
+            for i in xrange(3):
+                if v[i] < minPt[i]:
+                    minPt[i] = v[i]
+                elif v[i] > maxPt[i]:
+                    maxPt[i] = v[i]
+
+        return rotate((0, 0, 0), minPt, angle), rotate((0, 0, 0), maxPt, angle)
+
+
+def calculateMinMax(geometry, angle):
+    """Calculate maximum and minimum x, y, z for input geometry.
+
+    angle: Anticlockwise rotation angle of the new coordinates system.
+    """
+    # get list of vertices in the new coordinates system
+    vertices = (rotate((0, 0, 0), v, -angle) for v in geometry.vertices)
+
+    infP = float('+inf')
+    infN = float('-inf')
+    minPt = [infP, infP, infP]
+    maxPt = [infN, infN, infN]
+
+    for v in vertices:
+        for i in xrange(3):
+            if v[i] < minPt[i]:
+                minPt[i] = v[i]
+            elif v[i] > maxPt[i]:
+                maxPt[i] = v[i]
+
+    # rotate them back to XY coordinates
+    return minPt, maxPt
 </code></pre>
   </div>
 
@@ -1238,6 +1377,165 @@ if __name__ == '__main__':
 
   <section id="section-items">
 
+    <h2 class="section-title" id="header-functions">Functions</h2>
+      
+  <div class="item">
+    <div class="name def" id="butterfly.geometry.bfGeometryFromStlBlock">
+    <p>def <span class="ident">bfGeometryFromStlBlock</span>(</p><p>stlBlock)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create BFGeometry from an stl block as a string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.bfGeometryFromStlBlock', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.bfGeometryFromStlBlock" class="source">
+    <pre><code>def bfGeometryFromStlBlock(stlBlock):
+    """Create BFGeometry from an stl block as a string."""
+    solid = read_ascii_string(stlBlock)
+
+    vertices = tuple(solid.vertices)
+    indices = tuple(tuple(vertices.index(ver) for ver in facet.vertices)
+                    for facet in solid.facets)
+    normals = tuple(facet.normal for facet in solid.facets)
+
+    return BFGeometry(solid.name, vertices, indices, normals)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="butterfly.geometry.bfGeometryFromStlFile">
+    <p>def <span class="ident">bfGeometryFromStlFile</span>(</p><p>filepath)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a tuple of BFGeometry from an stl file.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.bfGeometryFromStlFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.bfGeometryFromStlFile" class="source">
+    <pre><code>def bfGeometryFromStlFile(filepath):
+    """Return a tuple of BFGeometry from an stl file."""
+    with open(filepath, 'rb') as f:
+        l = ''.join(f.readlines())
+
+    blocks = ('\nsolid{}'.format(t) if not t.startswith('solid') else '\n{}'.format(t)
+              for t in l.split('\nsolid'))
+    del(l)
+
+    return tuple(bfGeometryFromStlBlock(b) for b in blocks)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="butterfly.geometry.calculateMinMax">
+    <p>def <span class="ident">calculateMinMax</span>(</p><p>geometry, angle)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Calculate maximum and minimum x, y, z for input geometry.</p>
+<p>angle: Anticlockwise rotation angle of the new coordinates system.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.calculateMinMax', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.calculateMinMax" class="source">
+    <pre><code>def calculateMinMax(geometry, angle):
+    """Calculate maximum and minimum x, y, z for input geometry.
+
+    angle: Anticlockwise rotation angle of the new coordinates system.
+    """
+    # get list of vertices in the new coordinates system
+    vertices = (rotate((0, 0, 0), v, -angle) for v in geometry.vertices)
+
+    infP = float('+inf')
+    infN = float('-inf')
+    minPt = [infP, infP, infP]
+    maxPt = [infN, infN, infN]
+
+    for v in vertices:
+        for i in xrange(3):
+            if v[i] < minPt[i]:
+                minPt[i] = v[i]
+            elif v[i] > maxPt[i]:
+                maxPt[i] = v[i]
+
+    # rotate them back to XY coordinates
+    return minPt, maxPt
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="butterfly.geometry.calculateMinMaxFromBFGeometries">
+    <p>def <span class="ident">calculateMinMaxFromBFGeometries</span>(</p><p>geometries, xAxis=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Calculate maximum and minimum x, y, z for this geometry.</p>
+<p>Returns:
+    (minPt, maxPt)</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.calculateMinMaxFromBFGeometries', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.calculateMinMaxFromBFGeometries" class="source">
+    <pre><code>def calculateMinMaxFromBFGeometries(geometries, xAxis=None):
+    """Calculate maximum and minimum x, y, z for this geometry.
+
+    Returns:
+        (minPt, maxPt)
+    """
+    if not xAxis or xAxis[0] == 1 and xAxis[1] == 0:
+        minPt = list(geometries[0].min)
+        maxPt = list(geometries[0].max)
+
+        for geo in geometries[1:]:
+            for i in xrange(3):
+                if geo.min[i] < minPt[i]:
+                    minPt[i] = geo.min[i]
+
+                if geo.max[i] > maxPt[i]:
+                    maxPt[i] = geo.max[i]
+
+        return minPt, maxPt
+    else:
+        # calculate min and max for each geometry in new coordinates
+        infP = float('+inf')
+        infN = float('-inf')
+        minPt = [infP, infP, infP]
+        maxPt = [infN, infN, infN]
+
+        angle = angleAnitclockwise((1, 0, 0), xAxis)
+        vertices = tuple(pts for geo in geometries
+                         for pts in calculateMinMax(geo, angle))
+        for v in vertices:
+            for i in xrange(3):
+                if v[i] < minPt[i]:
+                    minPt[i] = v[i]
+                elif v[i] > maxPt[i]:
+                    maxPt[i] = v[i]
+
+        return rotate((0, 0, 0), minPt, angle), rotate((0, 0, 0), maxPt, angle)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
 
     <h2 class="section-title" id="header-classes">Classes</h2>
       
@@ -1251,7 +1549,6 @@ if __name__ == '__main__':
     name: Name as a string (A-Z a-z 0-9 _).
     vertices: A flatten list of (x, y, z) for vertices.
     faceIndices: A flatten list of (a, b, c) for indices for each face.
-    normals: A flatten list of (x, y, z) for face normals.
     boundaryCondition: Boundary condition for this geometry.
     borderVertices: List of lists of (x, y, z) values for each quad face of
         the geometry.</p></div>
@@ -1267,16 +1564,15 @@ if __name__ == '__main__':
         name: Name as a string (A-Z a-z 0-9 _).
         vertices: A flatten list of (x, y, z) for vertices.
         faceIndices: A flatten list of (a, b, c) for indices for each face.
-        normals: A flatten list of (x, y, z) for face normals.
         boundaryCondition: Boundary condition for this geometry.
         borderVertices: List of lists of (x, y, z) values for each quad face of
             the geometry.
     """
 
-    def __init__(self, name, vertices, faceIndices, normals, borderVertices,
+    def __init__(self, name, vertices, faceIndices, borderVertices,
                  boundaryCondition=None):
         """Create Block Geometry."""
-        BFGeometry.__init__(self, name, vertices, faceIndices, normals,
+        BFGeometry.__init__(self, name, vertices, faceIndices, None,
                             boundaryCondition)
         self.__borderVertices = borderVertices
 
@@ -1386,6 +1682,34 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
+            <p id="butterfly.geometry.BFBlockGeometry.max" class="name">var <span class="ident">max</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.geometry.BFGeometry">BFGeometry</a></code>.<code><a href="#butterfly.geometry.BFGeometry.max">max</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.geometry.BFBlockGeometry.min" class="name">var <span class="ident">min</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.geometry.BFGeometry">BFGeometry</a></code>.<code><a href="#butterfly.geometry.BFGeometry.min">min</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.geometry.BFBlockGeometry.name" class="name">var <span class="ident">name</span></p>
             
     <p class="inheritance">
@@ -1434,7 +1758,7 @@ if __name__ == '__main__':
             
   <div class="item">
     <div class="name def" id="butterfly.geometry.BFBlockGeometry.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, vertices, faceIndices, normals, borderVertices, boundaryCondition=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, vertices, faceIndices, borderVertices, boundaryCondition=None)</p>
     </div>
     
     <p class="inheritance">
@@ -1448,10 +1772,10 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFBlockGeometry.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.BFBlockGeometry.__init__" class="source">
-    <pre><code>def __init__(self, name, vertices, faceIndices, normals, borderVertices,
+    <pre><code>def __init__(self, name, vertices, faceIndices, borderVertices,
              boundaryCondition=None):
     """Create Block Geometry."""
-    BFGeometry.__init__(self, name, vertices, faceIndices, normals,
+    BFGeometry.__init__(self, name, vertices, faceIndices, None,
                         boundaryCondition)
     self.__borderVertices = borderVertices
 </code></pre>
@@ -1514,22 +1838,22 @@ if __name__ == '__main__':
   
             
   <div class="item">
-    <div class="name def" id="butterfly.geometry.BFBlockGeometry.toStlString">
-    <p>def <span class="ident">toStlString</span>(</p><p>self)</p>
+    <div class="name def" id="butterfly.geometry.BFBlockGeometry.toSTL">
+    <p>def <span class="ident">toSTL</span>(</p><p>self)</p>
     </div>
     
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.geometry.BFGeometry">BFGeometry</a></code>.<code><a href="#butterfly.geometry.BFGeometry.toStlString">toStlString</a></code>
+       <code><a href="#butterfly.geometry.BFGeometry">BFGeometry</a></code>.<code><a href="#butterfly.geometry.BFGeometry.toSTL">toSTL</a></code>
     </p>
 
     
   
     <div class="desc inherited"><p>Get STL definition for this geometry as a string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFBlockGeometry.toStlString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.geometry.BFBlockGeometry.toStlString" class="source">
-    <pre><code>def toStlString(self):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFBlockGeometry.toSTL', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.BFBlockGeometry.toSTL" class="source">
+    <pre><code>def toSTL(self):
     """Get STL definition for this geometry as a string."""
     _hea = "solid {}".format(self.name)
     _tale = "endsolid {}".format(self.name)
@@ -1554,7 +1878,7 @@ if __name__ == '__main__':
         self.__vertices[faceInd[2]][1],
         self.__vertices[faceInd[2]][2]
     ) for count, faceInd in enumerate(self.__faceIndices))
-    return "{}\n{}\n{}".format(
+    return "{}\n{}\n{}\n".format(
         _hea, "\n".join(_bodyCollector), _tale
     )
 </code></pre>
@@ -1583,7 +1907,7 @@ if __name__ == '__main__':
     <pre><code>def writeToStl(self, folder):
     """Save BFFace to a stl file. File name will be self.name."""
     with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-        outf.write(self.toStlString())
+        outf.write(self.toSTL())
 </code></pre>
   </div>
 </div>
@@ -1637,7 +1961,7 @@ print geo.toStlString()
         print geo.toStlString()
     """
 
-    def __init__(self, name, vertices, faceIndices, normals,
+    def __init__(self, name, vertices, faceIndices, normals=None,
                  boundaryCondition=None):
         """Init Butterfly geometry."""
         _BFMesh.__init__(self, name, vertices, faceIndices, normals)
@@ -1719,6 +2043,26 @@ print geo.toStlString()
 
             </div>
             <div class="item">
+            <p id="butterfly.geometry.BFGeometry.max" class="name">var <span class="ident">max</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.geometry.BFGeometry.min" class="name">var <span class="ident">min</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.geometry.BFGeometry.name" class="name">var <span class="ident">name</span></p>
             
 
@@ -1755,7 +2099,7 @@ print geo.toStlString()
             
   <div class="item">
     <div class="name def" id="butterfly.geometry.BFGeometry.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, vertices, faceIndices, normals, boundaryCondition=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, vertices, faceIndices, normals=None, boundaryCondition=None)</p>
     </div>
     
 
@@ -1765,7 +2109,7 @@ print geo.toStlString()
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFGeometry.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.BFGeometry.__init__" class="source">
-    <pre><code>def __init__(self, name, vertices, faceIndices, normals,
+    <pre><code>def __init__(self, name, vertices, faceIndices, normals=None,
              boundaryCondition=None):
     """Init Butterfly geometry."""
     _BFMesh.__init__(self, name, vertices, faceIndices, normals)
@@ -1822,8 +2166,8 @@ print geo.toStlString()
   
             
   <div class="item">
-    <div class="name def" id="butterfly.geometry.BFGeometry.toStlString">
-    <p>def <span class="ident">toStlString</span>(</p><p>self)</p>
+    <div class="name def" id="butterfly.geometry.BFGeometry.toSTL">
+    <p>def <span class="ident">toSTL</span>(</p><p>self)</p>
     </div>
     
 
@@ -1831,9 +2175,9 @@ print geo.toStlString()
   
     <div class="desc"><p>Get STL definition for this geometry as a string.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFGeometry.toStlString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.geometry.BFGeometry.toStlString" class="source">
-    <pre><code>def toStlString(self):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFGeometry.toSTL', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.geometry.BFGeometry.toSTL" class="source">
+    <pre><code>def toSTL(self):
     """Get STL definition for this geometry as a string."""
     _hea = "solid {}".format(self.name)
     _tale = "endsolid {}".format(self.name)
@@ -1858,7 +2202,7 @@ print geo.toStlString()
         self.__vertices[faceInd[2]][1],
         self.__vertices[faceInd[2]][2]
     ) for count, faceInd in enumerate(self.__faceIndices))
-    return "{}\n{}\n{}".format(
+    return "{}\n{}\n{}\n".format(
         _hea, "\n".join(_bodyCollector), _tale
     )
 </code></pre>
@@ -1883,7 +2227,7 @@ print geo.toStlString()
     <pre><code>def writeToStl(self, folder):
     """Save BFFace to a stl file. File name will be self.name."""
     with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-        outf.write(self.toStlString())
+        outf.write(self.toSTL())
 </code></pre>
   </div>
 </div>

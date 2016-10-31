@@ -1127,12 +1127,13 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition" class="source">
-    <pre><code>"""Collection of OpenFOAM boundary conditions (e.g. wall, inlet, outlet)."""
+    <pre><code># coding=utf-8
+"""Collection of OpenFOAM boundary conditions (e.g. wall, inlet, outlet)."""
 from copy import deepcopy
 from fields import AtmBoundaryLayerInletVelocity, AtmBoundaryLayerInletK, \
     AtmBoundaryLayerInletEpsilon, Calculated, EpsilonWallFunction, FixedValue, \
     InletOutlet, KqRWallFunction, NutkWallFunction, NutkAtmRoughWallFunction, \
-    Slip, ZeroGradient
+    Slip, ZeroGradient, AlphatJayatillekeWallFunction, FixedFluxPressure
 
 
 class BoundaryCondition(object):
@@ -1141,26 +1142,28 @@ class BoundaryCondition(object):
     Attributes:
         bcType: Boundary condition type. e.g.(patch, wall)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for temperature in Kelvin (300)
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, bcType='patch', refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, bcType='patch', refLevels=None, T=None, U=None, p=None,
+                 k=None, epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         self.type = bcType
-        self.temperature = temperature
-        self.refLevels = (0, 0) if not refLevels else tuple(int(v) for v in refLevels)
+        self.T = T or ZeroGradient()
+        self.refLevels = (1, 1) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
-        self.u = ZeroGradient() if not u else u
-        self.p = ZeroGradient() if not p else p
-        self.k = ZeroGradient() if not k else k
-        self.epsilon = ZeroGradient() if not epsilon else epsilon
-        self.nut = ZeroGradient() if not nut else nut
+        self.U = U or ZeroGradient()
+        self.p = p or ZeroGradient()
+        self.k = k or ZeroGradient()
+        self.epsilon = epsilon or ZeroGradient()
+        self.nut = nut or ZeroGradient()
+        self.alphat = alphat or ZeroGradient()
+        self.p_rgh = p_rgh or ZeroGradient()
 
     def isBoundaryCondition(self):
         """Return True for boundary conditions."""
@@ -1188,15 +1191,17 @@ class BoundingBoxBoundaryCondition(BoundaryCondition):
 
     def __init__(self, refLevels=None):
         """Init bounday condition."""
-        u = ZeroGradient()
+        U = ZeroGradient()
         p = ZeroGradient()
         k = ZeroGradient()
         epsilon = ZeroGradient()
         nut = ZeroGradient()
         refLevels = None
-        temperature = None
+        T = ZeroGradient()
+        alphat = ZeroGradient()
+        p_rgh = ZeroGradient()
         super(BoundingBoxBoundaryCondition, self).__init__(
-            'wall', refLevels, temperature, u, p, k, epsilon, nut
+            'wall', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 
 
@@ -1204,29 +1209,31 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
     """Wall boundary condition base class.
 
     Attributes:
-        temperature: Optional input for Temperature
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+                 epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = KqRWallFunction('0.1') if not k else k
-        epsilon = EpsilonWallFunction(0.01) \
-            if not epsilon else epsilon
-        nut = NutkWallFunction(0.01) \
-            if not nut else nut
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or KqRWallFunction('0.1')
+        epsilon = epsilon or EpsilonWallFunction(0.01)
+        nut = nut or NutkWallFunction(0.01)
+        T = T or ZeroGradient()
+        alphat = alphat or AlphatJayatillekeWallFunction(
+            value='0', isUniform=True, Prt='0.85')
 
-        BoundaryCondition.__init__(self, 'wall', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        p_rgh = p_rgh or FixedFluxPressure(value='0', isUniform=True, rho='rhok')
+
+        BoundaryCondition.__init__(self, 'wall', refLevels, T, U, p,
+                                   k, epsilon, nut, alphat, p_rgh)
 
 
 class FixedInletBoundaryCondition(BoundaryCondition):
@@ -1234,31 +1241,34 @@ class FixedInletBoundaryCondition(BoundaryCondition):
 
     Attributes:
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: Air velocity as fixed value (x, y, z).
+        T: Optional input for Temperature.
+        U: Air velocity as fixed value (x, y, z).
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+                 epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = FixedValue('0.1') if not k else k
-        epsilon = FixedValue('0.01') if not epsilon else epsilon
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or FixedValue('0.1')
+        epsilon = epsilon or FixedValue('0.01')
         nut = Calculated('0')
+        T = T if T else None
+        alphat = ZeroGradient()
+        p_rgh = ZeroGradient()
 
-        BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        BoundaryCondition.__init__(self, 'patch', refLevels, T, U, p,
+                                   k, epsilon, nut, alphat, p_rgh)
 
     def __repr__(self):
         """Bounday condition representatoin."""
         return "{}: {}\nvelocity {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.u, self.refLevels)
+            self.__class__.__name__, self.type, self.U, self.refLevels)
 
 
 class FixedOutletBoundaryCondition(BoundaryCondition):
@@ -1267,26 +1277,29 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
     Attributes:
         pressure: Pressure as a float (default: 0)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+                 epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = ZeroGradient() if not u else u
-        p = FixedValue('0') if not p else p
-        k = ZeroGradient() if not k else k
-        epsilon = ZeroGradient() if not epsilon else epsilon
+        U = U or ZeroGradient()
+        p = p or FixedValue('0')
+        k = k or ZeroGradient()
+        epsilon = epsilon or ZeroGradient()
         nut = Calculated('0')
+        T = T or ZeroGradient()
+        alphat = ZeroGradient()
+        p_rgh = ZeroGradient()
 
         super(FixedOutletBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut
+            'patch', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 
     def __repr__(self):
@@ -1299,29 +1312,27 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
     """Wall boundary condition for wall geometrys inside wind tunnel.
 
     Attributes:
-        temperature: Optional input for Temperature
+        T: Optional input for Temperature.
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = KqRWallFunction('$internalField', isUnifrom=False) if not k else k
-        epsilon = EpsilonWallFunction('$internalField', isUnifrom=False) \
-            if not epsilon else epsilon
-        nut = NutkWallFunction('0.0') \
-            if not nut else nut
-
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or KqRWallFunction('$internalField', isUnifrom=False)
+        epsilon = epsilon or EpsilonWallFunction('$internalField', isUnifrom=False)
+        nut = nut or NutkWallFunction('0.0')
+        T = T or ZeroGradient()
         super(WindTunnelWallBoundaryCondition, self).__init__(
-            'wall', refLevels, temperature, u, p, k, epsilon, nut
+            'wall', refLevels, T, U, p, k, epsilon, nut
         )
 
 
@@ -1329,28 +1340,29 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
     """Wind tunnel ground boundary condition.
 
     Attributes:
-        temperature: Optional input for Temperature
+        T: Optional input for Temperature.
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, ablConditions, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None):
+    def __init__(self, ablConditions, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None):
         """Init bounday condition."""
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = ZeroGradient() if not k else k
-        epsilon = ZeroGradient() if not epsilon else epsilon
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or ZeroGradient()
+        epsilon = epsilon or ZeroGradient()
         nut = NutkAtmRoughWallFunction.fromABLConditions(ablConditions,
                                                          'uniform 0')
+        T = T or ZeroGradient()
 
         super(WindTunnelGroundBoundaryCondition, self).__init__(
-            'wall', refLevels, temperature, u, p, k, epsilon, nut
+            'wall', refLevels, T, U, p, k, epsilon, nut
         )
 
 
@@ -1359,31 +1371,32 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
 
     Attributes:
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, ablConditions, refLevels=None, temperature=None, p=None,
+    def __init__(self, ablConditions, refLevels=None, T=None, p=None,
                  nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
+        U = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
         k = AtmBoundaryLayerInletK.fromABLConditions(ablConditions)
         epsilon = AtmBoundaryLayerInletEpsilon.fromABLConditions(ablConditions)
-        p = ZeroGradient() if not p else p
-        nut = Calculated('0') if not nut else nut
+        p = p or ZeroGradient()
+        nut = nut or Calculated('0')
+        T = T or ZeroGradient()
 
         super(WindTunnelInletBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut)
+            'patch', refLevels, T, U, p, k, epsilon, nut)
 
     def __repr__(self):
         """Bounday condition representatoin."""
         return "{}: {}\nvelocity {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.u.Uref, self.refLevels)
+            self.__class__.__name__, self.type, self.U.Uref, self.refLevels)
 
 
 class WindTunnelOutletBoundaryCondition(BoundaryCondition):
@@ -1392,28 +1405,27 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
     Attributes:
         pressure: Pressure as a float (default: 0)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = InletOutlet('uniform (0 0 0)', '$internalField') if not u else u
-        p = FixedValue('$pressure') if not p else p
-        k = InletOutlet('uniform $turbulentKE', '$internalField') \
-            if not k else k
-        epsilon = InletOutlet('uniform $turbulentEpsilon', '$internalField') \
-            if not epsilon else epsilon
-        nut = Calculated('0') if not nut else nut
+        U = U or InletOutlet('uniform (0 0 0)', '$internalField')
+        p = p or FixedValue('$pressure')
+        k = k or InletOutlet('uniform $turbulentKE', '$internalField')
+        epsilon = epsilon or InletOutlet('uniform $turbulentEpsilon', '$internalField')
+        nut = nut or Calculated('0')
+        T = T or ZeroGradient()
 
         super(WindTunnelOutletBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut
+            'patch', refLevels, T, U, p, k, epsilon, nut
         )
 
     def __repr__(self):
@@ -1428,26 +1440,27 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
     Attributes:
         pressure: Pressure as a float (default: 0)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = Slip() if not u else u
-        p = Slip() if not p else p
-        k = Slip() if not k else k
-        epsilon = Slip() if not epsilon else epsilon
+        U = U or Slip()
+        p = p or Slip()
+        k = k or Slip()
+        epsilon = epsilon or Slip()
         nut = Calculated('0')
+        T = T or ZeroGradient()
 
         super(WindTunnelTopAndSidesBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut
+            'patch', refLevels, T, U, p, k, epsilon, nut
         )
 
     def __repr__(self):
@@ -1481,8 +1494,8 @@ if __name__ == '__main__':
 <p>Attributes:
     bcType: Boundary condition type. e.g.(patch, wall)
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for temperature in Kelvin (300)
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -1496,26 +1509,28 @@ if __name__ == '__main__':
     Attributes:
         bcType: Boundary condition type. e.g.(patch, wall)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for temperature in Kelvin (300)
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, bcType='patch', refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, bcType='patch', refLevels=None, T=None, U=None, p=None,
+                 k=None, epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         self.type = bcType
-        self.temperature = temperature
-        self.refLevels = (0, 0) if not refLevels else tuple(int(v) for v in refLevels)
+        self.T = T or ZeroGradient()
+        self.refLevels = (1, 1) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
-        self.u = ZeroGradient() if not u else u
-        self.p = ZeroGradient() if not p else p
-        self.k = ZeroGradient() if not k else k
-        self.epsilon = ZeroGradient() if not epsilon else epsilon
-        self.nut = ZeroGradient() if not nut else nut
+        self.U = U or ZeroGradient()
+        self.p = p or ZeroGradient()
+        self.k = k or ZeroGradient()
+        self.epsilon = epsilon or ZeroGradient()
+        self.nut = nut or ZeroGradient()
+        self.alphat = alphat or ZeroGradient()
+        self.p_rgh = p_rgh or ZeroGradient()
 
     def isBoundaryCondition(self):
         """Return True for boundary conditions."""
@@ -1545,6 +1560,36 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.BoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.BoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.BoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.BoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -1586,7 +1631,7 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.BoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.BoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
 
             
@@ -1596,7 +1641,7 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.BoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.BoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
 
             
@@ -1615,21 +1660,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.BoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.BoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, bcType=&#39;patch&#39;, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, bcType=&#39;patch&#39;, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None, nut=None, alphat=None, p_rgh=None)</p>
     </div>
     
 
@@ -1639,18 +1674,20 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.BoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.BoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, bcType='patch', refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None, nut=None):
+    <pre><code>def __init__(self, bcType='patch', refLevels=None, T=None, U=None, p=None,
+             k=None, epsilon=None, nut=None, alphat=None, p_rgh=None):
     """Init bounday condition."""
     self.type = bcType
-    self.temperature = temperature
-    self.refLevels = (0, 0) if not refLevels else tuple(int(v) for v in refLevels)
+    self.T = T or ZeroGradient()
+    self.refLevels = (1, 1) if not refLevels else tuple(int(v) for v in refLevels)
     # set default values
-    self.u = ZeroGradient() if not u else u
-    self.p = ZeroGradient() if not p else p
-    self.k = ZeroGradient() if not k else k
-    self.epsilon = ZeroGradient() if not epsilon else epsilon
-    self.nut = ZeroGradient() if not nut else nut
+    self.U = U or ZeroGradient()
+    self.p = p or ZeroGradient()
+    self.k = k or ZeroGradient()
+    self.epsilon = epsilon or ZeroGradient()
+    self.nut = nut or ZeroGradient()
+    self.alphat = alphat or ZeroGradient()
+    self.p_rgh = p_rgh or ZeroGradient()
 </code></pre>
   </div>
 </div>
@@ -1743,15 +1780,17 @@ if __name__ == '__main__':
 
     def __init__(self, refLevels=None):
         """Init bounday condition."""
-        u = ZeroGradient()
+        U = ZeroGradient()
         p = ZeroGradient()
         k = ZeroGradient()
         epsilon = ZeroGradient()
         nut = ZeroGradient()
         refLevels = None
-        temperature = None
+        T = ZeroGradient()
+        alphat = ZeroGradient()
+        p_rgh = ZeroGradient()
         super(BoundingBoxBoundaryCondition, self).__init__(
-            'wall', refLevels, temperature, u, p, k, epsilon, nut
+            'wall', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 </code></pre>
   </div>
@@ -1766,6 +1805,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -1823,6 +1904,20 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
+            <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
@@ -1837,39 +1932,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
             <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.type" class="name">var <span class="ident">type</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
        <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.type">type</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.BoundingBoxBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
     </p>
 
             
@@ -1898,15 +1965,17 @@ if __name__ == '__main__':
   <div id="source-butterfly.boundarycondition.BoundingBoxBoundaryCondition.__init__" class="source">
     <pre><code>def __init__(self, refLevels=None):
     """Init bounday condition."""
-    u = ZeroGradient()
+    U = ZeroGradient()
     p = ZeroGradient()
     k = ZeroGradient()
     epsilon = ZeroGradient()
     nut = ZeroGradient()
     refLevels = None
-    temperature = None
+    T = ZeroGradient()
+    alphat = ZeroGradient()
+    p_rgh = ZeroGradient()
     super(BoundingBoxBoundaryCondition, self).__init__(
-        'wall', refLevels, temperature, u, p, k, epsilon, nut
+        'wall', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
     )
 </code></pre>
   </div>
@@ -2002,8 +2071,8 @@ if __name__ == '__main__':
     <div class="desc"><p>Inlet boundary condition base class.</p>
 <p>Attributes:
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: Air velocity as fixed value (x, y, z).
+    T: Optional input for Temperature.
+    U: Air velocity as fixed value (x, y, z).
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -2016,31 +2085,34 @@ if __name__ == '__main__':
 
     Attributes:
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: Air velocity as fixed value (x, y, z).
+        T: Optional input for Temperature.
+        U: Air velocity as fixed value (x, y, z).
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+                 epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = FixedValue('0.1') if not k else k
-        epsilon = FixedValue('0.01') if not epsilon else epsilon
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or FixedValue('0.1')
+        epsilon = epsilon or FixedValue('0.01')
         nut = Calculated('0')
+        T = T if T else None
+        alphat = ZeroGradient()
+        p_rgh = ZeroGradient()
 
-        BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        BoundaryCondition.__init__(self, 'patch', refLevels, T, U, p,
+                                   k, epsilon, nut, alphat, p_rgh)
 
     def __repr__(self):
         """Bounday condition representatoin."""
         return "{}: {}\nvelocity {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.u, self.refLevels)
+            self.__class__.__name__, self.type, self.U, self.refLevels)
 </code></pre>
   </div>
 </div>
@@ -2054,6 +2126,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -2111,11 +2225,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -2125,11 +2239,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -2152,25 +2266,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.FixedInletBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.FixedInletBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None, nut=None, alphat=None, p_rgh=None)</p>
     </div>
     
     <p class="inheritance">
@@ -2184,17 +2284,20 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.FixedInletBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.FixedInletBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None, nut=None):
+    <pre><code>def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+             epsilon=None, nut=None, alphat=None, p_rgh=None):
     """Init bounday condition."""
     # set default values for an inlet
-    u = FixedValue('(0 0 0)') if not u else u
-    p = ZeroGradient() if not p else p
-    k = FixedValue('0.1') if not k else k
-    epsilon = FixedValue('0.01') if not epsilon else epsilon
+    U = U or FixedValue('(0 0 0)')
+    p = p or ZeroGradient()
+    k = k or FixedValue('0.1')
+    epsilon = epsilon or FixedValue('0.01')
     nut = Calculated('0')
-    BoundaryCondition.__init__(self, 'patch', refLevels, temperature, u, p,
-                               k, epsilon, nut)
+    T = T if T else None
+    alphat = ZeroGradient()
+    p_rgh = ZeroGradient()
+    BoundaryCondition.__init__(self, 'patch', refLevels, T, U, p,
+                               k, epsilon, nut, alphat, p_rgh)
 </code></pre>
   </div>
 </div>
@@ -2290,8 +2393,8 @@ if __name__ == '__main__':
 <p>Attributes:
     pressure: Pressure as a float (default: 0)
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for Temperature.
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -2305,26 +2408,29 @@ if __name__ == '__main__':
     Attributes:
         pressure: Pressure as a float (default: 0)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+                 epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = ZeroGradient() if not u else u
-        p = FixedValue('0') if not p else p
-        k = ZeroGradient() if not k else k
-        epsilon = ZeroGradient() if not epsilon else epsilon
+        U = U or ZeroGradient()
+        p = p or FixedValue('0')
+        k = k or ZeroGradient()
+        epsilon = epsilon or ZeroGradient()
         nut = Calculated('0')
+        T = T or ZeroGradient()
+        alphat = ZeroGradient()
+        p_rgh = ZeroGradient()
 
         super(FixedOutletBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut
+            'patch', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 
     def __repr__(self):
@@ -2344,6 +2450,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -2401,11 +2549,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -2415,11 +2563,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -2442,25 +2590,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.FixedOutletBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.FixedOutletBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None, nut=None, alphat=None, p_rgh=None)</p>
     </div>
     
     <p class="inheritance">
@@ -2474,17 +2608,20 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.FixedOutletBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.FixedOutletBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None, nut=None):
+    <pre><code>def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+             epsilon=None, nut=None, alphat=None, p_rgh=None):
     """Init bounday condition."""
     # set default values for an inlet
-    u = ZeroGradient() if not u else u
-    p = FixedValue('0') if not p else p
-    k = ZeroGradient() if not k else k
-    epsilon = ZeroGradient() if not epsilon else epsilon
+    U = U or ZeroGradient()
+    p = p or FixedValue('0')
+    k = k or ZeroGradient()
+    epsilon = epsilon or ZeroGradient()
     nut = Calculated('0')
+    T = T or ZeroGradient()
+    alphat = ZeroGradient()
+    p_rgh = ZeroGradient()
     super(FixedOutletBoundaryCondition, self).__init__(
-        'patch', refLevels, temperature, u, p, k, epsilon, nut
+        'patch', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
     )
 </code></pre>
   </div>
@@ -2579,10 +2716,9 @@ if __name__ == '__main__':
   
     <div class="desc"><p>Wall boundary condition base class.</p>
 <p>Attributes:
-    temperature: Optional input for Temperature
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for Temperature.
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -2594,29 +2730,31 @@ if __name__ == '__main__':
     """Wall boundary condition base class.
 
     Attributes:
-        temperature: Optional input for Temperature
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+                 epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = KqRWallFunction('0.1') if not k else k
-        epsilon = EpsilonWallFunction(0.01) \
-            if not epsilon else epsilon
-        nut = NutkWallFunction(0.01) \
-            if not nut else nut
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or KqRWallFunction('0.1')
+        epsilon = epsilon or EpsilonWallFunction(0.01)
+        nut = nut or NutkWallFunction(0.01)
+        T = T or ZeroGradient()
+        alphat = alphat or AlphatJayatillekeWallFunction(
+            value='0', isUniform=True, Prt='0.85')
 
-        BoundaryCondition.__init__(self, 'wall', refLevels, temperature, u, p,
-                                   k, epsilon, nut)
+        p_rgh = p_rgh or FixedFluxPressure(value='0', isUniform=True, rho='rhok')
+
+        BoundaryCondition.__init__(self, 'wall', refLevels, T, U, p,
+                                   k, epsilon, nut, alphat, p_rgh)
 </code></pre>
   </div>
 </div>
@@ -2630,6 +2768,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -2687,11 +2867,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -2701,11 +2881,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -2728,25 +2908,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.IndoorWallBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.IndoorWallBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None, nut=None, alphat=None, p_rgh=None)</p>
     </div>
     
     <p class="inheritance">
@@ -2760,18 +2926,20 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.IndoorWallBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.IndoorWallBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None, nut=None):
+    <pre><code>def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
+             epsilon=None, nut=None, alphat=None, p_rgh=None):
     """Init bounday condition."""
-    u = FixedValue('(0 0 0)') if not u else u
-    p = ZeroGradient() if not p else p
-    k = KqRWallFunction('0.1') if not k else k
-    epsilon = EpsilonWallFunction(0.01) \
-        if not epsilon else epsilon
-    nut = NutkWallFunction(0.01) \
-        if not nut else nut
-    BoundaryCondition.__init__(self, 'wall', refLevels, temperature, u, p,
-                               k, epsilon, nut)
+    U = U or FixedValue('(0 0 0)')
+    p = p or ZeroGradient()
+    k = k or KqRWallFunction('0.1')
+    epsilon = epsilon or EpsilonWallFunction(0.01)
+    nut = nut or NutkWallFunction(0.01)
+    T = T or ZeroGradient()
+    alphat = alphat or AlphatJayatillekeWallFunction(
+        value='0', isUniform=True, Prt='0.85')
+    p_rgh = p_rgh or FixedFluxPressure(value='0', isUniform=True, rho='rhok')
+    BoundaryCondition.__init__(self, 'wall', refLevels, T, U, p,
+                               k, epsilon, nut, alphat, p_rgh)
 </code></pre>
   </div>
 </div>
@@ -2865,10 +3033,10 @@ if __name__ == '__main__':
   
     <div class="desc"><p>Wind tunnel ground boundary condition.</p>
 <p>Attributes:
-    temperature: Optional input for Temperature
+    T: Optional input for Temperature.
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for Temperature.
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -2880,28 +3048,29 @@ if __name__ == '__main__':
     """Wind tunnel ground boundary condition.
 
     Attributes:
-        temperature: Optional input for Temperature
+        T: Optional input for Temperature.
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, ablConditions, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None):
+    def __init__(self, ablConditions, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None):
         """Init bounday condition."""
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = ZeroGradient() if not k else k
-        epsilon = ZeroGradient() if not epsilon else epsilon
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or ZeroGradient()
+        epsilon = epsilon or ZeroGradient()
         nut = NutkAtmRoughWallFunction.fromABLConditions(ablConditions,
                                                          'uniform 0')
+        T = T or ZeroGradient()
 
         super(WindTunnelGroundBoundaryCondition, self).__init__(
-            'wall', refLevels, temperature, u, p, k, epsilon, nut
+            'wall', refLevels, T, U, p, k, epsilon, nut
         )
 </code></pre>
   </div>
@@ -2916,6 +3085,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -2973,11 +3184,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -2987,11 +3198,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -3014,25 +3225,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, ablConditions, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, ablConditions, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None)</p>
     </div>
     
     <p class="inheritance">
@@ -3046,17 +3243,18 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.WindTunnelGroundBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, ablConditions, refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None):
+    <pre><code>def __init__(self, ablConditions, refLevels=None, T=None,
+             U=None, p=None, k=None, epsilon=None):
     """Init bounday condition."""
-    u = FixedValue('(0 0 0)') if not u else u
-    p = ZeroGradient() if not p else p
-    k = ZeroGradient() if not k else k
-    epsilon = ZeroGradient() if not epsilon else epsilon
+    U = U or FixedValue('(0 0 0)')
+    p = p or ZeroGradient()
+    k = k or ZeroGradient()
+    epsilon = epsilon or ZeroGradient()
     nut = NutkAtmRoughWallFunction.fromABLConditions(ablConditions,
                                                      'uniform 0')
+    T = T or ZeroGradient()
     super(WindTunnelGroundBoundaryCondition, self).__init__(
-        'wall', refLevels, temperature, u, p, k, epsilon, nut
+        'wall', refLevels, T, U, p, k, epsilon, nut
     )
 </code></pre>
   </div>
@@ -3152,8 +3350,8 @@ if __name__ == '__main__':
     <div class="desc"><p>Wind tunnel atmBoundaryLayerInletVelocity boundary condition.</p>
 <p>Attributes:
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for Temperature.
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -3166,31 +3364,32 @@ if __name__ == '__main__':
 
     Attributes:
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, ablConditions, refLevels=None, temperature=None, p=None,
+    def __init__(self, ablConditions, refLevels=None, T=None, p=None,
                  nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
+        U = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
         k = AtmBoundaryLayerInletK.fromABLConditions(ablConditions)
         epsilon = AtmBoundaryLayerInletEpsilon.fromABLConditions(ablConditions)
-        p = ZeroGradient() if not p else p
-        nut = Calculated('0') if not nut else nut
+        p = p or ZeroGradient()
+        nut = nut or Calculated('0')
+        T = T or ZeroGradient()
 
         super(WindTunnelInletBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut)
+            'patch', refLevels, T, U, p, k, epsilon, nut)
 
     def __repr__(self):
         """Bounday condition representatoin."""
         return "{}: {}\nvelocity {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.u.Uref, self.refLevels)
+            self.__class__.__name__, self.type, self.U.Uref, self.refLevels)
 </code></pre>
   </div>
 </div>
@@ -3204,6 +3403,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -3261,11 +3502,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -3275,11 +3516,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -3302,25 +3543,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.WindTunnelInletBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, ablConditions, refLevels=None, temperature=None, p=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, ablConditions, refLevels=None, T=None, p=None, nut=None)</p>
     </div>
     
     <p class="inheritance">
@@ -3334,17 +3561,18 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.WindTunnelInletBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.WindTunnelInletBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, ablConditions, refLevels=None, temperature=None, p=None,
+    <pre><code>def __init__(self, ablConditions, refLevels=None, T=None, p=None,
              nut=None):
     """Init bounday condition."""
     # set default values for an inlet
-    u = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
+    U = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
     k = AtmBoundaryLayerInletK.fromABLConditions(ablConditions)
     epsilon = AtmBoundaryLayerInletEpsilon.fromABLConditions(ablConditions)
-    p = ZeroGradient() if not p else p
-    nut = Calculated('0') if not nut else nut
+    p = p or ZeroGradient()
+    nut = nut or Calculated('0')
+    T = T or ZeroGradient()
     super(WindTunnelInletBoundaryCondition, self).__init__(
-        'patch', refLevels, temperature, u, p, k, epsilon, nut)
+        'patch', refLevels, T, U, p, k, epsilon, nut)
 </code></pre>
   </div>
 </div>
@@ -3440,8 +3668,8 @@ if __name__ == '__main__':
 <p>Attributes:
     pressure: Pressure as a float (default: 0)
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for Temperature.
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -3455,28 +3683,27 @@ if __name__ == '__main__':
     Attributes:
         pressure: Pressure as a float (default: 0)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = InletOutlet('uniform (0 0 0)', '$internalField') if not u else u
-        p = FixedValue('$pressure') if not p else p
-        k = InletOutlet('uniform $turbulentKE', '$internalField') \
-            if not k else k
-        epsilon = InletOutlet('uniform $turbulentEpsilon', '$internalField') \
-            if not epsilon else epsilon
-        nut = Calculated('0') if not nut else nut
+        U = U or InletOutlet('uniform (0 0 0)', '$internalField')
+        p = p or FixedValue('$pressure')
+        k = k or InletOutlet('uniform $turbulentKE', '$internalField')
+        epsilon = epsilon or InletOutlet('uniform $turbulentEpsilon', '$internalField')
+        nut = nut or Calculated('0')
+        T = T or ZeroGradient()
 
         super(WindTunnelOutletBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut
+            'patch', refLevels, T, U, p, k, epsilon, nut
         )
 
     def __repr__(self):
@@ -3496,6 +3723,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -3553,11 +3822,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -3567,11 +3836,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -3594,25 +3863,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None, nut=None)</p>
     </div>
     
     <p class="inheritance">
@@ -3626,19 +3881,18 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.WindTunnelOutletBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None, nut=None):
+    <pre><code>def __init__(self, refLevels=None, T=None,
+             U=None, p=None, k=None, epsilon=None, nut=None):
     """Init bounday condition."""
     # set default values for an inlet
-    u = InletOutlet('uniform (0 0 0)', '$internalField') if not u else u
-    p = FixedValue('$pressure') if not p else p
-    k = InletOutlet('uniform $turbulentKE', '$internalField') \
-        if not k else k
-    epsilon = InletOutlet('uniform $turbulentEpsilon', '$internalField') \
-        if not epsilon else epsilon
-    nut = Calculated('0') if not nut else nut
+    U = U or InletOutlet('uniform (0 0 0)', '$internalField')
+    p = p or FixedValue('$pressure')
+    k = k or InletOutlet('uniform $turbulentKE', '$internalField')
+    epsilon = epsilon or InletOutlet('uniform $turbulentEpsilon', '$internalField')
+    nut = nut or Calculated('0')
+    T = T or ZeroGradient()
     super(WindTunnelOutletBoundaryCondition, self).__init__(
-        'patch', refLevels, temperature, u, p, k, epsilon, nut
+        'patch', refLevels, T, U, p, k, epsilon, nut
     )
 </code></pre>
   </div>
@@ -3735,8 +3989,8 @@ if __name__ == '__main__':
 <p>Attributes:
     pressure: Pressure as a float (default: 0)
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for Temperature.
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -3750,26 +4004,27 @@ if __name__ == '__main__':
     Attributes:
         pressure: Pressure as a float (default: 0)
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
-        u = Slip() if not u else u
-        p = Slip() if not p else p
-        k = Slip() if not k else k
-        epsilon = Slip() if not epsilon else epsilon
+        U = U or Slip()
+        p = p or Slip()
+        k = k or Slip()
+        epsilon = epsilon or Slip()
         nut = Calculated('0')
+        T = T or ZeroGradient()
 
         super(WindTunnelTopAndSidesBoundaryCondition, self).__init__(
-            'patch', refLevels, temperature, u, p, k, epsilon, nut
+            'patch', refLevels, T, U, p, k, epsilon, nut
         )
 
     def __repr__(self):
@@ -3789,6 +4044,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -3846,11 +4143,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -3860,11 +4157,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -3887,25 +4184,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None, nut=None)</p>
     </div>
     
     <p class="inheritance">
@@ -3919,17 +4202,18 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.WindTunnelTopAndSidesBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None, nut=None):
+    <pre><code>def __init__(self, refLevels=None, T=None,
+             U=None, p=None, k=None, epsilon=None, nut=None):
     """Init bounday condition."""
     # set default values for an inlet
-    u = Slip() if not u else u
-    p = Slip() if not p else p
-    k = Slip() if not k else k
-    epsilon = Slip() if not epsilon else epsilon
+    U = U or Slip()
+    p = p or Slip()
+    k = k or Slip()
+    epsilon = epsilon or Slip()
     nut = Calculated('0')
+    T = T or ZeroGradient()
     super(WindTunnelTopAndSidesBoundaryCondition, self).__init__(
-        'patch', refLevels, temperature, u, p, k, epsilon, nut
+        'patch', refLevels, T, U, p, k, epsilon, nut
     )
 </code></pre>
   </div>
@@ -4024,10 +4308,10 @@ if __name__ == '__main__':
   
     <div class="desc"><p>Wall boundary condition for wall geometrys inside wind tunnel.</p>
 <p>Attributes:
-    temperature: Optional input for Temperature
+    T: Optional input for Temperature.
     refLevels: A tuple for min, max refinment levels for this geometry.
-    temperature: Optional input for Temperature
-    u: OpenFOAM value for u.
+    T: Optional input for Temperature.
+    U: OpenFOAM value for U.
     p: OpenFOAM value for p.
     k: OpenFOAM value for k.
     epsilon: OpenFOAM value for epsilon.
@@ -4039,29 +4323,27 @@ if __name__ == '__main__':
     """Wall boundary condition for wall geometrys inside wind tunnel.
 
     Attributes:
-        temperature: Optional input for Temperature
+        T: Optional input for Temperature.
         refLevels: A tuple for min, max refinment levels for this geometry.
-        temperature: Optional input for Temperature
-        u: OpenFOAM value for u.
+        T: Optional input for Temperature.
+        U: OpenFOAM value for U.
         p: OpenFOAM value for p.
         k: OpenFOAM value for k.
         epsilon: OpenFOAM value for epsilon.
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, temperature=None,
-                 u=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, refLevels=None, T=None,
+                 U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
-        u = FixedValue('(0 0 0)') if not u else u
-        p = ZeroGradient() if not p else p
-        k = KqRWallFunction('$internalField', isUnifrom=False) if not k else k
-        epsilon = EpsilonWallFunction('$internalField', isUnifrom=False) \
-            if not epsilon else epsilon
-        nut = NutkWallFunction('0.0') \
-            if not nut else nut
-
+        U = U or FixedValue('(0 0 0)')
+        p = p or ZeroGradient()
+        k = k or KqRWallFunction('$internalField', isUnifrom=False)
+        epsilon = epsilon or EpsilonWallFunction('$internalField', isUnifrom=False)
+        nut = nut or NutkWallFunction('0.0')
+        T = T or ZeroGradient()
         super(WindTunnelWallBoundaryCondition, self).__init__(
-            'wall', refLevels, temperature, u, p, k, epsilon, nut
+            'wall', refLevels, T, U, p, k, epsilon, nut
         )
 </code></pre>
   </div>
@@ -4076,6 +4358,48 @@ if __name__ == '__main__':
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.T" class="name">var <span class="ident">T</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.T">T</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.U" class="name">var <span class="ident">U</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.U">U</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.alphat" class="name">var <span class="ident">alphat</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.alphat">alphat</a></code>
+    </p>
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
             <div class="item">
             <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.epsilon" class="name">var <span class="ident">epsilon</span></p>
             
@@ -4133,11 +4457,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.p_rgh" class="name">var <span class="ident">p_rgh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.p_rgh">p_rgh</a></code>
     </p>
 
             
@@ -4147,11 +4471,11 @@ if __name__ == '__main__':
 
             </div>
             <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.temperature" class="name">var <span class="ident">temperature</span></p>
+            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.refLevels" class="name">var <span class="ident">refLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.temperature">temperature</a></code>
+       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.refLevels">refLevels</a></code>
     </p>
 
             
@@ -4174,25 +4498,11 @@ if __name__ == '__main__':
 </div>
 
             </div>
-            <div class="item">
-            <p id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.u" class="name">var <span class="ident">u</span></p>
-            
-    <p class="inheritance">
-     <strong>Inheritance:</strong>
-       <code><a href="#butterfly.boundarycondition.BoundaryCondition">BoundaryCondition</a></code>.<code><a href="#butterfly.boundarycondition.BoundaryCondition.u">u</a></code>
-    </p>
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
           <h3>Methods</h3>
             
   <div class="item">
     <div class="name def" id="butterfly.boundarycondition.WindTunnelWallBoundaryCondition.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, temperature=None, u=None, p=None, k=None, epsilon=None, nut=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, refLevels=None, T=None, U=None, p=None, k=None, epsilon=None, nut=None)</p>
     </div>
     
     <p class="inheritance">
@@ -4206,18 +4516,17 @@ if __name__ == '__main__':
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.boundarycondition.WindTunnelWallBoundaryCondition.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.boundarycondition.WindTunnelWallBoundaryCondition.__init__" class="source">
-    <pre><code>def __init__(self, refLevels=None, temperature=None,
-             u=None, p=None, k=None, epsilon=None, nut=None):
+    <pre><code>def __init__(self, refLevels=None, T=None,
+             U=None, p=None, k=None, epsilon=None, nut=None):
     """Init bounday condition."""
-    u = FixedValue('(0 0 0)') if not u else u
-    p = ZeroGradient() if not p else p
-    k = KqRWallFunction('$internalField', isUnifrom=False) if not k else k
-    epsilon = EpsilonWallFunction('$internalField', isUnifrom=False) \
-        if not epsilon else epsilon
-    nut = NutkWallFunction('0.0') \
-        if not nut else nut
+    U = U or FixedValue('(0 0 0)')
+    p = p or ZeroGradient()
+    k = k or KqRWallFunction('$internalField', isUnifrom=False)
+    epsilon = epsilon or EpsilonWallFunction('$internalField', isUnifrom=False)
+    nut = nut or NutkWallFunction('0.0')
+    T = T or ZeroGradient()
     super(WindTunnelWallBoundaryCondition, self).__init__(
-        'wall', refLevels, temperature, u, p, k, epsilon, nut
+        'wall', refLevels, T, U, p, k, epsilon, nut
     )
 </code></pre>
   </div>
