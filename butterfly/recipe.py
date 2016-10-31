@@ -198,6 +198,9 @@ class _Recipe(object):
             case.turbulenceProperties = self.turbulenceProperties
             case.turbulenceProperties.save(case.projectDir)
 
+        if case.decomposeParDict:
+            case.decomposeParDict.save(case.projectDir)
+
         if hasattr(case, 'probes'):
             case.probes.save(case.projectDir)
 
@@ -397,8 +400,8 @@ class HeatTransfer(_SingleCommandRecipe):
             overwrite: Set to True to overwrite current files.
             remove: Set to True to remove extra files in the folder.
         """
-        # update pRef point to center locationInMesh for snappyHexMeshDict
-        self.fvSolution.values['SIMPLE']['pRef'] = \
+        # update pRefPoint to center locationInMesh for snappyHexMeshDict
+        self.fvSolution.values['SIMPLE']['pRefPoint'] = \
             str(case.snappyHexMeshDict.locationInMesh).replace(',', ' ')
 
         super(HeatTransfer, self).prepareCase(case, overwrite, remove)

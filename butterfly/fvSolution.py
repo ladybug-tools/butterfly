@@ -103,7 +103,7 @@ class FvSolution(FoamFile):
                                   'solver': 'smoothSolver'}},
                 'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-4',
                                                'T': '1e-4'},
-                            'pRef': '(0 0 0)', 'pRefValue': '0'},
+                            'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
                 'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
 
         # update values based on the recipe.

@@ -29,7 +29,7 @@ ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "4"
 
 try:
-    from butterfly.gh.refinementRegion import GHRefinementRegion
+    from butterfly_grasshopper.refinementRegion import RefinementRegionGH
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -40,4 +40,4 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _geo and _name and _refMode:
-    refinementRegion = GHRefinementRegion(_name, _geo, _refMode, _meshSet_)
+    refinementRegion = RefinementRegionGH(_name, _geo, _refMode, _meshSet_)

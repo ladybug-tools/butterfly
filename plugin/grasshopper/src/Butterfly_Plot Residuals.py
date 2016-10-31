@@ -118,7 +118,8 @@ def main():
     
     # calculate curves
     crvs = tuple(rc.Geometry.PolylineCurve(rc.Geometry.Point3d(c, float(i), 0)
-    for c, i in enumerate(p.getResiduals(field, timeRange_))) for field in fields)
+        for c, i in enumerate(p.getResiduals(field, timeRange_)))
+        for field in fields)
         
     # find bounding box for curves
     bbox = crvs[0].GetBoundingBox(True)

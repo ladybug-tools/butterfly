@@ -75,6 +75,8 @@ class WindTunnelGH(butterfly.windtunnel.WindTunnel):
 
         convertToMeters = convertDocumentUnitsToMeters()
 
+        tunnelParameters = tunnelParameters or butterfly.windtunnel.TunnelParameters()
+
         # init openFOAM windTunnel
         return super(WindTunnelGH, cls).fromGeometriesWindVectorAndParameters(
             name, geometries, windVector, tunnelParameters, roughness,

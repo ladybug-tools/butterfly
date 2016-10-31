@@ -81,7 +81,7 @@ if _case and _recipe and _write:
         info = solution.info
         timestep = info.timestep
         residualValues = info.residualValues
-        if isRunning:
+        if run_ and isRunning:
             print 'running...'
             # update parameters if there has been changes.
             solution.updateFromRecipe(_recipe)
@@ -91,6 +91,7 @@ if _case and _recipe and _write:
             # analysis is over
             print 'done!'
             solution = sticky[uniqueKey]
+            solution.terminate()
             # remove solution from sticky
             if uniqueKey in sticky:
                 del(sticky[uniqueKey])

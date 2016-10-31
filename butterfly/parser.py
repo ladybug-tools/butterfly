@@ -142,8 +142,10 @@ class ResidualParser(object):
 
     def getResiduals(self, quantity, timeRange):
         """Get residuals for a quantity."""
-        assert quantity in self.quantities, \
-            'Invalid quantity. Try from the list below:\n{}'.format(self.quantities)
+        if quantity not in self.quantities:
+            print 'Invalid quantity [{}]. Try from the list below:\n{}' \
+                .format(quantity, self.quantities)
+            return ()
 
         if not timeRange:
             return (v[quantity] for v in self.__residuals.itervalues())

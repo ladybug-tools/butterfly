@@ -1,10 +1,10 @@
 # coding=utf-8
 """RefinementRegion for Grasshopper."""
 from butterfly.refinementRegion import RefinementRegion
-from .geometry import GHMesh
+from .geometry import MeshGH
 
 
-class GHRefinementRegion(RefinementRegion):
+class RefinementRegionGH(RefinementRegion):
     """Butterfly refinement region in Grasshopper.
 
     Attributes:
@@ -18,7 +18,7 @@ class GHRefinementRegion(RefinementRegion):
 
     def __init__(self, name, geometries, refinementMode, meshingParameters=None):
         """Init Butterfly geometry."""
-        _mesh = GHMesh(geometries, meshingParameters)
+        _mesh = MeshGH(geometries, meshingParameters)
         self.__geometry = _mesh.geometry
         RefinementRegion.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
                                   _mesh.normals, refinementMode)

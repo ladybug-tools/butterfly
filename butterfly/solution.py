@@ -28,9 +28,12 @@ class Solution(object):
         self.__remove = removeExtraFoamFiles
         assert hasattr(case, 'isCase'), \
             'ValueError:: {} is not a Butterfly.Case'.format(case)
-        self.__case = case
-        self.recipe = recipe
         self.decomposeParDict = decomposeParDict
+
+        self.__case = case
+        self.case.decomposeParDict = self.decomposeParDict
+
+        self.recipe = recipe
         self.updateSolutionParams(solutionParameter)
         # set internal properties for running the solution
 

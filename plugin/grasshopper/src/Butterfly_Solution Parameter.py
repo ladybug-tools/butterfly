@@ -38,5 +38,5 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _filename and _values:
-    solutionParam = SolutionParameter.fromDictionary(_filename, _values,
+    solutionParam = SolutionParameter.fromCppDictionary(_filename, _values,
                                                      replace_, tRange_)
