@@ -6,8 +6,9 @@ A light python API for creating and running [OpenFoam](http://www.openfoam.org/)
 
 API documentation
 ========================================
-[Butterfly](http://mostapharoudsari.github.io/Butterfly/doc/buterfly).
-[Butterfly_Grasshopper](http://mostapharoudsari.github.io/Butterfly/doc/buterfly_grasshopper).
+[Butterfly](http://mostapharoudsari.github.io/Butterfly/doc/butterfly).
+
+[Butterfly_Grasshopper](http://mostapharoudsari.github.io/Butterfly/doc/butterfly_grasshopper).
 
 
 Wiki
