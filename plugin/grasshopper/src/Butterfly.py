@@ -22,7 +22,7 @@ C:\Users\%USERNAME%\AppData\Roaming\McNeel\Rhinoceros\5.0\scripts\butterfly
 
 ghenv.Component.Name = "Butterfly"
 ghenv.Component.NickName = "BF::BF"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_31_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -50,7 +50,7 @@ def installButterfly(update):
             return
         elif update and os.path.isdir(libFolder):
             shutil.rmtree(libFolder)
-        
+    
     # download the zip file
     print "Downloading the github repository to {}".format(targetDirectory)
     zipFile = os.path.join(targetDirectory, os.path.basename(url))
@@ -73,7 +73,7 @@ def installButterfly(update):
     zf.close()
     
     for f in ('butterfly', 'butterfly_grasshopper'):
-        bfFolder = os.path.join(targetDirectory, r"butterfly-master\butterfly")
+        bfFolder = os.path.join(targetDirectory, r"butterfly-master", f)
         libFolder = os.path.join(targetDirectory, f)
         print 'Copying butterfly source code to {}'.format(libFolder)
         shutil.copytree(bfFolder, libFolder)
