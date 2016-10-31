@@ -24,7 +24,7 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nOCT_31_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -60,7 +60,9 @@ if _case:
             if not log.success:
                 raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)                        
         
-        _case.decomposeParDict = decomposeParDict_
+        if decomposeParDict_:
+            _case.decomposeParDict = decomposeParDict_
+            _case.decomposeParDict.save(_case.projectDir)
         
         log = _case.snappyHexMesh()
         

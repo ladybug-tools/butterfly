@@ -157,9 +157,9 @@ class SnappyHexMeshDict(FoamFile):
 
     @globRefineLevel.setter
     def globRefineLevel(self, r):
-        self.globRefineLevel = (1, 1) if not r else tuple(r)
-        if r:
-            _cls.setRefinementSurfaces()
+        self.__globRefineLevel = (1, 1) if not r else tuple(r)
+        if self.__globRefineLevel:
+            self.setRefinementSurfaces()
 
     @property
     def castellatedMesh(self):
