@@ -106,24 +106,27 @@ class Case(object):
         if not name:
             name = __originalName
 
-        _files = loadCaseFiles(path, True)
+        _files = loadCaseFiles(path, fullpath=True)
 
         # convert files to butterfly objects
         ff = tuple(cls.__createFoamfileFromFile(p)
                    for f in (_files.zero, _files.constant, _files.system)
-                   for p in f)
+                   for p in f if p)
 
         # add stl objects
 
         # find snappyHexMeshDict
         sHMD = cls.__getFoamFileByName('snappyHexMeshDict', ff)
 
-        sHMD.projectName = name
+        if sHMD:
+            sHMD.projectName = name
 
-        bfGeometries = tuple(geo for f in _files.stl
-                             for geo in bfGeometryFromStlFile(f)
-                             if os.path.split(f)[-1][:-4]
-                             in sHMD.stlFileNames)
+            bfGeometries = tuple(geo for f in _files.stl
+                                 for geo in bfGeometryFromStlFile(f)
+                                 if os.path.split(f)[-1][:-4]
+                                 in sHMD.stlFileNames)
+        else:
+            bfGeometries = []
 
         _case = cls(name, ff, bfGeometries)
 

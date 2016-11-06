@@ -8,6 +8,7 @@ if 'butterfly' not in sys.modules:
 try:
     import butterfly
 except ImportError as e:
-    raise ImportError('Can\'t find butterfly in sys.path. ' \
-                      'You need to install butterfly to use butterfly-grasshopper.\n'\
-                      'You can download butterfly from here: https://github.com/mostaphaRoudsari/Butterfly')
+    raise ImportError('Can\'t find butterfly in sys.path.\n'
+                      'You need to install butterfly to use butterfly-grasshopper.\n'
+                      'You can download butterfly from\n'
+                      'https://github.com/mostaphaRoudsari/Butterfly')

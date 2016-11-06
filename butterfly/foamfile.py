@@ -252,7 +252,7 @@ class FoamFile(object):
             if isinstance(d, (dict, OrderedDict)):
                 return OrderedDict((k, removeNone(v))
                                    for k, v in d.iteritems()
-                                   if v and removeNone(v))
+                                   if v == {} or (v and removeNone(v)))
             elif isinstance(d, (list, tuple)):
                 return [removeNone(v) for v in d if v and removeNone(v)]
             else:
@@ -260,11 +260,6 @@ class FoamFile(object):
             return removeNone
 
         _values = removeNone(self.values)
-
-        # add an empty dict for refinementRegions
-        if 'castellatedMeshControls' in _values:
-            if 'refinementRegions' not in _values['castellatedMeshControls']:
-                _values['castellatedMeshControls']['refinementRegions'] = {}
 
         # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \

@@ -14,6 +14,10 @@ Create Case from wind tunnel.
     Args:
         _name: Project name.
         _BFGeometries: List of butterfly geometries that will be inside the tunnel.
+        _windVector: A vector that indicates speed and direction of wind. Length
+            of the vector will be used as windspeed and the unfied vector will be
+            used for wind direction. For wind tunnel vector will be projected to
+            XY plane.
         _refWindHeight_: Reference height for wind velocity (default: 10m).
         _landscape_: An integer between 0-7 to calculate z0 (roughness).
             You can find full description of the landscape in Table I at this
@@ -69,7 +73,7 @@ Create Case from wind tunnel.
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nNOV_06_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"

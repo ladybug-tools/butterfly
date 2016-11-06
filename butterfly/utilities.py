@@ -18,6 +18,8 @@ def listfiles(folder, fullpath=False):
                 yield os.path.join(folder, f)
             else:
                 yield f
+        else:
+            yield
 
 
 def loadCaseFiles(folder, fullpath=False):
@@ -25,7 +27,6 @@ def loadCaseFiles(folder, fullpath=False):
     files = []
     for p in ('0', 'constant', 'system', 'constant\\triSurface'):
         fp = os.path.join(folder, p)
-        assert os.path.isdir(fp), 'There is no such a folder:\t{}'.format(fp)
         files.append(tuple(listfiles(fp, fullpath)))
 
     Files = namedtuple('Files', 'zero constant system stl')

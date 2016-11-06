@@ -78,6 +78,8 @@ class WindTunnel(object):
         tp = tunnelParameters
 
         # find xAxis
+        # project wind vector to XY Plane
+        windVector = (windVector[0], windVector[1], 0)
         zAxis = (0, 0, 1)
         xAxis = vm.crossProduct(windVector, zAxis)
         yAxis = vm.normalize(windVector)
