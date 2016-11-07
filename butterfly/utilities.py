@@ -5,6 +5,7 @@ import os
 import sys
 from collections import OrderedDict, namedtuple
 from subprocess import Popen, PIPE
+import gzip
 
 
 def listfiles(folder, fullpath=False):
@@ -284,3 +285,42 @@ def loadProbeValuesFromFolder(probesFolder, field):
             raise Exception('\nFailed to load probes:\n{}'.format(e))
 
     return _res
+
+
+def loadOFPointsFile(pathToFile):
+    """Return points as a generator of tuples."""
+    assert os.path.isfile(pathToFile), \
+        'Failed to find points file at {}'.format(pathToFile)
+
+    if pathToFile.endswith('.gz'):
+        pfile = gzip.open(pathToFile, 'rb')
+    else:
+        pfile = open(pathToFile, 'rb')
+
+    try:
+        for l in pfile:
+            if l.strip().startswith('(') and l.strip().endswith(')'):
+                yield eval(','.join(l.split()))
+    finally:
+        pfile.close()
+
+
+def loadOFFacesFile(pathToFile):
+    """Return faces indecies as a generator of tuples."""
+    assert os.path.isfile(pathToFile), \
+        'Failed to find points file at {}'.format(pathToFile)
+
+    if pathToFile.endswith('.gz'):
+        ffile = gzip.open(pathToFile, 'rb')
+    else:
+        ffile = open(pathToFile, 'rb')
+
+    try:
+        for l in ffile:
+            try:
+                if l.strip()[1] == '(' and l.strip().endswith(')'):
+                    yield eval(','.join(l[1:].split()))
+            except IndexError:
+                continue
+    finally:
+        ffile.close()

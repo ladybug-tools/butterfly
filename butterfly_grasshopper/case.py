@@ -1,7 +1,7 @@
 # coding=utf-8
 """OpemFOAM Case for Grasshopper."""
 import butterfly.case
-from .postprocess import loadOFMeshToRhino, loadOFPointsToRhino
+from .utilities import loadOFMesh, loadOFPoints
 
 
 class Case(butterfly.case.Case):
@@ -14,7 +14,7 @@ class Case(butterfly.case.Case):
         else:
             convertToMeters = 1
 
-        return loadOFMeshToRhino(self.polyMeshFolder, convertToMeters)
+        return loadOFMesh(self.polyMeshFolder, convertToMeters)
 
     def loadPoints(self):
         """Return OpenFOAM mesh as a Rhino mesh."""
@@ -23,4 +23,4 @@ class Case(butterfly.case.Case):
         else:
             convertToMeters = 1
 
-        return loadOFPointsToRhino(self.polyMeshFolder, convertToMeters)
+        return loadOFPoints(self.polyMeshFolder, convertToMeters)
