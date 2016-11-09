@@ -619,6 +619,11 @@ class Case(object):
         for ref in self.refinementRegions:
             ref.writeToStl(self.triSurfaceFolder)
 
+        # add .foam file
+        with open(os.path.join(self.projectDir,
+                               self.projectName + '.foam'), 'wb') as ffile:
+            ffile.write('')
+
         print '{} is saved to: {}'.format(self.projectName, self.projectDir)
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
