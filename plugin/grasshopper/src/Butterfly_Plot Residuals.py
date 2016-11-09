@@ -33,7 +33,7 @@ Load residual values for a case.
 
 ghenv.Component.Name = "Butterfly_Plot Residuals"
 ghenv.Component.NickName = "plotResiduals"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nNOV_08_2016'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -84,8 +84,6 @@ def coloredMeshFromCurve(curves, width=10, colors=None):
     return meshes
 
 try:
-    import butterfly
-    reload(butterfly.parser)
     from butterfly.parser import ResidualParser
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
