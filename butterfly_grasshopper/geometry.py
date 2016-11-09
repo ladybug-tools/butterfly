@@ -56,6 +56,21 @@ class MeshGH(object):
 
         self.__geometry = self.__triangulateMesh(_geo)
 
+    @property
+    def normals(self):
+        """Mesh Face normals."""
+        return tuple((n.X, n.Y, n.Z) for n in self.geometry.FaceNormals)
+
+    @property
+    def vertices(self):
+        """Mesh Face normals."""
+        return tuple((v.X, v.Y, v.Z) for v in self.geometry.Vertices)
+
+    @property
+    def faceIndices(self):
+        """Mesh Face Indices."""
+        return tuple((f.A, f.B, f.C) for f in self.geometry.Faces)
+
     def __triangulateMesh(self, mesh):
         """Triangulate Rhino Mesh."""
         triMesh = rc.Geometry.Mesh()
@@ -71,11 +86,6 @@ class MeshGH(object):
         # collect mesh faces, normals and indices
         triMesh.FaceNormals.ComputeFaceNormals()
         triMesh.FaceNormals.UnitizeFaceNormals()
-
-        self.normals = tuple((n.X, n.Y, n.Z) for n in triMesh.FaceNormals)
-        self.vertices = tuple((v.X, v.Y, v.Z) for v in triMesh.Vertices)
-        # indices
-        self.faceIndices = tuple((f.A, f.B, f.C) for f in triMesh.Faces)
         return triMesh
 
     def duplicate(self):
@@ -173,7 +183,7 @@ class BFBlockGeometry_GH(BFGeometryGH):
         return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
 
 
-def BFMeshToMesh(bfMesh, color=None):
+def BFMeshToMesh(bfMesh, color=None, scale=1):
     """convert a BFMesh object to Grasshopper mesh."""
     assert hasattr(bfMesh, 'vertices'), \
         '\t{} is not a valid BFMesh.'.format(bfMesh)
@@ -189,5 +199,8 @@ def BFMeshToMesh(bfMesh, color=None):
 
     if color:
         mesh.VertexColors.CreateMonotoneMesh(color)
+
+    if scale != 1:
+        mesh.Scale(scale)
 
     return mesh
