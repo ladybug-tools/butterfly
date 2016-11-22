@@ -43,7 +43,7 @@ class RunManager(object):
 
         self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
             if self.isUsingDockerMachine \
-        else r'"C:\Program Files\Boot2Docker for Windows"'
+            else r'"C:\Program Files\Boot2Docker for Windows"'
 
         self.logFolder = './log'
         self.errFolder = './log'
@@ -70,11 +70,15 @@ class RunManager(object):
             process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
                             stderr=PIPE)
 
-        if tuple(process.stderr):
-            print 'ERROR!'
-            for line in process.stderr:
-                print line
-            # return
+        err = '\n'.join(process.stderr)
+        if err:
+            if err.find('Error checking TLS connection: Host is not running') != -1:
+                msg = ' Docker machine is not running! Run Oracle VM VirtualBox Manager ' \
+                    'and make sure "default" machine is "running".'
+            else:
+                msg = ''
+
+            raise IOError('{}\n\t{}'.format(err, msg))
 
         return tuple(line.replace('$Env:', 'set ')
                      .replace(' = ', '=')
