@@ -431,9 +431,8 @@ class BlockMeshDict(FoamFile):
             _y += ver[1]
             _z += ver[2]
 
-        return _x * self.convertToMeters / len(self.__rawvertices), \
-            _y * self.convertToMeters / len(self.__rawvertices), \
-            _z * self.convertToMeters / len(self.__rawvertices)
+        numofver = len(self.__rawvertices)
+        return _x / numofver, _y / numofver, _z / numofver
 
     def __sortVertices(self):
         """sort input vertices."""
