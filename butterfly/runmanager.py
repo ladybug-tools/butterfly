@@ -41,7 +41,7 @@ class RunManager(object):
             if hasattr(Version, 'isUsingDockerMachine') and Version.isUsingDockerMachine \
             else False
 
-        self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
+        self.dockerPath = r'"C:/Users/%USERNAME%"' \
             if self.isUsingDockerMachine \
             else r'"C:\Program Files\Boot2Docker for Windows"'
 
@@ -58,7 +58,7 @@ class RunManager(object):
 
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
-        os.environ['PATH'] += ';%s' % r'"C:\Program Files (x86)\Git\bin"'
+        os.environ['PATH'] += ';%s' % r'"C:/Users/%USERNAME%"'
         os.environ['PATH'] += ';%s' % self.dockerPath
 
         if self.isUsingDockerMachine:
