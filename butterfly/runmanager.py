@@ -6,11 +6,17 @@ docker container. For linux systems simply use .bash files or libraries such as
 pyFOAM.
 """
 import os
+import ctypes
 from subprocess import PIPE, Popen
 from collections import namedtuple
 from copy import deepcopy
 
 from .version import Version
+
+
+class UserNotAdminError(Exception):
+    """Exception for non-admin users."""
+    pass
 
 
 class RunManager(object):
@@ -35,6 +41,12 @@ class RunManager(object):
             projectName: A string for project name.
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
+        # make sure user has admin rights
+        if not ctypes.windll.shell32.IsUserAnAdmin():
+            raise UserNotAdminError(
+                'In order to run OpenFOAM using butterfly you must use an admin '
+                'account or run the program as administrator.')
+
         self.__projectName = projectName
         self.__separator = '&'
         self.isUsingDockerMachine = True \
