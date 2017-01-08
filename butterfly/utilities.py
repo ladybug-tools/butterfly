@@ -305,22 +305,58 @@ def loadOFPointsFile(pathToFile):
         pfile.close()
 
 
-def loadOFFacesFile(pathToFile):
+def loadOFFacesFile(pathToFile, innerMesh=True):
     """Return faces indecies as a generator of tuples."""
     assert os.path.isfile(pathToFile), \
-        'Failed to find points file at {}'.format(pathToFile)
+        'Failed to find faces file: {}'.format(pathToFile)
 
     if pathToFile.endswith('.gz'):
         ffile = gzip.open(pathToFile, 'rb')
     else:
         ffile = open(pathToFile, 'rb')
 
-    try:
-        for l in ffile:
-            try:
-                if l.strip()[1] == '(' and l.strip().endswith(')'):
-                    yield eval(','.join(l[1:].split()))
-            except IndexError:
-                continue
-    finally:
-        ffile.close()
+    if not innerMesh:
+        p, f = os.path.split(pathToFile)
+        fins = loadOFBoundaryFile(os.path.join(p, f.replace('faces', 'boundary')))
+        try:
+            fin = -1
+            for l in ffile:
+                l = l.strip()
+                try:
+                    if l[1] == '(' and l.endswith(')'):
+                        fin += 1  # add to face number
+                        if fin in fins:
+                            yield eval(','.join(l[1:].split()))
+                except IndexError:
+                    continue
+        finally:
+            ffile.close()
+    else:
+        try:
+            for l in ffile:
+                l = l.strip()
+                try:
+                    if l[1] == '(' and l.endswith(')'):
+                        yield eval(','.join(l[1:].split()))
+                except IndexError:
+                    continue
+        finally:
+            ffile.close()
+
+
+def loadOFBoundaryFile(pathToFile):
+    """Return Face indecies for boundary faces as a set."""
+    assert os.path.isfile(pathToFile), \
+        'Failed to find boundary file: {}'.format(pathToFile)
+
+    ind = []
+    with open(pathToFile, 'rb') as bf:
+        for line in bf:
+            line = line.strip()
+            if line.startswith('nFaces'):
+                count = int(line.split()[-1][:-1])
+                nl = next(bf)
+                st = int(nl.split()[-1][:-1])
+                ind.append(xrange(st - 1, st - 1 + count))
+
+    return {i for rng in ind for i in rng}

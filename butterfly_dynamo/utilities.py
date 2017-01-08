@@ -24,7 +24,7 @@ __all__ = ('loadOFMesh', 'loadOFPoints', tolerace)
 tolerance = 0.001
 
 
-def loadOFMesh(polyMeshFolder, convertToMeters=1):
+def loadOFMesh(polyMeshFolder, convertToMeters=1, innerMesh=True):
     """Convert OpenFOAM mesh to a Rhino Mesh."""
     if not polyMeshFolder:
         return
@@ -42,7 +42,7 @@ def loadOFMesh(polyMeshFolder, convertToMeters=1):
         raise ValueError('Failed to find faces file at {}'.format(polyMeshFolder))
 
     pts = loadOFPointsFile(pf)
-    faces = loadOFFacesFile(ff)
+    faces = loadOFFacesFile(ff, innerMesh)
 
     # create the mesh
     dsPts = (DSGeometry.Point.ByCoordinates(*p) for p in pts)

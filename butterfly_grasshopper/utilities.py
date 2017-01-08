@@ -21,7 +21,7 @@ def ghWrapper(objs):
             'Failed to wrap butterfly object in Grasshopper wrapper:\n\t{}'.format(e))
 
 
-def loadOFMesh(polyMeshFolder, convertToMeters=1):
+def loadOFMesh(polyMeshFolder, convertToMeters=1, innerMesh=True):
     """Convert OpenFOAM mesh to a Rhino Mesh."""
     if not polyMeshFolder:
         return
@@ -39,7 +39,7 @@ def loadOFMesh(polyMeshFolder, convertToMeters=1):
         raise ValueError('Failed to find faces file at {}'.format(polyMeshFolder))
 
     pts = loadOFPointsFile(pf)
-    faces = loadOFFacesFile(ff)
+    faces = loadOFFacesFile(ff, innerMesh)
 
     # create the mesh
     mesh = rc.Geometry.Mesh()
