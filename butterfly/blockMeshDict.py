@@ -26,7 +26,7 @@ class BlockMeshDict(FoamFile):
                           location='system', defaultValues=self.__defaultValues,
                           values=values)
 
-        self.__BFBlockGeometries = None # this will be overwritten in classmethods
+        self.__BFBlockGeometries = None  # this will be overwritten in classmethods
         self.__vertices = None
 
     @classmethod
@@ -42,10 +42,10 @@ class BlockMeshDict(FoamFile):
             float(bmd.split('convertToMeters')[-1].split(';')[0])
 
         # find vertices
-        _cls.__vertices = eval(','.join(bmd.split('vertices')[-1]
-                                        .split(';')[0]
-                                        .strip()[1:-1]
-                                        .split()))
+        _cls.__vertices = list(eval(','.join(bmd.split('vertices')[-1]
+                                    .split(';')[0]
+                                    .strip()[1:-1]
+                                    .split())))
 
         # get blocks, order of vertices, nDivXYZ, grading
         blocks = bmd.split('blocks')[-1].split(';')[0].strip()
@@ -97,13 +97,13 @@ class BlockMeshDict(FoamFile):
         _xAxis = vectormath.normalize((xAxis[0], xAxis[1], 0) if xAxis else (1, 0, 0))
         _zAxis = (0, 0, 1)
         _yAxis = vectormath.crossProduct(_zAxis, _xAxis)
-        vertices = tuple(
+        vertices = [
             vectormath.move(origin,
-                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
-                                            vectormath.scale(_yAxis, j *  length),
-                                            vectormath.scale(_zAxis, k *  height))
-                            ))
-            for i in range(2) for j in range(2) for k in range(2))
+                            vectormath.sums((vectormath.scale(_xAxis, i * width),
+                                            vectormath.scale(_yAxis, j * length),
+                                            vectormath.scale(_zAxis, k * height))
+                                            ))
+            for i in range(2) for j in range(2) for k in range(2)]
 
         return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
                                 xAxis)
@@ -131,13 +131,14 @@ class BlockMeshDict(FoamFile):
         length = sin(_angle) * vectormath.length(diagonal2D)
         height = maxPt[2] - minPt[2]
 
-        vertices = tuple(
+        vertices = [
             vectormath.move(minPt,
-                            vectormath.sums((vectormath.scale(_xAxis, i *  width),
-                                            vectormath.scale(_yAxis, j *  length),
-                                            vectormath.scale(_zAxis, k *  height))
-                            ))
-            for i in range(2) for j in range(2) for k in range(2))
+                            vectormath.sums((vectormath.scale(_xAxis, i * width),
+                                            vectormath.scale(_yAxis, j * length),
+                                            vectormath.scale(_zAxis, k * height))
+                                            ))
+
+            for i in range(2) for j in range(2) for k in range(2)]
 
         return cls.fromVertices(vertices, convertToMeters, nDivXYZ, grading,
                                 xAxis)
@@ -348,6 +349,50 @@ class BlockMeshDict(FoamFile):
         print('WARNING: make2d doesn\'t update boundary conditions to Empty.')
         return bmd
 
+    def expandUniform(self, dist):
+        """Expand blockMeshDict boundingbox for dist in all directions."""
+        if not dist:
+            return
+        self.expandX(dist)
+        self.expandY(dist)
+        self.expandZ(dist)
+
+    def expandX(self, dist):
+        """Expand blockMeshDict boundingbox for dist in x and -x directions."""
+        _xAxis = (self.xAxis[0], self.xAxis[1], 0) if len(self.xAxis) == 2 \
+            else self.xAxis
+
+        for i in (0, 3, 7, 4):
+            self.vertices[i] = vectormath.move(
+                self.vertices[i], vectormath.scale(_xAxis, -dist))
+
+        for i in (1, 2, 6, 5):
+            self.vertices[i] = vectormath.move(
+                self.vertices[i], vectormath.scale(_xAxis, dist))
+
+    def expandY(self, dist):
+        """Expand blockMeshDict boundingbox for dist in y and -y directions."""
+        _zAxis = (0, 0, 1)
+        _yAxis = vectormath.crossProduct(_zAxis, self.xAxis)
+        for i in (0, 1, 5, 4):
+            self.vertices[i] = vectormath.move(
+                self.vertices[i], vectormath.scale(_yAxis, -dist))
+
+        for i in (3, 2, 6, 7):
+            self.vertices[i] = vectormath.move(
+                self.vertices[i], vectormath.scale(_yAxis, dist))
+
+    def expandZ(self, dist):
+        """Expand blockMeshDict boundingbox for dist in z and -z directions."""
+        _zAxis = (0, 0, 1)
+        for i in (0, 1, 2, 3):
+            self.vertices[i] = vectormath.move(
+                self.vertices[i], vectormath.scale(_zAxis, -dist))
+
+        for i in (4, 5, 6, 7):
+            self.vertices[i] = vectormath.move(
+                self.vertices[i], vectormath.scale(_zAxis, dist))
+
     @staticmethod
     def __calculate2dPoints(v, o, n, w):
         # project point
@@ -464,8 +509,7 @@ class BlockMeshDict(FoamFile):
                        xAxisReversed, tuple(c1 - c2 for c1, c2
                                             in zip(x, centerPt))))
 
-        sortedPoints = tuple((pt[0], pt[1], z) for z in zValues
-                             for pt in sortedPoints2d)
+        sortedPoints = [(pt[0], pt[1], z) for z in zValues for pt in sortedPoints2d]
         return sortedPoints
 
     def toOpenFOAM(self):

@@ -1,12 +1,15 @@
 """A collection of useful methods."""
 try:
     import Rhino as rc
+    import scriptcontext as sc
     from Grasshopper.Kernel.Types import GH_ObjectWrapper as goo
 except ImportError:
     pass
 
 from butterfly.utilities import loadOFPointsFile, loadOFFacesFile
 import os
+
+tolerance = sc.doc.ModelAbsoluteTolerance
 
 
 def ghWrapper(objs):

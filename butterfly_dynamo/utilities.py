@@ -19,7 +19,9 @@ except ImportError:
 import os
 from butterfly.utilities import loadOFPointsFile, loadOFFacesFile
 
-__all__ = ('loadOFMesh', 'loadOFPoints')
+__all__ = ('loadOFMesh', 'loadOFPoints', tolerace)
+
+tolerance = 0.001
 
 
 def loadOFMesh(polyMeshFolder, convertToMeters=1):
