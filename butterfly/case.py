@@ -69,7 +69,7 @@ class Case(object):
         """Init case."""
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
-        # limitation is addressed.
+        # limitation is addressed. The value wil be assigned in classmethod fromFile
         self.__originalName = None
 
         self.projectName = name
@@ -112,8 +112,6 @@ class Case(object):
         ff = tuple(cls.__createFoamfileFromFile(p)
                    for f in (_files.zero, _files.constant, _files.system)
                    for p in f if p)
-
-        # add stl objects
 
         # find snappyHexMeshDict
         sHMD = cls.__getFoamFileByName('snappyHexMeshDict', ff)
@@ -196,8 +194,10 @@ class Case(object):
         if not meshingParameters.locationInMesh:
             meshingParameters.locationInMesh = blockMeshDict.center
 
+        # rename name for snappyHexMeshDict and stl file if starts with a digit
+        normname = '_{}'.format(name) if name[0].isdigit() else name
         snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
-            name, geometries, meshingParameters)
+            normname, geometries, meshingParameters)
 
         # constant folder
         if float(Version.OFVer) < 3:
@@ -233,7 +233,9 @@ class Case(object):
                      p_rgh, fvSchemes, fvSolution, controlDict, probes)
 
         # create case
-        return cls(name, foamFiles, geometries)
+        _cls = cls(name, foamFiles, geometries)
+        _cls.__originalName = normname
+        return _cls
 
     @classmethod
     def fromWindTunnel(cls, windTunnel):
