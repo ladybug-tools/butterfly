@@ -53,6 +53,7 @@ class Slip(Field):
 
     pass
 
+
 class Empty(Field):
     """Empty boundary condition."""
 

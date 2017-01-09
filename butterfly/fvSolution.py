@@ -103,7 +103,7 @@ class FvSolution(FoamFile):
                                   'solver': 'smoothSolver'}},
                 'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-4',
                                                'T': '1e-4'},
-                            'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
+                           'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
                 'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
 
         # update values based on the recipe.
@@ -176,7 +176,7 @@ class ResidualControl(dict):
     def __repr__(self):
         """Representation."""
         return 'residualControl\n{\n\t%s\n}' % (
-                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
 
 
 class RelaxationFactors(dict):
@@ -204,4 +204,4 @@ class RelaxationFactors(dict):
     def __repr__(self):
         """Representation."""
         return 'relaxationFactors\n{\n\t%s\n}' % (
-                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))

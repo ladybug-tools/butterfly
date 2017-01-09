@@ -9,9 +9,9 @@ class Version(object):
 
     BFVer = "0.0.3"
     OFVer = "3.0"
-    OFFullVer = "v1606+"
+    OFFullVer = "v1612+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
-    lastUpdated = datetime(year=2016, month=12, day=24, hour=23, minute=15)
+    lastUpdated = datetime(year=2017, month=1, day=9, hour=9, minute=00)
 
     def duplicate(self):
         """Return a copy of this object."""

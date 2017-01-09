@@ -1,7 +1,6 @@
 """Butterfly exceptions."""
 
 
-
 class CaseFoldersNotFoundError(IOError):
     """Exception when case folder is not created."""
 
