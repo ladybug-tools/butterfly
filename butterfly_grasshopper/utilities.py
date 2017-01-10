@@ -52,11 +52,11 @@ def loadOFMesh(polyMeshFolder, convertToMeters=1, innerMesh=True):
             mesh.Faces.AddFace(*face)
         elif len(face) == 5:
             mesh.Faces.AddFace(*face[:3])
-            mesh.Faces.AddFace(*face[:1] + (face[3:]))
+            mesh.Faces.AddFace(face[0], face[2], face[3], face[4])
         elif len(face) == 8:
             mesh.Faces.AddFace(*face[:4])
-            mesh.Faces.AddFace(*(face[0], face[3], face[4], face[7]))
-            mesh.Faces.AddFace(*(face[7], face[4], face[5], face[6]))
+            mesh.Faces.AddFace(face[0], face[3], face[4], face[7])
+            mesh.Faces.AddFace(face[7], face[4], face[5], face[6])
         else:
             try:
                 mesh.Faces.AddFace(*face[:4])

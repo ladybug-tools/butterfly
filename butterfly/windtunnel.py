@@ -227,11 +227,11 @@ class WindTunnel(object):
         else:
             raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
-    def toOpenFOAMCase(self):
+    def toOpenFOAMCase(self, make2dParameters=None):
         """Return a BF case for this wind tunnel."""
-        return Case.fromWindTunnel(self)
+        return Case.fromWindTunnel(self, make2dParameters)
 
-    def save(self, overwrite=False, minimum=True):
+    def save(self, overwrite=False, minimum=True, make2dParameters=None):
         """Save windTunnel to folder as an OpenFOAM case.
 
         Args:
@@ -240,7 +240,7 @@ class WindTunnel(object):
         Returns:
             A butterfly.Case.
         """
-        _case = self.toOpenFOAMCase()
+        _case = self.toOpenFOAMCase(make2dParameters)
         _case.save(overwrite, minimum)
         return _case
 

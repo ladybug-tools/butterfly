@@ -7,7 +7,7 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Set meshing parameters for blockMesh and snappyHexMesh.
+Parameters for a 2d case.
 
 
     Args:
@@ -20,11 +20,11 @@ Set meshing parameters for blockMesh and snappyHexMesh.
         _globRefineLevel_: A tuple of (min, max) values for global refinment.
             This value updates globalRefinementLevel in snappyHexMeshDict.
     Returns:
-        meshParams: meshingParameters.
+        make2dParams: Parameters for creating a 2d case.
 """
 
-ghenv.Component.Name = "Butterfly_Meshing Parameters"
-ghenv.Component.NickName = "meshParams"
+ghenv.Component.Name = "Butterfly_Make2d Parameters"
+ghenv.Component.NickName = "make2dParams"
 ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
@@ -32,7 +32,7 @@ ghenv.Component.AdditionalHelpFromDocStrings = "4"
 
 try:
     # import butterfly
-    from butterfly.meshingparameters import MeshingParameters
+    from butterfly.make2dparameters import Make2dParameters
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -43,5 +43,13 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 # create blockMeshDict based on BBox
-meshParams = MeshingParameters(_cellSizeXYZ_, _gradXYZ_, _locationInMesh_,
-                               _globRefineLevel_)
+if _origin and _normal:
+    try:
+        make2dParams = Make2dParameters(_origin, _normal, _width_)
+    except TypeError:
+        # DynamoBIM
+        make2dParams = Make2dParameters(
+            (_origin.X, _origin.Y, _origin.Z),
+            (_normal.X, _normal.Y, _normal.Z),
+            _width_)
+

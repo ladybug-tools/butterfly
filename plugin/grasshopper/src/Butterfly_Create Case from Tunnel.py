@@ -73,7 +73,7 @@ Create Case from wind tunnel.
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.03\nNOV_06_2016'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -100,10 +100,11 @@ def main():
     print "Number of divisions: {}, {} and {}".format(*wt.blockMeshDict.nDivXYZ)
     for region in refRegions_:
         wt.addRefinementRegion(region)
-    pts = (rc.Geometry.Point3d(*v) for v in wt.blockMeshDict.vertices)
     
     # save with overwrite set to False. User can clean the folder using purge if they need to.
-    case = wt.save(overwrite=(_run + 1) % 2)
+    case = wt.save(overwrite=(_run + 1) % 2, make2dParameters=make2dPars_)
+    
+    pts = (rc.Geometry.Point3d(*v) for v in case.blockMeshDict.vertices)
 
     return wt, pts, case
 

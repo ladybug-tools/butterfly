@@ -26,7 +26,7 @@ Create an OpenFOAM Case from geometries.
 
 ghenv.Component.Name = "Butterfly_Create Case from Geometries"
 ghenv.Component.NickName = "caseFromGeos"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_08_2017'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -45,7 +45,8 @@ except ImportError as e:
 
 if _run and _name and _BFGeometries: 
     # create OpenFoam Case
-    case = Case.fromBFGeometries(_name, tuple(_BFGeometries), meshingParameters=_meshParams_)
+    case = Case.fromBFGeometries(_name, tuple(_BFGeometries),
+        meshingParameters=_meshParams_, make2dParameters=make2dParams_)
     
     for reg in refRegions_:
         case.addRefinementRegion(reg)

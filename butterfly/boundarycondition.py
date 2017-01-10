@@ -4,7 +4,7 @@ from copy import deepcopy
 from fields import AtmBoundaryLayerInletVelocity, AtmBoundaryLayerInletK, \
     AtmBoundaryLayerInletEpsilon, Calculated, EpsilonWallFunction, FixedValue, \
     InletOutlet, KqRWallFunction, NutkWallFunction, NutkAtmRoughWallFunction, \
-    Slip, ZeroGradient, AlphatJayatillekeWallFunction, FixedFluxPressure
+    Slip, ZeroGradient, AlphatJayatillekeWallFunction, FixedFluxPressure, Empty
 
 
 class BoundaryCondition(object):
@@ -72,6 +72,28 @@ class BoundingBoxBoundaryCondition(BoundaryCondition):
         alphat = ZeroGradient()
         p_rgh = ZeroGradient()
         super(BoundingBoxBoundaryCondition, self).__init__(
+            'wall', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
+        )
+
+
+class EmptyBoundaryCondition(BoundaryCondition):
+    """Empty boundary condition.
+
+    It returns a boundary condition of Empty for all the inputs.
+    """
+
+    def __init__(self, refLevels=None):
+        """Init bounday condition."""
+        U = Empty()
+        p = Empty()
+        k = Empty()
+        epsilon = Empty()
+        nut = Empty()
+        refLevels = None
+        T = Empty()
+        alphat = Empty()
+        p_rgh = Empty()
+        super(EmptyBoundaryCondition, self).__init__(
             'wall', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 

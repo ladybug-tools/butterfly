@@ -159,7 +159,7 @@ class Case(object):
 
     @classmethod
     def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
-                         meshingParameters=None):
+                         meshingParameters=None, make2dParameters=None):
         """Create a case from Butterfly geometries.
 
         foamFiles/dictionaries will be generated based on boundary condition of
@@ -174,9 +174,12 @@ class Case(object):
             blockMeshDict: Optional input for blockMeshDict. If blockMeshDict is
                 not provided, it will be calculated from geometries in XY
                 direction and boundary condition for faces will be set to
-                BoundingBoxBoundaryCondition. Use BlockMeshDict to create the blockMeshDict if your case is not aligned to XY direction or you
+                BoundingBoxBoundaryCondition. Use BlockMeshDict to create the
+                blockMeshDict if your case is not aligned to XY direction or you
                 need to assign different boundary condition to geometries.
             meshingParameters: Optional input for MeshingParameters.
+            make2dParameters: Optional input for make2dParameters to make a 2d
+                case.
         """
         geometries = cls.__checkInputGeometries(geometries)
 
@@ -189,8 +192,17 @@ class Case(object):
             minPt, maxPt = calculateMinMaxFromBFGeometries(geometries)
             blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt)
 
+        if make2dParameters:
+            # create the 2D blockMeshDict
+            blockMeshDict.make2d(
+                make2dParameters.origin, make2dParameters.normal,
+                make2dParameters.width)
+
         blockMeshDict.updateMeshingParameters(meshingParameters)
 
+        # set the locationInMesh for snappyHexMeshDict
+        if make2dParameters:
+            meshingParameters.locationInMesh = make2dParameters.origin
         if not meshingParameters.locationInMesh:
             meshingParameters.locationInMesh = blockMeshDict.center
 
@@ -238,11 +250,11 @@ class Case(object):
         return _cls
 
     @classmethod
-    def fromWindTunnel(cls, windTunnel):
+    def fromWindTunnel(cls, windTunnel, make2dParameters=None):
         """Create case from wind tunnel."""
         _case = cls.fromBFGeometries(
             windTunnel.name, windTunnel.testGeomtries, windTunnel.blockMeshDict,
-            windTunnel.meshingParameters)
+            windTunnel.meshingParameters, make2dParameters)
 
         initialConditions = InitialConditions(
             Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)

@@ -1,6 +1,6 @@
 # coding=utf-8
 """BlockMeshDict class."""
-from .boundarycondition import BoundingBoxBoundaryCondition
+from .boundarycondition import BoundingBoxBoundaryCondition, EmptyBoundaryCondition
 from .foamfile import FoamFile
 from .fields import Empty
 import vectormath
@@ -28,6 +28,12 @@ class BlockMeshDict(FoamFile):
 
         self.__BFBlockGeometries = None  # this will be overwritten in classmethods
         self.__vertices = None
+        self.__isFromVertices = False
+        # variables for 2d blockMeshDict
+        self.__is2dInXDir = False
+        self.__is2dInYDir = False
+        self.__is2dInZDir = False
+        self.__original3dVertices = None
 
     @classmethod
     def fromFile(cls, filepah):
@@ -162,18 +168,19 @@ class BlockMeshDict(FoamFile):
 
         # sort vertices
         _cls.xAxis = xAxis[:2] if xAxis else (1, 0)
+
         _cls.__vertices = _cls.__sortVertices()
+
+        _cls.__order = tuple(range(8))
 
         # update self.values['boundary']
         _cls.__updateBoundaryFromSortedVertices()
-
-        _cls.__order = tuple(range(8))
 
         _cls.nDivXYZ = nDivXYZ
 
         # assign grading
         _cls.grading = grading
-
+        _cls.__isFromVertices = True
         return _cls
 
     @classmethod
@@ -243,7 +250,11 @@ class BlockMeshDict(FoamFile):
     def geometry(self):
         """A tuple of BFGeometries for BoundingBox faces."""
         def __getBFGeometry(name, attr):
-            bc = BoundingBoxBoundaryCondition()
+            if name == 'boundingbox_empty':
+                bc = EmptyBoundaryCondition()
+            else:
+                bc = BoundingBoxBoundaryCondition()
+
             ind = attr['faces'] if hasattr(attr['faces'][0], '__iter__') else \
                 (attr['faces'],)
 
@@ -299,6 +310,12 @@ class BlockMeshDict(FoamFile):
     @nDivXYZ.setter
     def nDivXYZ(self, dXYZ):
         self.__nDivXYZ = tuple(int(v) for v in dXYZ) if dXYZ else (5, 5, 5)
+        if self.__is2dInXDir:
+            self.__nDivXYZ = 1, self.__nDivXYZ[1], self.__nDivXYZ[2]
+        elif self.__is2dInYDir:
+            self.__nDivXYZ = self.__nDivXYZ[0], 1, self.__nDivXYZ[2]
+        elif self.__is2dInZDir:
+            self.__nDivXYZ = self.__nDivXYZ[0], self.__nDivXYZ[1], 1
 
     @property
     def grading(self):
@@ -312,42 +329,62 @@ class BlockMeshDict(FoamFile):
         assert hasattr(self.grading, 'isSimpleGrading'), \
             'grading input ({}) is not a valid simpleGrading.'.format(g)
 
+    def make3d(self):
+        """Reload the 3d blockMeshDict if it has been converted to 2d."""
+        if not self.__original3dVertices:
+            print 'This blockMeshDict is already a 3d blockMeshDict.'
+            return
+        self.__vertices = self.__original3dVertices
+        self.__is2dInXDir = False
+        self.__is2dInYDir = False
+        self.__is2dInZDir = False
+
     def make2d(self, planeOrigin, planeNormal, width=0.1):
-        """Create a new 2D blockMeshDict from this blockMeshDict.
+        """Make the blockMeshDict two dimensional.
 
         Args:
             planeOrigin: Plane origin as (x, y, z).
             planeNormal: Plane normal as (x, y, z).
             width: width of 2d blockMeshDict (default: 01).
         """
-        # duplicate blockMeshDict
-        bmd = self.duplicate()
+        # copy original vertices
+        if not self.__original3dVertices:
+            self.__original3dVertices = self.vertices
+        else:
+            # load original 3d vertices
+            self.make3d()
+
         n = vectormath.normalize(planeNormal)
 
         # project all vertices to plane and move them in direction of normal
         # by half of width
-        bmd.__vertices = tuple(
+        self.__vertices = [
             self.__calculate2dPoints(v, planeOrigin, n, width)
-            for v in bmd.vertices)
+            for v in self.vertices]
 
         # set boundary condition to empty
         # and number of divisions to 1 in shortest side
-        minimum = min(bmd.width, bmd.length, bmd.height)
-        if bmd.width == minimum:
-            bmd.nDivXYZ = (1, bmd.nDivXYZ[1], bmd.nDivXYZ[2])
+        minimum = min(self.width, self.length, self.height)
+        if self.width == minimum:
+            self.nDivXYZ = (1, self.nDivXYZ[1], self.nDivXYZ[2])
+            self.__is2dInXDir = True
             # set both sides to empty
+            self.__setBoundaryToEmpty(4)
+            self.__setBoundaryToEmpty(5)
 
-        elif bmd.length == minimum:
-            bmd.nDivXYZ = (bmd.nDivXYZ[0], 1, bmd.nDivXYZ[2])
+        elif self.length == minimum:
+            self.nDivXYZ = (self.nDivXYZ[0], 1, self.nDivXYZ[2])
+            self.__is2dInYDir = True
             # set inlet and outlet to empty
-            # bmd.inlet.boundaryCondition = Empty()
+            self.__setBoundaryToEmpty(0)
+            self.__setBoundaryToEmpty(1)
 
-        elif bmd.height == minimum:
-            bmd.nDivXYZ = (bmd.nDivXYZ[0], bmd.nDivXYZ[1], 1)
+        elif self.height == minimum:
+            self.nDivXYZ = (self.nDivXYZ[0], self.nDivXYZ[1], 1)
+            self.__is2dInZDir = True
             # set top and bottom to empty
-
-        print('WARNING: make2d doesn\'t update boundary conditions to Empty.')
-        return bmd
+            self.__setBoundaryToEmpty(2)
+            self.__setBoundaryToEmpty(3)
 
     def expandUniform(self, dist):
         """Expand blockMeshDict boundingbox for dist in all directions."""
@@ -422,13 +459,137 @@ class BlockMeshDict(FoamFile):
         if meshingParameters.grading:
             self.grading = meshingParameters.grading
 
+    @property
+    def bottomFaceIndices(self):
+        """Get indecies for bottom face."""
+        return (self.verticesOrder[0], self.verticesOrder[3],
+                self.verticesOrder[2], self.verticesOrder[1])
+
+    @property
+    def topFaceIndices(self):
+        """Get indecies for top face."""
+        return (self.verticesOrder[4], self.verticesOrder[5],
+                self.verticesOrder[6], self.verticesOrder[7])
+
+    @property
+    def rightFaceIndices(self):
+        """Get indecies for right face."""
+        return (self.verticesOrder[1], self.verticesOrder[2],
+                self.verticesOrder[6], self.verticesOrder[5])
+
+    @property
+    def leftFaceIndices(self):
+        """Get indecies for left face."""
+        return (self.verticesOrder[3], self.verticesOrder[0],
+                self.verticesOrder[4], self.verticesOrder[7])
+
+    @property
+    def frontFaceIndices(self):
+        """Get indecies for front face."""
+        return (self.verticesOrder[0], self.verticesOrder[1],
+                self.verticesOrder[5], self.verticesOrder[4])
+
+    @property
+    def backFaceIndices(self):
+        """Get indecies for back face."""
+        return (self.verticesOrder[2], self.verticesOrder[3],
+                self.verticesOrder[7], self.verticesOrder[6])
+
+    def getFaceIndices(self, faceIndex):
+        """Update boundary to empty for one of the faces.
+
+        Args:
+            faceIndex: 0 - front, 1 - back, 2 - bottom, 3 - top, 4 - right,
+                5 - left.
+        """
+        faceIndices = {0: self.frontFaceIndices, 1: self.backFaceIndices,
+                       2: self.bottomFaceIndices, 3: self.topFaceIndices,
+                       4: self.rightFaceIndices, 5: self.leftFaceIndices}
+
+        return faceIndices[faceIndex]
+
+    @property
+    def bottomFaceVertices(self):
+        """Get vertices for bottom face."""
+        return tuple(self.vertices[o] for o in self.bottomFaceIndices)
+
+    @property
+    def topFaceVertices(self):
+        """Get vertices for top face."""
+        return tuple(self.vertices[o] for o in self.topFaceIndices)
+
+    @property
+    def rightFaceVertices(self):
+        """Get vertices for right face."""
+        return tuple(self.vertices[o] for o in self.rightFaceIndices)
+
+    @property
+    def leftFaceVertices(self):
+        """Get vertices for left face."""
+        return tuple(self.vertices[o] for o in self.leftFaceIndices)
+
+    @property
+    def frontFaceVertices(self):
+        """Get vertices for front face."""
+        return tuple(self.vertices[o] for o in self.frontFaceIndices)
+
+    @property
+    def backFaceVertices(self):
+        """Get vertices for back face."""
+        return tuple(self.vertices[o] for o in self.backFaceIndices)
+
+    def getFaceVertices(self, faceIndex):
+        """Update boundary to empty for one of the faces.
+
+        Args:
+            faceIndex: 0 - front, 1 - back, 2 - bottom, 3 - top, 4 - right,
+                5 - left.
+        """
+        faceVertices = {0: self.frontFaceVertices, 1: self.backFaceVertices,
+                        2: self.bottomFaceVertices, 3: self.topFaceVertices,
+                        4: self.rightFaceVertices, 5: self.leftFaceVertices}
+
+        return faceVertices[faceIndex]
+
+    def __setBoundaryToEmpty(self, faceIndex):
+        """Update boundary to empty for the face based on index.
+
+        Args:
+            faceIndex: 0 - front, 1 - back, 2 - bottom, 3 - top, 4 - right,
+                5 - left.
+        """
+        # get indices and vertices for the faceIndex
+        ind = self.getFaceIndices(faceIndex)
+
+        if self.__isFromVertices:
+            if 'boundingbox_empty' not in self.values['boundary']:
+                self.values['boundary']['boundingbox_empty'] = \
+                    {'type': 'empty', 'faces': ()}
+
+            self.values['boundary']['boundingbox_empty']['faces'] += (ind,)
+            self.values['boundary']['boundingbox']['faces'] = tuple(
+                o for o in self.values['boundary']['boundingbox']['faces']
+                if o != ind
+            )
+        else:
+            # update boundary condition for the geometry if the boundary is created
+            # from geometry
+            for name, v in self.values['boundary'].iteritems():
+                if ind in v['faces']:
+                    v['type'] = 'empty'
+
+                    for geo in self.__BFBlockGeometries:
+                        if geo.name == name:
+                            geo.boundaryCondition = EmptyBoundaryCondition()
+                    break
+
     def __updateBoundaryFromSortedVertices(self):
-        """Update boundary dictionary based on BFBlockGeometries input."""
+        """Update boundary dictionary based ordered vertices."""
         self.values['boundary']['boundingbox'] = {
             'type': 'wall',
-            'faces': ((0, 3, 2, 1), (4, 5, 6, 7),
-                      (0, 1, 5, 4), (1, 2, 6, 5),
-                      (2, 3, 7, 6), (3, 0, 4, 7),
+            'faces': (self.bottomFaceIndices, self.topFaceIndices,
+                      self.rightFaceIndices, self.leftFaceIndices,
+                      self.frontFaceIndices, self.backFaceIndices,
                       )
         }
 

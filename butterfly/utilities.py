@@ -357,6 +357,6 @@ def loadOFBoundaryFile(pathToFile):
                 count = int(line.split()[-1][:-1])
                 nl = next(bf)
                 st = int(nl.split()[-1][:-1])
-                ind.append(xrange(st - 1, st - 1 + count))
+                ind.append(xrange(st, st + count))
 
     return {i for rng in ind for i in rng}

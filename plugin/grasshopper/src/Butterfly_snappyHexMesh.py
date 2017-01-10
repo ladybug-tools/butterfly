@@ -24,17 +24,13 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_31_2016'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 
-if _case:
-    if not _locationInMesh_:
-        _locationInMesh_ = _case.blockMeshDict.center
-    else:
-        _locationInMesh_ = tuple(_locationInMesh_)
+if _case and _run:
 
     if _snappyHexMeshDict_ and hasattr(_snappyHexMeshDict_, 'locationInMesh'):
         # update values for snappyHexMeshDict
@@ -42,33 +38,37 @@ if _case:
         _case.snappyHexMeshDict.snap = _snappyHexMeshDict_.snap
         _case.snappyHexMeshDict.addLayers = _snappyHexMeshDict_.addLayers
         _case.snappyHexMeshDict.maxGlobalCells = str(_snappyHexMeshDict_.maxGlobalCells)
-        
-    _case.snappyHexMeshDict.locationInMesh = _locationInMesh_
-    
-    if _run:
-        # remove result folders if any
         _case.snappyHexMeshDict.save(_case.projectDir)
-        _case.removeResultFolders()
         
-        if _case.isPolyMeshSnappyHexMesh:
-            # check if meshBlock has been replaced by sHM
-            # remove current snappyHexMesh and re-run block mesh
-            _case.removeSnappyHexMeshFolders()
-            # run blockMesh
-            log = _case.blockMesh(overwrite=True)
-        
-            if not log.success:
-                raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)                        
-        
-        if decomposeParDict_:
-            _case.decomposeParDict = decomposeParDict_
-            _case.decomposeParDict.save(_case.projectDir)
-        
-        log = _case.snappyHexMesh()
-        
-        if log.success:
-            if _case.getSnappyHexMeshFolders():
-                _case.copySnappyHexMesh()
-            case = _case
-        else:
-            raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)        
+    if _locationInMesh_:
+        _case.snappyHexMeshDict.locationInMesh = tuple(_locationInMesh_)
+        _case.snappyHexMeshDict.save(_case.projectDir)
+    elif not _case.snappyHexMeshDict.locationInMesh:
+        _case.snappyHexMeshDict.locationInMesh = _case.blockMeshDict.center    
+        _case.snappyHexMeshDict.save(_case.projectDir)
+
+    # remove result folders if any
+    _case.removeResultFolders()
+    
+    if _case.isPolyMeshSnappyHexMesh:
+        # check if meshBlock has been replaced by sHM
+        # remove current snappyHexMesh and re-run block mesh
+        _case.removeSnappyHexMeshFolders()
+        # run blockMesh
+        log = _case.blockMesh(overwrite=True)
+    
+        if not log.success:
+            raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)                        
+    
+    if decomposeParDict_:
+        _case.decomposeParDict = decomposeParDict_
+        _case.decomposeParDict.save(_case.projectDir)
+    
+    log = _case.snappyHexMesh()
+    
+    if log.success:
+        if _case.getSnappyHexMeshFolders():
+            _case.copySnappyHexMesh()
+        case = _case
+    else:
+        raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)        
