@@ -14,9 +14,12 @@ Create an OpenFOAM Case from geometries.
     Args:
         _name: Project name.
         _BFGeometries: List of butterfly geometries for this case.
-        _blockMeshDict: A Butterfly BlockMeshDict.
-        _globalRefLevel_: A tuple of (min, max) values for global refinment.
         refRegions_: A list of refinement regions.
+        make2dParams_: Butterfly parameters to make a 2d wind tunnel.
+        _meshParams_: Butterfly meshing parameters. You can set-up meshing parameters
+            also on the blockMesh and snappyHexMesh components to overwrite this
+            settings. Use this input to set up the meshing parameters if you are
+            not running the meshing locally.
         _run: Create case from inputs.
     Returns:
         readMe!: Reports, errors, warnings, etc.
@@ -26,7 +29,7 @@ Create an OpenFOAM Case from geometries.
 
 ghenv.Component.Name = "Butterfly_Create Case from Geometries"
 ghenv.Component.NickName = "caseFromGeos"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_11_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

@@ -18,12 +18,12 @@ Wind tunnel parameters.
         _leewardX_: Multiplier value for leeward extension (default: 15).
     Returns:
         readMe!: Reports, errors, warnings, etc.
-        tunnelPar: Tunnel Parameters
+        tunnelParams: Tunnel Parameters
 """
 
 ghenv.Component.Name = "Butterfly_Wind Tunnel Parameters"
-ghenv.Component.NickName = "WindTunnelPar"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.NickName = "tunnelParams"
+ghenv.Component.Message = 'VER 0.0.03\nJAN_11_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -39,4 +39,4 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-tunnelPar = TunnelParameters(_windwardX_, _topX_, _sidesX_, _leewardX_)
+tunnelParams = TunnelParameters(_windwardX_, _topX_, _sidesX_, _leewardX_)

@@ -61,8 +61,12 @@ Create Case from wind tunnel.
             7 > '2.0'     # chaotic. City centres with mixture of low-rise and
             high-rise buildings, or large forests of irregular height with many
             clearings.
-
-        _tunnelPar_: Butterfly tunnel parameters.
+        make2dParams_: Butterfly parameters to make a 2d wind tunnel.
+        _meshParams_: Butterfly meshing parameters. You can set-up meshing parameters
+            also on the blockMesh and snappyHexMesh components to overwrite this
+            settings. Use this input to set up the meshing parameters if you are
+            not running the meshing locally.
+        _tunnelParams_: Butterfly tunnel parameters.
         _run: Create wind tunnel case from inputs.
     Returns:
         readMe!: Reports, errors, warnings, etc.
@@ -73,7 +77,7 @@ Create Case from wind tunnel.
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_11_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
@@ -93,16 +97,19 @@ import Rhino as rc
 
 def main():
     wt = WindTunnelGH.fromGeometriesWindVectorAndParameters(
-        _name, _BFGeometries, _windVector, _tunnelPar_, _landscape_, _meshParams_,
-        _refWindHeight_)
+        _name, _BFGeometries, _windVector, _tunnelParams_, _landscape_,
+        _meshParams_, _refWindHeight_)
         
-    print "Wind tunnel dimensions: {}, {} and {}".format(wt.width, wt.length, wt.height)
-    print "Number of divisions: {}, {} and {}".format(*wt.blockMeshDict.nDivXYZ)
     for region in refRegions_:
         wt.addRefinementRegion(region)
     
     # save with overwrite set to False. User can clean the folder using purge if they need to.
-    case = wt.save(overwrite=(_run + 1) % 2, make2dParameters=make2dPars_)
+    case = wt.save(overwrite=(_run + 1) % 2, make2dParameters=make2dParams_)
+    
+    print "Wind tunnel dimensions: {}, {} and {}".format(
+        case.blockMeshDict.width, case.blockMeshDict.length, case.blockMeshDict.height)
+    
+    print "Number of divisions: {}, {} and {}".format(*wt.blockMeshDict.nDivXYZ)
     
     pts = (rc.Geometry.Point3d(*v) for v in case.blockMeshDict.vertices)
 
