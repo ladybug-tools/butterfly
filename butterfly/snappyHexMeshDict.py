@@ -30,7 +30,7 @@ class SnappyHexMeshDict(FoamFile):
     __defaultValues['castellatedMeshControls']['minRefinementCells'] = '10'
     __defaultValues['castellatedMeshControls']['maxLoadUnbalance'] = '0.10'
     __defaultValues['castellatedMeshControls']['nCellsBetweenLevels'] = '3'
-    __defaultValues['castellatedMeshControls']['features'] = '()'
+    __defaultValues['castellatedMeshControls']['features'] = {}
     __defaultValues['castellatedMeshControls']['refinementSurfaces'] = {}
     __defaultValues['castellatedMeshControls']['resolveFeatureAngle'] = '30'
     __defaultValues['castellatedMeshControls']['refinementRegions'] = {}
@@ -39,12 +39,15 @@ class SnappyHexMeshDict(FoamFile):
 
     # snap controls
     __defaultValues['snapControls'] = OrderedDict()
-    __defaultValues['snapControls']['nSmoothPatch'] = '3'
-    __defaultValues['snapControls']['tolerance'] = '2'
-    __defaultValues['snapControls']['nSolveIter'] = '30'
-    __defaultValues['snapControls']['nRelaxIter'] = '5'
-    __defaultValues['snapControls']['implicitFeatureSnap'] = 'true'
-    __defaultValues['snapControls']['multiRegionFeatureSnap'] = 'true'
+    __defaultValues['snapControls']['nSmoothPatch'] = '5'
+    __defaultValues['snapControls']['tolerance'] = '5'
+    __defaultValues['snapControls']['nSolveIter'] = '100'
+    __defaultValues['snapControls']['nRelaxIter'] = '8'
+    __defaultValues['snapControls']['nFeatureSnapIter'] = '20'
+    __defaultValues['snapControls']['extractFeaturesRefineLevel'] = '1'
+    __defaultValues['snapControls']['explicitFeatureSnap'] = 'true'
+    __defaultValues['snapControls']['implicitFeatureSnap'] = 'false'
+    __defaultValues['snapControls']['multiRegionFeatureSnap'] = 'false'
 
     # layer control
     __defaultValues['addLayersControls'] = OrderedDict()
@@ -160,7 +163,15 @@ class SnappyHexMeshDict(FoamFile):
         self.__globRefineLevel = (1, 1) if not r else tuple(r)
         if self.__globRefineLevel:
             self.setRefinementSurfaces()
+    @property
+    def extractFeaturesRefineLevel(self):
+        """A refinment value for extract feature level."""
+        return self.values['snapControls']['extractFeaturesRefineLevel']
 
+    @extractFeaturesRefineLevel.setter
+    def extractFeaturesRefineLevel(self, value=1):
+        self.values['snapControls']['extractFeaturesRefineLevel'] = str(int(value))
+        
     @property
     def castellatedMesh(self):
         """Set if castellatedMesh should be ran."""
@@ -258,6 +269,13 @@ class SnappyHexMeshDict(FoamFile):
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 
+    def setFeatures(self):
+        """Set feature inputs for explicit meshing."""
+        _ref = getSnappyHexMeshFeatures(self.projectName,
+                                       self.extractFeatureRefineLevel)
+
+        self.values['castellatedMeshControls']['features'] = _ref
+        
     def addStlGeometry(self, fileName):
         """Add stl geometry to snappyHexMeshDict.
 
