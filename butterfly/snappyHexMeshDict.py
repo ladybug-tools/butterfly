@@ -5,7 +5,7 @@ import re
 
 from .foamfile import FoamFile, foamFileFromFile
 from .utilities import getSnappyHexMeshGeometryFeild, \
-    getSnappyHexMeshRefinementSurfaces
+    getSnappyHexMeshRefinementSurfaces 
 from .refinementRegion import refinementModeFromDict
 
 
@@ -269,13 +269,18 @@ class SnappyHexMeshDict(FoamFile):
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 
-    def setFeatures(self):
-        """Set feature inputs for explicit meshing."""
-        _ref = getSnappyHexMeshFeatures(self.projectName,
-                                       self.extractFeatureRefineLevel)
+    def features(self, fileName):
+        """Set feature inputs for explicit meshing.
 
-        self.values['castellatedMeshControls']['features'] = _ref
-        
+        Args:
+            fileName: eMesh file name. This file should be located under
+                /constant/triSurface.
+        """
+        eMesh = {'{}.eMesh'.format(fileName): {'type': 'eMesh',
+                                           'name': fileName}}
+
+        self.values['features'].update(eMesh)
+           
     def addStlGeometry(self, fileName):
         """Add stl geometry to snappyHexMeshDict.
 
