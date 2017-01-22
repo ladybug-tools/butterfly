@@ -269,7 +269,7 @@ class SnappyHexMeshDict(FoamFile):
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 
-    def features(self, fileName):
+    def setFeatures(self, fileName):
         """Set feature inputs for explicit meshing.
 
         Args:
@@ -280,7 +280,15 @@ class SnappyHexMeshDict(FoamFile):
                                            'name': fileName}}
 
         self.values['features'].update(eMesh)
-           
+    
+    def addFeatures(self, features=None):
+        """Add features to snappyHexMeshDict."""
+
+        ftr = {features.name:
+              features.extractFeaturesRefineLevel.toOpenFOAMDict()}
+
+        self.values['castellatedMeshControls']['features'].update(ftr)
+        
     def addStlGeometry(self, fileName):
         """Add stl geometry to snappyHexMeshDict.
 
