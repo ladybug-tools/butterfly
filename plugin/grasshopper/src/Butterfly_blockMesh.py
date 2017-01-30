@@ -1,4 +1,4 @@
-# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
+﻿# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
 # This file is part of Butterfly.
 #
 # You should have received a copy of the GNU General Public License
@@ -19,6 +19,8 @@ blockMesh
             updates grading in blockMeshDict.
         _overwrite_: Remove current snappyHexMesh folders from the case if any (default: True). 
         _run: run blockMesh.
+        _surfaceFeatureExtract: Turns on Explicit Meshing which captures geometry accurately.
+        However, if you  want to use "Implicit Meshing", turn that "false".
     Returns:
         readMe!: Reports, errors, warnings, etc.
         case: Butterfly case.
@@ -26,7 +28,7 @@ blockMesh
 
 ghenv.Component.Name = "Butterfly_blockMesh"
 ghenv.Component.NickName = "blockMesh"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_28_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -48,3 +50,6 @@ if _case and _run:
         case = _case
     else:
         raise Exception("\n\n\nButterfly failed to run OpenFOAM command!\n%s" % log.error)
+
+    if log.success and _surfaceFeatureExtract:
+        _case.surfaceFeatureExtract()
