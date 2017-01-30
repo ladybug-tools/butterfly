@@ -1,4 +1,4 @@
-"""Butterfly OpenFOAM Case."""
+﻿"""Butterfly OpenFOAM Case."""
 import os
 import re  # to check input names
 from shutil import rmtree  # to remove case folders if needed
@@ -47,7 +47,6 @@ from .runmanager import RunManager
 
 class Case(object):
     """OpenFOAM Case.
-
     Attributes:
         name: Case name as a string with no whitespace.
         foamfiles: Collection of FoamFile objects (dictionaries) for this case.
@@ -96,7 +95,6 @@ class Case(object):
     @classmethod
     def fromFolder(cls, path, name=None):
         """Create a Butterfly case from a case folder.
-
         Args:
             path: Full path to case folder.
             name: An optional new name for this case.
@@ -161,12 +159,10 @@ class Case(object):
     def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
                          meshingParameters=None, make2dParameters=None):
         """Create a case from Butterfly geometries.
-
         foamFiles/dictionaries will be generated based on boundary condition of
         geometries. fvSolution and fvSchemes will be set to default can can be
         overwritten once a Solution is created from a Case and a Recipe. You can
         overwrite them through the recipe.
-
         Args:
             name: Case name as a string with no whitespace.
             geometries: Collection of BFGeometries. FoamFiles/dictionaries will
@@ -312,7 +308,6 @@ class Case(object):
     @property
     def workingDir(self):
         """Change default working directory.
-
         Do not change the working dir if you are using OpenFOAM for Windows
         to run the analysis.
         """
@@ -492,7 +487,6 @@ class Case(object):
 
     def renameSnappyHexMeshFolders(self, add=True):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa.
-
         Args:
             add: Set to True to add .org at the end of the file. Set to False
                 to rename them back to the original naming.
@@ -520,7 +514,6 @@ class Case(object):
 
     def removeSnappyHexMeshFolders(self):
         """Remove snappyHexMesh numerical folders.
-
         Use this to clean the folder.
         """
         self.renameSnappyHexMeshFolders(add=False)
@@ -577,7 +570,6 @@ class Case(object):
 
     def updateBCInZeroFolder(self):
         """Update boundary conditions in files in 0 folder.
-
         Call this method if you have made any changes to boundary condition of
         any of the geometries after initiating the class.
         """
@@ -585,7 +577,6 @@ class Case(object):
 
     def save(self, overwrite=False, minimum=True):
         """Save case to folder.
-
         Args:
             overwrite: If True all the current content will be overwritten
                 (default: False).
@@ -642,10 +633,8 @@ class Case(object):
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
         ur"""Run an OpenFOAM command for this case.
-
         This method creates a log and err file under logFolder for each command.
         The output will be logged as {cmd}.log and {cmd}.err.
-
         Args:
             cmd: OpenFOAM command.
             args: Command arguments.
@@ -653,11 +642,9 @@ class Case(object):
                 in parallel if desired.
             run: Run the command in shell.
             wait: Wait until the command is over.
-
         returns:
             If run is True returns a namedtuple for
                 (success, error, process, logfiles, errorfiles).
-
                 success: as a boolen.
                 error: None in case of success otherwise the error message as
                     a string.
@@ -697,7 +684,6 @@ class Case(object):
 
     def blockMesh(self, args=None, wait=True, overwrite=True,):
         """Run blockMesh.
-
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
@@ -711,13 +697,23 @@ class Case(object):
         return self.command('blockMesh', args, decomposeParDict=None,
                             wait=wait)
 
-    def snappyHexMesh(self, args=None, wait=True):
-        """Run snappyHexMesh.
-
+    def surfaceFeatureExtract(self, args=None, wait=True, overwrite=True,):
+        """Run blockMesh.
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
+            overwrite: Overwrite current content of the folder.
+        Returns:
+            namedtuple(success, error, process, logfiles, errorfiles).
+        """
+        return self.command('surfaceFeatureExtract', args, decomposeParDict=None,
+                            wait=wait)
 
+    def snappyHexMesh(self, args=None, wait=True):
+        """Run snappyHexMesh.
+        Args:
+            args: Command arguments.
+            wait: Wait until command execution ends.
         Returns:
             namedtuple(success, error, process, logfiles, errorfiles).
         """
@@ -726,11 +722,9 @@ class Case(object):
 
     def checkMesh(self, args=None, wait=True):
         """Run checkMesh.
-
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
-
         Returns:
             namedtuple(success, error, process, logfiles, errorfiles).
         """
@@ -739,7 +733,6 @@ class Case(object):
 
     def calculateMeshOrthogonality(self, useCurrntCheckMeshLog=False):
         """Calculate max and average mesh orthogonality.
-
         If average values is more than 80, try to generate a better mesh.
         You can use this values to set discretization schemes.
         try case.setFvSchemes(averageOrthogonality)
@@ -772,7 +765,6 @@ class Case(object):
     def __createFoamfileFromFile(p):
         """
         Create a foamfile object from an OpenFOAM foamfile.
-
         Args:
             p: Fullpath to file.
         """

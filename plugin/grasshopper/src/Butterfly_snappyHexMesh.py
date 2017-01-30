@@ -1,4 +1,4 @@
-# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
+﻿# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
 # This file is part of Butterfly.
 #
 # You should have received a copy of the GNU General Public License
@@ -24,7 +24,7 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_26_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -34,10 +34,12 @@ if _case and _run:
 
     if _snappyHexMeshDict_ and hasattr(_snappyHexMeshDict_, 'locationInMesh'):
         # update values for snappyHexMeshDict
-        _case.snappyHexMeshDict.castellatedMesh = _snappyHexMeshDict_.castellatedMesh
-        _case.snappyHexMeshDict.snap = _snappyHexMeshDict_.snap
-        _case.snappyHexMeshDict.addLayers = _snappyHexMeshDict_.addLayers
+        _case.snappyHexMeshDict.castellatedMesh = bool(_snappyHexMeshDict_.castellatedMesh)
+        _case.snappyHexMeshDict.snap = bool(_snappyHexMeshDict_.snap)
+        _case.snappyHexMeshDict.addLayers = bool(_snappyHexMeshDict_.addLayers)
+        _case.snappyHexMeshDict.nCellsBetweenLevels = str(_snappyHexMeshDict_.nCellsBetweenLevels)
         _case.snappyHexMeshDict.maxGlobalCells = str(_snappyHexMeshDict_.maxGlobalCells)
+        _case.snappyHexMeshDict.features = str(_snappyHexMeshDict_.features)
         _case.snappyHexMeshDict.save(_case.projectDir)
         
     if _locationInMesh_:
