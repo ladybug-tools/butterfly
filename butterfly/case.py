@@ -47,6 +47,7 @@ from .runmanager import RunManager
 
 class Case(object):
     """OpenFOAM Case.
+
     Attributes:
         name: Case name as a string with no whitespace.
         foamfiles: Collection of FoamFile objects (dictionaries) for this case.
@@ -95,6 +96,7 @@ class Case(object):
     @classmethod
     def fromFolder(cls, path, name=None):
         """Create a Butterfly case from a case folder.
+
         Args:
             path: Full path to case folder.
             name: An optional new name for this case.
@@ -133,7 +135,7 @@ class Case(object):
                     f = ff.getBoundaryField(geo.name)
                 except AttributeError as e:
                     if not geo.name.endswith('Conditions'):
-                        print str(e)
+                        print(str(e))
                 else:
                     # set boundary condition for the field
                     setattr(geo.boundaryCondition, ff.name,
@@ -159,10 +161,12 @@ class Case(object):
     def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
                          meshingParameters=None, make2dParameters=None):
         """Create a case from Butterfly geometries.
+
         foamFiles/dictionaries will be generated based on boundary condition of
         geometries. fvSolution and fvSchemes will be set to default can can be
         overwritten once a Solution is created from a Case and a Recipe. You can
         overwrite them through the recipe.
+
         Args:
             name: Case name as a string with no whitespace.
             geometries: Collection of BFGeometries. FoamFiles/dictionaries will
@@ -308,6 +312,7 @@ class Case(object):
     @property
     def workingDir(self):
         """Change default working directory.
+
         Do not change the working dir if you are using OpenFOAM for Windows
         to run the analysis.
         """
@@ -483,10 +488,11 @@ class Case(object):
         try:
             copy_tree(_s, self.polyMeshFolder)
         except Exception as e:
-            print "Failed to copy snappyHexMesh folder: {}".format(e)
+            print("Failed to copy snappyHexMesh folder: {}".format(e))
 
     def renameSnappyHexMeshFolders(self, add=True):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa.
+
         Args:
             add: Set to True to add .org at the end of the file. Set to False
                 to rename them back to the original naming.
@@ -510,10 +516,12 @@ class Case(object):
                     os.rename(os.path.join(self.projectDir, f),
                               os.path.join(self.projectDir, '%s.org' % f))
                 except Exception as e:
-                    raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
+                    raise Exception('Failed to rename snappyHexMesh folders: {}'
+                                    .format(e))
 
     def removeSnappyHexMeshFolders(self):
         """Remove snappyHexMesh numerical folders.
+
         Use this to clean the folder.
         """
         self.renameSnappyHexMeshFolders(add=False)
@@ -523,7 +531,7 @@ class Case(object):
             try:
                 rmtree(os.path.join(self.projectDir, f))
             except Exception as e:
-                print 'Failed to remove {}:\n{}'.format(f, e)
+                print('Failed to remove {}:\n{}'.format(f, e))
 
     def removeResultFolders(self):
         """Remove results folder."""
@@ -532,7 +540,7 @@ class Case(object):
             try:
                 rmtree(os.path.join(self.projectDir, _f))
             except Exception as e:
-                print 'Failed to remove {}:\n{}'.format(_f, e)
+                print('Failed to remove {}:\n{}'.format(_f, e))
 
     def removePostProcessingFolder(self):
         """Remove post postProcessing folder."""
@@ -542,7 +550,7 @@ class Case(object):
         try:
             rmtree(self.postProcessingFolder)
         except Exception as e:
-            print 'Failed to remove postProcessing folder:\n{}'.format(e)
+            print('Failed to remove postProcessing folder:\n{}'.format(e))
 
     def removePolyMeshContent(self):
         """Remove files inside polyMesh folder."""
@@ -570,6 +578,7 @@ class Case(object):
 
     def updateBCInZeroFolder(self):
         """Update boundary conditions in files in 0 folder.
+
         Call this method if you have made any changes to boundary condition of
         any of the geometries after initiating the class.
         """
@@ -577,6 +586,7 @@ class Case(object):
 
     def save(self, overwrite=False, minimum=True):
         """Save case to folder.
+
         Args:
             overwrite: If True all the current content will be overwritten
                 (default: False).
@@ -629,7 +639,7 @@ class Case(object):
                                self.projectName + '.foam'), 'wb') as ffile:
             ffile.write('')
 
-        print '{} is saved to: {}'.format(self.projectName, self.projectDir)
+        print('{} is saved to: {}'.format(self.projectName, self.projectDir))
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
         ur"""Run an OpenFOAM command for this case.
@@ -684,6 +694,7 @@ class Case(object):
 
     def blockMesh(self, args=None, wait=True, overwrite=True,):
         """Run blockMesh.
+
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
@@ -697,20 +708,22 @@ class Case(object):
         return self.command('blockMesh', args, decomposeParDict=None,
                             wait=wait)
 
-    def surfaceFeatureExtract(self, args=None, wait=True, overwrite=True,):
-        """Run blockMesh.
+    def surfaceFeatureExtract(self, args=None, wait=True):
+        """Run surfaceFeatureExtract command.
+
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
-            overwrite: Overwrite current content of the folder.
         Returns:
             namedtuple(success, error, process, logfiles, errorfiles).
         """
+        # create surfaceFeatureExtractDict if it's not created
         return self.command('surfaceFeatureExtract', args, decomposeParDict=None,
                             wait=wait)
 
     def snappyHexMesh(self, args=None, wait=True):
         """Run snappyHexMesh.
+
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
@@ -722,6 +735,7 @@ class Case(object):
 
     def checkMesh(self, args=None, wait=True):
         """Run checkMesh.
+
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
@@ -733,6 +747,7 @@ class Case(object):
 
     def calculateMeshOrthogonality(self, useCurrntCheckMeshLog=False):
         """Calculate max and average mesh orthogonality.
+
         If average values is more than 80, try to generate a better mesh.
         You can use this values to set discretization schemes.
         try case.setFvSchemes(averageOrthogonality)
@@ -763,11 +778,14 @@ class Case(object):
 
     @staticmethod
     def __createFoamfileFromFile(p):
-        """
-        Create a foamfile object from an OpenFOAM foamfile.
+        """Create a foamfile object from an OpenFOAM foamfile.
+
         Args:
             p: Fullpath to file.
+        Return:
+            A Butterfly foam file.
         """
+        # Butterfly FoamFiles. This dictionary should be expanded.
         __foamfilescollection = {
             'turbulenceProperties': TurbulenceProperties,
             'RASProperties': RASProperties,
@@ -787,7 +805,7 @@ class Case(object):
             try:
                 return __foamfilescollection[name].fromFile(p)
             except Exception as e:
-                print 'Failed to import {}:\n\t{}'.format(p, e)
+                print('Failed to import {}:\n\t{}'.format(p, e))
         else:
             return FoamFile.fromFile(p)
 

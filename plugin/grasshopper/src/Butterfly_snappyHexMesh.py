@@ -1,4 +1,4 @@
-﻿# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
+# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
 # This file is part of Butterfly.
 #
 # You should have received a copy of the GNU General Public License
@@ -24,22 +24,43 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_26_2017'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_31_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 
-if _case and _run:
+try:
+    from butterfly.surfaceFeatureExtractDict import SurfaceFeatureExtractDict
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
 
-    if _snappyHexMeshDict_ and hasattr(_snappyHexMeshDict_, 'locationInMesh'):
+if _case and _run:
+    
+    if _snappyHexMeshDict_:
+        assert hasattr(_snappyHexMeshDict_, 'locationInMesh'), \
+            TypeError(
+                '_snappyHexMeshDict_ input is {} and not a SnappyHexMeshDict.'
+                .format(type(_snappyHexMeshDict_)))
+            
         # update values for snappyHexMeshDict
-        _case.snappyHexMeshDict.castellatedMesh = bool(_snappyHexMeshDict_.castellatedMesh)
-        _case.snappyHexMeshDict.snap = bool(_snappyHexMeshDict_.snap)
-        _case.snappyHexMeshDict.addLayers = bool(_snappyHexMeshDict_.addLayers)
+        _case.snappyHexMeshDict.castellatedMesh = _snappyHexMeshDict_.castellatedMesh
+        _case.snappyHexMeshDict.snap = _snappyHexMeshDict_.snap
+        _case.snappyHexMeshDict.addLayers = _snappyHexMeshDict_.addLayers
         _case.snappyHexMeshDict.nCellsBetweenLevels = str(_snappyHexMeshDict_.nCellsBetweenLevels)
         _case.snappyHexMeshDict.maxGlobalCells = str(_snappyHexMeshDict_.maxGlobalCells)
-        _case.snappyHexMeshDict.features = str(_snappyHexMeshDict_.features)
+        if _snappyHexMeshDict_.extractFeaturesRefineLevel:
+            print 'updating snappyHexMeshDict for Implicit Edge Refinement.'
+            # change to explicit mode
+            _case.snappyHexMeshDict.setFeatureEdgeRefinementToExplicit(
+                _case.projectName, _snappyHexMeshDict_.extractFeaturesRefineLevel)
+        
         _case.snappyHexMeshDict.save(_case.projectDir)
         
     if _locationInMesh_:
@@ -60,12 +81,19 @@ if _case and _run:
         log = _case.blockMesh(overwrite=True)
     
         if not log.success:
-            raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)                        
+            raise Exception("\n --> blockMesh Failed!\n%s" % log.error)                        
     
     if decomposeParDict_:
         _case.decomposeParDict = decomposeParDict_
         _case.decomposeParDict.save(_case.projectDir)
     
+    if not _case.snappyHexMeshDict.isFeatureEdgeRefinementImplicit:
+        sfe = SurfaceFeatureExtractDict.fromStlFile(_case.projectName, includedAngle=150)
+        sfe.save(_case.projectDir)
+        log = _case.surfaceFeatureExtract()
+        if not log.success:
+            raise Exception("\n --> surfaceFeatureExtract Failed!\n%s" % log.error)
+
     log = _case.snappyHexMesh()
     
     if log.success:
@@ -73,4 +101,4 @@ if _case and _run:
             _case.copySnappyHexMesh()
         case = _case
     else:
-        raise Exception("\n --> OpenFOAM command Failed!\n%s" % log.error)        
+        raise Exception("\n --> snappyHexMesh Failed!\n%s" % log.error)        

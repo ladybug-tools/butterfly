@@ -1,4 +1,4 @@
-﻿# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
+# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
 # This file is part of Butterfly.
 #
 # You should have received a copy of the GNU General Public License
@@ -43,8 +43,8 @@ Create Case from wind tunnel.
 
             4 > '0.25'    # rough. Cultivated or natural area with high crops or
             crops of varying height, and scattered obstacles at relative distances
-            of 12–15 obstacle heights for porous objects (e.g. shelterbelts) or
-            8–12 obstacle heights for low solid objects (e.g. buildings).
+            of 12-15 obstacle heights for porous objects (e.g. shelterbelts) or
+            8-12 obstacle heights for low solid objects (e.g. buildings).
 
             5 > '0.5'     # very rough. Intensively cultivated landscape with many
             rather large obstacle groups (large farms, clumps of forest) separated
@@ -62,33 +62,25 @@ Create Case from wind tunnel.
             high-rise buildings, or large forests of irregular height with many
             clearings.
         make2dParams_: Butterfly parameters to make a 2d wind tunnel.
+        _meshParams_: Butterfly meshing parameters. You can set-up meshing parameters
+            also on the blockMesh and snappyHexMesh components to overwrite this
+            settings. Use this input to set up the meshing parameters if you are
+            not running the meshing locally.
         _tunnelParams_: Butterfly tunnel parameters.
         _run: Create wind tunnel case from inputs.
-        _surfaceFeatureExtractDict: Please do not change the default input, it's a stored data.
     Returns:
         readMe!: Reports, errors, warnings, etc.
         pts: Wind tunnel corners for visualization. Use Polyline component or box
             component to create the box.
         case: Butterfly case.
-        surfaceFeatureExtractDict: Just for reviewing "surfaceFeatureExtractDict".
-        features: Attact this to "snappyHexMeshDict" component's "_features_" input.
 """
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_28_2017'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_31_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
-
-#!/usr/bin/python
-#!/usr/bin/env python
-
-import os
-import platform
-
-userhome = os.path.expanduser('~')
-str=_surfaceFeatureExtractDict
 
 try:
     from butterfly_grasshopper.windtunnel import WindTunnelGH
@@ -125,17 +117,3 @@ def main():
 
 if _run and _name and _BFGeometries and _windVector:
         tunnel, pts, case = main()
-
-if _name and _run:
-    _output= str.replace("cylinder", _name)
-    save_path = userhome + '/butterfly/'+_name+'/system'
-    name_of_file = "surfaceFeatureExtractDict"
-    completeName = os.path.join(save_path, name_of_file)
-    file1 = open(completeName, "w")
-    toFile = _output
-    file1.write(toFile)
-    file1.close()
-    surfaceFeatureExtractDict= str.replace("cylinder", _name)
-    features='"'+_name+".eMesh"+'"'
-else:
-    surfaceFeatureExtractDict=()

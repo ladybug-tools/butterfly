@@ -1,4 +1,4 @@
-﻿# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
+# Butterfly: A Plugin for CFD Analysis (GPL) started by Mostapha Sadeghipour Roudsari
 # This file is part of Butterfly.
 #
 # You should have received a copy of the GNU General Public License
@@ -18,28 +18,21 @@ Read more about snappyHexMeshDict here:
         _snap_: Set to True to snap mesh to the surfaces (default: True).
         _addLayers_: Set to True to push mesh away from surfaces and add layers (default: False).
         _maxGlobalCells_: An intger for the maximum number of global cells (default: 2000000).
-        _features_: Attach the output of the "create case from wind tunnel component".
-        note that, this can only be used for explicit meshing feature, if you want to use implicit meshing, 
-        there's no need to attach anything.
-        _level_: An integer for the extract features refinement (default: 1).
-        
+        _surfaceFeatureLevel_: An integer for the extract features refinement. Default is None which
+            means implicit meshing feature will be used.
     Returns:
         snappyHexMeshDict: Butterfly snappyHexMeshDict.
 """
 
 ghenv.Component.Name = "Butterfly_snappyHexMeshDict"
 ghenv.Component.NickName = "snappyHexMeshDict"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_26_2017'
+ghenv.Component.Message = 'VER 0.0.03\nJAN_31_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly.snappyHexMeshDict import SnappyHexMeshDict
-    #import butterfly
-    #reload(butterfly)
-    #reload(butterfly.foamfile)
-    #reload(butterfly.snappyHexMeshDict)
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -57,19 +50,10 @@ if _meshQuality_:
 snappyDict.castellatedMesh = _castellatedMesh_
 snappyDict.snap = _snap_
 snappyDict.addLayers = _addLayers_
-
-if _nCellsBetweenLevels_:
-    snappyDict.nCellsBetweenLevels = str(_nCellsBetweenLevels_)
-
-if _maxGlobalCells_:
-    snappyDict.maxGlobalCells = str(_maxGlobalCells_)
-
-if _features_:
-    level= str(_level_)
-    ftrs="({file "+_features_+"; level "+level+";})"
-    snappyDict.features = ftrs
-else:
-    snappyDict.features = "()"
+snappyDict.nCellsBetweenLevels = _nCellsBetweenLevels_
+snappyDict.maxGlobalCells = _maxGlobalCells_
+if _surfaceFeatureLevel_ is not None:
+    snappyDict.extractFeaturesRefineLevel = _surfaceFeatureLevel_
 
 if additionalParameters_:
     raise NotImplementedError('additionalParameters is not implemented yet. It will be added soon.')
