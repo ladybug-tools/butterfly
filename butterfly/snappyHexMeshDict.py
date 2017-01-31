@@ -224,6 +224,24 @@ class SnappyHexMeshDict(FoamFile):
         self.values['castellatedMeshControls']['nCellsBetweenLevels'] = str(int(value))
 
     @property
+    def features(self):
+        """Set if addLayers should be ran."""
+        return self.values['castellatedMeshControls']['features']
+
+    @features.setter
+    def features(self, value=()):
+        self.values['castellatedMeshControls']['features'] = str(value)
+
+    @property
+    def nCellsBetweenLevels(self):
+        """Set if addLayers should be ran."""
+        return self.values['castellatedMeshControls']['nCellsBetweenLevels']
+
+    @nCellsBetweenLevels.setter
+    def nCellsBetweenLevels(self, value=3):
+        self.values['castellatedMeshControls']['nCellsBetweenLevels'] = str(int(value))
+
+    @property
     def maxGlobalCells(self):
         """Set if addLayers should be ran."""
         return self.values['castellatedMeshControls']['maxGlobalCells']
