@@ -30,7 +30,7 @@ class SnappyHexMeshDict(FoamFile):
     __defaultValues['castellatedMeshControls']['minRefinementCells'] = '10'
     __defaultValues['castellatedMeshControls']['maxLoadUnbalance'] = '0.10'
     __defaultValues['castellatedMeshControls']['nCellsBetweenLevels'] = '3'
-    __defaultValues['castellatedMeshControls']['features'] = '()'
+    __defaultValues['castellatedMeshControls']['features'] = {}
     __defaultValues['castellatedMeshControls']['refinementSurfaces'] = {}
     __defaultValues['castellatedMeshControls']['resolveFeatureAngle'] = '30'
     __defaultValues['castellatedMeshControls']['refinementRegions'] = {}
