@@ -7,6 +7,8 @@ pyFOAM.
 """
 import os
 import ctypes
+import time
+import sys
 from subprocess import PIPE, Popen
 from collections import namedtuple
 from copy import deepcopy
@@ -20,8 +22,7 @@ class UserNotAdminError(Exception):
 
 
 class RunManager(object):
-    """
-    RunManager to write and run OpenFOAM commands through batch files.
+    """RunManager to write and run OpenFOAM commands through batch files.
 
     Run manager is currently only useful for running OpenFOAM for Windows which
     runs in a docker container. For linux systems simply use .bash files or
@@ -59,6 +60,7 @@ class RunManager(object):
 
         self.logFolder = './log'
         self.errFolder = './log'
+        self._pid = None
 
     @property
     def containerId(self):
@@ -67,6 +69,11 @@ class RunManager(object):
             self.getContainerId()
 
         return self.__containerId
+
+    @property
+    def pid(self):
+        """Return PID for the latest command."""
+        return self._pid
 
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
@@ -110,34 +117,62 @@ class RunManager(object):
 
         if tuple(p.stderr):
             for line in p.stderr:
-                print line
+                print(line)
             return
 
         for count, line in enumerate(p.stdout):
             if line.find('of_plus') > -1:
                 # find container
                 _id = line.split()[0]
-                print 'container id: {}'.format(_id)
+                print('container id: {}'.format(_id))
 
         self.__containerId = _id
 
-    def terminate(self):
-        """Kill all process under username ofuser."""
-        # This code failed but should return pid for the container
-        # docker inspect --format="{{ .State.Pid }}" e7a36e8e9eeb'
-        # for now I kill all process in docker.
-        # docker exec -i e7a36e8e9eeb killall -u ofuser
+    def getPid(self, command, timeout=5):
+        """Get pid of a command."""
         if not self.containerId:
             self.getContainerId()
-        killer = 'docker exec -i {} killall -u ofuser'.format(self.containerId)
+
+        self._pid = None
+
+        cmd = 'docker exec -i {} pgrep {}'.format(self.containerId, command)
+        cmds = '&'.join(self.shellinit + (cmd,))
+
+        timeout_start = time.time()
+        while time.time() < timeout_start + timeout:
+            pids = Popen(cmds, shell=True, stdout=PIPE)
+            pp = [int(p) for p in tuple(pids.stdout)]
+            pp.sort()
+            if pp:
+                self._pid = int(pp[-1])
+                sys.stdout.flush()
+                return self._pid
+            else:
+                time.sleep(0.5)
+        sys.stdout.flush()
+
+    def terminate(self, pid=None, force=False):
+        """Kill the command using the pid."""
+        if not self.containerId:
+            self.getContainerId()
+        pid = pid or self.pid
+        if not pid:
+            return
+        if force:
+            killer = 'docker exec -i {} kill -9 {}'.format(self.containerId, pid)
+        else:
+            killer = 'docker exec -i {} kill {}'.format(self.containerId, pid)
 
         cmds = '&'.join(self.shellinit + (killer,))
-        p = Popen(cmds, shell=True)
+        sys.stdout.flush()
+        k = Popen(cmds, shell=True, stdout=PIPE)
+        print(''.join(tuple(k.stdout)))
 
     @property
     def __ofBatchFile(self):
         if Version.OFFullVer == 'v3.0+':
-            return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat'
+            return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts' \
+                '\start_OF.bat'
         else:
             return r'C:\Program Files (x86)\ESI\OpenFOAM\{}\\' \
                 'Windows\Scripts\start_OF.bat'.format(Version.OFFullVer[1:-1])
@@ -163,10 +198,9 @@ class RunManager(object):
         return _base.format(self.__separator, self.dockerPath,
                             self.__separator.join(self.shellinit))
 
-    # TODO: Update controlDict.application for multiple commands
+    # TODO(): Update controlDict.application for multiple commands
     def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
-        """
-        Get command line for an OpenFOAM command in parallel or serial.
+        """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
@@ -191,10 +225,10 @@ class RunManager(object):
                     decomposeParDict = None
                 try:
                     arg = args[count]
-                except:
+                except TypeError:
                     arg = args
 
-                logs[count] = self.__command(c, None, decomposeParDict,
+                logs[count] = self.__command(c, (arg,), decomposeParDict,
                                              includeHeader)
 
             command = '&'.join(log.cmd for log in logs)
@@ -204,8 +238,7 @@ class RunManager(object):
             return res(command, logfiles, errorfiles)
 
     def __command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
-        """
-        Get command line for an OpenFOAM command in parallel or serial.
+        """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
@@ -287,11 +320,20 @@ class RunManager(object):
         # shell should be True to run multiple commands at the same time.
         log = namedtuple('log', 'process logfiles errorfiles')
         p = Popen(cmd, shell=True)
+        c = command.split()[0].strip()
+        if c == 'blockMesh':
+            timeout = 1
+        else:
+            timeout = 10
+        time.sleep(1)  # wait 1 second to make sure the command has started
+        ppid = self.getPid(command.split()[0], timeout)
+        print('Butterfly is running {}. PID: {}'.format(command, ppid))
         if wait:
             p.communicate()
-            # once over kill all processes. This is effective if the user has
-            # canceled the run, otherwise there is no process to kill.
-            self.terminate()
+            # once over try to kill the process if exist.
+            # This will ensure that the command will be terminated even if the
+            # user has canceled the run by closing the batch window.
+            self.terminate(ppid)
 
         return log(p, logfiles, errfiles)
 

@@ -562,6 +562,20 @@ class Case(object):
                 elif os.path.isdir(_fp):
                     rmtree(_fp)
 
+    def removeProcessorFolders(self):
+        """Remove processor folders for parallel runs."""
+
+        ff = (os.path.join(self.projectDir, d)
+              for d in os.listdir(self.projectDir)
+              if d.startswith('processor') and
+              os.path.isdir(os.path.join(self.projectDir, d)))
+
+        for f in ff:
+            try:
+                rmtree(f)
+            except Exception as e:
+                print('Failed to remove processor folder:\n{}'.format(e))
+
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
               removeResultFolders=False,

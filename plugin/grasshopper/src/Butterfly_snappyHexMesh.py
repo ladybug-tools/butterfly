@@ -24,7 +24,7 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_31_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_05_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -95,6 +95,7 @@ if _case and _run:
             raise Exception("\n --> surfaceFeatureExtract Failed!\n%s" % log.error)
 
     log = _case.snappyHexMesh()
+    _case.removeProcessorFolders()
     
     if log.success:
         if _case.getSnappyHexMeshFolders():

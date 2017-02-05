@@ -32,7 +32,7 @@ Run recipes using OpenFOAM.
 
 ghenv.Component.Name = "Butterfly_Solution"
 ghenv.Component.NickName = "solution"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_05_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -41,8 +41,6 @@ from scriptcontext import sticky
 import os
 
 try:
-#    import butterfly
-#    reload(butterfly.solution)
     from butterfly_grasshopper.timer import ghComponentTimer
     from butterfly.solution import Solution
 except ImportError as e:
@@ -71,7 +69,11 @@ if _case and _recipe and _write:
             if run_:
                 timestep = solution.timestep
                 solution.updateSolutionParams(solutionParams_, timestep)
-                solution.run()
+                if _interval_ < 0:
+                    # wait for the run to be done
+                    solution.run(wait=True)
+                else:
+                    solution.run(wait=False)
         else:
             # solution is there so just load it
             solution = sticky[uniqueKey]
@@ -89,12 +91,13 @@ if _case and _recipe and _write:
             ghComponentTimer(ghenv.Component, interval=_interval_*1000)
         else:
             # analysis is over
-            print 'done!'
             solution = sticky[uniqueKey]
             solution.terminate()
             # remove solution from sticky
             if uniqueKey in sticky:
                 del(sticky[uniqueKey])
+            
+            print 'done!'
             
             # set run toggle to False
         

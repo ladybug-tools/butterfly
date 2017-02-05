@@ -175,7 +175,7 @@ class Solution(object):
         # get timestep
         try:
             t = int(text[0])
-        except:
+        except ValueError:
             t = 0
 
         # read residual values
@@ -199,7 +199,7 @@ class Solution(object):
         # get timestep
         try:
             t = int(text[0])
-        except:
+        except ValueError:
             t = 0
         return t
 
@@ -245,7 +245,7 @@ class Solution(object):
                 raise AttributeError(e)
 
             if update:
-                print 'Updating {}...'.format(solPar.filename)
+                print('Updating {}...'.format(solPar.filename))
                 ffile = getattr(self.__case, solPar.filename)
                 ffile.save(self.projectDir)
 
@@ -256,19 +256,22 @@ class Solution(object):
                         self.controlDict.include = solPar.filename
                         self.controlDict.save(self.projectDir)
 
-    def run(self):
+    def run(self, wait=False):
         """Execute the solution."""
         self.case.renameSnappyHexMeshFolders()
         log = self.case.command(
             cmd=self.recipe.application,
             args=None,
             decomposeParDict=self.__decomposeParDict,
-            run=True, wait=False)
+            run=True, wait=wait)
         self.__process = log.process
         self.__errFiles = log.errorfiles
         self.__logFiles = log.logfiles
         self.__isRunStarted = True
-        self.__isRunFinished = False
+        if not wait:
+            self.__isRunFinished = False
+        else:
+            self.__isRunFinished = True
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
@@ -282,6 +285,9 @@ class Solution(object):
     def terminate(self):
         """Cancel the solution."""
         self.case.runmanager.terminate()
+        if self.decomposeParDict:
+            # remove processor folders if they haven't been removed already.
+            self.case.removeProcessorFolders()
 
     def loadProbeValues(self, field):
         """Return OpenFOAM probes results for a given field (e.g. U)."""
@@ -334,7 +340,9 @@ class SolutionParameter(object):
         try:
             self.__t0 = int(timeRange[0])
             self.__t1 = int(timeRange[1])
-        except:
+        except TypeError:
+            self.__t0, self.__t1 = 0, 1.0e+100
+        except ValueError:
             self.__t0, self.__t1 = 0, 1.0e+100
 
     @classmethod
