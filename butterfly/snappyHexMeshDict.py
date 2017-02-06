@@ -43,7 +43,7 @@ class SnappyHexMeshDict(FoamFile):
     __defaultValues['snapControls']['tolerance'] = '5'
     __defaultValues['snapControls']['nSolveIter'] = '100'
     __defaultValues['snapControls']['nRelaxIter'] = '8'
-    __defaultValues['snapControls']['nFeatureSnapIter'] = '20'
+    __defaultValues['snapControls']['nFeatureSnapIter'] = '10'
     __defaultValues['snapControls']['extractFeaturesRefineLevel'] = None
     __defaultValues['snapControls']['explicitFeatureSnap'] = None
     __defaultValues['snapControls']['implicitFeatureSnap'] = 'true'

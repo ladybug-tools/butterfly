@@ -298,6 +298,24 @@ class FixedFluxPressure(FixedValue):
         return _d
 
 
+class FlowRateInletVelocity(FixedValue):
+    """FlowRateInletVelocity."""
+
+    def __init__(self, volumetricFlowRate, value, isUniform=True):
+        """Init class."""
+        FixedValue.__init__(self, value, isUniform)
+        self.volumetricFlowRate = volumetricFlowRate
+
+    @property
+    def valueDict(self):
+        """Get fields as a dictionary."""
+        _d = OrderedDict()
+        _d['type'] = self.type
+        _d['volumetricFlowRate'] = self.volumetricFlowRate
+        _d['value'] = self.value
+        return _d
+
+
 class WallFunction(FixedValue):
     """WallFunction."""
 
