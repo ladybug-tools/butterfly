@@ -19,9 +19,18 @@ class Field(object):
         """Create a field from a dictionary."""
         _cls = cls()
         assert isinstance(d, (OrderedDict, dict)), \
-            'Input should be a dictionary not {}'.format(type(d))
+            ValueError('Input should be a dictionary not {}'.format(type(d)))
+        assert 'type' in d, ValueError('"type" is missing from {}'.format(d))
         _cls.__values = d
         return _cls
+
+    @classmethod
+    def fromString(cls, st):
+        """Create a field from a string."""
+        d = {s.split()[0]: ''.join(s.split()[1:])
+             for s in st.replace('{', '').replace('}', '').split(';')
+             if s.strip()}
+        return cls.fromDict(d)
 
     @property
     def valueDict(self):
@@ -150,8 +159,7 @@ class AtmBoundary(Field):
 
     def __init__(self, Uref, Zref, z0, flowDir, zDir='(0 0 1)', zGround=0,
                  fromValues=True):
-        """
-        Create from values.
+        """Create from values.
 
         Args:
             Uref: Flow velocity as a float number.

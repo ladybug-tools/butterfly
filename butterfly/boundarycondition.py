@@ -1,10 +1,12 @@
 # coding=utf-8
 """Collection of OpenFOAM boundary conditions (e.g. wall, inlet, outlet)."""
 from copy import deepcopy
+from collections import OrderedDict
 from fields import AtmBoundaryLayerInletVelocity, AtmBoundaryLayerInletK, \
     AtmBoundaryLayerInletEpsilon, Calculated, EpsilonWallFunction, FixedValue, \
     InletOutlet, KqRWallFunction, NutkWallFunction, NutkAtmRoughWallFunction, \
-    Slip, ZeroGradient, AlphatJayatillekeWallFunction, FixedFluxPressure, Empty
+    Slip, ZeroGradient, AlphatJayatillekeWallFunction, FixedFluxPressure, Empty, \
+    Field
 
 
 class BoundaryCondition(object):
@@ -21,24 +23,117 @@ class BoundaryCondition(object):
         nut: OpenFOAM value for nut.
     """
 
+    # TODO(Mostapha): Write a descriptor for field and replace all properties
     def __init__(self, bcType='patch', refLevels=None, T=None, U=None, p=None,
                  k=None, epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
         self.type = bcType
-        self.T = T or ZeroGradient()
         self.refLevels = (1, 1) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
-        self.U = U or ZeroGradient()
-        self.p = p or ZeroGradient()
-        self.k = k or ZeroGradient()
-        self.epsilon = epsilon or ZeroGradient()
-        self.nut = nut or ZeroGradient()
-        self.alphat = alphat or ZeroGradient()
-        self.p_rgh = p_rgh or ZeroGradient()
+        self.T = T
+        self.U = U
+        self.p = p
+        self.k = k
+        self.epsilon = epsilon
+        self.nut = nut
+        self.alphat = alphat
+        self.p_rgh = p_rgh
+
+    @property
+    def T(self):
+        "T boundary condition."
+        return self._T
+
+    @T.setter
+    def T(self, t):
+        self._T = self.tryGetField(t or ZeroGradient())
+
+    @property
+    def U(self):
+        "U boundary condition."
+        return self._U
+
+    @U.setter
+    def U(self, u):
+        self._U = self.tryGetField(u or ZeroGradient())
+
+    @property
+    def p(self):
+        "p boundary condition."
+        return self._p
+
+    @p.setter
+    def p(self, p):
+        self._p = self.tryGetField(p or ZeroGradient())
+
+    @property
+    def k(self):
+        "k boundary condition."
+        return self._k
+
+    @k.setter
+    def k(self, k_):
+        self._k = self.tryGetField(k_ or ZeroGradient())
+
+    @property
+    def epsilon(self):
+        "epsilon boundary condition."
+        return self._epsilon
+
+    @epsilon.setter
+    def epsilon(self, e):
+        self._epsilon = self.tryGetField(e or ZeroGradient())
+
+    @property
+    def nut(self):
+        "nut boundary condition."
+        return self._nut
+
+    @nut.setter
+    def nut(self, n):
+        self._nut = self.tryGetField(n or ZeroGradient())
+
+    @property
+    def alphat(self):
+        "alphat boundary condition."
+        return self._alphat
+
+    @alphat.setter
+    def alphat(self, a):
+        self._alphat = self.tryGetField(a or ZeroGradient())
+
+    @property
+    def p_rgh(self):
+        "p_rgh boundary condition."
+        return self._p_rgh
+
+    @p_rgh.setter
+    def p_rgh(self, prgh):
+        self._p_rgh = self.tryGetField(prgh or ZeroGradient())
 
     def isBoundaryCondition(self):
         """Return True for boundary conditions."""
         return True
+
+    @staticmethod
+    def tryGetField(f):
+        """Try getting the field from the input.
+
+        The method will return the input if it is an instance of class <Field>,
+        otherwise it tries to create the field from a dictionary and finally
+        tries to create it from the string.
+        """
+        if isinstance(f, Field):
+            return f
+        elif isinstance(f, (dict, OrderedDict)):
+            return Field.fromDict(f)
+        else:
+            try:
+                return Field.fromString(f)
+            except Exception:
+                raise ValueError(
+                    'Failed to create an OpenFOAM field from {}. Use a valid value.'
+                    .format(f))
 
     def duplicate(self):
         """Duplicate Boundary Condition."""
@@ -365,7 +460,6 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
 if __name__ == '__main__':
     from conditions import ABLConditions
     abc = ABLConditions()
-    print WindTunnelWallBoundaryCondition()
-    print WindTunnelInletBoundaryCondition(abc)
-    print
-    print WindTunnelGroundBoundaryCondition(abc)
+    print(WindTunnelWallBoundaryCondition())
+    print(WindTunnelInletBoundaryCondition(abc))
+    print(WindTunnelGroundBoundaryCondition(abc))
