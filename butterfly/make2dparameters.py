@@ -13,10 +13,10 @@ class Make2dParameters(object):
     Attributes:
         origin: Plane origin as (x, y, z).
         normal: Plane normal as (x, y, z).
-        width: width of 2d blockMeshDict (default: 01).
+        width: width of 2d blockMeshDict (default: 0.5).
     """
 
-    def __init__(self, origin, normal, width=0.1):
+    def __init__(self, origin, normal, width=0.5):
         """Init make2d parameters."""
         self.origin = tuple(origin)
         self.normal = tuple(normal)

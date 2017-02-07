@@ -7,31 +7,25 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Parameters for a 2d case.
+Make a case 2d.
 
 
     Args:
-        _cellSizeXYZ_: Cell size in (x, y, z) as a tuple (default: length / 5).
-            This value updates number of divisions in blockMeshDict.
-        _gradXYZ_: A simpleGrading (default: simpleGrading(1, 1, 1)). This value
-            updates grading in blockMeshDict.
-        _locationInMesh_: A tuple for the location of the mesh to be kept. This
-            value updates locationInMesh in snappyHexMeshDict.
-        _globRefineLevel_: A tuple of (min, max) values for global refinment.
-            This value updates globalRefinementLevel in snappyHexMeshDict.
+        _origin: Origin point for the 2d case cutting plane.
+        _normal: Normal direction for the cutting plane as a vector.
+        _width_: Width of 2d case (default: 0.5)
     Returns:
         make2dParams: Parameters for creating a 2d case.
 """
 
 ghenv.Component.Name = "Butterfly_Make2d Parameters"
 ghenv.Component.NickName = "make2dParams"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_10_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_07_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "4"
 
 try:
-    # import butterfly
     from butterfly.make2dparameters import Make2dParameters
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
