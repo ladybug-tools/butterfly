@@ -119,10 +119,11 @@ class Case(object):
         if sHMD:
             sHMD.projectName = name
 
-            bfGeometries = tuple(geo for f in _files.stl
-                                 for geo in bfGeometryFromStlFile(f)
-                                 if os.path.split(f)[-1][:-4]
-                                 in sHMD.stlFileNames)
+            stlfiles = tuple(f for f in _files.stl if f.lower().endswith('.stl'))
+            bfGeometries = tuple(
+                geo for f in stlfiles for geo in bfGeometryFromStlFile(f)
+                if os.path.split(f)[-1][:-4] in sHMD.stlFileNames)
+
         else:
             bfGeometries = []
 

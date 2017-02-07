@@ -93,7 +93,7 @@ class RunManager(object):
         if err:
             if err.find('Error checking TLS connection: Host is not running') != -1:
                 msg = ' Docker machine is not running! Run Oracle VM VirtualBox Manager ' \
-                    'and make sure "default" machine is "running".'
+                    'as administrator and make sure "default" machine is "running".'
             else:
                 msg = ''
 
