@@ -293,6 +293,10 @@ class Solution(object):
         """Return OpenFOAM probes results for a given field (e.g. U)."""
         return self.case.loadProbeValues(field)
 
+    def loadProbes(self, field):
+        """Return OpenFOAM probes location for a given field (e.g. U)."""
+        return self.case.loadProbes(field)
+
     def skippedProbes(self):
         """Get list of probes that are skipped from the solution."""
         return loadSkippedProbes(os.path.join(self.case.logFolder,

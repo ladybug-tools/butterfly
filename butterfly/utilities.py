@@ -116,8 +116,7 @@ def tail(filePath, lines=20):
 
 
 def readLastLine(filepath, blockSize=1024):
-    """
-    Read the last line of a file.
+    """Read the last line of a file.
 
     Modified from: http://www.manugarg.com/2007/04/tailing-in-python.html
     Args:
@@ -238,10 +237,43 @@ def loadSkippedProbes(logFile):
         line = inf.readline()
         while line and not line.startswith('Time = '):
             if line.startswith('    Did not find location'):
-                _pts.append(tuple(float(i) for i in line.split("(")[1].split(")")[0].split()))
+                _pts.append(
+                    tuple(float(i) for i in line.split("(")[1].split(")")[0].split()))
             line = inf.readline()
 
     return _pts
+
+
+def loadProbesFromPostProcessingFile(probesFolder, field):
+    """Return a generator of probes as tuples.
+
+    Args:
+        probesFolder: full path to probes folder.
+        field: Probes field (e.g. U, p, T).
+    """
+    if not os.path.isdir(probesFolder):
+        raise ValueError(
+            'Failed to find probes folder folder at {}'.format(probesFolder))
+
+    folders = [os.path.join(probesFolder, f) for f in os.listdir(probesFolder)
+               if (os.path.isdir(os.path.join(probesFolder, f)) and
+                   f.isdigit())]
+
+    # sort based on last modified
+    folders = sorted(folders, key=lambda folder:
+                     max(tuple(os.stat(os.path.join(folder, f)).st_mtime
+                               for f in os.listdir(folder))))
+
+    # load the last line in the file
+    _f = os.path.join(probesFolder, str(folders[-1]), field)
+
+    assert os.path.isfile(_f), 'Cannot find {}!'.format(_f)
+
+    with open(_f, 'rb') as inf:
+        for line in inf:
+            if line.startswith('#        Probe'):
+                break
+            yield tuple(float(v) for v in line.strip().split('(')[-1][:-1].split())
 
 
 def loadProbeValuesFromFolder(probesFolder, field):
@@ -321,12 +353,12 @@ def loadOFFacesFile(pathToFile, innerMesh=True):
         try:
             fin = -1
             for l in ffile:
-                l = l.strip()
+                tl = l.strip()
                 try:
-                    if l[1] == '(' and l.endswith(')'):
+                    if tl[1] == '(' and tl.endswith(')'):
                         fin += 1  # add to face number
                         if fin in fins:
-                            yield eval(','.join(l[1:].split()))
+                            yield eval(','.join(tl[1:].split()))
                 except IndexError:
                     continue
         finally:
@@ -334,10 +366,10 @@ def loadOFFacesFile(pathToFile, innerMesh=True):
     else:
         try:
             for l in ffile:
-                l = l.strip()
+                tl = l.strip()
                 try:
-                    if l[1] == '(' and l.endswith(')'):
-                        yield eval(','.join(l[1:].split()))
+                    if tl[1] == '(' and tl.endswith(')'):
+                        yield eval(','.join(tl[1:].split()))
                 except IndexError:
                     continue
         finally:

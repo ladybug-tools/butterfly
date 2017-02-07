@@ -7,7 +7,8 @@ from collections import namedtuple
 from copy import deepcopy
 
 from .version import Version
-from .utilities import loadCaseFiles, loadProbeValuesFromFolder
+from .utilities import loadCaseFiles, loadProbeValuesFromFolder, \
+    loadProbesFromPostProcessingFile
 from .geometry import bfGeometryFromStlFile, calculateMinMaxFromBFGeometries
 from .refinementRegion import refinementRegionsFromStlFile
 from .meshingparameters import MeshingParameters
@@ -851,6 +852,17 @@ class Case(object):
                                                            self.probes.fields))
 
         return loadProbeValuesFromFolder(self.probesFolder, field)
+
+    def loadProbes(self, field):
+        """Return OpenFOAM probes locations for a field."""
+        if self.probes.probesCount == 0:
+            return ()
+
+        if field not in self.probes.fields:
+            raise ValueError("Can't find {} in {}.".format(field,
+                                                           self.probes.fields))
+
+        return loadProbesFromPostProcessingFile(self.probesFolder, field)
 
     def duplicate(self):
         """Return a copy of this object."""
