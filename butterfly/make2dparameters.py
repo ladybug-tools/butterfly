@@ -6,7 +6,7 @@ Parameters to convert a 3d OpenFOAM case to 2d.
 from copy import deepcopy
 
 
-# TODO: Add check for input values.
+# TODO(): Add check for input values.
 class Make2dParameters(object):
     """Make2d parameters.
 

@@ -304,6 +304,7 @@ class FoamFile(object):
 
         with open(fp, "wb") as outf:
             outf.write(self.toOpenFOAM())
+        return fp
 
     def __eq__(self, other):
         """Check equality."""
