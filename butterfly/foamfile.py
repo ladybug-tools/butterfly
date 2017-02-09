@@ -5,7 +5,7 @@ from .utilities import getBoundaryFieldFromGeometries
 from .parser import CppDictParser
 import os
 import json
-from collections import OrderedDict
+import collections
 from copy import deepcopy
 
 
@@ -125,6 +125,7 @@ class FoamFile(object):
         """Return values as a dictionary."""
         return self.__values
 
+    # TODO(Mostapha): replace log changes with updateDict from utilities
     def updateValues(self, v, replace=False, mute=False):
         """Update current values from dictionary v.
 
@@ -150,7 +151,7 @@ class FoamFile(object):
                     self.__hasChanged = True
                     return
 
-                if isinstance(value, (dict, OrderedDict)):
+                if isinstance(value, (dict, collections.OrderedDict)):
                     self.__parents.append(key)
                     logChanges(original[key], value)
                 elif str(original[key]) != str(value):
@@ -253,10 +254,10 @@ class FoamFile(object):
         """Return body string."""
         # remove None values
         def removeNone(d):
-            if isinstance(d, (dict, OrderedDict)):
-                return OrderedDict((k, removeNone(v))
-                                   for k, v in d.iteritems()
-                                   if v == {} or (v and removeNone(v)))
+            if isinstance(d, (dict, collections.OrderedDict)):
+                return collections.OrderedDict(
+                    (k, removeNone(v)) for k, v in d.iteritems()
+                    if v == {} or (v and removeNone(v)))
             elif isinstance(d, (list, tuple)):
                 return [removeNone(v) for v in d if v and removeNone(v)]
             else:

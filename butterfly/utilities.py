@@ -3,6 +3,7 @@
 from __future__ import print_function
 import os
 import sys
+import collections
 from collections import OrderedDict, namedtuple
 from subprocess import Popen, PIPE
 import gzip
@@ -156,6 +157,23 @@ def readLastLine(filepath, blockSize=1024):
         raise Exception(str(e))
     finally:
         f.close()
+
+
+def updateDict(d, u):
+    """Update a dictionary witout overwriting the currect values.
+
+    source: http://stackoverflow.com/a/3233356/4394669
+    Args:
+        d: original dictionary.
+        u: new dictionary.
+    """
+    for k, v in u.iteritems():
+        if isinstance(v, collections.Mapping):
+            r = updateDict(d.get(k, {}), v)
+            d[k] = r
+        else:
+            d[k] = u[k]
+    return d
 
 
 def getSnappyHexMeshGeometryFeild(projectName, BFGeometries,

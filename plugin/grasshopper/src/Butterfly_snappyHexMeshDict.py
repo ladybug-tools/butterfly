@@ -26,13 +26,15 @@ Read more about snappyHexMeshDict here:
 
 ghenv.Component.Name = "Butterfly_snappyHexMeshDict"
 ghenv.Component.NickName = "snappyHexMeshDict"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_31_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_09_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    from butterfly.snappyHexMeshDict import SnappyHexMeshDict
+    from butterfly.solution import SolutionParameter
+    from butterfly.parser import CppDictParser
+    from butterfly.utilities import updateDict
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -42,20 +44,26 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-snappyDict = SnappyHexMeshDict()
-
 if _meshQuality_:
     raise NotImplementedError('MeshQuality is not implemented yet. It will be added soon.')
 
-snappyDict.castellatedMesh = _castellatedMesh_
-snappyDict.snap = _snap_
-snappyDict.addLayers = _addLayers_
-snappyDict.nCellsBetweenLevels = _nCellsBetweenLevels_
-snappyDict.maxGlobalCells = _maxGlobalCells_
+values = {'castellatedMesh': str(_castellatedMesh_).lower(),
+          'snap': str(_snap_).lower(), 'addLayers': str(_addLayers_).lower(),
+          'castellatedMeshControls': {
+            'nCellsBetweenLevels': str(_nCellsBetweenLevels_),
+            'maxGlobalCells': str(_maxGlobalCells_)
+            }
+          }
+
 if _surfaceFeatureLevel_ is not None:
-    snappyDict.extractFeaturesRefineLevel = _surfaceFeatureLevel_
+    values['snapControls'] = {'extractFeaturesRefineLevel': str(_surfaceFeatureLevel_)}
 
 if additionalParameters_:
-    raise NotImplementedError('additionalParameters is not implemented yet. It will be added soon.')
+    try:
+        addedValues = CppDictParser(additionalParameters_).values
+    except Exception as e:
+        raise ValueError("Failed to load additionalParameters_:\n%s" % str(e))
+    else:
+        values = updateDict(values, addedValues)
 
-snappyHexMeshDict = snappyDict
+snappyHexMeshDict = SolutionParameter('snappyHexMeshDict', values)

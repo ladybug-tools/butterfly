@@ -134,10 +134,9 @@ class RunManager(object):
             self.getContainerId()
 
         self._pid = None
-
         cmd = 'docker exec -i {} pgrep {}'.format(self.containerId, command)
         cmds = '&'.join(self.shellinit + (cmd,))
-
+        sys.stdout.flush()
         timeout_start = time.time()
         while time.time() < timeout_start + timeout:
             pids = Popen(cmds, shell=True, stdout=PIPE)
@@ -321,7 +320,7 @@ class RunManager(object):
         log = namedtuple('log', 'process logfiles errorfiles')
         p = Popen(cmd, shell=True)
         c = command.split()[0].strip()
-        if c == 'blockMesh':
+        if c in ('blockMesh', 'surfaceFeatureExtract'):
             timeout = 1
         else:
             timeout = 10

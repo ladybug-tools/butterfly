@@ -427,6 +427,6 @@ class SolutionParameter(object):
 
     def __repr__(self):
         """Class representation."""
-        return 'SolutionParameter::{}@{}'\
-            .format('.'.join([self.filename] + self.values.keys()),
-                    self.timeRange)
+        kv = '\n'.join('{}: {};'.format(k, v) for k, v in self.values.iteritems())
+        return 'SolutionParameter::{}\n{}\n@{}'\
+            .format(self.filename, kv, self.timeRange)

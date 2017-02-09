@@ -24,7 +24,7 @@ snappyHexMesh
 
 ghenv.Component.Name = "Butterfly_snappyHexMesh"
 ghenv.Component.NickName = "snappyHexMesh"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_05_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_09_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -44,24 +44,34 @@ except ImportError as e:
 if _case and _run:
     
     if _snappyHexMeshDict_:
-        assert hasattr(_snappyHexMeshDict_, 'locationInMesh'), \
+        assert hasattr(_snappyHexMeshDict_, 'isSolutionParameter'), \
             TypeError(
-                '_snappyHexMeshDict_ input is {} and not a SnappyHexMeshDict.'
+                '_snappyHexMeshDict_ input is {} and not a SolutionParameter.'
                 .format(type(_snappyHexMeshDict_)))
-            
+        assert _snappyHexMeshDict_.filename == 'snappyHexMeshDict', \
+            TypeError(
+                '_snappyHexMeshDict_ input is prepared for {} and not snappyHexMeshDict'
+                .format(_snappyHexMeshDict_.filename))
+                
         # update values for snappyHexMeshDict
-        _case.snappyHexMeshDict.castellatedMesh = _snappyHexMeshDict_.castellatedMesh
-        _case.snappyHexMeshDict.snap = _snappyHexMeshDict_.snap
-        _case.snappyHexMeshDict.addLayers = _snappyHexMeshDict_.addLayers
-        _case.snappyHexMeshDict.nCellsBetweenLevels = str(_snappyHexMeshDict_.nCellsBetweenLevels)
-        _case.snappyHexMeshDict.maxGlobalCells = str(_snappyHexMeshDict_.maxGlobalCells)
-        if _snappyHexMeshDict_.extractFeaturesRefineLevel:
-            print 'updating snappyHexMeshDict for Implicit Edge Refinement.'
-            # change to explicit mode
-            _case.snappyHexMeshDict.setFeatureEdgeRefinementToExplicit(
-                _case.projectName, _snappyHexMeshDict_.extractFeaturesRefineLevel)
+        hasChanged = _case.snappyHexMeshDict.updateValues(_snappyHexMeshDict_.values)
         
-        _case.snappyHexMeshDict.save(_case.projectDir)
+        if 'snapControls' in _snappyHexMeshDict_.values:
+            if _case.snappyHexMeshDict.extractFeaturesRefineLevel is not None :
+                print 'updating snappyHexMeshDict for Explicit Edge Refinement.'
+                # change to explicit mode
+                _case.snappyHexMeshDict.setFeatureEdgeRefinementToExplicit(
+                    _case.projectName,
+                    _case.snappyHexMeshDict.extractFeaturesRefineLevel)
+                hasChanged = True
+        elif _case.snappyHexMeshDict.extractFeaturesRefineLevel is not None:
+                print 'updating snappyHexMeshDict for Implicit Edge Refinement.'
+                _case.snappyHexMeshDict.setFeatureEdgeRefinementToImplicit()
+                hasChanged = True
+        
+        if hasChanged:
+            print 'saving the new snappyHexMeshDict.'
+            _case.snappyHexMeshDict.save(_case.projectDir)
         
     if _locationInMesh_:
         _case.snappyHexMeshDict.locationInMesh = tuple(_locationInMesh_)
