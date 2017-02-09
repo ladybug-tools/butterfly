@@ -20,10 +20,10 @@ Load results for a field in probes.
 
 ghenv.Component.Name = "Butterfly_Load Skipped Probes"
 ghenv.Component.NickName = "loadSkippedProbes"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Solution"
-ghenv.Component.AdditionalHelpFromDocStrings = "3"
+ghenv.Component.SubCategory = "07::PostProcess"
+ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 from Rhino.Geometry import Point3d
 

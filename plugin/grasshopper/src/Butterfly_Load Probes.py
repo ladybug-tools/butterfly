@@ -21,10 +21,10 @@ Load probes from a folder.
 
 ghenv.Component.Name = "Butterfly_Load Probes"
 ghenv.Component.NickName = "loadProbes"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_07_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Solution"
-ghenv.Component.AdditionalHelpFromDocStrings = "3"
+ghenv.Component.SubCategory = "07::PostProcess"
+ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 try:
     from butterfly.utilities import loadProbesFromPostProcessingFile

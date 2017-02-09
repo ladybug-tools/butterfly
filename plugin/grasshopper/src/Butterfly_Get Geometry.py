@@ -20,10 +20,10 @@ Update fvSchemes values based on mesh orthogonalities.
 """
 
 ghenv.Component.Name = "Butterfly_Get Geometry"
-ghenv.Component.NickName = "GetGeometry"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.NickName = "getGeometry"
+ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "07::Etc"
+ghenv.Component.SubCategory = "08::Etc"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 try:

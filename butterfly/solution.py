@@ -244,6 +244,16 @@ class Solution(object):
                 # probes can be empty at start
                 raise AttributeError(e)
 
+            # check to remove functions if needed
+            if solPar.filename == 'controlDict':
+                curFunc = self.__case.controlDict.values['functions'].keys()
+                newFunc = solPar.values['functions'].keys()
+
+                for k in curFunc:
+                    if k not in newFunc:
+                        del(self.__case.controlDict.values['functions'][k])
+                        update = True
+
             if update:
                 print('Updating {}...'.format(solPar.filename))
                 ffile = getattr(self.__case, solPar.filename)

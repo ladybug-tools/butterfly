@@ -1,6 +1,7 @@
 # coding=utf-8
 """BlockMeshDict class."""
-from foamfile import FoamFile, foamFileFromFile
+from .foamfile import FoamFile, foamFileFromFile
+from .functions import Function
 from collections import OrderedDict
 
 
@@ -26,6 +27,7 @@ class ControlDict(FoamFile):
     __defaultValues['timeFormat'] = 'general'
     __defaultValues['timePrecision'] = '6'
     __defaultValues['runTimeModifiable'] = 'true'
+    __defaultValues['functions'] = OrderedDict()
 
     def __init__(self, values=None):
         """Init class."""
@@ -103,3 +105,16 @@ class ControlDict(FoamFile):
     @writeCompression.setter
     def writeCompression(self, value=True):
         self.values['writeCompression'] = self.convertBoolValue(value)
+
+    @property
+    def functions(self):
+        """Function objects."""
+        self.values['functions']
+
+    @functions.setter
+    def functions(self, funcObjects):
+        fos = (f if hasattr(f, 'isFunction') else Function.fromCppDictionary(f)
+               for f in funcObjects)
+        self.values['functions'] = OrderedDict()
+        for f in fos:
+            self.values['functions'].update(f.values)

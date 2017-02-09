@@ -33,10 +33,10 @@ Load residual values for a case.
 
 ghenv.Component.Name = "Butterfly_Plot Residuals"
 ghenv.Component.NickName = "plotResiduals"
-ghenv.Component.Message = 'VER 0.0.03\nNOV_08_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Solution"
-ghenv.Component.AdditionalHelpFromDocStrings = "3"
+ghenv.Component.SubCategory = "07::PostProcess"
+ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 import Rhino as rc
 import scriptcontext as sc

@@ -19,9 +19,9 @@ Set residual control convergance values
 
 ghenv.Component.Name = "Butterfly_residualControl"
 ghenv.Component.NickName = "residualControl"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "06::Solution"
+ghenv.Component.SubCategory = "05::Recipe"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:

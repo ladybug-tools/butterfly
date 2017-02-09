@@ -110,10 +110,16 @@ class Case(object):
         _files = loadCaseFiles(path, fullpath=True)
 
         # convert files to butterfly objects
-        ff = tuple(cls.__createFoamfileFromFile(p)
-                   for f in (_files.zero, _files.constant, _files.system)
-                   for p in f if p)
-
+        ff = []
+        for f in (_files.zero, _files.constant, _files.system):
+            for p in f:
+                if not p:
+                    continue
+                try:
+                    ff.append(cls.__createFoamfileFromFile(p))
+                    print('Imported {} from case.'.format(p))
+                except Exception as e:
+                    print('Failed to import {}:\n\t{}'.format(p, e))
         # find snappyHexMeshDict
         sHMD = cls.__getFoamFileByName('snappyHexMeshDict', ff)
 
@@ -143,14 +149,15 @@ class Case(object):
                     setattr(geo.boundaryCondition, ff.name,
                             Field.fromDict(f))
 
-        refinementRegions = tuple(
-            ref for f in _files.stl
-            if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
-            for ref in refinementRegionsFromStlFile(
-                f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
-        )
+        if sHMD:
+            refinementRegions = tuple(
+                ref for f in _files.stl
+                if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
+                for ref in refinementRegionsFromStlFile(
+                    f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
+            )
 
-        _case.addRefinementRegions(refinementRegions)
+            _case.addRefinementRegions(refinementRegions)
 
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
@@ -307,7 +314,10 @@ class Case(object):
     def geometries(self):
         """Butterfly geometries."""
         if hasattr(self, 'blockMeshDict'):
-            return self.__geometries + self.blockMeshDict.geometry
+            try:
+                return self.__geometries + self.blockMeshDict.geometry
+            except TypeError:
+                return tuple(self.__geometries) + self.blockMeshDict.geometry
 
         return self.__geometries
 
@@ -816,7 +826,6 @@ class Case(object):
         }
 
         name = os.path.split(p)[-1].split('.')[0]
-
         if name in __foamfilescollection:
             try:
                 return __foamfilescollection[name].fromFile(p)

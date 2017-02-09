@@ -7,25 +7,22 @@
 # @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
 
 """
-Set relaxtionFactors values
+Function Object.
 
     Args:
-        _quantities: 
-        _values_: relaxtionValues
-        
+        _funcObject: An OpenFOAM function object in (c++) dictionary format.
     Returns:
-        relaxationFactors: Relaxation factors.
+        funcObject: A function object.
 """
-
-ghenv.Component.Name = "Butterfly_relaxtionFactors"
-ghenv.Component.NickName = "relaxtionFactors"
+ghenv.Component.Name = "Butterfly_Function Object"
+ghenv.Component.NickName = "functionObject"
 ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
 ghenv.Component.Category = "Butterfly"
-ghenv.Component.SubCategory = "05::Recipe"
+ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    from butterfly.fvSolution import ResidualControl
+    from butterfly.functions import Function
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -35,19 +32,5 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _quantities and _values:
-    rc = ResidualControl()
-    
-    if _p_ is not None:
-        rc.p = str(_p_)
-    
-    if _U_ is not None:
-        rc.U = str(_U_)
-    
-    if _k_ is not None:
-        rc.k = str(_k_)
-    
-    if _epsilon_ is not None:
-        rc.epsilon = str(_epsilon_)
-    
-    residualControl = rc
+if _funcObject:
+    funcObject = Function.fromCppDictionary(_funcObject)

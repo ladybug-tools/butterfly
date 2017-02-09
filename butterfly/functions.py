@@ -1,19 +1,50 @@
 # coding=utf-8
 """A cllection of OpenFOAM functions such as Probes."""
-from foamfile import Condition, foamFileFromFile
+from .foamfile import FoamFile, foamFileFromFile
+from .parser import CppDictParser
 from collections import OrderedDict
 
 
-class Probes(Condition):
+class Function(FoamFile):
+    """OpenFOAM function object.
+
+    Use this class to create conditions function objects.
+    Functions don't have OpenFOAM header and OpenFOAM FoamFile. It's only values.
+    """
+
+    @classmethod
+    def fromCppDictionary(cls, dictionary):
+        """Create a foamfile from an OpenFOAM dictionary in text format."""
+        # convert values to python dictionary
+        values = CppDictParser(text=dictionary).values
+
+        if 'FoamFile' in values:
+            del(values['FoamFile'])
+
+        assert len(values.keys()) == 1, \
+            """You can define one function object at a time."""
+
+        return cls(values.keys()[0], 'dictionary', values=values)
+
+    def header(self):
+        """Return conditions header."""
+        return ''
+
+    def __repr__(self):
+        """Object representation."""
+        return 'Function Object: {}'.format(self.name)
+
+
+class Probes(Function):
     """Probes function."""
 
     # set default valus for this class
     __defaultValues = {'functions': {'probes': OrderedDict()}}
     __defaultValues['functions']['probes']['functionObjectLibs'] = '("libsampling.so")'
     __defaultValues['functions']['probes']['type'] = 'probes'
-    __defaultValues['functions']['probes']['name'] = 'probes'  # name of the directory for probe data
+    __defaultValues['functions']['probes']['name'] = 'probes'
     __defaultValues['functions']['probes']['fields'] = '(p U)'  # Fields to be probed
-    __defaultValues['functions']['probes']['probeLocations'] = None  # locations as (x y z)
+    __defaultValues['functions']['probes']['probeLocations'] = None
     __defaultValues['functions']['probes']['writeControl'] = 'timeStep'
     __defaultValues['functions']['probes']['writeInterval'] = '1'
 

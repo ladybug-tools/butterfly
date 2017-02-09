@@ -15,22 +15,20 @@ Set parameters for runDict
         _writeInterval_: Number of intervals between writing the results (default: 100)
         _writeCompression_: Set to True if you want the results to be compressed
             before being written to your machine (default: False).
+        funcObjects_: A list of OpenFOAM function objects. Use functionObject
+            component to create a butterfly function object from a cpp dictionary.
     Returns:
         controlDict: Butterfly controlDict.
 """
 ghenv.Component.Name = "Butterfly_controlDict"
 ghenv.Component.NickName = "controlDict"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly.controlDict import ControlDict
-    # import butterfly
-    #reload(butterfly)
-    #reload(butterfly.foamfile)
-    #reload(butterfly.controlDict)
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -53,5 +51,8 @@ if _writeInterval_ is not None:
 
 if _writeCompression_ is not None:
     cd.writeCompression = _writeCompression_
+
+if funcObjects_ and funcObjects_[0] is not None:
+    cd.functions = funcObjects_
 
 controlDict = cd

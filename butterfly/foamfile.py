@@ -61,11 +61,13 @@ class FoamFile(object):
             location: Optional folder name for location (0, constant or system)
         """
         def _tryGetFoamFileValue(key):
+            """Get values for FoamFile header."""
             try:
                 return _values['FoamFile'][key]
             except KeyError:
-                print 'failed to find {} in {}.\n\tUsing the default value: {}' \
-                    .format(filepath, key, default[key])
+                msg = 'failed to find ""{}"" in {} header.\nDefault value: {}' \
+                    .format(key, filepath, default[key])
+                print(msg)
                 return default[key]
 
         assert not filepath.endswith('blockMeshDict'), \
@@ -142,8 +144,9 @@ class FoamFile(object):
                 if key not in original:
                     # there is a new key so dictionary has changed.
                     if not mute:
-                        print '{} :: New values are added for {}.' \
+                        msg = '{} :: New values are added for {}.' \
                             .format('.'.join(self.__parents), key)
+                        print(msg)
                     self.__hasChanged = True
                     return
 
@@ -153,12 +156,13 @@ class FoamFile(object):
                 elif str(original[key]) != str(value):
                         # there is a change in value
                         if not mute:
-                            print '{}.{} is changed from "{}" to "{}".'\
+                            msg = '{}.{} is changed from "{}" to "{}".'\
                                 .format('.'.join(self.__parents), key,
                                         original[key] if len(str(original[key])) < 100
                                         else '%s...' % str(original[key])[:100],
                                         value if len(str(value)) < 100
                                         else '%s...' % str(value)[:100])
+                            print(msg)
                         self.__hasChanged = True
                         return
 
@@ -267,10 +271,10 @@ class FoamFile(object):
             .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
 
         # remove first and last {} and prettify[!] the file
-        l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-             for line in of.split("\n")[1:-1])
+        content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+                   for line in of.split("\n")[1:-1])
 
-        return "\n\n".join(l)
+        return "\n\n".join(content)
 
     @staticmethod
     def convertBoolValue(v=True):
@@ -358,7 +362,7 @@ class FoamFileZeroFolder(FoamFile):
         if name in self.values['boundaryField']:
             return self.values['boundaryField'][name]
         else:
-            print 'Failed to find boundaryField values for {}'.format(name)
+            print('Failed to find boundaryField values for {}'.format(name))
 
 
 class Condition(FoamFile):
