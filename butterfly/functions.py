@@ -128,3 +128,7 @@ class Probes(Function):
             return
         else:
             super(Probes, self).save(projectFolder, subFolder)
+
+    def __repr__(self):
+        """Class representation."""
+        return self.toOpenFOAM()

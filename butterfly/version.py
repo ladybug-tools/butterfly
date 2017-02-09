@@ -8,7 +8,7 @@ class Version(object):
     """Version class."""
 
     BFVer = "0.0.3"
-    OFVer = "3.0"
+    OFVer = "4.0"
     OFFullVer = "v1612+"
     isUsingDockerMachine = True  # useful to run OpenFOAM container
     lastUpdated = datetime(year=2017, month=2, day=7, hour=9, minute=00)
