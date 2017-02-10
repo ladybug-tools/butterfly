@@ -312,6 +312,20 @@ class Solution(object):
         return loadSkippedProbes(os.path.join(self.case.logFolder,
                                               self.recipe.logFile))
 
+    def sample(self, name, points, field, wait=True):
+        """Sample the results for a certain field.
+
+        Args:
+            name: A unique name for this sample.
+            points: List of points as (x, y, z).
+            fields: List of fields (e.g. U, p).
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(probes, values).
+        """
+        return self.case.sample(name, points, field, wait=True)
+
     def duplicate(self):
         """Return a copy of this object."""
         return deepcopy(self)

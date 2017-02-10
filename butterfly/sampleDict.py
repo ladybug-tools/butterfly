@@ -11,9 +11,9 @@ class SampleDict(Condition):
     __defaultValues = OrderedDict()
     __defaultValues['libs'] = '("libsampling.so")'
     __defaultValues['interpolationScheme'] = 'cellPoint'
-    __defaultValues['setFormat'] = 'raw'  # name of the directory for probe data
+    __defaultValues['setFormat'] = 'raw'
     __defaultValues['type'] = 'sets'
-    __defaultValues['fields'] = '(p U)'  # Fields to be probed
+    __defaultValues['fields'] = '(p U)'  # Fields
     __defaultValues['sets'] = OrderedDict()
 
     def __init__(self, values=None):
@@ -36,6 +36,15 @@ class SampleDict(Condition):
         _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
         return _cls
 
+    @classmethod
+    def fromPoints(cls, name, points, fields):
+        """Create sampleDict from points and fields."""
+        cls_ = cls()
+        cls_.filename = name
+        cls_.points = points
+        cls_.fields = fields
+        return cls_
+
     @property
     def pointsCount(self):
         """Get number of probes."""
@@ -43,6 +52,11 @@ class SampleDict(Condition):
             return 0
         else:
             return len(' '.join(self.points)[1:-1].split(')')) - 1
+
+    @property
+    def outputFilenames(self):
+        """A tuple of output file names."""
+        return tuple('{}_{}.xy'.format(self.filename, f) for f in self.fields)
 
     @property
     def points(self):
@@ -56,12 +70,12 @@ class SampleDict(Condition):
 
     @property
     def filename(self):
-        """Get Probes filename."""
+        """Get SampleDict filename."""
         return self._name
 
     @filename.setter
     def filename(self, n):
-        """Set Probes filename."""
+        """Set SampleDict filename."""
         if not n:
             return
         if self._name in self.values['sets']:
@@ -90,7 +104,10 @@ class SampleDict(Condition):
             .replace("\\r", '').replace("\\n", ' ')
 
     def save(self, projectFolder, subFolder=None):
-        """Save sampleDict file."""
+        """Save sampleDict file.
+
+        The file will be named
+        """
         if self.pointsCount == 0:
             return
         else:

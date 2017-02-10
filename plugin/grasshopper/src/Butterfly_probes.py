@@ -10,7 +10,8 @@
 Create Butterfly probes
 
     Args:
-        _pts: A flatten list of points that you're interested to collect the values for.
+        _points: A flatten list of points that you're interested to collect the
+            values for.
         _fields_: A list of fields such as U, p, k (default: U, p).
         _writeInterval_: Number of intervals between writing the results (default: 1)
     Returns:
@@ -19,15 +20,12 @@ Create Butterfly probes
 
 ghenv.Component.Name = "Butterfly_probes"
 ghenv.Component.NickName = "probes"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_09_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
-    #import butterfly
-    #reload(butterfly)
-    #reload(butterfly.functions)
     from butterfly.functions import Probes
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
@@ -38,8 +36,8 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _pts:
+if _points:
     probes = Probes()
-    probes.probeLocations = _pts
+    probes.probeLocations = _points
     probes.fields = _fields_
     probes.writeInterval = _writeInterval_

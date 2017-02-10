@@ -241,7 +241,7 @@ class RunManager(object):
 
         Args:
             cmd: An OpenFOAM command.
-            args: List of optional arguments for command. e.g. ('c', 'latestTime')
+            args: List of optional arguments for command. e.g. ('-c', '-latestTime')
             decomposeParDict: decomposeParDict for parallel runs (default: None).
             includeHeader: Include header lines to set up the environment
                 (default: True).
@@ -269,7 +269,7 @@ class RunManager(object):
             % (tee, self.logFolder, tee, self.errFolder)
 
         # join arguments for the command
-        arguments = '' if not args else '-{}'.format(' -'.join(args))
+        arguments = '' if not args else '{}'.format(' '.join(args))
 
         if decomposeParDict:
             # run in parallel
@@ -320,11 +320,11 @@ class RunManager(object):
         log = namedtuple('log', 'process logfiles errorfiles')
         p = Popen(cmd, shell=True)
         c = command.split()[0].strip()
-        if c in ('blockMesh', 'surfaceFeatureExtract'):
+        if c in ('blockMesh', 'surfaceFeatureExtract', 'postProcess'):
             timeout = 1
         else:
-            timeout = 10
-        time.sleep(1)  # wait 1 second to make sure the command has started
+            timeout = 5
+        time.sleep(0.5)  # wait 0.5 second to make sure the command has started
         ppid = self.getPid(command.split()[0], timeout)
         print('Butterfly is running {}. PID: {}'.format(command, ppid))
         if wait:

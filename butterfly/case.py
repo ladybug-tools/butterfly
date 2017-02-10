@@ -5,10 +5,11 @@ from shutil import rmtree  # to remove case folders if needed
 from distutils.dir_util import copy_tree  # to copy sHM meshes over to tri
 from collections import namedtuple
 from copy import deepcopy
+from itertools import izip
 
 from .version import Version
 from .utilities import loadCaseFiles, loadProbeValuesFromFolder, \
-    loadProbesFromPostProcessingFile
+    loadProbesFromPostProcessingFile, loadProbesAndValuesFromSampleFile
 from .geometry import bfGeometryFromStlFile, calculateMinMaxFromBFGeometries
 from .refinementRegion import refinementRegionsFromStlFile
 from .meshingparameters import MeshingParameters
@@ -42,6 +43,7 @@ from .fvSchemes import FvSchemes
 from .fvSolution import FvSolution
 from .functions import Probes
 from .decomposeParDict import DecomposeParDict
+from .sampleDict import SampleDict
 
 from .runmanager import RunManager
 
@@ -747,6 +749,44 @@ class Case(object):
         return self.command('surfaceFeatureExtract', args, decomposeParDict=None,
                             wait=wait)
 
+    # TODO(Mostapha): Sample for multiple fields.
+    # The reason we don't have it now is that I don't have the methods in place
+    # for dealing with lists of lists in Grasshopper.
+    def sample(self, name, points, field, wait=True):
+        """Sample the results for a certain field.
+
+        Args:
+            name: A unique name for this sample.
+            points: List of points as (x, y, z).
+            fields: List of fields (e.g. U, p).
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(probes, values).
+        """
+        sd = SampleDict.fromPoints(name, points, (field,))
+        sd.save(self.projectDir)
+
+        log = self.command(
+            'postProcess', args=('-func', 'sampleDict', '-latestTime'),
+            decomposeParDict=None, wait=wait)
+
+        if not log.success:
+            raise Exception("Failed to sample the case:\n\t%s"
+                            % log.error)
+
+        rf = list(self.getResultFolders())
+        rf.sort()
+
+        fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', rf[-1], f)
+                   for f in sd.outputFilenames)
+
+        if fp:
+            res = loadProbesAndValuesFromSampleFile(fp[0])
+            pts, values = izip(*(r for r in res))
+            res = namedtuple('Results', 'probes values')
+            return res(pts, values)
+
     def snappyHexMesh(self, args=None, wait=True):
         """Run snappyHexMesh.
 
@@ -779,7 +819,7 @@ class Case(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            log = self.checkMesh(args=('latestTime',))
+            log = self.checkMesh(args=('-latestTime',))
             assert log.success, log.error
 
         f = os.path.join(self.logFolder, 'checkMesh.log')

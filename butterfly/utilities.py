@@ -337,6 +337,21 @@ def loadProbeValuesFromFolder(probesFolder, field):
     return _res
 
 
+def loadProbesAndValuesFromSampleFile(fp):
+    """Load probes and respected values from the results of a sample file."""
+    with open(fp, 'rb') as inf:
+        for line in inf:
+            res = (float(v) for v in line.split())
+            x = res.next()
+            y = res.next()
+            z = res.next()
+            v = tuple(res)
+            if len(v) == 1:
+                yield (x, y, z), float(v[0])
+            else:
+                yield (x, y, z), v
+
+
 def loadOFPointsFile(pathToFile):
     """Return points as a generator of tuples."""
     assert os.path.isfile(pathToFile), \
