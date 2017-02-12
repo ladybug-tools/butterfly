@@ -72,7 +72,7 @@ class FvSolution(FoamFile):
         """
         return cls(values=foamFileFromFile(filepath, cls.__name__))
 
-    # TODO: update to pass the recipe itself and not the code!
+    # TODO(): update to pass the recipe itself and not the code!
     @classmethod
     def fromRecipe(cls, recipe=0):
         """Generate fvSolution for a particular recipe.
@@ -125,9 +125,10 @@ class FvSolution(FoamFile):
         if not resControl:
             return
 
-        self.values['SIMPLE']['residualControl'] = {}
+        if not self.values['SIMPLE']['residualControl']:
+            self.values['SIMPLE']['residualControl'] = {}
 
-        for key, value in resControl.iteritems():
+        for key, value in resControl.values.iteritems():
             self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 
     @property
@@ -145,24 +146,31 @@ class FvSolution(FoamFile):
         if not relaxFact:
             return
 
-        self.values['relaxationFactors'] = {}
+        if not self.values['relaxationFactors']:
+            self.values['relaxationFactors'] = {}
 
-        for key, value in relaxFact.iteritems():
+        for key, value in relaxFact.values.iteritems():
             self.values['relaxationFactors'][str(key)] = str(value)
 
 
-class ResidualControl(dict):
+# TODO(Mostapha): This is not critical but it will be cleaner if I can find a
+# solution to keep ResidualControl as a subclass of dict and still get it to
+# work in Grasshopper and Dynamo.
+class ResidualControl(object):
     """Residual Control class.
 
     Attributes:
         values: Values as a dictionary.
     """
 
-    __slots__ = ()
+    __slots__ = ('values',)
 
     def __init__(self, values):
         """Init ResidualControl class."""
-        dict.__init__(self, values)
+        if not values:
+            self.values = {}
+        else:
+            self.values = values
 
     @property
     def isResidualControl(self):
@@ -176,21 +184,24 @@ class ResidualControl(dict):
     def __repr__(self):
         """Representation."""
         return 'residualControl\n{\n\t%s\n}' % (
-            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))
 
 
-class RelaxationFactors(dict):
+class RelaxationFactors(object):
     """relaxationFactors class.
 
     Attributes:
         values: Values as a dictionary.
     """
 
-    __slots__ = ()
+    __slots__ = ('values',)
 
     def __init__(self, values):
         """Init relaxationFactors class."""
-        dict.__init__(self, values)
+        if not values:
+            self.values = {}
+        else:
+            self.values = values
 
     @property
     def isRelaxationFactors(self):
@@ -204,4 +215,4 @@ class RelaxationFactors(dict):
     def __repr__(self):
         """Representation."""
         return 'relaxationFactors\n{\n\t%s\n}' % (
-            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))
