@@ -71,9 +71,7 @@ class WindTunnel(object):
 
         # update boundary condition of wall geometries
         for bfGeometry in geometries:
-            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
-                bfGeometry.boundaryCondition.refLevels
-            )
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition()
 
         tp = tunnelParameters
 
@@ -279,7 +277,7 @@ class TunnelParameters(object):
         """Check input values."""
         try:
             _inp = float(input)
-        except:
+        except TypeError:
             raise ValueError("Failed to convert %s to a number." % input)
         else:
             assert _inp > 0, "Value (%.2f) should be larger than 0." % _inp

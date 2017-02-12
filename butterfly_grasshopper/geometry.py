@@ -114,6 +114,7 @@ class BFGeometryGH(BFGeometry):
     """
 
     def __init__(self, name, geometries, boundaryCondition=None,
+                 refinementLevels=None, nSurfaceLayers=None,
                  meshingParameters=None):
         """Init Butterfly geometry in Grasshopper."""
         # convert input geometries to a butterfly GHMesh.
@@ -122,7 +123,8 @@ class BFGeometryGH(BFGeometry):
         self.__geometry = _mesh.geometry
 
         BFGeometry.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
-                            _mesh.normals, boundaryCondition)
+                            _mesh.normals, boundaryCondition, refinementLevels,
+                            nSurfaceLayers)
 
     @property
     def geometry(self):
@@ -149,7 +151,7 @@ class BFBlockGeometry_GH(BFGeometryGH):
                  meshingParameters=None):
         """Init Butterfly block geometry in Grasshopper."""
         BFGeometryGH.__init__(self, name, geometries, boundaryCondition,
-                              meshingParameters)
+                              meshingParameters=meshingParameters)
 
         self.__calculateBlockBorderVertices(geometries)
 

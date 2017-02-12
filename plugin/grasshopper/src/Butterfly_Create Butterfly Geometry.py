@@ -15,6 +15,8 @@ Create Butterfly surface.
         _geo: Grasshopper geometries.
         _name: Geometry name.
         _boundary_: Boundary for this surface (e.g. Inlet, Outlet, Wall)
+        refineLevels_: Geometry refinement level as a tuple of two intger (min, max).
+        nSrfLayers_: Number of layers for snappyHexMesh.
         _meshSet_: Grasshopper mesh settings.
     Returns:
         readMe!: Reports, errors, warnings, etc.
@@ -23,7 +25,7 @@ Create Butterfly surface.
 
 ghenv.Component.Name = "Butterfly_Create Butterfly Geometry"
 ghenv.Component.NickName = "createBFGeometry"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -40,4 +42,4 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _geo and _name:
-    BFGeometries = BFGeometryGH(_name, _geo, _boundary_, _meshSet_)
+    BFGeometries = BFGeometryGH(_name, _geo, _boundary_, refineLevels_, nSrfLayers_, _meshSet_)

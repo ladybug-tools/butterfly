@@ -122,7 +122,8 @@ class BFGeometryDS(BFGeometry):
             In case geometry is Mesh this input won't be used.
     """
 
-    def __init__(self, name, geometries, boundaryCondition=None, tolerance=-1,
+    def __init__(self, name, geometries, boundaryCondition=None,
+                 refinementLevels=None, nSurfaceLayers=None, tolerance=-1,
                  maxGridLines=512):
         """Init Butterfly geometry in Dynamo."""
         # convert input geometries to a butterfly DSMesh.
@@ -131,7 +132,8 @@ class BFGeometryDS(BFGeometry):
         self.__geometry = _mesh.geometry
         # put indices in groups of three
         BFGeometry.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
-                            _mesh.normals, boundaryCondition)
+                            _mesh.normals, boundaryCondition, refinementLevels,
+                            nSurfaceLayers)
 
     @property
     def geometry(self):
@@ -158,7 +160,7 @@ class BFBlockGeometry_DS(BFGeometryDS):
                  maxGridLines=512):
         """Init Butterfly block geometry in Dynamo."""
         BFGeometryDS.__init__(self, name, geometries, boundaryCondition,
-                              tolerance, maxGridLines)
+                              tolerance=tolerance, maxGridLines=maxGridLines)
 
     @property
     def isBFBlockGeometry(self):

@@ -20,6 +20,10 @@ Create an OpenFOAM Case from geometries.
             also on the blockMesh and snappyHexMesh components to overwrite this
             settings. Use this input to set up the meshing parameters if you are
             not running the meshing locally.
+        expandBlockMesh_: Butterfly by default expands the mesh by one cell to
+            ensure snappyHexMesh will snap to extrior surfaces. You can set the
+            expand to off or overwrite the vertices using update blockMeshDict
+            component.
         _run: Create case from inputs.
     Returns:
         readMe!: Reports, errors, warnings, etc.
@@ -29,14 +33,13 @@ Create an OpenFOAM Case from geometries.
 
 ghenv.Component.Name = "Butterfly_Create Case from Geometries"
 ghenv.Component.NickName = "caseFromGeos"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_11_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_11_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly_grasshopper.case import Case
-    import butterfly_grasshopper.utilities as util
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -46,6 +49,8 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
+import Rhino.Geometry.Point3d as Point3d
+
 if _run and _name and _BFGeometries: 
     # create OpenFoam Case
     case = Case.fromBFGeometries(_name, tuple(_BFGeometries),
@@ -54,7 +59,9 @@ if _run and _name and _BFGeometries:
     for reg in refRegions_:
         case.addRefinementRegion(reg)
     
-    # make bounding box slightly larger to avoid boundary issues
-    case.blockMeshDict.expandUniform(util.tolerance)
+    if expandBlockMesh_:
+        case.blockMeshDict.expandUniformByCellsCount(1)
+    
+    blockPts = (Point3d(*v) for v in case.blockMeshDict.vertices)
     
     case.save(overwrite=(_run + 1) % 2)

@@ -18,14 +18,13 @@ Create a custom boundary.
         _k_: Boundary condition for k.
         _epsilon: Boundary condition for epsilon.
         _nut_: Boundary condition for nut.
-        _refLevels_: A tuple of (min, max) values for refinement levels.
     Returns:
         boundary: Buttefly custom boundary.
 """
 
 ghenv.Component.Name = "Butterfly_Boundary"
 ghenv.Component.NickName = "boundary"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_05_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -44,7 +43,7 @@ except ImportError as e:
 _bType_ = 'patch' if not _bType_ else _bType_
 
 boundary = boundarycondition.BoundaryCondition(
-    _bType_, refLevels=_refLevels_, U=_U_, p=_p_, k=_k_, epsilon=_epsilon_,
+    _bType_, U=_U_, p=_p_, k=_k_, epsilon=_epsilon_,
     nut=_nut_, alphat=_alphat_, p_rgh=_p_rgh_, T=_T_
 )
 

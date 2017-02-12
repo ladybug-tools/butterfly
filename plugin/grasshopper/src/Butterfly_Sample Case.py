@@ -36,7 +36,7 @@ from Rhino.Geometry import Point3d, Vector3d
 import os
 
 
-if _solution and _name and _points and _field and _run:
+if _solution and _name and any(p is not None for p in _points) and _field and _run:
     
     assert hasattr(_solution, 'sample'), \
         'Invalid Input: <{}> is not a valid Butterfly Case or Solution.'.format(_solution)

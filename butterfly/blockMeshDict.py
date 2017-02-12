@@ -2,7 +2,6 @@
 """BlockMeshDict class."""
 from .boundarycondition import BoundingBoxBoundaryCondition, EmptyBoundaryCondition
 from .foamfile import FoamFile
-from .fields import Empty
 import vectormath
 from .grading import SimpleGrading, Grading, MultiGrading
 from .parser import CppDictParser
@@ -241,6 +240,20 @@ class BlockMeshDict(FoamFile):
         """Get the sorted list of vertices."""
         return self.__vertices
 
+    def updateVertices(self, vertices, xAxis=None):
+        """Update blockMeshDict vertices."""
+        self.__rawvertices = vertices
+
+        # sort vertices
+        self.xAxis = xAxis[:2] if xAxis else (1, 0)
+
+        self.__vertices = self.__sortVertices()
+
+        self.__order = tuple(range(8))
+
+        # update self.values['boundary']
+        self.__updateBoundaryFromSortedVertices()
+
     @property
     def verticesOrder(self):
         """Get order of vertices in blocks."""
@@ -332,7 +345,7 @@ class BlockMeshDict(FoamFile):
     def make3d(self):
         """Reload the 3d blockMeshDict if it has been converted to 2d."""
         if not self.__original3dVertices:
-            print 'This blockMeshDict is already a 3d blockMeshDict.'
+            print('This blockMeshDict is already a 3d blockMeshDict.')
             return
         self.__vertices = self.__original3dVertices
         self.__is2dInXDir = False
@@ -385,6 +398,20 @@ class BlockMeshDict(FoamFile):
             # set top and bottom to empty
             self.__setBoundaryToEmpty(2)
             self.__setBoundaryToEmpty(3)
+
+    def expandUniformByCellsCount(self, count, renumberDivision=True):
+        """Expand blockMeshDict boundingbox for n cells from all sides.
+
+        This method will increase the number of divisions by 2 to keep the size
+        of the cells unchanged unless renumberDivision is set to False. Use a
+        negative count to shrink the bounding box.
+        """
+        x, y, z = self.nDivXYZ
+        self.expandX((self.width / float(x)) * count)
+        self.expandY((self.length / float(y)) * count)
+        self.expandZ((self.height / float(z)) * count)
+        if renumberDivision:
+            self.nDivXYZ = (x + 2, y + 2, z + 2)
 
     def expandUniform(self, dist):
         """Expand blockMeshDict boundingbox for dist in all directions."""

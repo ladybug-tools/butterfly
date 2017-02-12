@@ -218,12 +218,30 @@ def getSnappyHexMeshRefinementSurfaces(projectName, BFGeometries, globalLevels=N
     _ref[projectName]['level'] = '({} {})'.format(*(int(v) for v in globalLevels))
     _ref[projectName]['regions'] = {}
     for bfgeo in BFGeometries:
-        if not bfgeo.boundaryCondition.refLevels:
+        if not bfgeo.refinementLevels:
             continue
         if bfgeo.name not in _ref[projectName]['regions']:
             _ref[projectName]['regions'][bfgeo.name] = \
-                {'level': '({} {})'.format(bfgeo.boundaryCondition.refLevels[0],
-                                           bfgeo.boundaryCondition.refLevels[1])}
+                {'level': '({} {})'.format(int(bfgeo.refinementLevels[0]),
+                                           int(bfgeo.refinementLevels[1]))}
+
+    return _ref
+
+
+def getSnappyHexMeshSurfaceLayers(BFGeometries):
+    """Get data for nSurfaceLayers as a dictionary.
+
+    Args:
+        BFGeometries: List of Butterfly geometries.
+    Returns:
+        A dictionary of data that can be passed to snappyHexMeshDict.
+    """
+    _ref = OrderedDict()
+    for bfgeo in BFGeometries:
+        if not bfgeo.nSurfaceLayers:
+            continue
+        if bfgeo.name not in _ref:
+            _ref[bfgeo.name] = {'nSurfaceLayers': str(bfgeo.nSurfaceLayers)}
 
     return _ref
 
@@ -241,6 +259,9 @@ def getBoundaryFieldFromGeometries(BFGeometries, field='U'):
     _bou = {}
     for bfgeo in BFGeometries:
         if bfgeo.name not in _bou:
+            if hasattr(bfgeo.boundaryCondition, 'isBoundingBoxBoundaryCondition'):
+                # bounding box for meshing. should not be included in files
+                continue
             _bc = getattr(bfgeo.boundaryCondition, field)
             _bou[bfgeo.name] = _bc.valueDict
 

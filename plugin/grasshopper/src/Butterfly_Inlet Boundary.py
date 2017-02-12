@@ -14,14 +14,13 @@ Create an inlet boundary with uniform velocity value.
     Args:
         _velocityVec: Velocity vector.
         temperature_: Temperature in degrees celsius.
-        _refLevels_: A tuple of (min, max) values for refinement levels.
     Returns:
         inletBoundary: Buttefly inlet boundary.
 """
 
 ghenv.Component.Name = "Butterfly_Inlet Boundary"
 ghenv.Component.NickName = "inlet"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -47,6 +46,5 @@ if _velocityVec:
                    if temperature_ \
                    else None
                    
-    inletBoundary = bc.FixedInletBoundaryCondition(refLevels=_refLevels_,
-                                                   U=_velocityVec,
+    inletBoundary = bc.FixedInletBoundaryCondition(U=_velocityVec,
                                                    T = temperature_)

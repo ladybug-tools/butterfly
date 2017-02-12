@@ -14,14 +14,13 @@ Create an outlet boundary with uniform pressure value.
     Args:
         _pressure_: Pressure as a float (default: 0).
         temperature_: Temperature in degrees celsius.
-        _refLevels_: A tuple of (min, max) values for refinement levels.
     Returns:
         outletBoundary: Buttefly outlet boundary.
 """
 
 ghenv.Component.Name = "Butterfly_Outlet Boundary"
 ghenv.Component.NickName = "outlet"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_10_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -43,5 +42,4 @@ _pressure_ = FixedValue(_pressure_) if _pressure_ else None
 temperature_ = FixedValue(str(temperature_ + 273.15)) if temperature_ \
                else None
 
-outletBoundary = FixedOutletBoundaryCondition(refLevels=_refLevels_,
-                                                 p=_pressure_, T=temperature_)
+outletBoundary = FixedOutletBoundaryCondition(p=_pressure_, T=temperature_)

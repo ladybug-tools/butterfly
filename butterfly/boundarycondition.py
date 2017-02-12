@@ -14,7 +14,6 @@ class BoundaryCondition(object):
 
     Attributes:
         bcType: Boundary condition type. e.g.(patch, wall)
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for temperature in Kelvin (300)
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -24,11 +23,11 @@ class BoundaryCondition(object):
     """
 
     # TODO(Mostapha): Write a descriptor for field and replace all properties
-    def __init__(self, bcType='patch', refLevels=None, T=None, U=None, p=None,
-                 k=None, epsilon=None, nut=None, alphat=None, p_rgh=None):
+    def __init__(self, bcType='patch', T=None, U=None, p=None, k=None,
+                 epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Init bounday condition."""
+        self.__dict__['is{}'.format(self.__class__.__name__)] = True
         self.type = bcType
-        self.refLevels = (1, 1) if not refLevels else tuple(int(v) for v in refLevels)
         # set default values
         self.T = T
         self.U = U
@@ -145,8 +144,7 @@ class BoundaryCondition(object):
 
     def __repr__(self):
         """Bounday condition representatoin."""
-        return "{}: {}; refLevels {}".format(self.__class__.__name__,
-                                             self.type, self.refLevels)
+        return "{}: {}".format(self.__class__.__name__, self.type)
 
 
 class BoundingBoxBoundaryCondition(BoundaryCondition):
@@ -155,19 +153,18 @@ class BoundingBoxBoundaryCondition(BoundaryCondition):
     It returns a boundary condition of ZeroGradient for all the inputs.
     """
 
-    def __init__(self, refLevels=None):
+    def __init__(self):
         """Init bounday condition."""
         U = ZeroGradient()
         p = ZeroGradient()
         k = ZeroGradient()
         epsilon = ZeroGradient()
         nut = ZeroGradient()
-        refLevels = None
         T = ZeroGradient()
         alphat = ZeroGradient()
         p_rgh = ZeroGradient()
         super(BoundingBoxBoundaryCondition, self).__init__(
-            'wall', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
+            'wall', T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 
 
@@ -177,19 +174,18 @@ class EmptyBoundaryCondition(BoundaryCondition):
     It returns a boundary condition of Empty for all the inputs.
     """
 
-    def __init__(self, refLevels=None):
+    def __init__(self):
         """Init bounday condition."""
         U = Empty()
         p = Empty()
         k = Empty()
         epsilon = Empty()
         nut = Empty()
-        refLevels = None
         T = Empty()
         alphat = Empty()
         p_rgh = Empty()
         super(EmptyBoundaryCondition, self).__init__(
-            'wall', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
+            'wall', T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 
 
@@ -197,7 +193,6 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
     """Wall boundary condition base class.
 
     Attributes:
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -206,8 +201,8 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
-                 epsilon=None, nut=None, alphat=None, p_rgh=None):
+    def __init__(self, T=None, U=None, p=None, k=None, epsilon=None, nut=None,
+                 alphat=None, p_rgh=None):
         """Init bounday condition."""
         U = U or FixedValue('(0 0 0)')
         p = p or ZeroGradient()
@@ -220,7 +215,7 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
 
         p_rgh = p_rgh or FixedFluxPressure(value='0', isUniform=True, rho='rhok')
 
-        BoundaryCondition.__init__(self, 'wall', refLevels, T, U, p,
+        BoundaryCondition.__init__(self, 'wall', T, U, p,
                                    k, epsilon, nut, alphat, p_rgh)
 
 
@@ -228,7 +223,6 @@ class FixedInletBoundaryCondition(BoundaryCondition):
     """Inlet boundary condition base class.
 
     Attributes:
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: Air velocity as fixed value (x, y, z).
         p: OpenFOAM value for p.
@@ -237,8 +231,8 @@ class FixedInletBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
-                 epsilon=None, nut=None, alphat=None, p_rgh=None):
+    def __init__(self, T=None, U=None, p=None, k=None, epsilon=None, nut=None,
+                 alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
         U = U or FixedValue('(0 0 0)')
@@ -250,13 +244,13 @@ class FixedInletBoundaryCondition(BoundaryCondition):
         alphat = ZeroGradient()
         p_rgh = ZeroGradient()
 
-        BoundaryCondition.__init__(self, 'patch', refLevels, T, U, p,
+        BoundaryCondition.__init__(self, 'patch', T, U, p,
                                    k, epsilon, nut, alphat, p_rgh)
 
     def __repr__(self):
         """Bounday condition representatoin."""
-        return "{}: {}\nvelocity {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.U, self.refLevels)
+        return "{}: {}\nvelocity {}".format(
+            self.__class__.__name__, self.type, self.U)
 
 
 class FixedOutletBoundaryCondition(BoundaryCondition):
@@ -264,7 +258,6 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
 
     Attributes:
         pressure: Pressure as a float (default: 0)
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -273,8 +266,8 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, T=None, U=None, p=None, k=None,
-                 epsilon=None, nut=None, alphat=None, p_rgh=None):
+    def __init__(self, T=None, U=None, p=None, k=None, epsilon=None, nut=None,
+                 alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
         U = U or ZeroGradient()
@@ -287,13 +280,13 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
         p_rgh = ZeroGradient()
 
         super(FixedOutletBoundaryCondition, self).__init__(
-            'patch', refLevels, T, U, p, k, epsilon, nut, alphat, p_rgh
+            'patch', T, U, p, k, epsilon, nut, alphat, p_rgh
         )
 
     def __repr__(self):
         """Bounday condition representatoin."""
-        return "{}: {}\npressure {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.p, self.refLevels)
+        return "{}: {}\npressure {}".format(
+            self.__class__.__name__, self.type, self.p)
 
 
 class WindTunnelWallBoundaryCondition(BoundaryCondition):
@@ -301,7 +294,6 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
 
     Attributes:
         T: Optional input for Temperature.
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -310,8 +302,7 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, T=None,
-                 U=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, T=None, U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         U = U or FixedValue('(0 0 0)')
         p = p or ZeroGradient()
@@ -320,7 +311,7 @@ class WindTunnelWallBoundaryCondition(BoundaryCondition):
         nut = nut or NutkWallFunction('0.0')
         T = T or ZeroGradient()
         super(WindTunnelWallBoundaryCondition, self).__init__(
-            'wall', refLevels, T, U, p, k, epsilon, nut
+            'wall', T, U, p, k, epsilon, nut
         )
 
 
@@ -329,7 +320,6 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
 
     Attributes:
         T: Optional input for Temperature.
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -338,8 +328,7 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, ablConditions, refLevels=None, T=None,
-                 U=None, p=None, k=None, epsilon=None):
+    def __init__(self, ablConditions, T=None, U=None, p=None, k=None, epsilon=None):
         """Init bounday condition."""
         U = U or FixedValue('(0 0 0)')
         p = p or ZeroGradient()
@@ -350,7 +339,7 @@ class WindTunnelGroundBoundaryCondition(BoundaryCondition):
         T = T or ZeroGradient()
 
         super(WindTunnelGroundBoundaryCondition, self).__init__(
-            'wall', refLevels, T, U, p, k, epsilon, nut
+            'wall', T, U, p, k, epsilon, nut
         )
 
 
@@ -358,7 +347,6 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
     """Wind tunnel atmBoundaryLayerInletVelocity boundary condition.
 
     Attributes:
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -367,8 +355,7 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, ablConditions, refLevels=None, T=None, p=None,
-                 nut=None):
+    def __init__(self, ablConditions, T=None, p=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
         U = AtmBoundaryLayerInletVelocity.fromABLConditions(ablConditions)
@@ -379,12 +366,12 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
         T = T or ZeroGradient()
 
         super(WindTunnelInletBoundaryCondition, self).__init__(
-            'patch', refLevels, T, U, p, k, epsilon, nut)
+            'patch', T, U, p, k, epsilon, nut)
 
     def __repr__(self):
         """Bounday condition representatoin."""
-        return "{}: {}\nvelocity {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.U.Uref, self.refLevels)
+        return "{}: {}\nvelocity {}".format(
+            self.__class__.__name__, self.type, self.U.Uref)
 
 
 class WindTunnelOutletBoundaryCondition(BoundaryCondition):
@@ -392,7 +379,6 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
 
     Attributes:
         pressure: Pressure as a float (default: 0)
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -401,8 +387,7 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, T=None,
-                 U=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, T=None, U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
         U = U or InletOutlet('uniform (0 0 0)', '$internalField')
@@ -413,13 +398,13 @@ class WindTunnelOutletBoundaryCondition(BoundaryCondition):
         T = T or ZeroGradient()
 
         super(WindTunnelOutletBoundaryCondition, self).__init__(
-            'patch', refLevels, T, U, p, k, epsilon, nut
+            'patch', T, U, p, k, epsilon, nut
         )
 
     def __repr__(self):
         """Bounday condition representatoin."""
-        return "{}: {}\npressure {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.p, self.refLevels)
+        return "{}: {}\npressure {}".format(
+            self.__class__.__name__, self.type, self.p)
 
 
 class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
@@ -427,7 +412,6 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
 
     Attributes:
         pressure: Pressure as a float (default: 0)
-        refLevels: A tuple for min, max refinment levels for this geometry.
         T: Optional input for Temperature.
         U: OpenFOAM value for U.
         p: OpenFOAM value for p.
@@ -436,8 +420,7 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
         nut: OpenFOAM value for nut.
     """
 
-    def __init__(self, refLevels=None, T=None,
-                 U=None, p=None, k=None, epsilon=None, nut=None):
+    def __init__(self, T=None, U=None, p=None, k=None, epsilon=None, nut=None):
         """Init bounday condition."""
         # set default values for an inlet
         U = U or Slip()
@@ -448,13 +431,12 @@ class WindTunnelTopAndSidesBoundaryCondition(BoundaryCondition):
         T = T or ZeroGradient()
 
         super(WindTunnelTopAndSidesBoundaryCondition, self).__init__(
-            'patch', refLevels, T, U, p, k, epsilon, nut
+            'patch', T, U, p, k, epsilon, nut
         )
 
     def __repr__(self):
         """Bounday condition representatoin."""
-        return "{}: {}\nrefLevels {}".format(
-            self.__class__.__name__, self.type, self.refLevels)
+        return "{}: {}".format(self.__class__.__name__, self.type)
 
 
 if __name__ == '__main__':

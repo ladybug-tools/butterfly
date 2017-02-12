@@ -2,7 +2,7 @@
 """BF geometry library."""
 import os
 from copy import deepcopy
-from .boundarycondition import BoundaryCondition
+from .boundarycondition import IndoorWallBoundaryCondition
 from .stl import read_ascii_string
 from .vectormath import crossProduct, rotate, angleAnitclockwise
 
@@ -182,10 +182,13 @@ class BFGeometry(_BFMesh):
     """
 
     def __init__(self, name, vertices, faceIndices, normals=None,
-                 boundaryCondition=None):
+                 boundaryCondition=None, refinementLevels=None,
+                 nSurfaceLayers=None):
         """Init Butterfly geometry."""
         _BFMesh.__init__(self, name, vertices, faceIndices, normals)
         self.boundaryCondition = boundaryCondition
+        self.refinementLevels = refinementLevels
+        self.nSurfaceLayers = nSurfaceLayers
 
     @property
     def isBFGeometry(self):
@@ -200,12 +203,36 @@ class BFGeometry(_BFMesh):
     @boundaryCondition.setter
     def boundaryCondition(self, bc):
         if not bc:
-            bc = BoundaryCondition()
+            bc = IndoorWallBoundaryCondition()
 
         assert hasattr(bc, 'isBoundaryCondition'), \
             '{} is not a Butterfly boundary condition.'.format(bc)
 
         self.__bc = bc
+
+    @property
+    def refinementLevels(self):
+        """refinementLevels for snappyHexMeshDict as (min, max)."""
+        return self.__refinementLevels
+
+    @refinementLevels.setter
+    def refinementLevels(self, v):
+        if not v:
+            self.__refinementLevels = None
+        else:
+            self.__refinementLevels = tuple(v)
+
+    @property
+    def nSurfaceLayers(self):
+        """Number of surface layers for snappyHexMeshDict addLayers."""
+        return self.__nSurfaceLayers
+
+    @nSurfaceLayers.setter
+    def nSurfaceLayers(self, v):
+        if not v:
+            self.__nSurfaceLayers = None
+        else:
+            self.__nSurfaceLayers = int(v)
 
 
 class BFBlockGeometry(BFGeometry):
@@ -255,11 +282,11 @@ def bfGeometryFromStlBlock(stlBlock):
 def bfGeometryFromStlFile(filepath):
     """Return a tuple of BFGeometry from an stl file."""
     with open(filepath, 'rb') as f:
-        l = ''.join(f.readlines())
+        line = ''.join(f.readlines())
 
     blocks = ('\nsolid{}'.format(t) if not t.startswith('solid') else '\n{}'.format(t)
-              for t in l.split('\nsolid'))
-    del(l)
+              for t in line.split('\nsolid'))
+    del(line)
 
     return tuple(bfGeometryFromStlBlock(b) for b in blocks)
 

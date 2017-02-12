@@ -5,7 +5,7 @@ import re
 
 from .foamfile import FoamFile, foamFileFromFile
 from .utilities import getSnappyHexMeshGeometryFeild, \
-    getSnappyHexMeshRefinementSurfaces
+    getSnappyHexMeshRefinementSurfaces, getSnappyHexMeshSurfaceLayers
 from .refinementRegion import refinementModeFromDict
 
 
@@ -88,7 +88,7 @@ class SnappyHexMeshDict(FoamFile):
 
     __defaultValues['debug'] = '0'
     __defaultValues['mergeTolerance'] = '1E-6'
-    __globRefineLevel = (1, 1)
+    __globRefineLevel = (0, 0)
 
     def __init__(self, values=None):
         """Init class."""
@@ -117,6 +117,7 @@ class SnappyHexMeshDict(FoamFile):
         _cls.updateMeshingParameters(meshingParameters)
         _cls.setGeometry()
         _cls.setRefinementSurfaces()
+        _cls.setnSurfaceLayers()
         return _cls
 
     @property
@@ -166,7 +167,7 @@ class SnappyHexMeshDict(FoamFile):
 
     @globRefineLevel.setter
     def globRefineLevel(self, r):
-        self.__globRefineLevel = (1, 1) if not r else tuple(r)
+        self.__globRefineLevel = (0, 0) if not r else tuple(r)
         if self.__globRefineLevel:
             self.setRefinementSurfaces()
 
@@ -301,6 +302,11 @@ class SnappyHexMeshDict(FoamFile):
                                                   self.globRefineLevel)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
+
+    def setnSurfaceLayers(self):
+        """Set number of surface layers for geometries."""
+        layers = getSnappyHexMeshSurfaceLayers(self.geometries)
+        self.values['addLayersControls']['layers'] = layers
 
     def setFeatureEdgeRefinementToImplicit(self):
         """Set meshing snap to implicitFeatureSnap."""
