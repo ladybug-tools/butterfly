@@ -1,0 +1,198 @@
+solid around_buildings_area
+   facet normal 0.0 -1.0 0.0
+     outer loop
+       vertex -3.295 6.6102 14.1263
+       vertex -3.295 6.6102 0.0
+       vertex 15.7232 6.6102 0.0
+     endloop
+   endfacet
+   facet normal 0.0 -1.0 0.0
+     outer loop
+       vertex -3.295 6.6102 14.1263
+       vertex 15.7232 6.6102 0.0
+       vertex 15.7232 6.6102 14.1263
+     endloop
+   endfacet
+   facet normal 0.0 -1.0 0.0
+     outer loop
+       vertex 34.7414 6.6102 0.0
+       vertex 34.7414 6.6102 14.1263
+       vertex 15.7232 6.6102 14.1263
+     endloop
+   endfacet
+   facet normal -0.0 -1.0 -0.0
+     outer loop
+       vertex 34.7414 6.6102 0.0
+       vertex 15.7232 6.6102 14.1263
+       vertex 15.7232 6.6102 0.0
+     endloop
+   endfacet
+   facet normal 1.0 -0.0 0.0
+     outer loop
+       vertex 34.7414 6.6102 14.1263
+       vertex 34.7414 6.6102 0.0
+       vertex 34.7414 31.0998 0.0
+     endloop
+   endfacet
+   facet normal 1.0 0.0 0.0
+     outer loop
+       vertex 34.7414 6.6102 14.1263
+       vertex 34.7414 31.0998 0.0
+       vertex 34.7414 31.0998 14.1263
+     endloop
+   endfacet
+   facet normal 1.0 0.0 0.0
+     outer loop
+       vertex 34.7414 55.5893 0.0
+       vertex 34.7414 55.5893 14.1263
+       vertex 34.7414 31.0998 14.1263
+     endloop
+   endfacet
+   facet normal 1.0 0.0 0.0
+     outer loop
+       vertex 34.7414 55.5893 0.0
+       vertex 34.7414 31.0998 14.1263
+       vertex 34.7414 31.0998 0.0
+     endloop
+   endfacet
+   facet normal 0.0 1.0 0.0
+     outer loop
+       vertex 34.7414 55.5893 14.1263
+       vertex 34.7414 55.5893 0.0
+       vertex 15.7232 55.5893 0.0
+     endloop
+   endfacet
+   facet normal 0.0 1.0 -0.0
+     outer loop
+       vertex 34.7414 55.5893 14.1263
+       vertex 15.7232 55.5893 0.0
+       vertex 15.7232 55.5893 14.1263
+     endloop
+   endfacet
+   facet normal 0.0 1.0 0.0
+     outer loop
+       vertex -3.295 55.5893 0.0
+       vertex -3.295 55.5893 14.1263
+       vertex 15.7232 55.5893 14.1263
+     endloop
+   endfacet
+   facet normal -0.0 1.0 0.0
+     outer loop
+       vertex -3.295 55.5893 0.0
+       vertex 15.7232 55.5893 14.1263
+       vertex 15.7232 55.5893 0.0
+     endloop
+   endfacet
+   facet normal -1.0 -0.0 0.0
+     outer loop
+       vertex -3.295 55.5893 14.1263
+       vertex -3.295 55.5893 0.0
+       vertex -3.295 31.0998 0.0
+     endloop
+   endfacet
+   facet normal -1.0 0.0 0.0
+     outer loop
+       vertex -3.295 55.5893 14.1263
+       vertex -3.295 31.0998 0.0
+       vertex -3.295 31.0998 14.1263
+     endloop
+   endfacet
+   facet normal -1.0 0.0 0.0
+     outer loop
+       vertex -3.295 6.6102 0.0
+       vertex -3.295 6.6102 14.1263
+       vertex -3.295 31.0998 14.1263
+     endloop
+   endfacet
+   facet normal -1.0 0.0 0.0
+     outer loop
+       vertex -3.295 6.6102 0.0
+       vertex -3.295 31.0998 14.1263
+       vertex -3.295 31.0998 0.0
+     endloop
+   endfacet
+   facet normal 0.0 0.0 -1.0
+     outer loop
+       vertex 15.7232 6.6102 0.0
+       vertex -3.295 6.6102 0.0
+       vertex -3.295 31.0998 0.0
+     endloop
+   endfacet
+   facet normal 0.0 0.0 -1.0
+     outer loop
+       vertex 15.7232 6.6102 0.0
+       vertex 34.7414 31.0998 0.0
+       vertex 34.7414 6.6102 0.0
+     endloop
+   endfacet
+   facet normal -0.0 0.0 -1.0
+     outer loop
+       vertex 15.7232 55.5893 0.0
+       vertex 15.7232 6.6102 0.0
+       vertex -3.295 31.0998 0.0
+     endloop
+   endfacet
+   facet normal 0.0 0.0 -1.0
+     outer loop
+       vertex 15.7232 6.6102 0.0
+       vertex 15.7232 55.5893 0.0
+       vertex 34.7414 31.0998 0.0
+     endloop
+   endfacet
+   facet normal 0.0 0.0 -1.0
+     outer loop
+       vertex 15.7232 55.5893 0.0
+       vertex 34.7414 55.5893 0.0
+       vertex 34.7414 31.0998 0.0
+     endloop
+   endfacet
+   facet normal 0.0 -0.0 -1.0
+     outer loop
+       vertex -3.295 55.5893 0.0
+       vertex 15.7232 55.5893 0.0
+       vertex -3.295 31.0998 0.0
+     endloop
+   endfacet
+   facet normal -0.0 0.0 1.0
+     outer loop
+       vertex -3.295 31.0998 14.1263
+       vertex -3.295 6.6102 14.1263
+       vertex 15.7232 6.6102 14.1263
+     endloop
+   endfacet
+   facet normal 0.0 -0.0 1.0
+     outer loop
+       vertex -3.295 31.0998 14.1263
+       vertex 15.7232 55.5893 14.1263
+       vertex -3.295 55.5893 14.1263
+     endloop
+   endfacet
+   facet normal 0.0 0.0 1.0
+     outer loop
+       vertex 15.7232 55.5893 14.1263
+       vertex -3.295 31.0998 14.1263
+       vertex 15.7232 6.6102 14.1263
+     endloop
+   endfacet
+   facet normal 0.0 -0.0 1.0
+     outer loop
+       vertex 15.7232 6.6102 14.1263
+       vertex 34.7414 31.0998 14.1263
+       vertex 15.7232 55.5893 14.1263
+     endloop
+   endfacet
+   facet normal 0.0 0.0 1.0
+     outer loop
+       vertex 34.7414 31.0998 14.1263
+       vertex 34.7414 55.5893 14.1263
+       vertex 15.7232 55.5893 14.1263
+     endloop
+   endfacet
+   facet normal 0.0 0.0 1.0
+     outer loop
+       vertex 34.7414 6.6102 14.1263
+       vertex 34.7414 31.0998 14.1263
+       vertex 15.7232 6.6102 14.1263
+     endloop
+   endfacet
+endsolid around_buildings_area

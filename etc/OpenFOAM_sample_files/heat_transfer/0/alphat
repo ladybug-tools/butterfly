@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1612+                                |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+/* Butterfly 0.0.3       https://github.com/ladybug-analysis-tools/butterfly *\
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+	version		4.0;
+	format		ascii;
+	class		volScalarField;
+	location	"0";
+	object		alphat;
+}
+
+dimensions		[0 2 -1 0 0 0 0];
+
+internalField		uniform 0;
+
+boundaryField
+{
+
+    room
+    {
+
+        type		alphatJayatillekeWallFunction;
+
+        value		uniform 0;
+
+        Prt		0.85;
+
+    }
+
+    floor
+    {
+
+        type		alphatJayatillekeWallFunction;
+
+        value		uniform 0;
+
+        Prt		0.85;
+
+    }
+
+    roof
+    {
+
+        type		alphatJayatillekeWallFunction;
+
+        value		uniform 0;
+
+        Prt		0.85;
+
+    }
+
+}
