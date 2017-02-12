@@ -20,13 +20,18 @@ Read more about snappyHexMeshDict here:
         _maxGlobalCells_: An intger for the maximum number of global cells (default: 2000000).
         _surfaceFeatureLevel_: An integer for the extract features refinement. Default is None which
             means implicit meshing feature will be used.
+        _expansionRatio_: Layers expansion ration (default: 1.1)
+        _finalLayerThickness_: Thickness of final layer (default: 0.7)
+        _minThickness_: Minimum thickness for layers (default: 0.1).
+        additionalParameters_: Additional parameters as a valid c++ dictionary. Additional values
+            will overwrite the values from the other inputs above.
     Returns:
         snappyHexMeshDict: Butterfly snappyHexMeshDict.
 """
 
 ghenv.Component.Name = "Butterfly_snappyHexMeshDict"
 ghenv.Component.NickName = "snappyHexMeshDict"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_09_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_12_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -52,7 +57,11 @@ values = {'castellatedMesh': str(_castellatedMesh_).lower(),
           'castellatedMeshControls': {
             'nCellsBetweenLevels': str(_nCellsBetweenLevels_),
             'maxGlobalCells': str(_maxGlobalCells_)
-            }
+            },
+           'addLayersControls': {
+                'expansionRatio': str(_expansionRatio_),
+                'finalLayerThickness': str(_finalLayerThickness_),
+                'minThickness': str(_minThickness_)}
           }
 
 if _surfaceFeatureLevel_ is not None:
@@ -66,4 +75,5 @@ if additionalParameters_:
     else:
         values = updateDict(values, addedValues)
 
+print values['addLayersControls']
 snappyHexMeshDict = SolutionParameter('snappyHexMeshDict', values)
