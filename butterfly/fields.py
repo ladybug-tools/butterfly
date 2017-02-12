@@ -27,7 +27,7 @@ class Field(object):
     @classmethod
     def fromString(cls, st):
         """Create a field from a string."""
-        d = {s.split()[0]: ''.join(s.split()[1:])
+        d = {s.split()[0]: ' '.join(s.split()[1:])
              for s in st.replace('{', '').replace('}', '').split(';')
              if s.strip()}
         return cls.fromDict(d)
