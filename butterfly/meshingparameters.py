@@ -25,9 +25,20 @@ class MeshingParameters(object):
                  globRefineLevel=None):
         """Init meshing parameters."""
         # blockMeshDict
-        self.cellSizeXYZ = None if not cellSizeXYZ else tuple(cellSizeXYZ)
+        try:
+            self.cellSizeXYZ = None if not cellSizeXYZ else tuple(cellSizeXYZ)
+        except TypeError:
+            # Point in Dynamo is not iterable
+            self.cellSizeXYZ = (cellSizeXYZ.X, cellSizeXYZ.Y, cellSizeXYZ.Z)
+
         self.grading = grading  # blockMeshDict
-        self.locationInMesh = locationInMesh  # snappyHexMeshDict
+        # snappyHexMeshDict
+        try:
+            self.locationInMesh = None if not locationInMesh else tuple(locationInMesh)
+        except TypeError:
+            # Point in Dynamo is not iterable
+            self.locationInMesh = (locationInMesh.X, locationInMesh.Y, locationInMesh.Z)
+
         # snappyHexMeshDict
         self.globRefineLevel = None if not globRefineLevel else tuple(globRefineLevel)
 

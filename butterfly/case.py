@@ -148,8 +148,10 @@ class Case(object):
                         print(str(e))
                 else:
                     # set boundary condition for the field
-                    setattr(geo.boundaryCondition, ff.name,
-                            Field.fromDict(f))
+                    if not f:
+                        setattr(geo.boundaryCondition, ff.name, None)
+                    else:
+                        setattr(geo.boundaryCondition, ff.name, Field.fromDict(f))
 
         if sHMD:
             refinementRegions = tuple(

@@ -27,12 +27,24 @@ class MeshDS(object):
     Attributes:
         geometries: A list of Dynamo meshes or Breps. All input geometries
             will be converted as a joined mesh.
-        tolerance: (default: -1)
-        maxGridLines: (default: 512)
+        meshingParameters: A tuple for tolerance and maxGridLines (default: (-1, 512)).
     """
 
-    def __init__(self, geometries, tolerance=-1, maxGridLines=512):
+    def __init__(self, geometries, meshingParameters=None):
         """Init Butterfly geometry in Dynamo."""
+        if not meshingParameters:
+            meshingParameters = -1, 512
+        try:
+            tolerance = int(meshingParameters[0])
+            maxGridLines = int(meshingParameters[1])
+        except Exception as e:
+            msg = 'Failed to read meshingParameters from {}:\n{}'.format(
+                meshingParameters, e
+            )
+            print(msg)
+            tolerance = -1
+            maxGridLines = 512
+
         self.__tolerance = tolerance
         self.__maxGridLines = maxGridLines
         self.geometry = geometries
@@ -56,10 +68,11 @@ class MeshDS(object):
             try:
                 if not hasattr(g, 'vertices'):
                     # not a mesh
-                    _geo.Append(MeshToolkit.Mesh(g, self.__tolerance,
-                                                 self.__maxGridLines))
+                    _geo.append(
+                        MeshToolkit.Mesh.ByGeometry(
+                            g, self.__tolerance, self.__maxGridLines))
                 elif hasattr(g, 'vertices'):
-                    _geo.Append(g)
+                    _geo.append(g)
             except Exception as e:
                 raise ValueError(
                     "Failed to create a mesh from {}:\n\t{}".format(type(g), e))
@@ -79,7 +92,7 @@ class MeshDS(object):
     @property
     def faceIndices(self):
         """Mesh Face Indices."""
-        _ind = self.geometry.VertexIndicesByTri()
+        _ind = tuple(self.geometry.VertexIndicesByTri())
         return tuple(_ind[3 * i: 3 * i + 3] for i in range(len(_ind) / 3))
 
     def __joinMesh(self, mesh):
@@ -127,7 +140,7 @@ class BFGeometryDS(BFGeometry):
                  maxGridLines=512):
         """Init Butterfly geometry in Dynamo."""
         # convert input geometries to a butterfly DSMesh.
-        _mesh = MeshDS(geometries, tolerance, maxGridLines)
+        _mesh = MeshDS(geometries, (tolerance, maxGridLines))
 
         self.__geometry = _mesh.geometry
         # put indices in groups of three
@@ -175,7 +188,7 @@ class BFBlockGeometry_DS(BFGeometryDS):
         return self.geometry.vertices
 
 
-# TODO: add coloring
+# TODO(): add coloring
 def BFMeshToMesh(bfMesh, color=None, scale=1):
     """convert a BFMesh object to Dynamo mesh."""
     assert hasattr(bfMesh, 'vertices'), \
@@ -195,3 +208,13 @@ def BFMeshToMesh(bfMesh, color=None, scale=1):
     #   return meshDisplay
 
     return mesh
+
+
+def xyzToPoint(xyz):
+    """Convert a xyz tuple to Point."""
+    return DSGeometry.Point.ByCoordinates(*xyz)
+
+
+def xyzToVector(xyz):
+    """Convert a xyz tuple to Vector."""
+    return DSGeometry.Vector.ByCoordinates(*xyz)

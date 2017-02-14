@@ -31,5 +31,5 @@ def convertDocumentUnitsToMeters():
     elif docUnit == DisplayUnitType.DUT_DECIMAL_INCHES:
         return 0.0254
     else:
-        print "Unknown unit. Meters will be used instead."
+        print("Unknown unit. Meters will be used instead.")
         return 1.0000

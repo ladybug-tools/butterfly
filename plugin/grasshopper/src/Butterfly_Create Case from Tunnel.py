@@ -70,20 +70,20 @@ Create Case from wind tunnel.
         _run: Create wind tunnel case from inputs.
     Returns:
         readMe!: Reports, errors, warnings, etc.
-        pts: Wind tunnel corners for visualization. Use Polyline component or box
-            component to create the box.
+        pts: Wind tunnel corners for visualization.
         case: Butterfly case.
 """
 
 ghenv.Component.Name = "Butterfly_Create Case from Tunnel"
 ghenv.Component.NickName = "createCaseFromTunnel"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_31_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_14_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 try:
     from butterfly_grasshopper.windtunnel import WindTunnelGH
+    from butterfly_grasshopper.geometry import xyzToPoint
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -92,8 +92,7 @@ except ImportError as e:
             ' https://github.com/mostaphaRoudsari/Butterfly/issues'
         
     raise ImportError('{}\n{}'.format(msg, e))
-    
-import Rhino as rc
+
 
 def main():
     wt = WindTunnelGH.fromGeometriesWindVectorAndParameters(
@@ -111,7 +110,7 @@ def main():
     
     print "Number of divisions: {}, {} and {}".format(*wt.blockMeshDict.nDivXYZ)
     
-    pts = (rc.Geometry.Point3d(*v) for v in case.blockMeshDict.vertices)
+    pts = (xyzToPoint(v) for v in case.blockMeshDict.vertices)
 
     return wt, pts, case
 

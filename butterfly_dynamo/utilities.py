@@ -19,7 +19,7 @@ except ImportError:
 import os
 from butterfly.utilities import loadOFPointsFile, loadOFFacesFile
 
-__all__ = ('loadOFMesh', 'loadOFPoints', tolerace)
+__all__ = ('loadOFMesh', 'loadOFPoints')
 
 tolerance = 0.001
 
@@ -60,7 +60,7 @@ def _triangulate(v):
     return ((v[0], v[i], v[i + 1]) for i in range(1, len(v) - 1))
 
 
-# TODO: Scale points based on convertToMeters
+# TODO(): Scale points based on convertToMeters
 def loadOFPoints(polyMeshFolder, convertToMeters=1):
     """Load OpenFOAM points as Rhino points."""
     if not polyMeshFolder:

@@ -77,12 +77,14 @@ class WindTunnelDS(butterfly.windtunnel.WindTunnel):
 
         tunnelParameters = tunnelParameters or butterfly.windtunnel.TunnelParameters()
 
+        windVector = (windVector.X, windVector.Y, windVector.Z)
+
         # init openFOAM windTunnel
         return super(WindTunnelDS, cls).fromGeometriesWindVectorAndParameters(
             name, geometries, windVector, tunnelParameters, roughness,
             meshingParameters, Zref, convertToMeters
         )
 
-    def toOpenFOAMCase(self):
-        """Return a BF Dynamo case for this wind tunnel."""
-        return Case.fromWindTunnel(self)
+    def toOpenFOAMCase(self, make2dParameters=None):
+        """Return a BF case for this wind tunnel."""
+        return Case.fromWindTunnel(self, make2dParameters)

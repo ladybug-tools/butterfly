@@ -206,3 +206,13 @@ def BFMeshToMesh(bfMesh, color=None, scale=1):
         mesh.Scale(scale)
 
     return mesh
+
+
+def xyzToPoint(xyz):
+    """Convert a xyz tuple to Point."""
+    return rc.Geometry.Point3d(*xyz)
+
+
+def xyzToVector(xyz):
+    """Convert a xyz tuple to Vector."""
+    return rc.Geometry.Vector3d(*xyz)

@@ -33,13 +33,14 @@ Create an OpenFOAM Case from geometries.
 
 ghenv.Component.Name = "Butterfly_Create Case from Geometries"
 ghenv.Component.NickName = "caseFromGeos"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_11_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_14_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly_grasshopper.case import Case
+    from butterfly_grasshopper.geometry import xyzToPoint
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -49,7 +50,6 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-import Rhino.Geometry.Point3d as Point3d
 
 if _run and _name and _BFGeometries: 
     # create OpenFoam Case
@@ -62,6 +62,6 @@ if _run and _name and _BFGeometries:
     if expandBlockMesh_:
         case.blockMeshDict.expandUniformByCellsCount(1)
     
-    blockPts = (Point3d(*v) for v in case.blockMeshDict.vertices)
+    blockPts = (xyzToPoint(v) for v in case.blockMeshDict.vertices)
     
     case.save(overwrite=(_run + 1) % 2)

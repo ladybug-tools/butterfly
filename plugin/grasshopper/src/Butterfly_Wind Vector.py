@@ -15,18 +15,21 @@ Wind vector.
         _windSpeed: Wind speed in m/s at a the reference height (_refWindHeight_).
         _windDirection_: Wind direction as Vector3D (default: 0, 1, 0).
     Returns:
-        windVector: A Rhino Vector.
+        windVector: Wind Vector.
 """
 
 ghenv.Component.Name = "Butterfly_Wind Vector"
 ghenv.Component.NickName = "WindVector"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_14_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "3"
 
 if _windSpeed and _windDirection_:
-    _windDirection_.Unitize()
-    
-    windVector = _windSpeed * _windDirection_
-        
+    try:
+        _windDirection_.Unitize()
+        windVector = _windSpeed * _windDirection_
+    except AttributeError:
+        # dynamo
+        nv = _windDirection_.Normalized();
+        windVector = nv.Scale(_windSpeed);
