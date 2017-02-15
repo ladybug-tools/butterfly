@@ -23,6 +23,9 @@ Read more about snappyHexMeshDict here:
         _expansionRatio_: Layers expansion ration (default: 1.1)
         _finalLayerThickness_: Thickness of final layer (default: 0.7)
         _minThickness_: Minimum thickness for layers (default: 0.1).
+        _nLayerIter_: Overall max number of layer addition iterations. The mesher
+            will exit if it reaches this number of iterations; possibly with an
+            illegal mesh (default: 50).
         additionalParameters_: Additional parameters as a valid c++ dictionary. Additional values
             will overwrite the values from the other inputs above.
     Returns:
@@ -31,7 +34,7 @@ Read more about snappyHexMeshDict here:
 
 ghenv.Component.Name = "Butterfly_snappyHexMeshDict"
 ghenv.Component.NickName = "snappyHexMeshDict"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_12_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_14_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -61,7 +64,8 @@ values = {'castellatedMesh': str(_castellatedMesh_).lower(),
            'addLayersControls': {
                 'expansionRatio': str(_expansionRatio_),
                 'finalLayerThickness': str(_finalLayerThickness_),
-                'minThickness': str(_minThickness_)}
+                'minThickness': str(_minThickness_),
+                'nLayerIter': str(_nLayerIter_)}
           }
 
 if _surfaceFeatureLevel_ is not None:
@@ -75,5 +79,4 @@ if additionalParameters_:
     else:
         values = updateDict(values, addedValues)
 
-print values['addLayersControls']
 snappyHexMeshDict = SolutionParameter('snappyHexMeshDict', values)
