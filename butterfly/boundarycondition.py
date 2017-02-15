@@ -270,14 +270,14 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
                  alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        U = U or ZeroGradient()
+        U = U or InletOutlet(value='uniform (0 0 0)', inletValue='uniform (0 0 0)')
         p = p or FixedValue('0')
-        k = k or ZeroGradient()
-        epsilon = epsilon or ZeroGradient()
+        k = k or InletOutlet(value='uniform 0.1', inletValue='uniform 0.1')
+        epsilon = epsilon or InletOutlet(value='uniform 0.1', inletValue='uniform 0.1')
         nut = Calculated('0')
         T = T or ZeroGradient()
-        alphat = ZeroGradient()
-        p_rgh = ZeroGradient()
+        alphat = alphat or ZeroGradient()
+        p_rgh = p_rgh or FixedValue('0')
 
         super(FixedOutletBoundaryCondition, self).__init__(
             'patch', T, U, p, k, epsilon, nut, alphat, p_rgh
