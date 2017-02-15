@@ -41,33 +41,17 @@ def loadOFMesh(polyMeshFolder, convertToMeters=1, innerMesh=True):
     pts = loadOFPointsFile(pf)
     faces = loadOFFacesFile(ff, innerMesh)
 
-    # create the mesh
-    mesh = rc.Geometry.Mesh()
-
-    for p in pts:
-        mesh.Vertices.Add(rc.Geometry.Point3d(*p))
-
-    for face in faces:
-        if len(face) < 5:
-            mesh.Faces.AddFace(*face)
-        elif len(face) == 5:
-            mesh.Faces.AddFace(*face[:3])
-            mesh.Faces.AddFace(face[0], face[2], face[3], face[4])
-        elif len(face) == 8:
-            mesh.Faces.AddFace(*face[:4])
-            mesh.Faces.AddFace(face[0], face[3], face[4], face[7])
-            mesh.Faces.AddFace(face[7], face[4], face[5], face[6])
-        else:
-            try:
-                mesh.Faces.AddFace(*face[:4])
-                mesh.Faces.AddFace(*face[:1] + (face[4:]))
-            except:
-                msg = "One of the faces has %d vertices." % len(face)
-                print msg
+    # create mesh edges
+    pts = tuple(rc.Geometry.Point3d(*p) for p in pts)
+    # create a closed polyline for each edge
+    mesh = tuple(
+        rc.Geometry.Polyline([pts[i] for i in f] + [pts[f[0]]]).ToNurbsCurve()
+        for f in faces)
 
     # scale mesh to Rhion units if not meters
     if convertToMeters != 1:
-        mesh.Scale(1.0 / convertToMeters)
+        for m in mesh:
+            m.Scale(1.0 / convertToMeters)
 
     return mesh
 
