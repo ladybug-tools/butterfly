@@ -27,12 +27,24 @@ Use this component yo load the results for a case that you have ran already.
 
 ghenv.Component.Name = "Butterfly_Sample Case"
 ghenv.Component.NickName = "sampleCase"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_10_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_15_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "07::PostProcess"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
-from Rhino.Geometry import Point3d, Vector3d
+
+try:
+    from butterfly.utilities import loadProbesFromPostProcessingFile
+    from butterfly_grasshopper.geometry import xyzToPoint, xyzToVector
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+        
+    raise ImportError('{}\n{}'.format(msg, e))
+
 import os
 
 
@@ -45,9 +57,9 @@ if _solution and _name and any(p is not None for p in _points) and _field and _r
     res = _solution.sample(_name, points, _field)
     
     if res:
-        probes = (Point3d(*p) for p in res.probes)
+        probes = (xyzToPoint(p) for p in res.probes)
         
         if isinstance(res.values[0], float) == 1:
             values = res.values
         else:
-            values = (Vector3d(*v) for v in res.values)
+            values = (xyzToVector(v) for v in res.values)

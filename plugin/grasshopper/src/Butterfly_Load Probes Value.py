@@ -22,13 +22,14 @@ Load results for a field in probes.
 
 ghenv.Component.Name = "Butterfly_Load Probes Value"
 ghenv.Component.NickName = "loadProbesValue"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_15_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "07::PostProcess"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
 
 try:
     from butterfly.utilities import loadProbeValuesFromFolder
+    from butterfly_grasshopper.geometry import xyzToVector
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -38,7 +39,6 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-from Rhino.Geometry import Point3d, Vector3d
 import os
 
 
@@ -56,6 +56,6 @@ if _solution and _field:
             raise ValueError('Failed to load values:\n\t{}'.format(e))
             
     try:
-        values = tuple(Vector3d(*v) for v in rawValues)
+        values = tuple(xyzToVector(v) for v in rawValues)
     except:
         values = rawValues

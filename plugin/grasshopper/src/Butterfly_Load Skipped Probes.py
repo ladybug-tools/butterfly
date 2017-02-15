@@ -20,20 +20,30 @@ Load results for a field in probes.
 
 ghenv.Component.Name = "Butterfly_Load Skipped Probes"
 ghenv.Component.NickName = "loadSkippedProbes"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_10_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_15_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "07::PostProcess"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
-from Rhino.Geometry import Point3d
+
+try:
+    from butterfly_grasshopper.geometry import xyzToPoint
+except ImportError as e:
+    msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
+            '\nYou can download the installer file from github: ' + \
+            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nOpen an issue on github if you think this is a bug:' + \
+            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+
 
 if _solution:
     try:
         pts = _solution.skippedProbes()
     except AssertionError as e:
         raise ValueError('{}.\nDid you run the solution before loading the probes?'.format(e))
-
+    except AttributeError:
+        raise ValueError('{} is not a butterfly Solution.'.format(_solution))
     try:
-        skippedProbes = tuple(Point3d(*v) for v in pts)
+        skippedProbes = tuple(xyzToPoint(v) for v in pts)
     except:
         skippedProbes = pts
