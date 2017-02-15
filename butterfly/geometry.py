@@ -209,6 +209,7 @@ class BFGeometry(_BFMesh):
             '{} is not a Butterfly boundary condition.'.format(bc)
 
         self.__bc = bc
+        self._checkBoundaryAndLayers()
 
     @property
     def refinementLevels(self):
@@ -233,6 +234,22 @@ class BFGeometry(_BFMesh):
             self.__nSurfaceLayers = None
         else:
             self.__nSurfaceLayers = int(v)
+            self._checkBoundaryAndLayers()
+
+    def _checkBoundaryAndLayers(self):
+
+        try:
+            if not self.nSurfaceLayers:
+                return
+        except AttributeError:
+            # not initiated yet
+            return
+        else:
+            if not self.boundaryCondition:
+                return
+            if self.boundaryCondition.type == 'patch':
+                print('Warning: You are adding layers to a geometry of type "patch".\n'
+                      'Layers are normally used only for "wall" boundaries.')
 
 
 class BFBlockGeometry(BFGeometry):
