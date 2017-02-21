@@ -11,7 +11,7 @@ Set residual control convergance values
 
     Args:
         _quantities: 
-        _values_: Residual control valeus for p (default: 1e-5)
+        _values_: Residual control valeus for quantities (default: 1e-5)
         
     Returns:
         residualControl: Residual Control.
@@ -19,7 +19,7 @@ Set residual control convergance values
 
 ghenv.Component.Name = "Butterfly_residualControl"
 ghenv.Component.NickName = "residualControl"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_21_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "05::Recipe"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

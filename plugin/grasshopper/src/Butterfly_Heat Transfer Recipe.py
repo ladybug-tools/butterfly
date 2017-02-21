@@ -27,7 +27,7 @@ Heat Transfer Recipe.
 
 ghenv.Component.Name = "Butterfly_Heat Transfer Recipe"
 ghenv.Component.NickName = "heatTransfer"
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_21_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "05::Recipe"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -49,5 +49,3 @@ recipe = HeatTransfer(_turbulenceProp_, fvSchemes_, fvSolution_, residualControl
 l = len(recipe.quantities)
 q = ''.join(q + ' ..... ' if (c + 1) % 4 != 0 and c + 1 != l else q + '\n'
             for c, q in enumerate(recipe.quantities))
-
-ghenv.Component.Message = 'VER 0.0.03\nOCT_30_2016'

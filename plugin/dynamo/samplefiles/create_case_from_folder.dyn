@@ -1,4 +1,4 @@
-<Workspace Version="1.2.1.3083" X="25.7738867202158" Y="193.016121689065" zoom="0.369612950053463" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+<Workspace Version="1.2.1.3083" X="-274.082780783793" Y="71.1444750696763" zoom="0.592279055920462" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
   <NamespaceResolutionMap>
     <ClassMap partialName="Surface" resolvedName="Autodesk.DesignScript.Geometry.Surface" assemblyName="ProtoGeometry.dll" />
     <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
@@ -6,7 +6,7 @@
   <Elements>
     <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="db3a6108-d1a1-44ef-8ffd-f3e722402e3e" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="11.4338885560502" y="195.302936823485" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;C:\\Users\\Mostapha\\butterfly\\indoor_airflow&quot;;" ShouldFocus="false" />
     <CoreNodeModels.Input.BoolSelector guid="a9901f51-e082-45a1-b820-560d0ceeb240" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="272.37332276193" y="290.071052724373" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <System.Boolean>False</System.Boolean>
+      <System.Boolean>True</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="305c5df8-ee45-4724-9e12-e06fb177a887" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Create Case from Folder" x="498.413092287611" y="164.893221311711" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="True" />
@@ -29,7 +29,7 @@
       <PortInfo index="0" default="False" />
       <PortInfo index="1" default="True" />
       <PortInfo index="2" default="False" />
-      <ID value="a5427a32-5605-4c58-87bb-f41972fe019a" />
+      <ID value="e8b6080e-2791-4e9b-b378-a380de047811" />
       <Name value="Load Mesh" />
       <Description value="Load mesh from the case for preview.&#xD;&#xA;-" />
       <Inputs>
@@ -96,22 +96,42 @@
     <CoreNodeModels.Input.BoolSelector guid="88e91fb9-28d9-49ec-9a29-445d80bc3f59" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="1349.24874546382" y="254.217145792326" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <System.Boolean>False</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="40bcacd6-1ae3-4f4c-a3a9-4a6f95bf830d" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Get Geometry" x="1000.78356329265" y="435.237528635746" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+      <ID value="f00d0d5c-6d8c-4d7e-abac-593f1eca6304" />
+      <Name value="Get Geometry" />
+      <Description value="Update fvSchemes values based on mesh orthogonalities.&#xD;&#xA;-" />
+      <Inputs>
+        <Input value="_BFObjects" />
+        <Input value="colors_" />
+      </Inputs>
+      <Outputs>
+        <Output value="geometries" />
+        <Output value="ERRReport" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="3eee035a-14f3-4ec8-a415-fa5f16460941" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Mesh.Edges" x="1287.82106985882" y="434.798747351913" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="..\..\..\..\..\..\..\AppData\Roaming\Dynamo\Dynamo%20Revit\1.2\packages\MeshToolkit\bin\MeshToolkit.dll" function="Autodesk.Dynamo.MeshToolkit.Mesh.Edges">
+      <PortInfo index="0" default="False" />
+    </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
   </Elements>
   <Connectors>
     <Dynamo.Graph.Connectors.ConnectorModel start="db3a6108-d1a1-44ef-8ffd-f3e722402e3e" start_index="0" end="305c5df8-ee45-4724-9e12-e06fb177a887" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="a9901f51-e082-45a1-b820-560d0ceeb240" start_index="0" end="305c5df8-ee45-4724-9e12-e06fb177a887" end_index="2" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="305c5df8-ee45-4724-9e12-e06fb177a887" start_index="0" end="a8b8b5f4-c5a8-4e27-8d8f-13597ec11953" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="305c5df8-ee45-4724-9e12-e06fb177a887" start_index="0" end="40bcacd6-1ae3-4f4c-a3a9-4a6f95bf830d" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="26df9402-8d82-48a3-876b-bf5efbe0e410" start_index="0" end="5a43a174-68fc-418e-bb96-f26975524aec" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="09b8e29f-99c1-4fa3-bb4b-23518b12e72f" start_index="0" end="26df9402-8d82-48a3-876b-bf5efbe0e410" end_index="2" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="a8b8b5f4-c5a8-4e27-8d8f-13597ec11953" start_index="0" end="1f0a4ea6-48f1-470c-8c73-acd6fc228730" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="1f0a4ea6-48f1-470c-8c73-acd6fc228730" start_index="0" end="26df9402-8d82-48a3-876b-bf5efbe0e410" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="ef040afc-e419-4cf6-807f-9ead4f217352" start_index="0" end="a8b8b5f4-c5a8-4e27-8d8f-13597ec11953" end_index="4" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="88e91fb9-28d9-49ec-9a29-445d80bc3f59" start_index="0" end="1f0a4ea6-48f1-470c-8c73-acd6fc228730" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="40bcacd6-1ae3-4f4c-a3a9-4a6f95bf830d" start_index="0" end="3eee035a-14f3-4ec8-a415-fa5f16460941" end_index="0" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
   <Presets />
   <Cameras>
-    <Camera Name="Background Preview" eyeX="-2.26446715189473" eyeY="1.22612607052037" eyeZ="-2.06024294917924" lookX="2.79725349590122" lookY="-1.5586162010435" lookZ="2.55030997076807" upX="0.128321240344458" upY="0.984807773209479" upZ="0.116992952165874" />
+    <Camera Name="Background Preview" eyeX="-10.3161677184726" eyeY="16.5888261994529" eyeZ="0.662398150967986" lookX="12.6236626844685" lookY="-14.5365731704828" lookZ="-3.37714073699384" upX="0.563260842197724" upY="0.812422909140928" upZ="-0.15068614640188" />
   </Cameras>
 </Workspace>

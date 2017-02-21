@@ -70,7 +70,7 @@ class TurbulenceProperties(FoamFile):
         # check RASModel input
         assert RASModel in cls.__RASModels, \
             '{} is not a valid input for RASModel.' \
-            ' Try one of the models below:'.format(cls.__RASModels)
+            ' Try one of the models below:\n{}'.format(RASModel, cls.__RASModels)
 
         values = {'simulationType': 'RAS', 'RAS': {
             'RASModel': RASModel,
@@ -109,7 +109,7 @@ class TurbulenceProperties(FoamFile):
         """
         assert LESModel in cls.__LESModels, \
             '{} is not a valid input for LESModels.' \
-            ' Try one of the models below:'.format(cls.__LESModels)
+            ' Try one of the models below:\n{}'.format(LESModel, cls.__LESModels)
 
         values = {'simulationType': 'LES', 'LES': {
             'LESModel': LESModel,

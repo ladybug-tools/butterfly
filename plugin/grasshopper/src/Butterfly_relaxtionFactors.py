@@ -11,7 +11,7 @@ Set relaxtionFactors values
 
     Args:
         _quantities: 
-        _values_: relaxtionValues
+        _values: relaxtionValues
         
     Returns:
         relaxationFactors: Relaxation factors.
@@ -19,7 +19,7 @@ Set relaxtionFactors values
 
 ghenv.Component.Name = "Butterfly_relaxtionFactors"
 ghenv.Component.NickName = "relaxtionFactors"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_12_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_21_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "05::Recipe"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"

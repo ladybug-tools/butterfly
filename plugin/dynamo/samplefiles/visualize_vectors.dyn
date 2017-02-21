@@ -1,0 +1,111 @@
+<Workspace Version="1.2.1.3083" X="350.257362281772" Y="-180.522812524804" zoom="0.781806175584408" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+  <NamespaceResolutionMap>
+    <ClassMap partialName="Point" resolvedName="Autodesk.DesignScript.Geometry.Point" assemblyName="ProtoGeometry.dll" />
+    <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
+  </NamespaceResolutionMap>
+  <Elements>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="99f7ffcb-d0b4-4294-a94c-f963f66e2098" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-200.82420730578" y="328.777266649077" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;C:\\Users\\Mostapha\\butterfly\\indoor_airflow&quot;;&#xA;&quot;U&quot;;" ShouldFocus="false" />
+    <CoreNodeModels.Input.DoubleSlider guid="507b74a7-1d7c-4537-9421-3eeb79a253b5" type="CoreNodeModels.Input.DoubleSlider" nickname="Number Slider" x="270.092224090526" y="631.424596539768" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Double>0.25</System.Double>
+      <Range min="0.1" max="1" step="0.01" />
+    </CoreNodeModels.Input.DoubleSlider>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="086278c8-e156-4611-b9b3-15f07662101b" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Load Probes" x="300.812551823722" y="323.927074653984" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="1c9de1e0-3334-4da6-9183-39775b2d5397" />
+      <Name value="Load Probes" />
+      <Description value="Load probes from a folder.&#xD;&#xA;-" />
+      <Inputs>
+        <Input value="_solution" />
+        <Input value="_field" />
+      </Inputs>
+      <Outputs>
+        <Output value="probes" />
+        <Output value="ERRReport" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="f2d337dd-4dd3-4072-9b79-31925a0e4046" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Load Probes Value" x="299.149956786468" y="465.624131322685" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <ID value="6d483ff0-fd28-4a11-a4c7-ccb80a0fc91f" />
+      <Name value="Load Probes Value" />
+      <Description value="Load results for a field in probes.&#xD;&#xA;-" />
+      <Inputs>
+        <Input value="_solution" />
+        <Input value="_field" />
+      </Inputs>
+      <Outputs>
+        <Output value="values" />
+        <Output value="ERRReport" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="5f3e9bae-6a11-4314-9aff-9f6e3530b108" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Legend Parameters" x="505.733375269944" y="890.085731155777" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <ID value="a61b91d2-3ce6-4d1c-905f-6fe4aa4ecd90" />
+      <Name value="Legend Parameters" />
+      <Description value="Use legend parameter to set up results visualization setting" />
+      <Inputs>
+        <Input value="_cType_" />
+        <Input value="_domain_" />
+        <Input value="_colors_" />
+      </Inputs>
+      <Outputs>
+        <Output value="legendPar" />
+        <Output value="ERRReport" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="b1271762-f730-439b-bf48-3a12fdb1231c" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="LB Color Range" x="140.605042025879" y="941.273728069009" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="True" />
+      <ID value="934e1b58-33ad-4e48-837f-357d5d61b044" />
+      <Name value="LB Color Range" />
+      <Description value="A set of color ranges for coloring analysis results" />
+      <Inputs>
+        <Input value="_index_" />
+      </Inputs>
+      <Outputs>
+        <Output value="colors" />
+        <Output value="ERRReport" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="4908cf0e-69b7-443f-845e-34194956786a" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="-6.85680287923879" y="944.545394607331" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="17;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="1e279d61-c8cf-4e2b-ba92-9ed375b9beab" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Visualize Vectors" x="990.327209371009" y="578.876231476115" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="False" />
+      <PortInfo index="2" default="True" />
+      <PortInfo index="3" default="True" />
+      <ID value="9224c9f7-b7fe-42b3-8fa2-22ba9c81f7e6" />
+      <Name value="Visualize Vectors" />
+      <Description value="Visualize vectors" />
+      <Inputs>
+        <Input value="_vectors" />
+        <Input value="_startPts" />
+        <Input value="scale_" />
+        <Input value="_legendPar_" />
+      </Inputs>
+      <Outputs>
+        <Output value="ERRReport" />
+        <Output value="Display" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+  </Elements>
+  <Connectors>
+    <Dynamo.Graph.Connectors.ConnectorModel start="99f7ffcb-d0b4-4294-a94c-f963f66e2098" start_index="0" end="086278c8-e156-4611-b9b3-15f07662101b" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="99f7ffcb-d0b4-4294-a94c-f963f66e2098" start_index="0" end="f2d337dd-4dd3-4072-9b79-31925a0e4046" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="99f7ffcb-d0b4-4294-a94c-f963f66e2098" start_index="1" end="086278c8-e156-4611-b9b3-15f07662101b" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="99f7ffcb-d0b4-4294-a94c-f963f66e2098" start_index="1" end="f2d337dd-4dd3-4072-9b79-31925a0e4046" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="507b74a7-1d7c-4537-9421-3eeb79a253b5" start_index="0" end="1e279d61-c8cf-4e2b-ba92-9ed375b9beab" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="086278c8-e156-4611-b9b3-15f07662101b" start_index="0" end="1e279d61-c8cf-4e2b-ba92-9ed375b9beab" end_index="1" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="f2d337dd-4dd3-4072-9b79-31925a0e4046" start_index="0" end="1e279d61-c8cf-4e2b-ba92-9ed375b9beab" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5f3e9bae-6a11-4314-9aff-9f6e3530b108" start_index="0" end="1e279d61-c8cf-4e2b-ba92-9ed375b9beab" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="b1271762-f730-439b-bf48-3a12fdb1231c" start_index="0" end="5f3e9bae-6a11-4314-9aff-9f6e3530b108" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="4908cf0e-69b7-443f-845e-34194956786a" start_index="0" end="b1271762-f730-439b-bf48-3a12fdb1231c" end_index="0" portType="0" />
+  </Connectors>
+  <Notes />
+  <Annotations />
+  <Presets />
+  <Cameras>
+    <Camera Name="Background Preview" eyeX="-1.22401003105611" eyeY="7.76120709274382" eyeZ="0.759938058868682" lookX="4.9106512349528" lookY="-5.00952232984765" lookZ="-6.05923852202438" upX="0.218784005990826" upY="0.937686894898229" upZ="-0.269956980206647" />
+  </Cameras>
+</Workspace>
