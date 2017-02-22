@@ -97,12 +97,15 @@ class Case(object):
         self.runmanager = RunManager(self.projectName)
 
     @classmethod
-    def fromFolder(cls, path, name=None):
+    def fromFolder(cls, path, name=None, convertFromMeters=1):
         """Create a Butterfly case from a case folder.
 
         Args:
             path: Full path to case folder.
             name: An optional new name for this case.
+            convertFromMeters: A number to be multiplied to stl file vertices
+                to be converted to the new units if not meters. This value will
+                be the inverse of convertToMeters.
         """
         # collect foam files
         __originalName = os.path.split(path)[-1]
@@ -118,11 +121,10 @@ class Case(object):
                 if not p:
                     continue
                 try:
-                    ff.append(cls.__createFoamfileFromFile(p))
+                    ff.append(cls.__createFoamfileFromFile(p, 1.0 / convertFromMeters))
                     print('Imported {} from case.'.format(p))
                 except Exception as e:
                     print('Failed to import {}:\n\t{}'.format(p, e))
-        # find snappyHexMeshDict
         sHMD = cls.__getFoamFileByName('snappyHexMeshDict', ff)
 
         if sHMD:
@@ -130,7 +132,8 @@ class Case(object):
 
             stlfiles = tuple(f for f in _files.stl if f.lower().endswith('.stl'))
             bfGeometries = tuple(
-                geo for f in stlfiles for geo in bfGeometryFromStlFile(f)
+                geo for f in stlfiles
+                for geo in bfGeometryFromStlFile(f, convertFromMeters)
                 if os.path.split(f)[-1][:-4] in sHMD.stlFileNames)
 
         else:
@@ -222,7 +225,8 @@ class Case(object):
         # rename name for snappyHexMeshDict and stl file if starts with a digit
         normname = '_{}'.format(name) if name[0].isdigit() else name
         snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
-            normname, geometries, meshingParameters)
+            normname, geometries, meshingParameters,
+            convertToMeters=blockMeshDict.convertToMeters)
 
         # constant folder
         if float(Version.OFVer) < 3:
@@ -279,16 +283,16 @@ class Case(object):
 
         # include condition files in 0 folder files
         _case.U.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $flowVelocity'},
+                              'internalField': 'uniform $flowVelocity'},
                              mute=True)
         _case.p.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $pressure'},
+                              'internalField': 'uniform $pressure'},
                              mute=True)
         _case.k.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $turbulentKE'},
+                              'internalField': 'uniform $turbulentKE'},
                              mute=True)
         _case.epsilon.updateValues({'#include': '"initialConditions"',
-                                   'internalField': 'uniform $turbulentEpsilon'},
+                                    'internalField': 'uniform $turbulentEpsilon'},
                                    mute=True)
 
         if windTunnel.refinementRegions:
@@ -517,8 +521,8 @@ class Case(object):
         if not add:
             _folders = (name for name in os.listdir(self.projectDir)
                         if (name.endswith('.org') and
-                        os.path.isdir(os.path.join(self.projectDir, name,
-                                                   'polyMesh'))))
+                            os.path.isdir(os.path.join(self.projectDir, name,
+                                                       'polyMesh'))))
 
             for f in _folders:
                 os.rename(os.path.join(self.projectDir, f),
@@ -652,9 +656,14 @@ class Case(object):
         for f in foamFiles:
             f.save(self.projectDir)
 
+        # find blockMeshDict and convertToMeters so I can scale stl files to meters.
+        bmds = (ff for ff in self.foamFiles if ff.name == 'blockMeshDict')
+        bmd = bmds.next()
+        convertToMeters = bmd.convertToMeters
+
         # write bfgeometries to stl file. __geometries is geometries without
         # blockMesh geometry
-        stlStr = (geo.toSTL() for geo in self.__geometries)
+        stlStr = (geo.toSTL(convertToMeters) for geo in self.__geometries)
         stlName = self.__originalName or self.projectName
         with open(os.path.join(self.triSurfaceFolder,
                                '%s.stl' % stlName), 'wb') as stlf:
@@ -662,7 +671,7 @@ class Case(object):
 
         # write refinementRegions to stl files
         for ref in self.refinementRegions:
-            ref.writeToStl(self.triSurfaceFolder)
+            ref.writeToStl(self.triSurfaceFolder, convertToMeters)
 
         # add .foam file
         with open(os.path.join(self.projectDir,
@@ -845,7 +854,7 @@ class Case(object):
                 return f
 
     @staticmethod
-    def __createFoamfileFromFile(p):
+    def __createFoamfileFromFile(p, convertToMeters=1):
         """Create a foamfile object from an OpenFOAM foamfile.
 
         Args:
@@ -868,7 +877,12 @@ class Case(object):
         }
 
         name = os.path.split(p)[-1].split('.')[0]
-        if name in __foamfilescollection:
+        if name == 'blockMeshDict':
+            try:
+                return BlockMeshDict.fromFile(p, convertToMeters)
+            except Exception as e:
+                print('Failed to import {}:\n\t{}'.format(p, e))
+        elif name in __foamfilescollection:
             try:
                 return __foamfilescollection[name].fromFile(p)
             except Exception as e:

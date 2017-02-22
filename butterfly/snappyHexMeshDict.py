@@ -98,6 +98,7 @@ class SnappyHexMeshDict(FoamFile):
                           values=values)
         self.__geometries = None
         self.__isFeatureEdgeRefinementImplicit = True
+        self.convertToMeters = 1.0  # This is useful to scale the locationInMesh
 
     @classmethod
     def fromFile(cls, filepath):
@@ -110,9 +111,10 @@ class SnappyHexMeshDict(FoamFile):
 
     @classmethod
     def fromBFGeometries(cls, projectName, geometries, meshingParameters=None,
-                         values=None):
+                         convertToMeters=1, values=None):
         """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
+        _cls.convertToMeters = convertToMeters
         _cls.projectName = projectName
         _cls.__geometries = cls.__checkInputGeometries(geometries)
         _cls.updateMeshingParameters(meshingParameters)
@@ -147,19 +149,30 @@ class SnappyHexMeshDict(FoamFile):
 
     @property
     def locationInMesh(self):
-        """A tuple for the location of the volume the should be meshed."""
+        """A tuple for the location of the volume the should be meshed.
+
+        x, y, z values will be multiplied to self.convertToMeters. If the units
+        are not Meters you can set the convertToMeters using self.convertToMeters
+        """
         return self.values['castellatedMeshControls']['locationInMesh']
 
     @locationInMesh.setter
     def locationInMesh(self, point):
         if not point:
             point = (0, 0, 0)
+
         try:
-            self.values['castellatedMeshControls']['locationInMesh'] = \
-                str(tuple(eval(point))).replace(',', "")
+            x, y, z = tuple(eval(point))
         except Exception:
-            self.values['castellatedMeshControls']['locationInMesh'] = \
-                str(tuple(point)).replace(',', "")
+            x, y, z = tuple(point)
+
+        # scale point based on convertToMeters
+        point = x * self.convertToMeters, \
+            y * self.convertToMeters, \
+            z * self.convertToMeters
+
+        self.values['castellatedMeshControls']['locationInMesh'] = \
+            str(tuple(point)).replace(',', "")
 
     @property
     def globRefineLevel(self):

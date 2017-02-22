@@ -35,22 +35,35 @@ class BlockMeshDict(FoamFile):
         self.__original3dVertices = None
 
     @classmethod
-    def fromFile(cls, filepah):
-        """Create a blockMeshDict from file."""
+    def fromFile(cls, filepah, convertToMeters=1):
+        """Create a blockMeshDict from file.
+
+        Args:
+            filepah: Full path to blockMeshDict.
+            converToMeters: converToMeters for the new document. This values
+                will be used to update the vertices to the new units. Default
+                is 1 which means blockMeshDict will be converted to meters.
+        """
         _cls = cls()
 
         with open(filepah, 'rb') as bf:
             lines = CppDictParser._removeComments(bf.read())
             bmd = ' '.join(lines.replace('\r\n', ' ').replace('\n', ' ').split())
 
-        _cls.values['convertToMeters'] = \
-            float(bmd.split('convertToMeters')[-1].split(';')[0])
+        _cls.values['convertToMeters'] = convertToMeters
+
+        originalConvertToMeters = float(bmd.split('convertToMeters')[-1].split(';')[0])
+
+        conversion = convertToMeters / originalConvertToMeters
 
         # find vertices
-        _cls.__vertices = list(eval(','.join(bmd.split('vertices')[-1]
-                                    .split(';')[0]
-                                    .strip()[1:-1]
-                                    .split())))
+        vertices = list(eval(','.join(bmd.split('vertices')[-1]
+                                      .split(';')[0]
+                                      .strip()[1:-1]
+                                      .split())))
+
+        _cls.__vertices = list(tuple(i / conversion for i in v)
+                               for v in vertices)
 
         # get blocks, order of vertices, nDivXYZ, grading
         blocks = bmd.split('blocks')[-1].split(';')[0].strip()
@@ -105,8 +118,8 @@ class BlockMeshDict(FoamFile):
         vertices = [
             vectormath.move(origin,
                             vectormath.sums((vectormath.scale(_xAxis, i * width),
-                                            vectormath.scale(_yAxis, j * length),
-                                            vectormath.scale(_zAxis, k * height))
+                                             vectormath.scale(_yAxis, j * length),
+                                             vectormath.scale(_zAxis, k * height))
                                             ))
             for i in range(2) for j in range(2) for k in range(2)]
 
@@ -139,8 +152,8 @@ class BlockMeshDict(FoamFile):
         vertices = [
             vectormath.move(minPt,
                             vectormath.sums((vectormath.scale(_xAxis, i * width),
-                                            vectormath.scale(_yAxis, j * length),
-                                            vectormath.scale(_zAxis, k * height))
+                                             vectormath.scale(_yAxis, j * length),
+                                             vectormath.scale(_zAxis, k * height))
                                             ))
 
             for i in range(2) for j in range(2) for k in range(2)]
@@ -643,8 +656,8 @@ class BlockMeshDict(FoamFile):
                 "   }\n"
 
         col = (_body % (name, attr['type'],
-               '\n' + '\n'.join('\t' + str(indices).replace(",", "")
-                                for indices in attr['faces']))
+                        '\n' + '\n'.join('\t' + str(indices).replace(",", "")
+                                         for indices in attr['faces']))
                if isinstance(attr['faces'][0], tuple) else
                _body % (name, attr['type'],
                         '\n\t' + str(attr['faces']).replace(",", ""))

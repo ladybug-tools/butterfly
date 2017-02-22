@@ -1,4 +1,4 @@
-<Workspace Version="1.2.1.3083" X="218.185702331163" Y="171.53402441685" zoom="0.334524400670438" Name="Home" Description="" RunType="Automatic" RunPeriod="1000" HasRunWithoutCrash="True">
+<Workspace Version="1.2.1.3083" X="176.818698006795" Y="140.147040441666" zoom="0.238139539362913" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
   <NamespaceResolutionMap />
   <Elements>
     <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="84b2dbbf-830d-4b5e-b879-3a140e451d8c" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Cuboid.ByLengths" x="-10.5535962414424" y="154.130133074123" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Cuboid.ByLengths@Autodesk.DesignScript.Geometry.Point,double,double,double">
@@ -61,8 +61,8 @@
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
     <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="70359ea3-d00c-4084-9125-a1c60bdc0bdd" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="403.064647003278" y="-67.3043131727348" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;outdoor_study&quot;;" ShouldFocus="false" />
-    <CoreNodeModels.Input.BoolSelector guid="a954d1a1-3c90-492c-9064-54369b96353c" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="561.414064337627" y="608.680472621065" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <System.Boolean>False</System.Boolean>
+    <CoreNodeModels.Input.BoolSelector guid="a954d1a1-3c90-492c-9064-54369b96353c" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="534.853314078306" y="582.119722361744" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="f22780a8-8e22-4d10-8fa6-84937da8dda3" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Create Butterfly Geometry" x="326.729863304054" y="53.3862810716309" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
@@ -148,10 +148,10 @@
         <Output value="ERRReport" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <CoreNodeModels.Input.BoolSelector guid="af54aee3-b5d4-4143-ae17-607bfc2fc460" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="1084.67196361203" y="414.533352218612" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+    <CoreNodeModels.Input.BoolSelector guid="af54aee3-b5d4-4143-ae17-607bfc2fc460" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="1095.90692166561" y="412.928358210958" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <System.Boolean>True</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="8d88b742-8f61-49c8-80f2-b17519a50da9" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Load Mesh" x="1704.0690020952" y="240.978138117428" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="8d88b742-8f61-49c8-80f2-b17519a50da9" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Load Mesh" x="2087.6625699245" y="-8.59843007276723" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
       <PortInfo index="1" default="True" />
       <PortInfo index="2" default="False" />
@@ -168,10 +168,76 @@
         <Output value="ERRReport" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <CoreNodeModels.Input.BoolSelector guid="a68c0d07-6e47-4eb9-b006-76f99997f122" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="1416.16118875002" y="489.095758776348" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+    <CoreNodeModels.Input.BoolSelector guid="a68c0d07-6e47-4eb9-b006-76f99997f122" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="1849.5095708166" y="43.7099216523661" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <System.Boolean>True</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
-    <CoreNodeModels.Watch guid="cdde12df-a5b2-4825-88f7-f8e13297f03b" type="CoreNodeModels.Watch" nickname="Watch" x="2106.00789144845" y="243.901101255426" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <CoreNodeModels.Watch guid="cdde12df-a5b2-4825-88f7-f8e13297f03b" type="CoreNodeModels.Watch" nickname="Watch" x="2404.53677687209" y="17.5969461762137" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="6ac276c9-e83d-4900-899e-620712ae0b8a" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="snappyHexMesh" x="1640.075301257" y="572.777987264829" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+      <PortInfo index="0" default="False" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <PortInfo index="3" default="True" />
+      <PortInfo index="4" default="False" />
+      <ID value="501ab7da-b001-4cfa-9d40-cb77db35f81c" />
+      <Name value="snappyHexMesh" />
+      <Description value="snappyHexMesh&#xD;&#xA;-" />
+      <Inputs>
+        <Input value="_case" />
+        <Input value="_locationInMesh_" />
+        <Input value="_snappyHexMeshDict_" />
+        <Input value="decomposeParDict_" />
+        <Input value="_run" />
+      </Inputs>
+      <Outputs>
+        <Output value="case" />
+        <Output value="ERRReport" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Input.BoolSelector guid="5f235530-c14b-466d-aa1b-df424e7409de" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="1476.20136726441" y="700.943720531015" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="42a5109f-09f4-4df8-b8b7-0ec3a68e93c5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="snappyHexMeshDict" x="979.380159545332" y="631.968857607475" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="True" />
+      <PortInfo index="1" default="True" />
+      <PortInfo index="2" default="True" />
+      <PortInfo index="3" default="True" />
+      <PortInfo index="4" default="True" />
+      <PortInfo index="5" default="True" />
+      <PortInfo index="6" default="True" />
+      <PortInfo index="7" default="True" />
+      <PortInfo index="8" default="True" />
+      <PortInfo index="9" default="True" />
+      <PortInfo index="10" default="True" />
+      <PortInfo index="11" default="True" />
+      <ID value="2d56e5de-23dc-4a83-8f12-50dcfcf17527" />
+      <Name value="snappyHexMeshDict" />
+      <Description value="Set parameters for snappyHexMeshDict.&#xD;&#xA;Read more about snappyHexMeshDict here:&#xD;&#xA;    https://openfoamwiki.net/images/f/f0/Final-AndrewJacksonSlidesOFW7.pdf" />
+      <Inputs>
+        <Input value="_meshQuality_" />
+        <Input value="_castellatedMesh_" />
+        <Input value="_snap_" />
+        <Input value="_addLayers_" />
+        <Input value="_nCellsBetweenLevels_" />
+        <Input value="_maxGlobalCells_" />
+        <Input value="_surfaceFeatureLevel_" />
+        <Input value="_expansionRatio_" />
+        <Input value="_finalLayerThickness_" />
+        <Input value="_minThickness_" />
+        <Input value="_nLayerIter_" />
+        <Input value="additionalParameters_" />
+      </Inputs>
+      <Outputs>
+        <Output value="snappyHexMeshDict" />
+        <Output value="ERRReport" />
+      </Outputs>
+    </Dynamo.Graph.Nodes.CustomNodes.Function>
+    <CoreNodeModels.Input.BoolSelector guid="0db16aa8-706f-4648-af30-15fd00a536e4" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="759.299750416747" y="685.595554520648" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>False</System.Boolean>
+    </CoreNodeModels.Input.BoolSelector>
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="1d66eebe-590b-48a1-8e32-fc7178f22264" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="474.681364240524" y="922.06894742599" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;castellatedMeshControls  {resolveFeatureAngle 95;&#xA;}&quot;;" ShouldFocus="false" />
+    <CoreNodeModels.Watch guid="e60284f0-8357-4a85-96dc-9ef7cd6b88ba" type="CoreNodeModels.Watch" nickname="Watch" x="1478.49509525008" y="-49.2175473883895" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
     </CoreNodeModels.Watch>
   </Elements>
@@ -184,6 +250,7 @@
     <Dynamo.Graph.Connectors.ConnectorModel start="e8ad0274-35df-41ee-a1e3-21a23d1fa1e2" start_index="2" end="84b2dbbf-830d-4b5e-b879-3a140e451d8c" end_index="3" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="e8ad0274-35df-41ee-a1e3-21a23d1fa1e2" start_index="3" end="5c46578e-9e47-40e9-823c-84382b5fae60" end_index="2" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="8f14ee2e-9f3c-4882-b202-2d2f0a4908ef" start_index="0" end="42f51c85-a7a6-4cbf-9745-3cbb70322ed8" end_index="3" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="42f51c85-a7a6-4cbf-9745-3cbb70322ed8" start_index="0" end="e60284f0-8357-4a85-96dc-9ef7cd6b88ba" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="42f51c85-a7a6-4cbf-9745-3cbb70322ed8" start_index="1" end="98097e5d-e940-4dc4-8b8e-f43c19db565c" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="70359ea3-d00c-4084-9125-a1c60bdc0bdd" start_index="0" end="42f51c85-a7a6-4cbf-9745-3cbb70322ed8" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="a954d1a1-3c90-492c-9064-54369b96353c" start_index="0" end="42f51c85-a7a6-4cbf-9745-3cbb70322ed8" end_index="9" portType="0" />
@@ -193,15 +260,20 @@
     <Dynamo.Graph.Connectors.ConnectorModel start="d7914377-bad7-4ea7-ae04-c34dc9b02459" start_index="0" end="42f51c85-a7a6-4cbf-9745-3cbb70322ed8" end_index="8" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="11a5de3f-67d9-454a-ab04-8be7f65ec184" start_index="0" end="2dd49d1e-3cb8-4e3d-9b91-6bcb63508a65" end_index="1" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="012f5714-69ed-4f8f-a038-d203530c7c3b" start_index="0" end="2dd49d1e-3cb8-4e3d-9b91-6bcb63508a65" end_index="2" portType="0" />
-    <Dynamo.Graph.Connectors.ConnectorModel start="98097e5d-e940-4dc4-8b8e-f43c19db565c" start_index="0" end="8d88b742-8f61-49c8-80f2-b17519a50da9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="98097e5d-e940-4dc4-8b8e-f43c19db565c" start_index="0" end="6ac276c9-e83d-4900-899e-620712ae0b8a" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="af54aee3-b5d4-4143-ae17-607bfc2fc460" start_index="0" end="98097e5d-e940-4dc4-8b8e-f43c19db565c" end_index="4" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="8d88b742-8f61-49c8-80f2-b17519a50da9" start_index="1" end="cdde12df-a5b2-4825-88f7-f8e13297f03b" end_index="0" portType="0" />
     <Dynamo.Graph.Connectors.ConnectorModel start="a68c0d07-6e47-4eb9-b006-76f99997f122" start_index="0" end="8d88b742-8f61-49c8-80f2-b17519a50da9" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="6ac276c9-e83d-4900-899e-620712ae0b8a" start_index="0" end="8d88b742-8f61-49c8-80f2-b17519a50da9" end_index="0" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="5f235530-c14b-466d-aa1b-df424e7409de" start_index="0" end="6ac276c9-e83d-4900-899e-620712ae0b8a" end_index="4" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="42a5109f-09f4-4df8-b8b7-0ec3a68e93c5" start_index="0" end="6ac276c9-e83d-4900-899e-620712ae0b8a" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="0db16aa8-706f-4648-af30-15fd00a536e4" start_index="0" end="42a5109f-09f4-4df8-b8b7-0ec3a68e93c5" end_index="2" portType="0" />
+    <Dynamo.Graph.Connectors.ConnectorModel start="1d66eebe-590b-48a1-8e32-fc7178f22264" start_index="0" end="42a5109f-09f4-4df8-b8b7-0ec3a68e93c5" end_index="11" portType="0" />
   </Connectors>
   <Notes />
   <Annotations />
   <Presets />
   <Cameras>
-    <Camera Name="Background Preview" eyeX="249.000289916992" eyeY="148.668548583984" eyeZ="131.353515625" lookX="-297.168640136719" lookY="-126.432640075684" lookZ="-249.554840087891" upX="-0.0756147056818008" upY="0.9951131939888" upZ="-0.0634993463754654" />
+    <Camera Name="Background Preview" eyeX="278.295928955078" eyeY="188.201995849609" eyeZ="141.270248413086" lookX="-276.384582519531" lookY="-150.991256713867" lookZ="-213.53239440918" upX="-0.150994211435318" upY="0.98162716627121" upZ="-0.116656847298145" />
   </Cameras>
 </Workspace>

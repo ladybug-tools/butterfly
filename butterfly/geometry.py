@@ -111,8 +111,13 @@ class _BFMesh(object):
         self.__min = minPt
         self.__max = maxPt
 
-    def toSTL(self):
-        """Get STL definition for this geometry as a string."""
+    def toSTL(self, convertToMeters=1):
+        """Get STL definition for this geometry as a string.
+
+        Args:
+            convertToMeters: A value to scale the geometry to meters. For isinstance
+                if the mesh is in mm the value should be 0.001 (default: 1).
+        """
         _hea = "solid {}".format(self.name)
         _tale = "endsolid {}".format(self.name)
         _body = "   facet normal {0} {1} {2}\n" \
@@ -127,25 +132,30 @@ class _BFMesh(object):
             self.__normals[count][0],
             self.__normals[count][1],
             self.__normals[count][2],
-            self.__vertices[faceInd[0]][0],
-            self.__vertices[faceInd[0]][1],
-            self.__vertices[faceInd[0]][2],
-            self.__vertices[faceInd[1]][0],
-            self.__vertices[faceInd[1]][1],
-            self.__vertices[faceInd[1]][2],
-            self.__vertices[faceInd[2]][0],
-            self.__vertices[faceInd[2]][1],
-            self.__vertices[faceInd[2]][2]
+            self.__vertices[faceInd[0]][0] * convertToMeters,
+            self.__vertices[faceInd[0]][1] * convertToMeters,
+            self.__vertices[faceInd[0]][2] * convertToMeters,
+            self.__vertices[faceInd[1]][0] * convertToMeters,
+            self.__vertices[faceInd[1]][1] * convertToMeters,
+            self.__vertices[faceInd[1]][2] * convertToMeters,
+            self.__vertices[faceInd[2]][0] * convertToMeters,
+            self.__vertices[faceInd[2]][1] * convertToMeters,
+            self.__vertices[faceInd[2]][2] * convertToMeters
         ) for count, faceInd in enumerate(self.__faceIndices))
 
         return "{}\n{}\n{}\n".format(
             _hea, "\n".join(_bodyCollector), _tale
         )
 
-    def writeToStl(self, folder):
-        """Save BFFace to a stl file. File name will be self.name."""
+    def writeToStl(self, folder, convertToMeters=1):
+        """Save BFFace to a stl file. File name will be self.name.
+
+        Args:
+            convertToMeters: A value to scale the geometry to meters. For isinstance
+                if the mesh is in mm the value should be 0.001 (default: 1).
+        """
         with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-            outf.write(self.toSTL())
+            outf.write(self.toSTL(convertToMeters))
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -284,19 +294,23 @@ class BFBlockGeometry(BFGeometry):
         return self.__borderVertices
 
 
-def bfGeometryFromStlBlock(stlBlock):
+def bfGeometryFromStlBlock(stlBlock, convertFromMeters=1):
     """Create BFGeometry from an stl block as a string."""
     solid = read_ascii_string(stlBlock)
 
-    vertices = tuple(solid.vertices)
-    indices = tuple(tuple(vertices.index(ver) for ver in facet.vertices)
+    vertices = tuple(tuple(i * convertFromMeters for i in ver)
+                     for ver in tuple(solid.vertices))
+
+    origiVer = tuple(solid.vertices)
+
+    indices = tuple(tuple(origiVer.index(ver) for ver in facet.vertices)
                     for facet in solid.facets)
     normals = tuple(facet.normal for facet in solid.facets)
 
     return BFGeometry(solid.name, vertices, indices, normals)
 
 
-def bfGeometryFromStlFile(filepath):
+def bfGeometryFromStlFile(filepath, convertFromMeters=1):
     """Return a tuple of BFGeometry from an stl file."""
     with open(filepath, 'rb') as f:
         line = ''.join(f.readlines())
@@ -305,7 +319,7 @@ def bfGeometryFromStlFile(filepath):
               for t in line.split('\nsolid'))
     del(line)
 
-    return tuple(bfGeometryFromStlBlock(b) for b in blocks)
+    return tuple(bfGeometryFromStlBlock(b, convertFromMeters) for b in blocks)
 
 
 def calculateMinMaxFromBFGeometries(geometries, xAxis=None):
