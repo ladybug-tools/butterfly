@@ -1,10 +1,9 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_quantities, _values_ = IN
+residualControl = None
 
 try:
-    from butterfly_dynamo.case import Case
-    import butterfly_dynamo.unitconversion as uc
+    from butterfly.fvSolution import ResidualControl
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -14,10 +13,19 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+if _quantities:
+    if not _values_:
+        _values_ = (0.0001,)
+    
+    # match length
+    l = len(_quantities)
+    values = (_values_[c] if c < len(_values_) else _values_[-1]
+        for c, q in enumerate(_quantities))
+
+    residualControl = ResidualControl(
+        {key: value for (key, value) in zip(_quantities, values)}
+    )
+
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (residualControl,)

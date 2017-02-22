@@ -1,9 +1,9 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_points, _fields_, _writeInterval_ = IN
+probes = None
 
 try:
-    from butterfly_dynamo.case import Case
+    from butterfly.functions import Probes
     import butterfly_dynamo.unitconversion as uc
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
@@ -14,10 +14,12 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+if _points:
+    probes = Probes()
+    c = uc.convertDocumentUnitsToMeters()
+    probes.probeLocations = ((p.X * c, p.Y * c, p.Z * c) for p in _points)
+    probes.fields = _fields_
+    probes.writeInterval = _writeInterval_
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (probes,)

@@ -15,8 +15,11 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 # create blockMeshDict based on BBox
-meshParams = MeshingParameters(_cellSizeXYZ_, _gradXYZ_, _locationInMesh_,
-                               _globRefineLevel_)
+if _gradXYZ_:
+    _gradXYZ_ = _gradXYZ_.X, _gradXYZ_.Y, _gradXYZ_.Z
+
+meshParams = MeshingParameters(
+    _cellSizeXYZ_, _gradXYZ_, _locationInMesh_, _globRefineLevel_)
 
 # assign outputs to OUT
 OUT = (meshParams,)

@@ -1,10 +1,10 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_value = IN[0]
+kqRWallFunction = None
+
 
 try:
-    from butterfly_dynamo.case import Case
-    import butterfly_dynamo.unitconversion as uc
+    from butterfly.fields import KqRWallFunction
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -12,12 +12,10 @@ except ImportError as e:
             '\nOpen an issue on github if you think this is a bug:' + \
             ' https://github.com/mostaphaRoudsari/Butterfly/issues'
         
-    raise ImportError('{}\n{}'.format(msg, e))
+    raise ImportError('{}\n{}'.format(msg, e))    
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+if _value:
+    kqRWallFunction = KqRWallFunction(_value)
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (kqRWallFunction,)

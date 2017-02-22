@@ -1,10 +1,9 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_bType_, _alphat_, _U_, _p_, _p_rgh_, _k_, _epsilon_, _nut_, _T_ = IN
+boundary = None
 
 try:
-    from butterfly_dynamo.case import Case
-    import butterfly_dynamo.unitconversion as uc
+    from butterfly import boundarycondition
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -14,10 +13,14 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+_bType_ = 'patch' if not _bType_ else _bType_
+
+boundary = boundarycondition.BoundaryCondition(
+    _bType_, U=_U_, p=_p_, k=_k_, epsilon=_epsilon_,
+    nut=_nut_, alphat=_alphat_, p_rgh=_p_rgh_, T=_T_
+)
+
+boundary = boundary.duplicate()
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (boundary,)

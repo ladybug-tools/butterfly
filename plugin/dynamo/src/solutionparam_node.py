@@ -1,10 +1,9 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_filename, _values, tRange_, replace_ = IN
+solutionParam = None
 
 try:
-    from butterfly_dynamo.case import Case
-    import butterfly_dynamo.unitconversion as uc
+    from butterfly.solution import SolutionParameter
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -14,10 +13,9 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+if _filename and _values:
+    solutionParam = SolutionParameter.fromCppDictionary(_filename, _values,
+                                                     replace_, tRange_)
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (solutionParam,)

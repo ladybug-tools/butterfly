@@ -1,10 +1,9 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_quantities, _values = IN
+relaxationFactors = None
 
 try:
-    from butterfly_dynamo.case import Case
-    import butterfly_dynamo.unitconversion as uc
+    from butterfly.fvSolution import RelaxationFactors
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -14,10 +13,16 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+
+if _quantities and _values:
+    
+    assert len(_quantities) == len(_values), \
+        'Length of quantities [%d] must be equal to the length of values [%d].' \
+        % (len(_quantities), len(_values))
+
+    relaxationFactors = RelaxationFactors(
+        {key: value for (key, value) in zip(_quantities, _values)}
+    )
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (relaxationFactors,)

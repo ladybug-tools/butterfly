@@ -8,7 +8,8 @@ if _case and _run:
         _case.removeSnappyHexMeshFolders()
     # run blockMesh
     if _cellSizeXYZ_:
-        _case.blockMeshDict.nDivXYZByCellSize(_cellSizeXYZ_)
+        _case.blockMeshDict.nDivXYZByCellSize(
+            (_cellSizeXYZ_.X, _cellSizeXYZ_.Y, _cellSizeXYZ_.Z))
     if _gradXYZ_:
         _case.blockMeshDict.grading = _gradXYZ_
     if _cellSizeXYZ_ or _gradXYZ_:

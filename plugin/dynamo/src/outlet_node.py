@@ -1,10 +1,10 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_pressure_, temperature_ = IN
+outletBoundary = None
 
 try:
-    from butterfly_dynamo.case import Case
-    import butterfly_dynamo.unitconversion as uc
+    from butterfly.boundarycondition import FixedOutletBoundaryCondition
+    from butterfly.fields import FixedValue
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -14,10 +14,13 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+_pressure_ = FixedValue(_pressure_) if _pressure_ else None
+
+temperature_ = FixedValue(str(temperature_ + 273.15)) if temperature_ \
+               else None
+
+outletBoundary = FixedOutletBoundaryCondition(p=_pressure_, T=temperature_)
+
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (outletBoundary,)

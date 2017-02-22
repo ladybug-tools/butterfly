@@ -1,10 +1,9 @@
 # assign inputs
-name_, _folder, _run = IN
-case = None
+_turbulenceProp_, fvSchemes_, fvSolution_, residualControl_, _relaxationFactors_ = IN
+recipe = None
 
 try:
-    from butterfly_dynamo.case import Case
-    import butterfly_dynamo.unitconversion as uc
+    from butterfly.recipe import HeatTransfer
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -14,10 +13,12 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
-if _folder and _run: 
-    # create OpenFoam Case
-    case = Case.fromFolder(_folder, name_, 1.0 / uc.convertDocumentUnitsToMeters())
-    case.save(overwrite=False)
+recipe = HeatTransfer(_turbulenceProp_, fvSchemes_, fvSolution_, residualControl_,
+                      _relaxationFactors_)
+
+l = len(recipe.quantities)
+q = ''.join(q + ' ..... ' if (c + 1) % 4 != 0 and c + 1 != l else q + '\n'
+            for c, q in enumerate(recipe.quantities))
 
 # assign outputs to OUT
-OUT = (case,)
+OUT = (recipe,)
