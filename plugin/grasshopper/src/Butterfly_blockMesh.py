@@ -26,7 +26,7 @@ blockMesh
 
 ghenv.Component.Name = "Butterfly_blockMesh"
 ghenv.Component.NickName = "blockMesh"
-ghenv.Component.Message = 'VER 0.0.03\nJAN_31_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_22_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "03::Mesh"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -37,7 +37,8 @@ if _case and _run:
         _case.removeSnappyHexMeshFolders()
     # run blockMesh
     if _cellSizeXYZ_:
-        _case.blockMeshDict.nDivXYZByCellSize(_cellSizeXYZ_)
+        _case.blockMeshDict.nDivXYZByCellSize(
+            (_cellSizeXYZ_.X, _cellSizeXYZ_.Y, _cellSizeXYZ_.Z))
     if _gradXYZ_:
         _case.blockMeshDict.grading = _gradXYZ_
     if _cellSizeXYZ_ or _gradXYZ_:
