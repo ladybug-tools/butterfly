@@ -21,7 +21,7 @@ Load probes from a folder.
 
 ghenv.Component.Name = "Butterfly_Load Probes"
 ghenv.Component.NickName = "loadProbes"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_15_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_22_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "07::PostProcess"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -29,6 +29,7 @@ ghenv.Component.AdditionalHelpFromDocStrings = "1"
 try:
     from butterfly.utilities import loadProbesFromPostProcessingFile
     from butterfly_grasshopper.geometry import xyzToPoint
+    import butterfly_grasshopper.unitconversion as uc
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -53,8 +54,9 @@ if _solution and _field:
             rawValues = _solution.loadProbes(_field)
         except Exception as e:
             raise ValueError('Failed to load probes:\n\t{}'.format(e))
-            
+    
+    c = 1.0 / uc.convertDocumentUnitsToMeters()
     try:
-        probes = tuple(xyzToPoint(v) for v in rawValues)
+        probes = tuple(xyzToPoint(v, c) for v in rawValues)
     except:
         probes = rawValues

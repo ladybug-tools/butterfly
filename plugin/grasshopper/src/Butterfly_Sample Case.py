@@ -27,7 +27,7 @@ Use this component yo load the results for a case that you have ran already.
 
 ghenv.Component.Name = "Butterfly_Sample Case"
 ghenv.Component.NickName = "sampleCase"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_15_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_22_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "07::PostProcess"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -36,6 +36,7 @@ ghenv.Component.AdditionalHelpFromDocStrings = "1"
 try:
     from butterfly.utilities import loadProbesFromPostProcessingFile
     from butterfly_grasshopper.geometry import xyzToPoint, xyzToVector
+    import butterfly_grasshopper.unitconversion as uc
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -52,12 +53,14 @@ if _solution and _name and any(p is not None for p in _points) and _field and _r
     
     assert hasattr(_solution, 'sample'), \
         'Invalid Input: <{}> is not a valid Butterfly Case or Solution.'.format(_solution)
+    c = uc.convertDocumentUnitsToMeters()
+    cr = 1.0 / c
     
-    points = ((pt.X, pt.Y, pt.Z) for pt in _points)
+    points = ((pt.X * c, pt.Y * c, pt.Z * c) for pt in _points)
     res = _solution.sample(_name, points, _field)
     
     if res:
-        probes = (xyzToPoint(p) for p in res.probes)
+        probes = (xyzToPoint(p, cr) for p in res.probes)
         
         if isinstance(res.values[0], float) == 1:
             values = res.values

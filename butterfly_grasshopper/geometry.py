@@ -208,9 +208,9 @@ def BFMeshToMesh(bfMesh, color=None, scale=1):
     return mesh
 
 
-def xyzToPoint(xyz):
+def xyzToPoint(xyz, convertFromMeters=1):
     """Convert a xyz tuple to Point."""
-    return rc.Geometry.Point3d(*xyz)
+    return rc.Geometry.Point3d(*(i * convertFromMeters for i in xyz))
 
 
 def xyzToVector(xyz):

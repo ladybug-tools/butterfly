@@ -20,13 +20,14 @@ Create Butterfly probes
 
 ghenv.Component.Name = "Butterfly_probes"
 ghenv.Component.NickName = "probes"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_09_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_22_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
 
 try:
     from butterfly.functions import Probes
+    import butterfly_grasshopper.unitconversion as uc
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
             '\nYou can download the installer file from github: ' + \
@@ -38,6 +39,7 @@ except ImportError as e:
 
 if _points:
     probes = Probes()
-    probes.probeLocations = _points
+    c = uc.convertDocumentUnitsToMeters()
+    probes.probeLocations = ((p.X * c, p.Y * c, p.Z * c) for p in _points)
     probes.fields = _fields_
     probes.writeInterval = _writeInterval_

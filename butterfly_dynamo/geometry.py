@@ -210,9 +210,9 @@ def BFMeshToMesh(bfMesh, color=None, scale=1):
     return mesh
 
 
-def xyzToPoint(xyz):
+def xyzToPoint(xyz, convertFromMeters=1):
     """Convert a xyz tuple to Point."""
-    return DSGeometry.Point.ByCoordinates(*xyz)
+    return DSGeometry.Point.ByCoordinates(*(i * convertFromMeters for i in xyz))
 
 
 def xyzToVector(xyz):
