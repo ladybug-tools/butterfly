@@ -175,7 +175,8 @@ class Case(object):
 
     @classmethod
     def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
-                         meshingParameters=None, make2dParameters=None):
+                         meshingParameters=None, make2dParameters=None,
+                         convertToMeters=1):
         """Create a case from Butterfly geometries.
 
         foamFiles/dictionaries will be generated based on boundary condition of
@@ -206,7 +207,7 @@ class Case(object):
         # create foam files
         if not blockMeshDict:
             minPt, maxPt = calculateMinMaxFromBFGeometries(geometries)
-            blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt)
+            blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters)
 
         if make2dParameters:
             # create the 2D blockMeshDict

@@ -20,7 +20,7 @@ Create an inlet boundary with uniform velocity value.
 
 ghenv.Component.Name = "Butterfly_Inlet Boundary"
 ghenv.Component.NickName = "inlet"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_10_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_22_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "01::Boundary"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -38,7 +38,7 @@ except ImportError as e:
     raise ImportError('{}\n{}'.format(msg, e))
 
 if _velocityVec:
-    _velocityVec = FixedValue(str(tuple(_velocityVec)).replace(',', '')) \
+    _velocityVec = FixedValue(str((_velocityVec.X, _velocityVec.Y, _velocityVec.Z)).replace(',', '')) \
                    if _velocityVec \
                    else None
 
