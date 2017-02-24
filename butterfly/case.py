@@ -790,7 +790,7 @@ class Case(object):
         rf = list(int(f) for f in self.getResultFolders())
         rf.sort()
 
-        fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', rf[-1], f)
+        fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', str(rf[-1]), f)
                    for f in sd.outputFilenames)
 
         if fp:
