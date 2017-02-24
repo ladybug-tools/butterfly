@@ -787,7 +787,7 @@ class Case(object):
             raise Exception("Failed to sample the case:\n\t%s"
                             % log.error)
 
-        rf = list(self.getResultFolders())
+        rf = list(int(f) for f in self.getResultFolders())
         rf.sort()
 
         fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', rf[-1], f)
