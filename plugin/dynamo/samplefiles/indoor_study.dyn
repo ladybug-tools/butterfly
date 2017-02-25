@@ -1,4 +1,4 @@
-<Workspace Version="1.2.1.3083" X="164.127038283463" Y="223.986551272334" zoom="0.111307322132253" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
+<Workspace Version="1.2.1.3083" X="211.767789586332" Y="381.933274306584" zoom="0.150842709774857" Name="Home" Description="" RunType="Manual" RunPeriod="1000" HasRunWithoutCrash="True">
   <NamespaceResolutionMap>
     <ClassMap partialName="System.Object" resolvedName="System.Object" assemblyName="" />
     <ClassMap partialName="Color" resolvedName="DSCore.Color" assemblyName="DSCoreNodes.dll" />
@@ -6,7 +6,7 @@
     <ClassMap partialName="Vector" resolvedName="Autodesk.DesignScript.Geometry.Vector" assemblyName="ProtoGeometry.dll" />
   </NamespaceResolutionMap>
   <Elements>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e8ad0274-35df-41ee-a1e3-21a23d1fa1e2" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="cell size in x, y, z direction" x="2381.06076841408" y="1377.03740575776" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="x = 300;&#xA;y = 300;&#xA;z = 300;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="e8ad0274-35df-41ee-a1e3-21a23d1fa1e2" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="cell size in x, y, z direction" x="2314.61051876775" y="1386.80950129399" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="x = 300;&#xA;y = 300;&#xA;z = 300;" ShouldFocus="false" />
     <CoreNodeModels.Input.BoolSelector guid="a954d1a1-3c90-492c-9064-54369b96353c" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="2888.22044097062" y="752.455140823367" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
       <System.Boolean>False</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
@@ -32,7 +32,7 @@
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
     <CoreNodeModels.Input.BoolSelector guid="af54aee3-b5d4-4143-ae17-607bfc2fc460" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="4807.19736248791" y="945.133470296073" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <System.Boolean>False</System.Boolean>
+      <System.Boolean>True</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="8d88b742-8f61-49c8-80f2-b17519a50da9" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Load Mesh" x="6475.42390478738" y="389.620876438348" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
@@ -75,8 +75,8 @@
         <Output value="ERRReport" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <CoreNodeModels.Input.BoolSelector guid="5f235530-c14b-466d-aa1b-df424e7409de" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="5867.71457980159" y="783.715745741474" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <System.Boolean>False</System.Boolean>
+    <CoreNodeModels.Input.BoolSelector guid="5f235530-c14b-466d-aa1b-df424e7409de" type="CoreNodeModels.Input.BoolSelector" nickname="Boolean" x="5838.21424868792" y="795.337088301403" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
+      <System.Boolean>True</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="42a5109f-09f4-4df8-b8b7-0ec3a68e93c5" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="snappyHexMeshDict" x="5691.25582011716" y="888.028493640863" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="True" />
@@ -117,7 +117,7 @@
       <System.Boolean>False</System.Boolean>
     </CoreNodeModels.Input.BoolSelector>
     <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="1d66eebe-590b-48a1-8e32-fc7178f22264" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="5201.84001376221" y="1178.67461720253" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;castellatedMeshControls  {resolveFeatureAngle 95;&#xA;}&quot;;" ShouldFocus="false" />
-    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5aa8dd68-fa15-4219-a100-d5458f9d1808" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Point.ByCoordinates" x="2650.18141413809" y="1242.26655600983" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double">
+    <Dynamo.Graph.Nodes.ZeroTouch.DSFunction guid="5aa8dd68-fa15-4219-a100-d5458f9d1808" type="Dynamo.Graph.Nodes.ZeroTouch.DSFunction" nickname="Point.ByCoordinates" x="2583.73116449176" y="1252.03865154606" isVisible="false" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false" assembly="ProtoGeometry.dll" function="Autodesk.DesignScript.Geometry.Point.ByCoordinates@double,double,double">
       <PortInfo index="0" default="True" />
       <PortInfo index="1" default="True" />
       <PortInfo index="2" default="True" />
@@ -187,7 +187,7 @@
         <Output value="ERRReport" />
       </Outputs>
     </Dynamo.Graph.Nodes.CustomNodes.Function>
-    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="26dec472-d6f8-4638-99ee-51d8486f1803" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="6098.98266184274" y="1275.64293909249" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="10000;" ShouldFocus="false" />
+    <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="26dec472-d6f8-4638-99ee-51d8486f1803" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="6098.98266184274" y="1275.64293909249" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="500;" ShouldFocus="false" />
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="7145b2c4-1fbf-4d69-8f97-0533702697b8" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Steady Incompressible Recipe" x="6747.23586439089" y="1002.15333836123" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="True" />
       <PortInfo index="1" default="True" />
@@ -348,9 +348,6 @@
       <PortInfo index="0" default="False" />
     </CoreNodeModels.Watch>
     <CoreNodeModels.Watch guid="3ac9f2d3-3503-4137-8a33-f69e497c5ec0" type="CoreNodeModels.Watch" nickname="Error messages if any! If your OpenFOAM installation is not working correctly or the VM is not running here it will give you an error." x="5049.96108750063" y="498.283117698753" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
-      <PortInfo index="0" default="False" />
-    </CoreNodeModels.Watch>
-    <CoreNodeModels.Watch guid="6d151778-8c10-4036-87a0-6780a1e449b7" type="CoreNodeModels.Watch" nickname="Watch" x="8017.12365627865" y="1266.16764153118" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
     </CoreNodeModels.Watch>
     <Dynamo.Graph.Nodes.CustomNodes.Function guid="2625ca3e-cee3-418a-b0cc-5da1569a5885" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Collect Rooms and Spaces" x="-1047.98779119687" y="755.198578614147" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
@@ -584,10 +581,10 @@
       <PortInfo index="0" default="False" />
     </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
     <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="b0aed940-beab-43cc-b7d8-2848d237f2f7" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="1989.6150321544" y="955.003563281854" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;inlet_windows&quot;;" ShouldFocus="false" />
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="03c925a9-2c74-4e8b-b476-69a44d5342b7" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Inlet Boundary" x="1916.8846631686" y="1159.99263453418" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="03c925a9-2c74-4e8b-b476-69a44d5342b7" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Inlet Boundary" x="1916.8846631686" y="1159.38460765588" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="true">
       <PortInfo index="0" default="False" />
       <PortInfo index="1" default="True" />
-      <ID value="2da57c99-902f-4c0d-be84-36ae0c1afef0" />
+      <ID value="74a24d1f-a071-4d38-b10b-ba28b8be6c2f" />
       <Name value="Inlet Boundary" />
       <Description value="Create an inlet boundary with uniform velocity value.&#xD;&#xA;-" />
       <Inputs>
@@ -640,7 +637,7 @@
       <PortInfo index="0" default="False" />
     </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
     <Dynamo.Graph.Nodes.CodeBlockNodeModel guid="346ec0c6-25c2-4864-94c8-aca1739d367a" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" nickname="Code Block" x="2872.33567720646" y="402.998975593653" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false" CodeText="&quot;indoor_study&quot;;" ShouldFocus="false" />
-    <Dynamo.Graph.Nodes.CustomNodes.Function guid="7e49f133-3add-41a5-b1ef-a916ba53f445" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Meshing Parameters" x="2830.6548547634" y="1245.62789517042" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
+    <Dynamo.Graph.Nodes.CustomNodes.Function guid="7e49f133-3add-41a5-b1ef-a916ba53f445" type="Dynamo.Graph.Nodes.CustomNodes.Function" nickname="Meshing Parameters" x="2764.20460511707" y="1255.39999070665" isVisible="true" isUpstreamVisible="true" lacing="Shortest" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="True" />
       <PortInfo index="1" default="True" />
       <PortInfo index="2" default="True" />
@@ -667,6 +664,9 @@
       <PortInfo index="0" default="False" />
     </CoreNodeModels.Watch>
     <CoreNodeModels.Watch guid="b8b255e6-3e9e-45ea-8710-85411ceb8ee1" type="CoreNodeModels.Watch" nickname="Error messages if any! If you haven't run Revit as an admin you should get an error about it!" x="3514.52688317226" y="613.115054629097" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
+      <PortInfo index="0" default="False" />
+    </CoreNodeModels.Watch>
+    <CoreNodeModels.Watch guid="6d151778-8c10-4036-87a0-6780a1e449b7" type="CoreNodeModels.Watch" nickname="Watch" x="8017.12365627865" y="1266.16764153118" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />
     </CoreNodeModels.Watch>
   </Elements>
@@ -806,7 +806,7 @@
     <Dynamo.Graph.Annotations.AnnotationModel guid="42217f45-d923-4693-9349-d613706f60ab" annotationText="2. set to Ture to run blockMesh." left="4797.19736248791" top="848.466803629406" width="150.666666666667" height="164.333333333333" fontSize="24" InitialTop="945.133470296073" InitialHeight="97.6666666666667" TextblockHeight="86.6666666666667" backgrouund="#FFFF7BAC">
       <Models ModelGuid="af54aee3-b5d4-4143-ae17-607bfc2fc460" />
     </Dynamo.Graph.Annotations.AnnotationModel>
-    <Dynamo.Graph.Annotations.AnnotationModel guid="78526696-df56-4308-a5a3-0eb30619e1f6" annotationText="3. set to Ture to run snappyHexMesh" left="5857.71457980159" top="658.382412408141" width="150.666666666667" height="193" fontSize="24" InitialTop="783.715745741474" InitialHeight="97.6666666666667" TextblockHeight="115.333333333333" backgrouund="#FFFF7BAC">
+    <Dynamo.Graph.Annotations.AnnotationModel guid="78526696-df56-4308-a5a3-0eb30619e1f6" annotationText="3. set to Ture to run snappyHexMesh" left="5828.21424868792" top="670.00375496807" width="150.666666666667" height="193" fontSize="24" InitialTop="795.337088301403" InitialHeight="97.6666666666667" TextblockHeight="115.333333333333" backgrouund="#FFFF7BAC">
       <Models ModelGuid="5f235530-c14b-466d-aa1b-df424e7409de" />
     </Dynamo.Graph.Annotations.AnnotationModel>
     <Dynamo.Graph.Annotations.AnnotationModel guid="bd002a34-b240-4ccf-bc01-08dc2094503a" annotationText="4. load the mesh and check mesh quality." left="6227.84731293471" top="315.647446228473" width="150.666666666667" height="193" fontSize="24" InitialTop="440.980779561806" InitialHeight="97.6666666666667" TextblockHeight="115.333333333333" backgrouund="#FFFF7BAC">
@@ -821,7 +821,7 @@
     <Dynamo.Graph.Annotations.AnnotationModel guid="09787c33-b937-4351-9b3d-80c85560c3c0" annotationText="7. Set to True to visualize velocity vectors." left="8334.88162576376" top="319.499032907307" width="150.666666666667" height="193" fontSize="24" InitialTop="444.83236624064" InitialHeight="97.6666666666667" TextblockHeight="115.333333333333" backgrouund="#FFFF7BAC">
       <Models ModelGuid="b1096cf4-1538-41b6-9cb1-8c4375be2e21" />
     </Dynamo.Graph.Annotations.AnnotationModel>
-    <Dynamo.Graph.Annotations.AnnotationModel guid="a9ae7771-0b0f-4a0b-83e4-5df600ddbf7d" annotationText="Make sure these values are valid in your document units!" left="2371.06076841408" top="1251.70407242443" width="181.333333333333" height="245" fontSize="24" InitialTop="1377.03740575776" InitialHeight="167" TextblockHeight="115.333333333333" backgrouund="#FFFF7BAC">
+    <Dynamo.Graph.Annotations.AnnotationModel guid="a9ae7771-0b0f-4a0b-83e4-5df600ddbf7d" annotationText="Make sure these values are valid in your document units!" left="2304.61051876775" top="1261.47616796066" width="181.333333333333" height="245" fontSize="24" InitialTop="1386.80950129399" InitialHeight="167" TextblockHeight="115.333333333333" backgrouund="#FFFF7BAC">
       <Models ModelGuid="e8ad0274-35df-41ee-a1e3-21a23d1fa1e2" />
     </Dynamo.Graph.Annotations.AnnotationModel>
     <Dynamo.Graph.Annotations.AnnotationModel guid="697a4bf5-3986-4d7f-a1d1-322e02069c05" annotationText="roof, floor and walls with no window!" left="573.364784066494" top="40.7466137343321" width="686.860870940389" height="129.016820353773" fontSize="14" InitialTop="70.7466137343321" InitialHeight="130.345006563224" TextblockHeight="20" backgrouund="#FFC1D676">
@@ -844,6 +844,6 @@
   </Annotations>
   <Presets />
   <Cameras>
-    <Camera Name="Background Preview" eyeX="-6305.01382607736" eyeY="6683.83466540197" eyeZ="5026.98610370176" lookX="3023.04111575475" lookY="-5580.07968356536" lookZ="-2985.70180988197" upX="0.460498234323103" upY="0.76229191015605" upZ="-0.454810358672605" />
+    <Camera Name="Background Preview" eyeX="-9461.859375" eyeY="10190.0556640625" eyeZ="5329.23486328125" lookX="6155.9423828125" lookY="-7597.240234375" lookZ="-6911.85888671875" upX="0.301945418119431" upY="0.891006529331207" upZ="-0.339022666215897" />
   </Cameras>
 </Workspace>
