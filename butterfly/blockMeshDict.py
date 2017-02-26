@@ -249,6 +249,21 @@ class BlockMeshDict(FoamFile):
         return self.values['boundary']
 
     @property
+    def is2dInXDirection(self):
+        """Return True if the case is 2d in X direction."""
+        return self.__is2dInXDir
+
+    @property
+    def is2dInYDirection(self):
+        """Return True if the case is 2d in Y direction."""
+        return self.__is2dInYDir
+
+    @property
+    def is2dInZDirection(self):
+        """Return True if the case is 2d in Z direction."""
+        return self.__is2dInZDir
+
+    @property
     def vertices(self):
         """Get the sorted list of vertices."""
         return self.__vertices
@@ -424,7 +439,21 @@ class BlockMeshDict(FoamFile):
         self.expandY((self.length / float(y)) * count)
         self.expandZ((self.height / float(z)) * count)
         if renumberDivision:
-            self.nDivXYZ = (x + 2, y + 2, z + 2)
+            self.nDivXYZ = (x + 2 * count, y + 2 * count, z + 2 * count)
+
+    def expandByCellsCount(self, xCount, yCount, zCount, renumberDivision=True):
+        """Expand blockMeshDict boundingbox for n cells from all sides.
+
+        This method will increase the number of divisions by 2 to keep the size
+        of the cells unchanged unless renumberDivision is set to False. Use a
+        negative count to shrink the bounding box.
+        """
+        x, y, z = self.nDivXYZ
+        self.expandX((self.width / float(x)) * xCount)
+        self.expandY((self.length / float(y)) * yCount)
+        self.expandZ((self.height / float(z)) * zCount)
+        if renumberDivision:
+            self.nDivXYZ = (x + 2 * xCount, y + 2 * yCount, z + 2 * zCount)
 
     def expandUniform(self, dist):
         """Expand blockMeshDict boundingbox for dist in all directions."""

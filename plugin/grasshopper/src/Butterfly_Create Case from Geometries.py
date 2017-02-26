@@ -33,7 +33,7 @@ Create an OpenFOAM Case from geometries.
 
 ghenv.Component.Name = "Butterfly_Create Case from Geometries"
 ghenv.Component.NickName = "caseFromGeos"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_14_2017'
+ghenv.Component.Message = 'VER 0.0.03\nFEB_25_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "00::Create"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -43,10 +43,9 @@ try:
     from butterfly_grasshopper.geometry import xyzToPoint
 except ImportError as e:
     msg = '\nFailed to import butterfly. Did you install butterfly on your machine?' + \
-            '\nYou can download the installer file from github: ' + \
-            'https://github.com/mostaphaRoudsari/Butterfly/tree/master/plugin/grasshopper/samplefiles' + \
+            '\nYou can download the installer file from food4Rhino!' + \
             '\nOpen an issue on github if you think this is a bug:' + \
-            ' https://github.com/mostaphaRoudsari/Butterfly/issues'
+            ' https://github.com/ladybug-analysis-tools/butterfly/issues'
         
     raise ImportError('{}\n{}'.format(msg, e))
 
@@ -60,7 +59,15 @@ if _run and _name and _BFGeometries:
         case.addRefinementRegion(reg)
     
     if expandBlockMesh_:
-        case.blockMeshDict.expandUniformByCellsCount(1)
+        xCount, yCount, zCount = 1, 1, 1
+        if case.blockMeshDict.is2dInXDirection:
+            xCount = 0
+        if case.blockMeshDict.is2dInYDirection:
+            yCount = 0
+        if case.blockMeshDict.is2dInZDirection:
+            zCount = 0
+        
+        case.blockMeshDict.expandByCellsCount(xCount, yCount, zCount)
     
     blockPts = (xyzToPoint(v) for v in case.blockMeshDict.vertices)
     
