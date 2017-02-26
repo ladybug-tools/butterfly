@@ -1072,6 +1072,10 @@ def angleAnitclockwise(v1, v2):
 
 def crossProduct(v1, v2, norm=True):
     """Calculate cross product of two 3d vector."""
+    # handle 2D vectors
+    v1 = (v1[0], v1[1], 0) if len(v1) == 2 else v1
+    v2 = (v2[0], v2[1], 0) if len(v2) == 2 else v2
+
     v = (v1[1] * v2[2] - v1[2] * v2[1], -v1[0] * v2[2] + v1[2] * v2[0],
          v1[0] * v2[1] - v1[1] * v2[0])
 
@@ -1084,6 +1088,8 @@ def crossProduct(v1, v2, norm=True):
 def normalize(v):
     """Normalize a vector."""
     l = length(v)
+    if l == 0:
+        raise ValueError('A vector with length of 0 cannot be normalized.')
     return tuple(c / l for c in v)
 
 
@@ -1118,9 +1124,11 @@ def rotate(origin, point, angle):
     qy = oy + sine * (px - ox) + cosine * (py - oy)
     return qx, qy, pz
 
+
 def subtract(v1, v2):
     """subtract v2 from v1."""
-    return tuple(a-b for a, b in zip(v1, v2))
+    return tuple(a - b for a, b in zip(v1, v2))
+
 
 def project(p, o, n):
     """Project a point3d on a plane.
@@ -1194,6 +1202,10 @@ def project(p, o, n):
   <div id="source-butterfly.vectormath.crossProduct" class="source">
     <pre><code>def crossProduct(v1, v2, norm=True):
     """Calculate cross product of two 3d vector."""
+    # handle 2D vectors
+    v1 = (v1[0], v1[1], 0) if len(v1) == 2 else v1
+    v2 = (v2[0], v2[1], 0) if len(v2) == 2 else v2
+
     v = (v1[1] * v2[2] - v1[2] * v2[1], -v1[0] * v2[2] + v1[2] * v2[0],
          v1[0] * v2[1] - v1[1] * v2[0])
 

@@ -1076,7 +1076,8 @@ class CppDictParser(object):
         for pp in itp:
             if not isinstance(pp, list):
                 if pp.find(';') == -1:
-                    # if not a list and doesn't include ';' it's a key and next item is the value
+                    # if not a list and doesn't include ';' it's a key and
+                    # next item is the value
                     d[pp.strip()] = self._convertToDict(next(itp))
                 else:
                     s = pp.split(';')
@@ -1271,7 +1272,8 @@ class ResidualParser(object):
         for pp in itp:
             if not isinstance(pp, list):
                 if pp.find(';') == -1:
-                    # if not a list and doesn't include ';' it's a key and next item is the value
+                    # if not a list and doesn't include ';' it's a key and
+                    # next item is the value
                     d[pp.strip()] = self._convertToDict(next(itp))
                 else:
                     s = pp.split(';')

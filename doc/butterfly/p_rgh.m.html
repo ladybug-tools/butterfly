@@ -1280,28 +1280,24 @@ def convertBoolValue(v=True):
     """Return body string."""
     # remove None values
     def removeNone(d):
-        if isinstance(d, (dict, OrderedDict)):
-            return OrderedDict((k, removeNone(v))
-                               for k, v in d.iteritems()
-                               if v and removeNone(v))
+        if isinstance(d, (dict, collections.OrderedDict)):
+            return collections.OrderedDict(
+                (k, removeNone(v)) for k, v in d.iteritems()
+                if v == {} or (v and removeNone(v)))
         elif isinstance(d, (list, tuple)):
             return [removeNone(v) for v in d if v and removeNone(v)]
         else:
             return d
         return removeNone
     _values = removeNone(self.values)
-    # add an empty dict for refinementRegions
-    if 'castellatedMeshControls' in _values:
-        if 'refinementRegions' not in _values['castellatedMeshControls']:
-            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
         .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
     # remove first and last {} and prettify[!] the file
-    l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-         for line in of.split("\n")[1:-1])
-    return "\n\n".join(l)
+    content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+               for line in of.split("\n")[1:-1])
+    return "\n\n".join(content)
 </code></pre>
   </div>
 </div>
@@ -1410,7 +1406,7 @@ Returns:
     if name in self.values['boundaryField']:
         return self.values['boundaryField'][name]
     else:
-        print 'Failed to find boundaryField values for {}'.format(name)
+        print('Failed to find boundaryField values for {}'.format(name))
 </code></pre>
   </div>
 </div>
@@ -1516,6 +1512,7 @@ Returns:
         return
     with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
+    return fp
 </code></pre>
   </div>
 </div>
@@ -1633,22 +1630,24 @@ already exists it will be updated.</p>
             if key not in original:
                 # there is a new key so dictionary has changed.
                 if not mute:
-                    print '{} :: New values are added for {}.' \
+                    msg = '{} :: New values are added for {}.' \
                         .format('.'.join(self.__parents), key)
+                    print(msg)
                 self.__hasChanged = True
                 return
-            if isinstance(value, (dict, OrderedDict)):
+            if isinstance(value, (dict, collections.OrderedDict)):
                 self.__parents.append(key)
                 logChanges(original[key], value)
             elif str(original[key]) != str(value):
                     # there is a change in value
                     if not mute:
-                        print '{}.{} is changed from "{}" to "{}".'\
+                        msg = '{}.{} is changed from "{}" to "{}".'\
                             .format('.'.join(self.__parents), key,
                                     original[key] if len(str(original[key])) < 100
                                     else '%s...' % str(original[key])[:100],
                                     value if len(str(value)) < 100
                                     else '%s...' % str(value)[:100])
+                        print(msg)
                     self.__hasChanged = True
                     return
     def modifyDict(original, new):

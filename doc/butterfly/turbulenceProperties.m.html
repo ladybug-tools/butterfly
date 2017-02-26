@@ -1105,7 +1105,7 @@ class TurbulenceProperties(FoamFile):
         # check RASModel input
         assert RASModel in cls.__RASModels, \
             '{} is not a valid input for RASModel.' \
-            ' Try one of the models below:'.format(cls.__RASModels)
+            ' Try one of the models below:\n{}'.format(RASModel, cls.__RASModels)
 
         values = {'simulationType': 'RAS', 'RAS': {
             'RASModel': RASModel,
@@ -1144,7 +1144,7 @@ class TurbulenceProperties(FoamFile):
         """
         assert LESModel in cls.__LESModels, \
             '{} is not a valid input for LESModels.' \
-            ' Try one of the models below:'.format(cls.__LESModels)
+            ' Try one of the models below:\n{}'.format(LESModel, cls.__LESModels)
 
         values = {'simulationType': 'LES', 'LES': {
             'LESModel': LESModel,
@@ -1246,7 +1246,7 @@ class TurbulenceProperties(FoamFile):
         # check RASModel input
         assert RASModel in cls.__RASModels, \
             '{} is not a valid input for RASModel.' \
-            ' Try one of the models below:'.format(cls.__RASModels)
+            ' Try one of the models below:\n{}'.format(RASModel, cls.__RASModels)
 
         values = {'simulationType': 'RAS', 'RAS': {
             'RASModel': RASModel,
@@ -1285,7 +1285,7 @@ class TurbulenceProperties(FoamFile):
         """
         assert LESModel in cls.__LESModels, \
             '{} is not a valid input for LESModels.' \
-            ' Try one of the models below:'.format(cls.__LESModels)
+            ' Try one of the models below:\n{}'.format(LESModel, cls.__LESModels)
 
         values = {'simulationType': 'LES', 'LES': {
             'LESModel': LESModel,
@@ -1507,7 +1507,7 @@ def LES(cls, LESModel='kEqn', delta='cubeRootVol', turbulence=True,
     """
     assert LESModel in cls.__LESModels, \
         '{} is not a valid input for LESModels.' \
-        ' Try one of the models below:'.format(cls.__LESModels)
+        ' Try one of the models below:\n{}'.format(LESModel, cls.__LESModels)
     values = {'simulationType': 'LES', 'LES': {
         'LESModel': LESModel,
         'delta': delta,
@@ -1584,7 +1584,7 @@ def RAS(cls, RASModel='RNGkEpsilon', turbulence=True, printCoeffs=True,
     # check RASModel input
     assert RASModel in cls.__RASModels, \
         '{} is not a valid input for RASModel.' \
-        ' Try one of the models below:'.format(cls.__RASModels)
+        ' Try one of the models below:\n{}'.format(RASModel, cls.__RASModels)
     values = {'simulationType': 'RAS', 'RAS': {
         'RASModel': RASModel,
         'turbulence': FoamFile.convertBoolValue(turbulence),
@@ -1638,28 +1638,24 @@ def RAS(cls, RASModel='RNGkEpsilon', turbulence=True, printCoeffs=True,
     """Return body string."""
     # remove None values
     def removeNone(d):
-        if isinstance(d, (dict, OrderedDict)):
-            return OrderedDict((k, removeNone(v))
-                               for k, v in d.iteritems()
-                               if v and removeNone(v))
+        if isinstance(d, (dict, collections.OrderedDict)):
+            return collections.OrderedDict(
+                (k, removeNone(v)) for k, v in d.iteritems()
+                if v == {} or (v and removeNone(v)))
         elif isinstance(d, (list, tuple)):
             return [removeNone(v) for v in d if v and removeNone(v)]
         else:
             return d
         return removeNone
     _values = removeNone(self.values)
-    # add an empty dict for refinementRegions
-    if 'castellatedMeshControls' in _values:
-        if 'refinementRegions' not in _values['castellatedMeshControls']:
-            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
         .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
     # remove first and last {} and prettify[!] the file
-    l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-         for line in of.split("\n")[1:-1])
-    return "\n\n".join(l)
+    content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+               for line in of.split("\n")[1:-1])
+    return "\n\n".join(content)
 </code></pre>
   </div>
 </div>
@@ -1838,6 +1834,7 @@ def laminar(cls):
         return
     with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
+    return fp
 </code></pre>
   </div>
 </div>
@@ -1927,22 +1924,24 @@ already exists it will be updated.</p>
             if key not in original:
                 # there is a new key so dictionary has changed.
                 if not mute:
-                    print '{} :: New values are added for {}.' \
+                    msg = '{} :: New values are added for {}.' \
                         .format('.'.join(self.__parents), key)
+                    print(msg)
                 self.__hasChanged = True
                 return
-            if isinstance(value, (dict, OrderedDict)):
+            if isinstance(value, (dict, collections.OrderedDict)):
                 self.__parents.append(key)
                 logChanges(original[key], value)
             elif str(original[key]) != str(value):
                     # there is a change in value
                     if not mute:
-                        print '{}.{} is changed from "{}" to "{}".'\
+                        msg = '{}.{} is changed from "{}" to "{}".'\
                             .format('.'.join(self.__parents), key,
                                     original[key] if len(str(original[key])) < 100
                                     else '%s...' % str(original[key])[:100],
                                     value if len(str(value)) < 100
                                     else '%s...' % str(value)[:100])
+                        print(msg)
                     self.__hasChanged = True
                     return
     def modifyDict(original, new):

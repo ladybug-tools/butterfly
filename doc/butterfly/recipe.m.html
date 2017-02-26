@@ -1077,7 +1077,8 @@ class _Recipe(object):
     __globalConvergence = 10 ** -4
 
     def __init__(self, commands, turbulenceProperties, fvSolution=None,
-                 fvSchemes=None, quantities=None, residualControl=None, relaxationFactors=None):
+                 fvSchemes=None, quantities=None, residualControl=None,
+                 relaxationFactors=None):
         """Initiate recipe."""
         self.commands = commands
         self.turbulenceProperties = turbulenceProperties
@@ -1178,10 +1179,14 @@ class _Recipe(object):
 
         # check the input to be dictionary and have values for all the input
         # otherwise use default value
-        assert isinstance(res, (ResidualControl, dict)), \
-            'residualControl should be a dictionary not a {}.'.format(type(res))
-        self.__residualControl = ResidualControl(res)
-
+        if isinstance(res, dict):
+            self.__residualControl = ResidualControl(res)
+        elif isinstance(res, ResidualControl):
+            self.__residualControl = res
+        else:
+            raise TypeError(
+                'residualControl should be a dictionary not a {}.'.format(type(res))
+            )
         # update fvSolution
         self.fvSolution.residualControl = self.residualControl
 
@@ -1197,10 +1202,16 @@ class _Recipe(object):
 
         # check the input to be dictionary and have values for all the input
         # otherwise use default value
-        assert isinstance(relaxFact, (RelaxationFactors, dict)), \
-            'relaxationFactors should be a dictionary not a {}.'.format(type(relaxFact))
+        if isinstance(relaxFact, dict):
+            self.__relaxationFactors = RelaxationFactors(relaxFact)
+        elif isinstance(relaxFact, RelaxationFactors):
+            self.__relaxationFactors = relaxFact
+        else:
+            raise TypeError(
+                'relaxationFactors should be a dictionary not a {}.'
+                .format(type(relaxFact))
+            )
 
-        self.__relaxationFactors = RelaxationFactors(relaxFact)
         # update fvSolution
         self.fvSolution.relaxationFactors = self.relaxationFactors
 

@@ -989,6 +989,27 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
+        <span class="class_name"><a href="#butterfly.functions.Function">Function</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#butterfly.functions.Function.convertBoolValue">convertBoolValue</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.body">body</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.fromCppDictionary">fromCppDictionary</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.fromFile">fromFile</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.getValueByParameter">getValueByParameter</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.header">header</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.save">save</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.setValueByParameter">setValueByParameter</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.toOpenFOAM">toOpenFOAM</a></li>
+    <li class="mono"><a href="#butterfly.functions.Function.updateValues">updateValues</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
         <span class="class_name"><a href="#butterfly.functions.Probes">Probes</a></span>
         
           
@@ -998,6 +1019,7 @@ table {
     <li class="mono"><a href="#butterfly.functions.Probes.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.body">body</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly.functions.Probes.fromCppDictionary">fromCppDictionary</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.fromFile">fromFile</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.getValueByParameter">getValueByParameter</a></li>
     <li class="mono"><a href="#butterfly.functions.Probes.header">header</a></li>
@@ -1029,20 +1051,51 @@ table {
   <div id="source-butterfly.functions" class="source">
     <pre><code># coding=utf-8
 """A cllection of OpenFOAM functions such as Probes."""
-from foamfile import Condition, foamFileFromFile
+from .foamfile import FoamFile, foamFileFromFile
+from .parser import CppDictParser
 from collections import OrderedDict
 
 
-class Probes(Condition):
+class Function(FoamFile):
+    """OpenFOAM function object.
+
+    Use this class to create conditions function objects.
+    Functions don't have OpenFOAM header and OpenFOAM FoamFile. It's only values.
+    """
+
+    @classmethod
+    def fromCppDictionary(cls, dictionary):
+        """Create a foamfile from an OpenFOAM dictionary in text format."""
+        # convert values to python dictionary
+        values = CppDictParser(text=dictionary).values
+
+        if 'FoamFile' in values:
+            del(values['FoamFile'])
+
+        assert len(values.keys()) == 1, \
+            """You can define one function object at a time."""
+
+        return cls(values.keys()[0], 'dictionary', values=values)
+
+    def header(self):
+        """Return conditions header."""
+        return ''
+
+    def __repr__(self):
+        """Object representation."""
+        return 'Function Object: {}'.format(self.name)
+
+
+class Probes(Function):
     """Probes function."""
 
     # set default valus for this class
     __defaultValues = {'functions': {'probes': OrderedDict()}}
     __defaultValues['functions']['probes']['functionObjectLibs'] = '("libsampling.so")'
     __defaultValues['functions']['probes']['type'] = 'probes'
-    __defaultValues['functions']['probes']['name'] = 'probes'  # name of the directory for probe data
+    __defaultValues['functions']['probes']['name'] = 'probes'
     __defaultValues['functions']['probes']['fields'] = '(p U)'  # Fields to be probed
-    __defaultValues['functions']['probes']['probeLocations'] = None  # locations as (x y z)
+    __defaultValues['functions']['probes']['probeLocations'] = None
     __defaultValues['functions']['probes']['writeControl'] = 'timeStep'
     __defaultValues['functions']['probes']['writeInterval'] = '1'
 
@@ -1126,6 +1179,10 @@ class Probes(Condition):
             return
         else:
             super(Probes, self).save(projectFolder, subFolder)
+
+    def __repr__(self):
+        """Class representation."""
+        return self.toOpenFOAM()
 </code></pre>
   </div>
 
@@ -1137,6 +1194,593 @@ class Probes(Condition):
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
+      <p id="butterfly.functions.Function" class="name">class <span class="ident">Function</span></p>
+      
+  
+    <div class="desc"><p>OpenFOAM function object.</p>
+<p>Use this class to create conditions function objects.
+Functions don't have OpenFOAM header and OpenFOAM FoamFile. It's only values.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function" class="source">
+    <pre><code>class Function(FoamFile):
+    """OpenFOAM function object.
+
+    Use this class to create conditions function objects.
+    Functions don't have OpenFOAM header and OpenFOAM FoamFile. It's only values.
+    """
+
+    @classmethod
+    def fromCppDictionary(cls, dictionary):
+        """Create a foamfile from an OpenFOAM dictionary in text format."""
+        # convert values to python dictionary
+        values = CppDictParser(text=dictionary).values
+
+        if 'FoamFile' in values:
+            del(values['FoamFile'])
+
+        assert len(values.keys()) == 1, \
+            """You can define one function object at a time."""
+
+        return cls(values.keys()[0], 'dictionary', values=values)
+
+    def header(self):
+        """Return conditions header."""
+        return ''
+
+    def __repr__(self):
+        """Object representation."""
+        return 'Function Object: {}'.format(self.name)
+</code></pre>
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#butterfly.functions.Function">Function</a></li>
+          <li>butterfly.foamfile.FoamFile</li>
+          <li>__builtin__.object</li>
+          </ul>
+          <h3>Static methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.convertBoolValue">
+    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.convertBoolValue', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.convertBoolValue" class="source">
+    <pre><code>@staticmethod
+def convertBoolValue(v=True):
+    """Convert Boolean values to on/off string."""
+    _v = ('off', 'on')
+    if v in _v:
+        return v
+    if v:
+        return 'on'
+    else:
+        return 'off'
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+          <h3>Instance variables</h3>
+            <div class="item">
+            <p id="butterfly.functions.Function.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'constant' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Function.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return True for FoamFile.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Function.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is 'system' folder.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Function.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Check if the file location is folder 0.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Function.parameters" class="name">var <span class="ident">parameters</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Get list of parameters.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.functions.Function.values" class="name">var <span class="ident">values</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return values as a dictionary.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, cls, location=None, fileFormat=&#39;ascii&#39;, defaultValues=None, values=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Init foam file.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.__init__" class="source">
+    <pre><code>def __init__(self, name, cls, location=None, fileFormat="ascii",
+             defaultValues=None, values=None):
+    """Init foam file."""
+    self.__dict__['is{}'.format(self.__class__.__name__)] = True
+    self.__version = str(Version().OFVer)
+    self.format = str(fileFormat)  # ascii / binary
+    self.cls = str(cls)  # dictionary or field
+    self.name = str(name)
+    self.location = location  # location is optional
+    if self.location:
+        if self.location.replace('"', '') in self.__locations:
+            self.location = '"' + self.location.replace('"', '') + '"'
+        else:
+                raise ValueError(
+                    '{} is not a valid OpenFOAM location: {}'.format(
+                        self.location, self.__locations
+                    )
+                )
+    # Initiate values
+    if not values:
+        values = {}
+    if not defaultValues:
+        defaultValues = {}
+    self.__values = deepcopy(defaultValues)
+    self.updateValues(values, mute=True)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.ToString">
+    <p>def <span class="ident">ToString</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.ToString" class="source">
+    <pre><code>def ToString(self):
+    """Overwrite .NET ToString method."""
+    return self.__repr__()
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.body">
+    <p>def <span class="ident">body</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return body string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.body', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.body" class="source">
+    <pre><code>def body(self):
+    """Return body string."""
+    # remove None values
+    def removeNone(d):
+        if isinstance(d, (dict, collections.OrderedDict)):
+            return collections.OrderedDict(
+                (k, removeNone(v)) for k, v in d.iteritems()
+                if v == {} or (v and removeNone(v)))
+        elif isinstance(d, (list, tuple)):
+            return [removeNone(v) for v in d if v and removeNone(v)]
+        else:
+            return d
+        return removeNone
+    _values = removeNone(self.values)
+    # make python dictionary look like c++ dictionary!!
+    of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
+        .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
+        .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
+    # remove first and last {} and prettify[!] the file
+    content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+               for line in of.split("\n")[1:-1])
+    return "\n\n".join(content)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.duplicate">
+    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return a copy of this object.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.duplicate" class="source">
+    <pre><code>def duplicate(self):
+    """Return a copy of this object."""
+    return deepcopy(self)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.fromCppDictionary">
+    <p>def <span class="ident">fromCppDictionary</span>(</p><p>cls, dictionary)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a foamfile from an OpenFOAM dictionary in text format.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.fromCppDictionary', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.fromCppDictionary" class="source">
+    <pre><code>@classmethod
+def fromCppDictionary(cls, dictionary):
+    """Create a foamfile from an OpenFOAM dictionary in text format."""
+    # convert values to python dictionary
+    values = CppDictParser(text=dictionary).values
+    if 'FoamFile' in values:
+        del(values['FoamFile'])
+    assert len(values.keys()) == 1, \
+        """You can define one function object at a time."""
+    return cls(values.keys()[0], 'dictionary', values=values)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.fromFile">
+    <p>def <span class="ident">fromFile</span>(</p><p>cls, filepath, location=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Create a FoamFile from a file.</p>
+<p>Args:
+    filepath: Full file path to dictionary.
+    location: Optional folder name for location (0, constant or system)</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.fromFile', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.fromFile" class="source">
+    <pre><code>@classmethod
+def fromFile(cls, filepath, location=None):
+    """Create a FoamFile from a file.
+    Args:
+        filepath: Full file path to dictionary.
+        location: Optional folder name for location (0, constant or system)
+    """
+    def _tryGetFoamFileValue(key):
+        """Get values for FoamFile header."""
+        try:
+            return _values['FoamFile'][key]
+        except KeyError:
+            msg = 'failed to find ""{}"" in {} header.\nDefault value: {}' \
+                .format(key, filepath, default[key])
+            print(msg)
+            return default[key]
+    assert not filepath.endswith('blockMeshDict'), \
+        'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
+    _values = CppDictParser.fromFile(filepath).values
+    p, _name = os.path.split(filepath)
+    default = {
+        'object': _name,
+        'class': 'dictionary',
+        'location': None,
+        'format': 'ascii'
+    }
+    # set up FoamFile dictionary
+    _name = _tryGetFoamFileValue('object')
+    _cls = _tryGetFoamFileValue('class')
+    _location = _tryGetFoamFileValue('location')
+    _fileFormat = _tryGetFoamFileValue('format')
+    if 'FoamFile' in _values:
+        del(_values['FoamFile'])
+    return cls(_name, _cls, _location, _fileFormat, values=_values)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.getValueByParameter">
+    <p>def <span class="ident">getValueByParameter</span>(</p><p>self, parameter)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Get values for a given parameter by parameter name.</p>
+<p>Args:
+    parameter: Name of a parameter as a string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.getValueByParameter', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.getValueByParameter" class="source">
+    <pre><code>def getValueByParameter(self, parameter):
+    """Get values for a given parameter by parameter name.
+    Args:
+        parameter: Name of a parameter as a string.
+    """
+    try:
+        return self.values[parameter]
+    except KeyError:
+        raise KeyError('{} is not available in {}.'.format(
+            parameter, self.__class__.__name__
+        ))
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.header">
+    <p>def <span class="ident">header</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return conditions header.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.header', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.header" class="source">
+    <pre><code>def header(self):
+    """Return conditions header."""
+    return ''
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.save">
+    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None, overwrite=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Save to file.</p>
+<p>Args:
+    projectFolder: Path to project folder as a string.
+    subFolder: Optional input for subFolder (default: self.location).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.save', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.save" class="source">
+    <pre><code>def save(self, projectFolder, subFolder=None, overwrite=True):
+    """Save to file.
+    Args:
+        projectFolder: Path to project folder as a string.
+        subFolder: Optional input for subFolder (default: self.location).
+    """
+    subFolder = subFolder or self.location.replace('"', '')
+    fp = os.path.join(projectFolder, subFolder, self.name)
+    if not overwrite and os.path.isfile(fp):
+        return
+    with open(fp, "wb") as outf:
+        outf.write(self.toOpenFOAM())
+    return fp
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.setValueByParameter">
+    <p>def <span class="ident">setValueByParameter</span>(</p><p>self, parameter, value)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Set value for a parameter.</p>
+<p>Args:
+    parameter: Name of a parameter as a string.
+    value: Parameter value as a string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.setValueByParameter', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.setValueByParameter" class="source">
+    <pre><code>def setValueByParameter(self, parameter, value):
+    """Set value for a parameter.
+    Args:
+        parameter: Name of a parameter as a string.
+        value: Parameter value as a string.
+    """
+    self.values[parameter] = value
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.toOpenFOAM">
+    <p>def <span class="ident">toOpenFOAM</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return OpenFOAM string.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.toOpenFOAM', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.toOpenFOAM" class="source">
+    <pre><code>def toOpenFOAM(self):
+    """Return OpenFOAM string."""
+    return "\n".join((self.header(), self.body()))
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.functions.Function.updateValues">
+    <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Update current values from dictionary v.</p>
+<p>if key is not available in current values it will be added, if the key
+already exists it will be updated.</p>
+<p>Returns:
+    True is the dictionary is updated.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Function.updateValues', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Function.updateValues" class="source">
+    <pre><code>def updateValues(self, v, replace=False, mute=False):
+    """Update current values from dictionary v.
+    if key is not available in current values it will be added, if the key
+    already exists it will be updated.
+    Returns:
+        True is the dictionary is updated.
+    """
+    def logChanges(original, new):
+        """compare this dictionary with the current values."""
+        if original is None:
+            original = {}
+        for key, value in new.items():
+            if key not in original:
+                # there is a new key so dictionary has changed.
+                if not mute:
+                    msg = '{} :: New values are added for {}.' \
+                        .format('.'.join(self.__parents), key)
+                    print(msg)
+                self.__hasChanged = True
+                return
+            if isinstance(value, (dict, collections.OrderedDict)):
+                self.__parents.append(key)
+                logChanges(original[key], value)
+            elif str(original[key]) != str(value):
+                    # there is a change in value
+                    if not mute:
+                        msg = '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                        print(msg)
+                    self.__hasChanged = True
+                    return
+    def modifyDict(original, new):
+        """Modify a dictionary based on a new dictionary."""
+        for key, value in new.items():
+            if key in original and isinstance(value, dict):
+                if isinstance(original[key], dict):
+                    modifyDict(original[key], value)
+                else:
+                    # the value was not a dict, replce them with the new one
+                    original[key] = value
+            else:
+                original[key] = value
+        return original
+    assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
+    self.__parents = [self.__class__.__name__]
+    self.__hasChanged = False
+    logChanges(self.__values, v)
+    if self.__hasChanged:
+        if replace:
+            self.__values.update(v)
+        else:
+            self.__values = modifyDict(self.__values, v)
+        return True
+    else:
+        return False
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
       <p id="butterfly.functions.Probes" class="name">class <span class="ident">Probes</span></p>
       
   
@@ -1144,16 +1788,16 @@ class Probes(Condition):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes" class="source">
-    <pre><code>class Probes(Condition):
+    <pre><code>class Probes(Function):
     """Probes function."""
 
     # set default valus for this class
     __defaultValues = {'functions': {'probes': OrderedDict()}}
     __defaultValues['functions']['probes']['functionObjectLibs'] = '("libsampling.so")'
     __defaultValues['functions']['probes']['type'] = 'probes'
-    __defaultValues['functions']['probes']['name'] = 'probes'  # name of the directory for probe data
+    __defaultValues['functions']['probes']['name'] = 'probes'
     __defaultValues['functions']['probes']['fields'] = '(p U)'  # Fields to be probed
-    __defaultValues['functions']['probes']['probeLocations'] = None  # locations as (x y z)
+    __defaultValues['functions']['probes']['probeLocations'] = None
     __defaultValues['functions']['probes']['writeControl'] = 'timeStep'
     __defaultValues['functions']['probes']['writeInterval'] = '1'
 
@@ -1237,6 +1881,10 @@ class Probes(Condition):
             return
         else:
             super(Probes, self).save(projectFolder, subFolder)
+
+    def __repr__(self):
+        """Class representation."""
+        return self.toOpenFOAM()
 </code></pre>
   </div>
 </div>
@@ -1246,7 +1894,7 @@ class Probes(Condition):
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
           <li><a href="#butterfly.functions.Probes">Probes</a></li>
-          <li>butterfly.foamfile.Condition</li>
+          <li><a href="#butterfly.functions.Function">Function</a></li>
           <li>butterfly.foamfile.FoamFile</li>
           <li>__builtin__.object</li>
           </ul>
@@ -1257,10 +1905,14 @@ class Probes(Condition):
     <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.convertBoolValue">convertBoolValue</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
+    <div class="desc inherited"><p>Convert Boolean values to on/off string.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.convertBoolValue', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.convertBoolValue" class="source">
@@ -1306,10 +1958,14 @@ def convertBoolValue(v=True):
             <div class="item">
             <p id="butterfly.functions.Probes.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
             
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.isConstantFile">isConstantFile</a></code>
+    </p>
 
             
   
-    <div class="desc"><p>Check if the file location is 'constant' folder.</p></div>
+    <div class="desc inherited"><p>Check if the file location is 'constant' folder.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1317,10 +1973,14 @@ def convertBoolValue(v=True):
             <div class="item">
             <p id="butterfly.functions.Probes.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
             
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.isFoamFile">isFoamFile</a></code>
+    </p>
 
             
   
-    <div class="desc"><p>Return True for FoamFile.</p></div>
+    <div class="desc inherited"><p>Return True for FoamFile.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1328,10 +1988,14 @@ def convertBoolValue(v=True):
             <div class="item">
             <p id="butterfly.functions.Probes.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
             
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.isSystemFile">isSystemFile</a></code>
+    </p>
 
             
   
-    <div class="desc"><p>Check if the file location is 'system' folder.</p></div>
+    <div class="desc inherited"><p>Check if the file location is 'system' folder.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1339,10 +2003,14 @@ def convertBoolValue(v=True):
             <div class="item">
             <p id="butterfly.functions.Probes.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
             
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.isZeroFile">isZeroFile</a></code>
+    </p>
 
             
   
-    <div class="desc"><p>Check if the file location is folder 0.</p></div>
+    <div class="desc inherited"><p>Check if the file location is folder 0.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1350,10 +2018,14 @@ def convertBoolValue(v=True):
             <div class="item">
             <p id="butterfly.functions.Probes.parameters" class="name">var <span class="ident">parameters</span></p>
             
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.parameters">parameters</a></code>
+    </p>
 
             
   
-    <div class="desc"><p>Get list of parameters.</p></div>
+    <div class="desc inherited"><p>Get list of parameters.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1383,10 +2055,14 @@ def convertBoolValue(v=True):
             <div class="item">
             <p id="butterfly.functions.Probes.values" class="name">var <span class="ident">values</span></p>
             
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.values">values</a></code>
+    </p>
 
             
   
-    <div class="desc"><p>Return values as a dictionary.</p></div>
+    <div class="desc inherited"><p>Return values as a dictionary.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1409,6 +2085,10 @@ def convertBoolValue(v=True):
     <p>def <span class="ident">__init__</span>(</p><p>self, values=None)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.__init__">__init__</a></code>
+    </p>
 
     
   
@@ -1434,10 +2114,14 @@ def convertBoolValue(v=True):
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.ToString">ToString</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
+    <div class="desc inherited"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.ToString', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.ToString" class="source">
@@ -1456,10 +2140,14 @@ def convertBoolValue(v=True):
     <p>def <span class="ident">body</span>(</p><p>self)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.body">body</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Return body string.</p></div>
+    <div class="desc inherited"><p>Return body string.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.body', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.body" class="source">
@@ -1467,28 +2155,24 @@ def convertBoolValue(v=True):
     """Return body string."""
     # remove None values
     def removeNone(d):
-        if isinstance(d, (dict, OrderedDict)):
-            return OrderedDict((k, removeNone(v))
-                               for k, v in d.iteritems()
-                               if v and removeNone(v))
+        if isinstance(d, (dict, collections.OrderedDict)):
+            return collections.OrderedDict(
+                (k, removeNone(v)) for k, v in d.iteritems()
+                if v == {} or (v and removeNone(v)))
         elif isinstance(d, (list, tuple)):
             return [removeNone(v) for v in d if v and removeNone(v)]
         else:
             return d
         return removeNone
     _values = removeNone(self.values)
-    # add an empty dict for refinementRegions
-    if 'castellatedMeshControls' in _values:
-        if 'refinementRegions' not in _values['castellatedMeshControls']:
-            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
         .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
     # remove first and last {} and prettify[!] the file
-    l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-         for line in of.split("\n")[1:-1])
-    return "\n\n".join(l)
+    content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+               for line in of.split("\n")[1:-1])
+    return "\n\n".join(content)
 </code></pre>
   </div>
 </div>
@@ -1501,10 +2185,14 @@ def convertBoolValue(v=True):
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.duplicate">duplicate</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Return a copy of this object.</p></div>
+    <div class="desc inherited"><p>Return a copy of this object.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.duplicate', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.duplicate" class="source">
@@ -1519,10 +2207,47 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.functions.Probes.fromCppDictionary">
+    <p>def <span class="ident">fromCppDictionary</span>(</p><p>cls, dictionary)</p>
+    </div>
+    
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.fromCppDictionary">fromCppDictionary</a></code>
+    </p>
+
+    
+  
+    <div class="desc inherited"><p>Create a foamfile from an OpenFOAM dictionary in text format.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.fromCppDictionary', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.functions.Probes.fromCppDictionary" class="source">
+    <pre><code>@classmethod
+def fromCppDictionary(cls, dictionary):
+    """Create a foamfile from an OpenFOAM dictionary in text format."""
+    # convert values to python dictionary
+    values = CppDictParser(text=dictionary).values
+    if 'FoamFile' in values:
+        del(values['FoamFile'])
+    assert len(values.keys()) == 1, \
+        """You can define one function object at a time."""
+    return cls(values.keys()[0], 'dictionary', values=values)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.functions.Probes.fromFile">
     <p>def <span class="ident">fromFile</span>(</p><p>cls, filepath)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.fromFile">fromFile</a></code>
+    </p>
 
     
   
@@ -1552,10 +2277,14 @@ def fromFile(cls, filepath):
     <p>def <span class="ident">getValueByParameter</span>(</p><p>self, parameter)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.getValueByParameter">getValueByParameter</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Get values for a given parameter by parameter name.</p>
+    <div class="desc inherited"><p>Get values for a given parameter by parameter name.</p>
 <p>Args:
     parameter: Name of a parameter as a string.</p></div>
   <div class="source_cont">
@@ -1584,16 +2313,20 @@ def fromFile(cls, filepath):
     <p>def <span class="ident">header</span>(</p><p>self)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.header">header</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Return conditions header.</p></div>
+    <div class="desc inherited"><p>Return conditions header.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.header', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.header" class="source">
     <pre><code>def header(self):
     """Return conditions header."""
-    return Header.header()
+    return ''
 </code></pre>
   </div>
 </div>
@@ -1606,9 +2339,17 @@ def fromFile(cls, filepath):
     <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.save">save</a></code>
+    </p>
 
     
   
+    <div class="desc inherited"><p>Save to file.</p>
+<p>Args:
+    projectFolder: Path to project folder as a string.
+    subFolder: Optional input for subFolder (default: self.location).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.save', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.save" class="source">
@@ -1629,10 +2370,14 @@ def fromFile(cls, filepath):
     <p>def <span class="ident">setValueByParameter</span>(</p><p>self, parameter, value)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.setValueByParameter">setValueByParameter</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Set value for a parameter.</p>
+    <div class="desc inherited"><p>Set value for a parameter.</p>
 <p>Args:
     parameter: Name of a parameter as a string.
     value: Parameter value as a string.</p></div>
@@ -1658,10 +2403,14 @@ def fromFile(cls, filepath):
     <p>def <span class="ident">toOpenFOAM</span>(</p><p>self)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.toOpenFOAM">toOpenFOAM</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Return OpenFOAM string.</p></div>
+    <div class="desc inherited"><p>Return OpenFOAM string.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.functions.Probes.toOpenFOAM', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.functions.Probes.toOpenFOAM" class="source">
@@ -1680,10 +2429,14 @@ def fromFile(cls, filepath):
     <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
     </div>
     
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.functions.Function">Function</a></code>.<code><a href="#butterfly.functions.Function.updateValues">updateValues</a></code>
+    </p>
 
     
   
-    <div class="desc"><p>Update current values from dictionary v.</p>
+    <div class="desc inherited"><p>Update current values from dictionary v.</p>
 <p>if key is not available in current values it will be added, if the key
 already exists it will be updated.</p>
 <p>Returns:
@@ -1706,22 +2459,24 @@ already exists it will be updated.</p>
             if key not in original:
                 # there is a new key so dictionary has changed.
                 if not mute:
-                    print '{} :: New values are added for {}.' \
+                    msg = '{} :: New values are added for {}.' \
                         .format('.'.join(self.__parents), key)
+                    print(msg)
                 self.__hasChanged = True
                 return
-            if isinstance(value, (dict, OrderedDict)):
+            if isinstance(value, (dict, collections.OrderedDict)):
                 self.__parents.append(key)
                 logChanges(original[key], value)
             elif str(original[key]) != str(value):
                     # there is a change in value
                     if not mute:
-                        print '{}.{} is changed from "{}" to "{}".'\
+                        msg = '{}.{} is changed from "{}" to "{}".'\
                             .format('.'.join(self.__parents), key,
                                     original[key] if len(str(original[key])) < 100
                                     else '%s...' % str(original[key])[:100],
                                     value if len(str(value)) < 100
                                     else '%s...' % str(value)[:100])
+                        print(msg)
                     self.__hasChanged = True
                     return
     def modifyDict(original, new):

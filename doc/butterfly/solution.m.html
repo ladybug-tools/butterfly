@@ -997,8 +997,10 @@ table {
     <li class="mono"><a href="#butterfly.solution.Solution.ToString">ToString</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.loadProbeValues">loadProbeValues</a></li>
+    <li class="mono"><a href="#butterfly.solution.Solution.loadProbes">loadProbes</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.purge">purge</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.run">run</a></li>
+    <li class="mono"><a href="#butterfly.solution.Solution.sample">sample</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.skippedProbes">skippedProbes</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.terminate">terminate</a></li>
     <li class="mono"><a href="#butterfly.solution.Solution.updateFromRecipe">updateFromRecipe</a></li>
@@ -1216,7 +1218,7 @@ class Solution(object):
         # get timestep
         try:
             t = int(text[0])
-        except:
+        except ValueError:
             t = 0
 
         # read residual values
@@ -1240,7 +1242,7 @@ class Solution(object):
         # get timestep
         try:
             t = int(text[0])
-        except:
+        except ValueError:
             t = 0
         return t
 
@@ -1285,8 +1287,18 @@ class Solution(object):
                 # probes can be empty at start
                 raise AttributeError(e)
 
+            # check to remove functions if needed
+            if solPar.filename == 'controlDict':
+                curFunc = self.__case.controlDict.values['functions'].keys()
+                newFunc = solPar.values['functions'].keys()
+
+                for k in curFunc:
+                    if k not in newFunc:
+                        del(self.__case.controlDict.values['functions'][k])
+                        update = True
+
             if update:
-                print 'Updating {}...'.format(solPar.filename)
+                print('Updating {}...'.format(solPar.filename))
                 ffile = getattr(self.__case, solPar.filename)
                 ffile.save(self.projectDir)
 
@@ -1297,19 +1309,22 @@ class Solution(object):
                         self.controlDict.include = solPar.filename
                         self.controlDict.save(self.projectDir)
 
-    def run(self):
+    def run(self, wait=False):
         """Execute the solution."""
         self.case.renameSnappyHexMeshFolders()
         log = self.case.command(
             cmd=self.recipe.application,
             args=None,
             decomposeParDict=self.__decomposeParDict,
-            run=True, wait=False)
+            run=True, wait=wait)
         self.__process = log.process
         self.__errFiles = log.errorfiles
         self.__logFiles = log.logfiles
         self.__isRunStarted = True
-        self.__isRunFinished = False
+        if not wait:
+            self.__isRunFinished = False
+        else:
+            self.__isRunFinished = True
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
@@ -1323,15 +1338,36 @@ class Solution(object):
     def terminate(self):
         """Cancel the solution."""
         self.case.runmanager.terminate()
+        if self.decomposeParDict:
+            # remove processor folders if they haven't been removed already.
+            self.case.removeProcessorFolders()
 
     def loadProbeValues(self, field):
         """Return OpenFOAM probes results for a given field (e.g. U)."""
         return self.case.loadProbeValues(field)
 
+    def loadProbes(self, field):
+        """Return OpenFOAM probes location for a given field (e.g. U)."""
+        return self.case.loadProbes(field)
+
     def skippedProbes(self):
         """Get list of probes that are skipped from the solution."""
         return loadSkippedProbes(os.path.join(self.case.logFolder,
                                               self.recipe.logFile))
+
+    def sample(self, name, points, field, wait=True):
+        """Sample the results for a certain field.
+
+        Args:
+            name: A unique name for this sample.
+            points: List of points as (x, y, z).
+            fields: List of fields (e.g. U, p).
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(probes, values).
+        """
+        return self.case.sample(name, points, field, wait=True)
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1375,7 +1411,9 @@ class SolutionParameter(object):
         try:
             self.__t0 = int(timeRange[0])
             self.__t1 = int(timeRange[1])
-        except:
+        except TypeError:
+            self.__t0, self.__t1 = 0, 1.0e+100
+        except ValueError:
             self.__t0, self.__t1 = 0, 1.0e+100
 
     @classmethod
@@ -1446,9 +1484,9 @@ class SolutionParameter(object):
 
     def __repr__(self):
         """Class representation."""
-        return 'SolutionParameter::{}@{}'\
-            .format('.'.join([self.filename] + self.values.keys()),
-                    self.timeRange)
+        kv = '\n'.join('{}: {};'.format(k, v) for k, v in self.values.iteritems())
+        return 'SolutionParameter::{}\n{}\n@{}'\
+            .format(self.filename, kv, self.timeRange)
 </code></pre>
   </div>
 
@@ -1642,7 +1680,7 @@ class SolutionParameter(object):
         # get timestep
         try:
             t = int(text[0])
-        except:
+        except ValueError:
             t = 0
 
         # read residual values
@@ -1666,7 +1704,7 @@ class SolutionParameter(object):
         # get timestep
         try:
             t = int(text[0])
-        except:
+        except ValueError:
             t = 0
         return t
 
@@ -1711,8 +1749,18 @@ class SolutionParameter(object):
                 # probes can be empty at start
                 raise AttributeError(e)
 
+            # check to remove functions if needed
+            if solPar.filename == 'controlDict':
+                curFunc = self.__case.controlDict.values['functions'].keys()
+                newFunc = solPar.values['functions'].keys()
+
+                for k in curFunc:
+                    if k not in newFunc:
+                        del(self.__case.controlDict.values['functions'][k])
+                        update = True
+
             if update:
-                print 'Updating {}...'.format(solPar.filename)
+                print('Updating {}...'.format(solPar.filename))
                 ffile = getattr(self.__case, solPar.filename)
                 ffile.save(self.projectDir)
 
@@ -1723,19 +1771,22 @@ class SolutionParameter(object):
                         self.controlDict.include = solPar.filename
                         self.controlDict.save(self.projectDir)
 
-    def run(self):
+    def run(self, wait=False):
         """Execute the solution."""
         self.case.renameSnappyHexMeshFolders()
         log = self.case.command(
             cmd=self.recipe.application,
             args=None,
             decomposeParDict=self.__decomposeParDict,
-            run=True, wait=False)
+            run=True, wait=wait)
         self.__process = log.process
         self.__errFiles = log.errorfiles
         self.__logFiles = log.logfiles
         self.__isRunStarted = True
-        self.__isRunFinished = False
+        if not wait:
+            self.__isRunFinished = False
+        else:
+            self.__isRunFinished = True
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
@@ -1749,15 +1800,36 @@ class SolutionParameter(object):
     def terminate(self):
         """Cancel the solution."""
         self.case.runmanager.terminate()
+        if self.decomposeParDict:
+            # remove processor folders if they haven't been removed already.
+            self.case.removeProcessorFolders()
 
     def loadProbeValues(self, field):
         """Return OpenFOAM probes results for a given field (e.g. U)."""
         return self.case.loadProbeValues(field)
 
+    def loadProbes(self, field):
+        """Return OpenFOAM probes location for a given field (e.g. U)."""
+        return self.case.loadProbes(field)
+
     def skippedProbes(self):
         """Get list of probes that are skipped from the solution."""
         return loadSkippedProbes(os.path.join(self.case.logFolder,
                                               self.recipe.logFile))
+
+    def sample(self, name, points, field, wait=True):
+        """Sample the results for a certain field.
+
+        Args:
+            name: A unique name for this sample.
+            points: List of points as (x, y, z).
+            fields: List of fields (e.g. U, p).
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(probes, values).
+        """
+        return self.case.sample(name, points, field, wait=True)
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -2085,6 +2157,28 @@ class SolutionParameter(object):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.solution.Solution.loadProbes">
+    <p>def <span class="ident">loadProbes</span>(</p><p>self, field)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return OpenFOAM probes location for a given field (e.g. U).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.loadProbes', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.Solution.loadProbes" class="source">
+    <pre><code>def loadProbes(self, field):
+    """Return OpenFOAM probes location for a given field (e.g. U)."""
+    return self.case.loadProbes(field)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.solution.Solution.purge">
     <p>def <span class="ident">purge</span>(</p><p>self, removePolyMeshContent=True, removeSnappyHexMeshFolders=True, removeResultFolders=False, removePostProcessingFolder=False)</p>
     </div>
@@ -2113,7 +2207,7 @@ class SolutionParameter(object):
             
   <div class="item">
     <div class="name def" id="butterfly.solution.Solution.run">
-    <p>def <span class="ident">run</span>(</p><p>self)</p>
+    <p>def <span class="ident">run</span>(</p><p>self, wait=False)</p>
     </div>
     
 
@@ -2123,19 +2217,61 @@ class SolutionParameter(object):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.run', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.solution.Solution.run" class="source">
-    <pre><code>def run(self):
+    <pre><code>def run(self, wait=False):
     """Execute the solution."""
     self.case.renameSnappyHexMeshFolders()
     log = self.case.command(
         cmd=self.recipe.application,
         args=None,
         decomposeParDict=self.__decomposeParDict,
-        run=True, wait=False)
+        run=True, wait=wait)
     self.__process = log.process
     self.__errFiles = log.errorfiles
     self.__logFiles = log.logfiles
     self.__isRunStarted = True
-    self.__isRunFinished = False
+    if not wait:
+        self.__isRunFinished = False
+    else:
+        self.__isRunFinished = True
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.solution.Solution.sample">
+    <p>def <span class="ident">sample</span>(</p><p>self, name, points, field, wait=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Sample the results for a certain field.</p>
+<p>Args:
+    name: A unique name for this sample.
+    points: List of points as (x, y, z).
+    fields: List of fields (e.g. U, p).
+    args: Command arguments.
+    wait: Wait until command execution ends.
+Returns:
+    namedtuple(probes, values).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.solution.Solution.sample', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.solution.Solution.sample" class="source">
+    <pre><code>def sample(self, name, points, field, wait=True):
+    """Sample the results for a certain field.
+    Args:
+        name: A unique name for this sample.
+        points: List of points as (x, y, z).
+        fields: List of fields (e.g. U, p).
+        args: Command arguments.
+        wait: Wait until command execution ends.
+    Returns:
+        namedtuple(probes, values).
+    """
+    return self.case.sample(name, points, field, wait=True)
 </code></pre>
   </div>
 </div>
@@ -2181,6 +2317,9 @@ class SolutionParameter(object):
     <pre><code>def terminate(self):
     """Cancel the solution."""
     self.case.runmanager.terminate()
+    if self.decomposeParDict:
+        # remove processor folders if they haven't been removed already.
+        self.case.removeProcessorFolders()
 </code></pre>
   </div>
 </div>
@@ -2257,8 +2396,16 @@ uses updateSolutionParams to update the solution.</p></div>
         except AttributeError as e:
             # probes can be empty at start
             raise AttributeError(e)
+        # check to remove functions if needed
+        if solPar.filename == 'controlDict':
+            curFunc = self.__case.controlDict.values['functions'].keys()
+            newFunc = solPar.values['functions'].keys()
+            for k in curFunc:
+                if k not in newFunc:
+                    del(self.__case.controlDict.values['functions'][k])
+                    update = True
         if update:
-            print 'Updating {}...'.format(solPar.filename)
+            print('Updating {}...'.format(solPar.filename))
             ffile = getattr(self.__case, solPar.filename)
             ffile.save(self.projectDir)
             # just in case probes was not there and now should be included
@@ -2323,7 +2470,9 @@ uses updateSolutionParams to update the solution.</p></div>
         try:
             self.__t0 = int(timeRange[0])
             self.__t1 = int(timeRange[1])
-        except:
+        except TypeError:
+            self.__t0, self.__t1 = 0, 1.0e+100
+        except ValueError:
             self.__t0, self.__t1 = 0, 1.0e+100
 
     @classmethod
@@ -2394,9 +2543,9 @@ uses updateSolutionParams to update the solution.</p></div>
 
     def __repr__(self):
         """Class representation."""
-        return 'SolutionParameter::{}@{}'\
-            .format('.'.join([self.filename] + self.values.keys()),
-                    self.timeRange)
+        kv = '\n'.join('{}: {};'.format(k, v) for k, v in self.values.iteritems())
+        return 'SolutionParameter::{}\n{}\n@{}'\
+            .format(self.filename, kv, self.timeRange)
 </code></pre>
   </div>
 </div>
@@ -2483,7 +2632,9 @@ uses updateSolutionParams to update the solution.</p></div>
     try:
         self.__t0 = int(timeRange[0])
         self.__t1 = int(timeRange[1])
-    except:
+    except TypeError:
+        self.__t0, self.__t1 = 0, 1.0e+100
+    except ValueError:
         self.__t0, self.__t1 = 0, 1.0e+100
 </code></pre>
   </div>

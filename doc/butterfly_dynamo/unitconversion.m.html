@@ -3,8 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>butterfly.version API documentation</title>
-    <meta name="description" content="Versions and header." />
+    <title>butterfly_dynamo.unitconversion API documentation</title>
+    <meta name="description" content="Unit conversion to meters for Dynamo." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -985,32 +985,14 @@ table {
     <h1>Index</h1>
     <ul id="index">
 
-
-    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
-      <ul>
-        <li class="mono">
-        <span class="class_name"><a href="#butterfly.version.Header">Header</a></span>
-        
-          
+    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
+      
   <ul>
-    <li class="mono"><a href="#butterfly.version.Header.header">header</a></li>
-    <li class="mono"><a href="#butterfly.version.Header.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.version.Header.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.unitconversion.convertDocumentUnitsToMeters">convertDocumentUnitsToMeters</a></li>
   </ul>
 
-        </li>
-        <li class="mono">
-        <span class="class_name"><a href="#butterfly.version.Version">Version</a></span>
-        
-          
-  <ul>
-    <li class="mono"><a href="#butterfly.version.Version.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.version.Version.duplicate">duplicate</a></li>
-  </ul>
-
-        </li>
-      </ul>
     </li>
+
 
     </ul>
   </div>
@@ -1023,73 +1005,46 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">butterfly.version</span> module</h1>
-  <p>Versions and header.</p>
+  <h1 class="title"><span class="name">butterfly_dynamo.unitconversion</span> module</h1>
+  <p>Unit conversion to meters for Dynamo.</p>
   
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.unitconversion', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.unitconversion" class="source">
     <pre><code># coding=utf-8
-"""Versions and header."""
-from copy import deepcopy
-from datetime import datetime
+"""Unit conversion to meters for Dynamo."""
+try:
+    import clr
+    clr.AddReference('RevitAPI')
+    clr.AddReference('RevitServices')
+    from RevitServices.Persistence import DocumentManager
+    from Autodesk.Revit.DB import UnitType, DisplayUnitType
+except ImportError:
+    pass
 
 
-class Version(object):
-    """Version class."""
+def convertDocumentUnitsToMeters():
+    """Calculate converToMeters value for this document."""
+    doc = DocumentManager.Instance.CurrentDBDocument
+    docunits = doc.GetUnits()
+    docUnit = docunits.GetFormatOptions(UnitType.UT_Length).DisplayUnits
 
-    BFVer = "0.0.3"
-    OFVer = "4.0"
-    OFFullVer = "v1612+"
-    isUsingDockerMachine = True  # useful to run OpenFOAM container
-    lastUpdated = datetime(year=2017, month=2, day=7, hour=9, minute=00)
-
-    def duplicate(self):
-        """Return a copy of this object."""
-        return deepcopy(self)
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """Version."""
-        return 'Version::Butterfly{}::OpenFOAM{}'.format(self.BFVer, self.OFVer)
-
-
-class Header(object):
-    """Input files header.
-
-    Usage:
-        Header.header()
-    """
-
-    @staticmethod
-    def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
-        """Retuen OpenFOAM file header."""
-        header = \
-            "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
-            "| =========                 |                                                 |\n" + \
-            "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
-            "|  \\\\    /   O peration     | Version:  {}                                |\n" + \
-            "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \
-            "|    \\\\/     M anipulation  |                                                 |\n" + \
-            "\\*---------------------------------------------------------------------------*/\n" + \
-            "/* Butterfly {}       https://github.com/ladybug-analysis-tools/butterfly *\\\n" + \
-            "\\*---------------------------------------------------------------------------*/\n"
-
-        return header.format(OpenFOAMVersion, ButterflyVersion)
-
-    def duplicate(self):
-        """Return a copy of this object."""
-        return deepcopy(self)
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """Header."""
-        return self.header
+    if docUnit == DisplayUnitType.DUT_METERS:
+        return 1.0000
+    elif docUnit == DisplayUnitType.DUT_CENTIMETERS:
+        return 0.010
+    elif docUnit == DisplayUnitType.DUT_MILLIMETERS:
+        return 0.0010
+    elif docUnit == DisplayUnitType.DUT_DECIMAL_FEET:
+        return 0.3050
+    elif docUnit == DisplayUnitType.DUT_FEET_FRACTIONAL_INCHES:
+        return 0.3050
+    elif docUnit == DisplayUnitType.DUT_FRACTIONAL_INCHES:
+        return 0.0254
+    elif docUnit == DisplayUnitType.DUT_DECIMAL_INCHES:
+        return 0.0254
+    else:
+        print("Unknown unit. Meters will be used instead.")
+        return 1.0000
 </code></pre>
   </div>
 
@@ -1097,283 +1052,50 @@ class Header(object):
 
   <section id="section-items">
 
-
-    <h2 class="section-title" id="header-classes">Classes</h2>
+    <h2 class="section-title" id="header-functions">Functions</h2>
       
-      <div class="item">
-      <p id="butterfly.version.Header" class="name">class <span class="ident">Header</span></p>
-      
-  
-    <div class="desc"><p>Input files header.</p>
-<p>Usage:
-    Header.header()</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Header', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version.Header" class="source">
-    <pre><code>class Header(object):
-    """Input files header.
-
-    Usage:
-        Header.header()
-    """
-
-    @staticmethod
-    def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
-        """Retuen OpenFOAM file header."""
-        header = \
-            "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
-            "| =========                 |                                                 |\n" + \
-            "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
-            "|  \\\\    /   O peration     | Version:  {}                                |\n" + \
-            "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \
-            "|    \\\\/     M anipulation  |                                                 |\n" + \
-            "\\*---------------------------------------------------------------------------*/\n" + \
-            "/* Butterfly {}       https://github.com/ladybug-analysis-tools/butterfly *\\\n" + \
-            "\\*---------------------------------------------------------------------------*/\n"
-
-        return header.format(OpenFOAMVersion, ButterflyVersion)
-
-    def duplicate(self):
-        """Return a copy of this object."""
-        return deepcopy(self)
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """Header."""
-        return self.header
-</code></pre>
-  </div>
-</div>
-
-
-      <div class="class">
-          <h3>Ancestors (in MRO)</h3>
-          <ul class="class_list">
-          <li><a href="#butterfly.version.Header">Header</a></li>
-          <li>__builtin__.object</li>
-          </ul>
-          <h3>Static methods</h3>
-            
   <div class="item">
-    <div class="name def" id="butterfly.version.Header.header">
-    <p>def <span class="ident">header</span>(</p><p>OpenFOAMVersion=&#39;v1612+&#39;, ButterflyVersion=&#39;0.0.3&#39;)</p>
+    <div class="name def" id="butterfly_dynamo.unitconversion.convertDocumentUnitsToMeters">
+    <p>def <span class="ident">convertDocumentUnitsToMeters</span>(</p><p>)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Retuen OpenFOAM file header.</p></div>
+    <div class="desc"><p>Calculate converToMeters value for this document.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Header.header', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version.Header.header" class="source">
-    <pre><code>@staticmethod
-def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
-    """Retuen OpenFOAM file header."""
-    header = \
-        "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
-        "| =========                 |                                                 |\n" + \
-        "| \\\\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |\n" + \
-        "|  \\\\    /   O peration     | Version:  {}                                |\n" + \
-        "|   \\\\  /    A nd           | Web:      www.OpenFOAM.org                      |\n" + \
-        "|    \\\\/     M anipulation  |                                                 |\n" + \
-        "\\*---------------------------------------------------------------------------*/\n" + \
-        "/* Butterfly {}       https://github.com/ladybug-analysis-tools/butterfly *\\\n" + \
-        "\\*---------------------------------------------------------------------------*/\n"
-    return header.format(OpenFOAMVersion, ButterflyVersion)
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.unitconversion.convertDocumentUnitsToMeters', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.unitconversion.convertDocumentUnitsToMeters" class="source">
+    <pre><code>def convertDocumentUnitsToMeters():
+    """Calculate converToMeters value for this document."""
+    doc = DocumentManager.Instance.CurrentDBDocument
+    docunits = doc.GetUnits()
+    docUnit = docunits.GetFormatOptions(UnitType.UT_Length).DisplayUnits
+
+    if docUnit == DisplayUnitType.DUT_METERS:
+        return 1.0000
+    elif docUnit == DisplayUnitType.DUT_CENTIMETERS:
+        return 0.010
+    elif docUnit == DisplayUnitType.DUT_MILLIMETERS:
+        return 0.0010
+    elif docUnit == DisplayUnitType.DUT_DECIMAL_FEET:
+        return 0.3050
+    elif docUnit == DisplayUnitType.DUT_FEET_FRACTIONAL_INCHES:
+        return 0.3050
+    elif docUnit == DisplayUnitType.DUT_FRACTIONAL_INCHES:
+        return 0.0254
+    elif docUnit == DisplayUnitType.DUT_DECIMAL_INCHES:
+        return 0.0254
+    else:
+        print("Unknown unit. Meters will be used instead.")
+        return 1.0000
 </code></pre>
   </div>
 </div>
 
   </div>
   
-          <h3>Methods</h3>
-            
-  <div class="item">
-    <div class="name def" id="butterfly.version.Header.ToString">
-    <p>def <span class="ident">ToString</span>(</p><p>self)</p>
-    </div>
-    
 
-    
-  
-    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Header.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version.Header.ToString" class="source">
-    <pre><code>def ToString(self):
-    """Overwrite .NET ToString method."""
-    return self.__repr__()
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.version.Header.duplicate">
-    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return a copy of this object.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Header.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version.Header.duplicate" class="source">
-    <pre><code>def duplicate(self):
-    """Return a copy of this object."""
-    return deepcopy(self)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-      </div>
-      </div>
-      
-      <div class="item">
-      <p id="butterfly.version.Version" class="name">class <span class="ident">Version</span></p>
-      
-  
-    <div class="desc"><p>Version class.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Version', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version.Version" class="source">
-    <pre><code>class Version(object):
-    """Version class."""
-
-    BFVer = "0.0.3"
-    OFVer = "4.0"
-    OFFullVer = "v1612+"
-    isUsingDockerMachine = True  # useful to run OpenFOAM container
-    lastUpdated = datetime(year=2017, month=2, day=7, hour=9, minute=00)
-
-    def duplicate(self):
-        """Return a copy of this object."""
-        return deepcopy(self)
-
-    def ToString(self):
-        """Overwrite .NET ToString method."""
-        return self.__repr__()
-
-    def __repr__(self):
-        """Version."""
-        return 'Version::Butterfly{}::OpenFOAM{}'.format(self.BFVer, self.OFVer)
-</code></pre>
-  </div>
-</div>
-
-
-      <div class="class">
-          <h3>Ancestors (in MRO)</h3>
-          <ul class="class_list">
-          <li><a href="#butterfly.version.Version">Version</a></li>
-          <li>__builtin__.object</li>
-          </ul>
-          <h3>Class variables</h3>
-            <div class="item">
-            <p id="butterfly.version.Version.BFVer" class="name">var <span class="ident">BFVer</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.version.Version.OFFullVer" class="name">var <span class="ident">OFFullVer</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.version.Version.OFVer" class="name">var <span class="ident">OFVer</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.version.Version.isUsingDockerMachine" class="name">var <span class="ident">isUsingDockerMachine</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-            <div class="item">
-            <p id="butterfly.version.Version.lastUpdated" class="name">var <span class="ident">lastUpdated</span></p>
-            
-
-            
-  
-  <div class="source_cont">
-</div>
-
-            </div>
-          <h3>Methods</h3>
-            
-  <div class="item">
-    <div class="name def" id="butterfly.version.Version.ToString">
-    <p>def <span class="ident">ToString</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Overwrite .NET ToString method.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Version.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version.Version.ToString" class="source">
-    <pre><code>def ToString(self):
-    """Overwrite .NET ToString method."""
-    return self.__repr__()
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.version.Version.duplicate">
-    <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return a copy of this object.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.version.Version.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.version.Version.duplicate" class="source">
-    <pre><code>def duplicate(self):
-    """Return a copy of this object."""
-    return deepcopy(self)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-      </div>
-      </div>
 
   </section>
 

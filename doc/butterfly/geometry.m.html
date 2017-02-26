@@ -1047,7 +1047,7 @@ table {
 """BF geometry library."""
 import os
 from copy import deepcopy
-from .boundarycondition import BoundaryCondition
+from .boundarycondition import IndoorWallBoundaryCondition
 from .stl import read_ascii_string
 from .vectormath import crossProduct, rotate, angleAnitclockwise
 
@@ -1156,8 +1156,13 @@ class _BFMesh(object):
         self.__min = minPt
         self.__max = maxPt
 
-    def toSTL(self):
-        """Get STL definition for this geometry as a string."""
+    def toSTL(self, convertToMeters=1):
+        """Get STL definition for this geometry as a string.
+
+        Args:
+            convertToMeters: A value to scale the geometry to meters. For isinstance
+                if the mesh is in mm the value should be 0.001 (default: 1).
+        """
         _hea = "solid {}".format(self.name)
         _tale = "endsolid {}".format(self.name)
         _body = "   facet normal {0} {1} {2}\n" \
@@ -1172,25 +1177,30 @@ class _BFMesh(object):
             self.__normals[count][0],
             self.__normals[count][1],
             self.__normals[count][2],
-            self.__vertices[faceInd[0]][0],
-            self.__vertices[faceInd[0]][1],
-            self.__vertices[faceInd[0]][2],
-            self.__vertices[faceInd[1]][0],
-            self.__vertices[faceInd[1]][1],
-            self.__vertices[faceInd[1]][2],
-            self.__vertices[faceInd[2]][0],
-            self.__vertices[faceInd[2]][1],
-            self.__vertices[faceInd[2]][2]
+            self.__vertices[faceInd[0]][0] * convertToMeters,
+            self.__vertices[faceInd[0]][1] * convertToMeters,
+            self.__vertices[faceInd[0]][2] * convertToMeters,
+            self.__vertices[faceInd[1]][0] * convertToMeters,
+            self.__vertices[faceInd[1]][1] * convertToMeters,
+            self.__vertices[faceInd[1]][2] * convertToMeters,
+            self.__vertices[faceInd[2]][0] * convertToMeters,
+            self.__vertices[faceInd[2]][1] * convertToMeters,
+            self.__vertices[faceInd[2]][2] * convertToMeters
         ) for count, faceInd in enumerate(self.__faceIndices))
 
         return "{}\n{}\n{}\n".format(
             _hea, "\n".join(_bodyCollector), _tale
         )
 
-    def writeToStl(self, folder):
-        """Save BFFace to a stl file. File name will be self.name."""
+    def writeToStl(self, folder, convertToMeters=1):
+        """Save BFFace to a stl file. File name will be self.name.
+
+        Args:
+            convertToMeters: A value to scale the geometry to meters. For isinstance
+                if the mesh is in mm the value should be 0.001 (default: 1).
+        """
         with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-            outf.write(self.toSTL())
+            outf.write(self.toSTL(convertToMeters))
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1227,10 +1237,13 @@ class BFGeometry(_BFMesh):
     """
 
     def __init__(self, name, vertices, faceIndices, normals=None,
-                 boundaryCondition=None):
+                 boundaryCondition=None, refinementLevels=None,
+                 nSurfaceLayers=None):
         """Init Butterfly geometry."""
         _BFMesh.__init__(self, name, vertices, faceIndices, normals)
         self.boundaryCondition = boundaryCondition
+        self.refinementLevels = refinementLevels
+        self.nSurfaceLayers = nSurfaceLayers
 
     @property
     def isBFGeometry(self):
@@ -1245,12 +1258,53 @@ class BFGeometry(_BFMesh):
     @boundaryCondition.setter
     def boundaryCondition(self, bc):
         if not bc:
-            bc = BoundaryCondition()
+            bc = IndoorWallBoundaryCondition()
 
         assert hasattr(bc, 'isBoundaryCondition'), \
             '{} is not a Butterfly boundary condition.'.format(bc)
 
         self.__bc = bc
+        self._checkBoundaryAndLayers()
+
+    @property
+    def refinementLevels(self):
+        """refinementLevels for snappyHexMeshDict as (min, max)."""
+        return self.__refinementLevels
+
+    @refinementLevels.setter
+    def refinementLevels(self, v):
+        if not v:
+            self.__refinementLevels = None
+        else:
+            self.__refinementLevels = tuple(v)
+
+    @property
+    def nSurfaceLayers(self):
+        """Number of surface layers for snappyHexMeshDict addLayers."""
+        return self.__nSurfaceLayers
+
+    @nSurfaceLayers.setter
+    def nSurfaceLayers(self, v):
+        if not v:
+            self.__nSurfaceLayers = None
+        else:
+            self.__nSurfaceLayers = int(v)
+            self._checkBoundaryAndLayers()
+
+    def _checkBoundaryAndLayers(self):
+
+        try:
+            if not self.nSurfaceLayers:
+                return
+        except AttributeError:
+            # not initiated yet
+            return
+        else:
+            if not self.boundaryCondition:
+                return
+            if self.boundaryCondition.type == 'patch':
+                print('Warning: You are adding layers to a geometry of type "patch".\n'
+                      'Layers are normally used only for "wall" boundaries.')
 
 
 class BFBlockGeometry(BFGeometry):
@@ -1285,28 +1339,32 @@ class BFBlockGeometry(BFGeometry):
         return self.__borderVertices
 
 
-def bfGeometryFromStlBlock(stlBlock):
+def bfGeometryFromStlBlock(stlBlock, convertFromMeters=1):
     """Create BFGeometry from an stl block as a string."""
     solid = read_ascii_string(stlBlock)
 
-    vertices = tuple(solid.vertices)
-    indices = tuple(tuple(vertices.index(ver) for ver in facet.vertices)
+    vertices = tuple(tuple(i * convertFromMeters for i in ver)
+                     for ver in tuple(solid.vertices))
+
+    origiVer = tuple(solid.vertices)
+
+    indices = tuple(tuple(origiVer.index(ver) for ver in facet.vertices)
                     for facet in solid.facets)
     normals = tuple(facet.normal for facet in solid.facets)
 
     return BFGeometry(solid.name, vertices, indices, normals)
 
 
-def bfGeometryFromStlFile(filepath):
+def bfGeometryFromStlFile(filepath, convertFromMeters=1):
     """Return a tuple of BFGeometry from an stl file."""
     with open(filepath, 'rb') as f:
-        l = ''.join(f.readlines())
+        line = ''.join(f.readlines())
 
     blocks = ('\nsolid{}'.format(t) if not t.startswith('solid') else '\n{}'.format(t)
-              for t in l.split('\nsolid'))
-    del(l)
+              for t in line.split('\nsolid'))
+    del(line)
 
-    return tuple(bfGeometryFromStlBlock(b) for b in blocks)
+    return tuple(bfGeometryFromStlBlock(b, convertFromMeters) for b in blocks)
 
 
 def calculateMinMaxFromBFGeometries(geometries, xAxis=None):
@@ -1381,7 +1439,7 @@ def calculateMinMax(geometry, angle):
       
   <div class="item">
     <div class="name def" id="butterfly.geometry.bfGeometryFromStlBlock">
-    <p>def <span class="ident">bfGeometryFromStlBlock</span>(</p><p>stlBlock)</p>
+    <p>def <span class="ident">bfGeometryFromStlBlock</span>(</p><p>stlBlock, convertFromMeters=1)</p>
     </div>
     
 
@@ -1391,12 +1449,16 @@ def calculateMinMax(geometry, angle):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.bfGeometryFromStlBlock', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.bfGeometryFromStlBlock" class="source">
-    <pre><code>def bfGeometryFromStlBlock(stlBlock):
+    <pre><code>def bfGeometryFromStlBlock(stlBlock, convertFromMeters=1):
     """Create BFGeometry from an stl block as a string."""
     solid = read_ascii_string(stlBlock)
 
-    vertices = tuple(solid.vertices)
-    indices = tuple(tuple(vertices.index(ver) for ver in facet.vertices)
+    vertices = tuple(tuple(i * convertFromMeters for i in ver)
+                     for ver in tuple(solid.vertices))
+
+    origiVer = tuple(solid.vertices)
+
+    indices = tuple(tuple(origiVer.index(ver) for ver in facet.vertices)
                     for facet in solid.facets)
     normals = tuple(facet.normal for facet in solid.facets)
 
@@ -1410,7 +1472,7 @@ def calculateMinMax(geometry, angle):
       
   <div class="item">
     <div class="name def" id="butterfly.geometry.bfGeometryFromStlFile">
-    <p>def <span class="ident">bfGeometryFromStlFile</span>(</p><p>filepath)</p>
+    <p>def <span class="ident">bfGeometryFromStlFile</span>(</p><p>filepath, convertFromMeters=1)</p>
     </div>
     
 
@@ -1420,16 +1482,16 @@ def calculateMinMax(geometry, angle):
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.bfGeometryFromStlFile', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.bfGeometryFromStlFile" class="source">
-    <pre><code>def bfGeometryFromStlFile(filepath):
+    <pre><code>def bfGeometryFromStlFile(filepath, convertFromMeters=1):
     """Return a tuple of BFGeometry from an stl file."""
     with open(filepath, 'rb') as f:
-        l = ''.join(f.readlines())
+        line = ''.join(f.readlines())
 
     blocks = ('\nsolid{}'.format(t) if not t.startswith('solid') else '\n{}'.format(t)
-              for t in l.split('\nsolid'))
-    del(l)
+              for t in line.split('\nsolid'))
+    del(line)
 
-    return tuple(bfGeometryFromStlBlock(b) for b in blocks)
+    return tuple(bfGeometryFromStlBlock(b, convertFromMeters) for b in blocks)
 </code></pre>
   </div>
 </div>
@@ -1710,6 +1772,21 @@ def calculateMinMax(geometry, angle):
 
             </div>
             <div class="item">
+            <p id="butterfly.geometry.BFBlockGeometry.nSurfaceLayers" class="name">var <span class="ident">nSurfaceLayers</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.geometry.BFGeometry">BFGeometry</a></code>.<code><a href="#butterfly.geometry.BFGeometry.nSurfaceLayers">nSurfaceLayers</a></code>
+    </p>
+
+            
+  
+    <div class="desc"><p>Number of surface layers for snappyHexMeshDict addLayers.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.geometry.BFBlockGeometry.name" class="name">var <span class="ident">name</span></p>
             
     <p class="inheritance">
@@ -1735,6 +1812,21 @@ def calculateMinMax(geometry, angle):
             
   
     <div class="desc inherited"><p>A flatten list of (x, y, z) for normals.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.geometry.BFBlockGeometry.refinementLevels" class="name">var <span class="ident">refinementLevels</span></p>
+            
+    <p class="inheritance">
+     <strong>Inheritance:</strong>
+       <code><a href="#butterfly.geometry.BFGeometry">BFGeometry</a></code>.<code><a href="#butterfly.geometry.BFGeometry.refinementLevels">refinementLevels</a></code>
+    </p>
+
+            
+  
+    <div class="desc"><p>refinementLevels for snappyHexMeshDict as (min, max).</p></div>
   <div class="source_cont">
 </div>
 
@@ -1839,7 +1931,7 @@ def calculateMinMax(geometry, angle):
             
   <div class="item">
     <div class="name def" id="butterfly.geometry.BFBlockGeometry.toSTL">
-    <p>def <span class="ident">toSTL</span>(</p><p>self)</p>
+    <p>def <span class="ident">toSTL</span>(</p><p>self, convertToMeters=1)</p>
     </div>
     
     <p class="inheritance">
@@ -1849,12 +1941,19 @@ def calculateMinMax(geometry, angle):
 
     
   
-    <div class="desc inherited"><p>Get STL definition for this geometry as a string.</p></div>
+    <div class="desc inherited"><p>Get STL definition for this geometry as a string.</p>
+<p>Args:
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFBlockGeometry.toSTL', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.BFBlockGeometry.toSTL" class="source">
-    <pre><code>def toSTL(self):
-    """Get STL definition for this geometry as a string."""
+    <pre><code>def toSTL(self, convertToMeters=1):
+    """Get STL definition for this geometry as a string.
+    Args:
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
+    """
     _hea = "solid {}".format(self.name)
     _tale = "endsolid {}".format(self.name)
     _body = "   facet normal {0} {1} {2}\n" \
@@ -1868,15 +1967,15 @@ def calculateMinMax(geometry, angle):
         self.__normals[count][0],
         self.__normals[count][1],
         self.__normals[count][2],
-        self.__vertices[faceInd[0]][0],
-        self.__vertices[faceInd[0]][1],
-        self.__vertices[faceInd[0]][2],
-        self.__vertices[faceInd[1]][0],
-        self.__vertices[faceInd[1]][1],
-        self.__vertices[faceInd[1]][2],
-        self.__vertices[faceInd[2]][0],
-        self.__vertices[faceInd[2]][1],
-        self.__vertices[faceInd[2]][2]
+        self.__vertices[faceInd[0]][0] * convertToMeters,
+        self.__vertices[faceInd[0]][1] * convertToMeters,
+        self.__vertices[faceInd[0]][2] * convertToMeters,
+        self.__vertices[faceInd[1]][0] * convertToMeters,
+        self.__vertices[faceInd[1]][1] * convertToMeters,
+        self.__vertices[faceInd[1]][2] * convertToMeters,
+        self.__vertices[faceInd[2]][0] * convertToMeters,
+        self.__vertices[faceInd[2]][1] * convertToMeters,
+        self.__vertices[faceInd[2]][2] * convertToMeters
     ) for count, faceInd in enumerate(self.__faceIndices))
     return "{}\n{}\n{}\n".format(
         _hea, "\n".join(_bodyCollector), _tale
@@ -1890,7 +1989,7 @@ def calculateMinMax(geometry, angle):
             
   <div class="item">
     <div class="name def" id="butterfly.geometry.BFBlockGeometry.writeToStl">
-    <p>def <span class="ident">writeToStl</span>(</p><p>self, folder)</p>
+    <p>def <span class="ident">writeToStl</span>(</p><p>self, folder, convertToMeters=1)</p>
     </div>
     
     <p class="inheritance">
@@ -1900,14 +1999,21 @@ def calculateMinMax(geometry, angle):
 
     
   
-    <div class="desc inherited"><p>Save BFFace to a stl file. File name will be self.name.</p></div>
+    <div class="desc inherited"><p>Save BFFace to a stl file. File name will be self.name.</p>
+<p>Args:
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFBlockGeometry.writeToStl', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.BFBlockGeometry.writeToStl" class="source">
-    <pre><code>def writeToStl(self, folder):
-    """Save BFFace to a stl file. File name will be self.name."""
+    <pre><code>def writeToStl(self, folder, convertToMeters=1):
+    """Save BFFace to a stl file. File name will be self.name.
+    Args:
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
+    """
     with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-        outf.write(self.toSTL())
+        outf.write(self.toSTL(convertToMeters))
 </code></pre>
   </div>
 </div>
@@ -1962,10 +2068,13 @@ print geo.toStlString()
     """
 
     def __init__(self, name, vertices, faceIndices, normals=None,
-                 boundaryCondition=None):
+                 boundaryCondition=None, refinementLevels=None,
+                 nSurfaceLayers=None):
         """Init Butterfly geometry."""
         _BFMesh.__init__(self, name, vertices, faceIndices, normals)
         self.boundaryCondition = boundaryCondition
+        self.refinementLevels = refinementLevels
+        self.nSurfaceLayers = nSurfaceLayers
 
     @property
     def isBFGeometry(self):
@@ -1980,12 +2089,53 @@ print geo.toStlString()
     @boundaryCondition.setter
     def boundaryCondition(self, bc):
         if not bc:
-            bc = BoundaryCondition()
+            bc = IndoorWallBoundaryCondition()
 
         assert hasattr(bc, 'isBoundaryCondition'), \
             '{} is not a Butterfly boundary condition.'.format(bc)
 
         self.__bc = bc
+        self._checkBoundaryAndLayers()
+
+    @property
+    def refinementLevels(self):
+        """refinementLevels for snappyHexMeshDict as (min, max)."""
+        return self.__refinementLevels
+
+    @refinementLevels.setter
+    def refinementLevels(self, v):
+        if not v:
+            self.__refinementLevels = None
+        else:
+            self.__refinementLevels = tuple(v)
+
+    @property
+    def nSurfaceLayers(self):
+        """Number of surface layers for snappyHexMeshDict addLayers."""
+        return self.__nSurfaceLayers
+
+    @nSurfaceLayers.setter
+    def nSurfaceLayers(self, v):
+        if not v:
+            self.__nSurfaceLayers = None
+        else:
+            self.__nSurfaceLayers = int(v)
+            self._checkBoundaryAndLayers()
+
+    def _checkBoundaryAndLayers(self):
+
+        try:
+            if not self.nSurfaceLayers:
+                return
+        except AttributeError:
+            # not initiated yet
+            return
+        else:
+            if not self.boundaryCondition:
+                return
+            if self.boundaryCondition.type == 'patch':
+                print('Warning: You are adding layers to a geometry of type "patch".\n'
+                      'Layers are normally used only for "wall" boundaries.')
 </code></pre>
   </div>
 </div>
@@ -2063,6 +2213,16 @@ print geo.toStlString()
 
             </div>
             <div class="item">
+            <p id="butterfly.geometry.BFGeometry.nSurfaceLayers" class="name">var <span class="ident">nSurfaceLayers</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.geometry.BFGeometry.name" class="name">var <span class="ident">name</span></p>
             
 
@@ -2085,6 +2245,16 @@ print geo.toStlString()
 
             </div>
             <div class="item">
+            <p id="butterfly.geometry.BFGeometry.refinementLevels" class="name">var <span class="ident">refinementLevels</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
             <p id="butterfly.geometry.BFGeometry.vertices" class="name">var <span class="ident">vertices</span></p>
             
 
@@ -2099,7 +2269,7 @@ print geo.toStlString()
             
   <div class="item">
     <div class="name def" id="butterfly.geometry.BFGeometry.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, vertices, faceIndices, normals=None, boundaryCondition=None)</p>
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, vertices, faceIndices, normals=None, boundaryCondition=None, refinementLevels=None, nSurfaceLayers=None)</p>
     </div>
     
 
@@ -2110,10 +2280,13 @@ print geo.toStlString()
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFGeometry.__init__', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.BFGeometry.__init__" class="source">
     <pre><code>def __init__(self, name, vertices, faceIndices, normals=None,
-             boundaryCondition=None):
+             boundaryCondition=None, refinementLevels=None,
+             nSurfaceLayers=None):
     """Init Butterfly geometry."""
     _BFMesh.__init__(self, name, vertices, faceIndices, normals)
     self.boundaryCondition = boundaryCondition
+    self.refinementLevels = refinementLevels
+    self.nSurfaceLayers = nSurfaceLayers
 </code></pre>
   </div>
 </div>
@@ -2167,18 +2340,25 @@ print geo.toStlString()
             
   <div class="item">
     <div class="name def" id="butterfly.geometry.BFGeometry.toSTL">
-    <p>def <span class="ident">toSTL</span>(</p><p>self)</p>
+    <p>def <span class="ident">toSTL</span>(</p><p>self, convertToMeters=1)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Get STL definition for this geometry as a string.</p></div>
+    <div class="desc"><p>Get STL definition for this geometry as a string.</p>
+<p>Args:
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFGeometry.toSTL', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.BFGeometry.toSTL" class="source">
-    <pre><code>def toSTL(self):
-    """Get STL definition for this geometry as a string."""
+    <pre><code>def toSTL(self, convertToMeters=1):
+    """Get STL definition for this geometry as a string.
+    Args:
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
+    """
     _hea = "solid {}".format(self.name)
     _tale = "endsolid {}".format(self.name)
     _body = "   facet normal {0} {1} {2}\n" \
@@ -2192,15 +2372,15 @@ print geo.toStlString()
         self.__normals[count][0],
         self.__normals[count][1],
         self.__normals[count][2],
-        self.__vertices[faceInd[0]][0],
-        self.__vertices[faceInd[0]][1],
-        self.__vertices[faceInd[0]][2],
-        self.__vertices[faceInd[1]][0],
-        self.__vertices[faceInd[1]][1],
-        self.__vertices[faceInd[1]][2],
-        self.__vertices[faceInd[2]][0],
-        self.__vertices[faceInd[2]][1],
-        self.__vertices[faceInd[2]][2]
+        self.__vertices[faceInd[0]][0] * convertToMeters,
+        self.__vertices[faceInd[0]][1] * convertToMeters,
+        self.__vertices[faceInd[0]][2] * convertToMeters,
+        self.__vertices[faceInd[1]][0] * convertToMeters,
+        self.__vertices[faceInd[1]][1] * convertToMeters,
+        self.__vertices[faceInd[1]][2] * convertToMeters,
+        self.__vertices[faceInd[2]][0] * convertToMeters,
+        self.__vertices[faceInd[2]][1] * convertToMeters,
+        self.__vertices[faceInd[2]][2] * convertToMeters
     ) for count, faceInd in enumerate(self.__faceIndices))
     return "{}\n{}\n{}\n".format(
         _hea, "\n".join(_bodyCollector), _tale
@@ -2214,20 +2394,27 @@ print geo.toStlString()
             
   <div class="item">
     <div class="name def" id="butterfly.geometry.BFGeometry.writeToStl">
-    <p>def <span class="ident">writeToStl</span>(</p><p>self, folder)</p>
+    <p>def <span class="ident">writeToStl</span>(</p><p>self, folder, convertToMeters=1)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Save BFFace to a stl file. File name will be self.name.</p></div>
+    <div class="desc"><p>Save BFFace to a stl file. File name will be self.name.</p>
+<p>Args:
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.geometry.BFGeometry.writeToStl', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.geometry.BFGeometry.writeToStl" class="source">
-    <pre><code>def writeToStl(self, folder):
-    """Save BFFace to a stl file. File name will be self.name."""
+    <pre><code>def writeToStl(self, folder, convertToMeters=1):
+    """Save BFFace to a stl file. File name will be self.name.
+    Args:
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
+    """
     with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-        outf.write(self.toSTL())
+        outf.write(self.toSTL(convertToMeters))
 </code></pre>
   </div>
 </div>

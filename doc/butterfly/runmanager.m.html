@@ -1008,6 +1008,7 @@ table {
     <li class="mono"><a href="#butterfly.runmanager.RunManager.command">command</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.duplicate">duplicate</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.getContainerId">getContainerId</a></li>
+    <li class="mono"><a href="#butterfly.runmanager.RunManager.getPid">getPid</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.getShellinit">getShellinit</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.header">header</a></li>
     <li class="mono"><a href="#butterfly.runmanager.RunManager.run">run</a></li>
@@ -1015,6 +1016,10 @@ table {
     <li class="mono"><a href="#butterfly.runmanager.RunManager.terminate">terminate</a></li>
   </ul>
 
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#butterfly.runmanager.UserNotAdminError">UserNotAdminError</a></span>
+        
         </li>
       </ul>
     </li>
@@ -1046,6 +1051,9 @@ docker container. For linux systems simply use .bash files or libraries such as
 pyFOAM.
 """
 import os
+import ctypes
+import time
+import sys
 from subprocess import PIPE, Popen
 from collections import namedtuple
 from copy import deepcopy
@@ -1053,9 +1061,13 @@ from copy import deepcopy
 from .version import Version
 
 
+class UserNotAdminError(Exception):
+    """Exception for non-admin users."""
+    pass
+
+
 class RunManager(object):
-    """
-    RunManager to write and run OpenFOAM commands through batch files.
+    """RunManager to write and run OpenFOAM commands through batch files.
 
     Run manager is currently only useful for running OpenFOAM for Windows which
     runs in a docker container. For linux systems simply use .bash files or
@@ -1075,6 +1087,12 @@ class RunManager(object):
             projectName: A string for project name.
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
+        # make sure user has admin rights
+        if not ctypes.windll.shell32.IsUserAnAdmin():
+            raise UserNotAdminError(
+                'In order to run OpenFOAM using butterfly you must use an admin '
+                'account or run the program as administrator.')
+
         self.__projectName = projectName
         self.__separator = '&'
         self.isUsingDockerMachine = True \
@@ -1083,10 +1101,11 @@ class RunManager(object):
 
         self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
             if self.isUsingDockerMachine \
-        else r'"C:\Program Files\Boot2Docker for Windows"'
+            else r'"C:\Program Files\Boot2Docker for Windows"'
 
         self.logFolder = './log'
         self.errFolder = './log'
+        self._pid = None
 
     @property
     def containerId(self):
@@ -1095,6 +1114,11 @@ class RunManager(object):
             self.getContainerId()
 
         return self.__containerId
+
+    @property
+    def pid(self):
+        """Return PID for the latest command."""
+        return self._pid
 
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
@@ -1110,11 +1134,15 @@ class RunManager(object):
             process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
                             stderr=PIPE)
 
-        if tuple(process.stderr):
-            print 'ERROR!'
-            for line in process.stderr:
-                print line
-            # return
+        err = '\n'.join(process.stderr)
+        if err:
+            if err.find('Error checking TLS connection: Host is not running') != -1:
+                msg = ' Docker machine is not running! Run Oracle VM VirtualBox Manager ' \
+                    'as administrator and make sure "default" machine is "running".'
+            else:
+                msg = ''
+
+            raise IOError('{}\n\t{}'.format(err, msg))
 
         return tuple(line.replace('$Env:', 'set ')
                      .replace(' = ', '=')
@@ -1134,34 +1162,61 @@ class RunManager(object):
 
         if tuple(p.stderr):
             for line in p.stderr:
-                print line
+                print(line)
             return
 
         for count, line in enumerate(p.stdout):
             if line.find('of_plus') > -1:
                 # find container
                 _id = line.split()[0]
-                print 'container id: {}'.format(_id)
+                print('container id: {}'.format(_id))
 
         self.__containerId = _id
 
-    def terminate(self):
-        """Kill all process under username ofuser."""
-        # This code failed but should return pid for the container
-        # docker inspect --format="{{ .State.Pid }}" e7a36e8e9eeb'
-        # for now I kill all process in docker.
-        # docker exec -i e7a36e8e9eeb killall -u ofuser
+    def getPid(self, command, timeout=5):
+        """Get pid of a command."""
         if not self.containerId:
             self.getContainerId()
-        killer = 'docker exec -i {} killall -u ofuser'.format(self.containerId)
+
+        self._pid = None
+        cmd = 'docker exec -i {} pgrep {}'.format(self.containerId, command)
+        cmds = '&'.join(self.shellinit + (cmd,))
+        sys.stdout.flush()
+        timeout_start = time.time()
+        while time.time() < timeout_start + timeout:
+            pids = Popen(cmds, shell=True, stdout=PIPE)
+            pp = [int(p) for p in tuple(pids.stdout)]
+            pp.sort()
+            if pp:
+                self._pid = int(pp[-1])
+                sys.stdout.flush()
+                return self._pid
+            else:
+                time.sleep(0.5)
+        sys.stdout.flush()
+
+    def terminate(self, pid=None, force=False):
+        """Kill the command using the pid."""
+        if not self.containerId:
+            self.getContainerId()
+        pid = pid or self.pid
+        if not pid:
+            return
+        if force:
+            killer = 'docker exec -i {} kill -9 {}'.format(self.containerId, pid)
+        else:
+            killer = 'docker exec -i {} kill {}'.format(self.containerId, pid)
 
         cmds = '&'.join(self.shellinit + (killer,))
-        p = Popen(cmds, shell=True)
+        sys.stdout.flush()
+        k = Popen(cmds, shell=True, stdout=PIPE)
+        print(''.join(tuple(k.stdout)))
 
     @property
     def __ofBatchFile(self):
         if Version.OFFullVer == 'v3.0+':
-            return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat'
+            return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts' \
+                '\start_OF.bat'
         else:
             return r'C:\Program Files (x86)\ESI\OpenFOAM\{}\\' \
                 'Windows\Scripts\start_OF.bat'.format(Version.OFFullVer[1:-1])
@@ -1187,10 +1242,9 @@ class RunManager(object):
         return _base.format(self.__separator, self.dockerPath,
                             self.__separator.join(self.shellinit))
 
-    # TODO: Update controlDict.application for multiple commands
+    # TODO(): Update controlDict.application for multiple commands
     def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
-        """
-        Get command line for an OpenFOAM command in parallel or serial.
+        """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
@@ -1215,10 +1269,10 @@ class RunManager(object):
                     decomposeParDict = None
                 try:
                     arg = args[count]
-                except:
+                except TypeError:
                     arg = args
 
-                logs[count] = self.__command(c, None, decomposeParDict,
+                logs[count] = self.__command(c, (arg,), decomposeParDict,
                                              includeHeader)
 
             command = '&'.join(log.cmd for log in logs)
@@ -1228,12 +1282,11 @@ class RunManager(object):
             return res(command, logfiles, errorfiles)
 
     def __command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
-        """
-        Get command line for an OpenFOAM command in parallel or serial.
+        """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
-            args: List of optional arguments for command. e.g. ('c', 'latestTime')
+            args: List of optional arguments for command. e.g. ('-c', '-latestTime')
             decomposeParDict: decomposeParDict for parallel runs (default: None).
             includeHeader: Include header lines to set up the environment
                 (default: True).
@@ -1261,7 +1314,7 @@ class RunManager(object):
             % (tee, self.logFolder, tee, self.errFolder)
 
         # join arguments for the command
-        arguments = '' if not args else '-{}'.format(' -'.join(args))
+        arguments = '' if not args else '{}'.format(' '.join(args))
 
         if decomposeParDict:
             # run in parallel
@@ -1311,11 +1364,20 @@ class RunManager(object):
         # shell should be True to run multiple commands at the same time.
         log = namedtuple('log', 'process logfiles errorfiles')
         p = Popen(cmd, shell=True)
+        c = command.split()[0].strip()
+        if c in ('blockMesh', 'surfaceFeatureExtract', 'postProcess'):
+            timeout = 1
+        else:
+            timeout = 5
+        time.sleep(0.5)  # wait 0.5 second to make sure the command has started
+        ppid = self.getPid(command.split()[0], timeout)
+        print('Butterfly is running {}. PID: {}'.format(command, ppid))
         if wait:
             p.communicate()
-            # once over kill all processes. This is effective if the user has
-            # canceled the run, otherwise there is no process to kill.
-            self.terminate()
+            # once over try to kill the process if exist.
+            # This will ensure that the command will be terminated even if the
+            # user has canceled the run by closing the batch window.
+            self.terminate(ppid)
 
         return log(p, logfiles, errfiles)
 
@@ -1390,8 +1452,7 @@ libraries such as pyFOAM.</p></div>
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.runmanager.RunManager" class="source">
     <pre><code>class RunManager(object):
-    """
-    RunManager to write and run OpenFOAM commands through batch files.
+    """RunManager to write and run OpenFOAM commands through batch files.
 
     Run manager is currently only useful for running OpenFOAM for Windows which
     runs in a docker container. For linux systems simply use .bash files or
@@ -1411,6 +1472,12 @@ libraries such as pyFOAM.</p></div>
             projectName: A string for project name.
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
+        # make sure user has admin rights
+        if not ctypes.windll.shell32.IsUserAnAdmin():
+            raise UserNotAdminError(
+                'In order to run OpenFOAM using butterfly you must use an admin '
+                'account or run the program as administrator.')
+
         self.__projectName = projectName
         self.__separator = '&'
         self.isUsingDockerMachine = True \
@@ -1419,10 +1486,11 @@ libraries such as pyFOAM.</p></div>
 
         self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
             if self.isUsingDockerMachine \
-        else r'"C:\Program Files\Boot2Docker for Windows"'
+            else r'"C:\Program Files\Boot2Docker for Windows"'
 
         self.logFolder = './log'
         self.errFolder = './log'
+        self._pid = None
 
     @property
     def containerId(self):
@@ -1431,6 +1499,11 @@ libraries such as pyFOAM.</p></div>
             self.getContainerId()
 
         return self.__containerId
+
+    @property
+    def pid(self):
+        """Return PID for the latest command."""
+        return self._pid
 
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
@@ -1446,11 +1519,15 @@ libraries such as pyFOAM.</p></div>
             process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
                             stderr=PIPE)
 
-        if tuple(process.stderr):
-            print 'ERROR!'
-            for line in process.stderr:
-                print line
-            # return
+        err = '\n'.join(process.stderr)
+        if err:
+            if err.find('Error checking TLS connection: Host is not running') != -1:
+                msg = ' Docker machine is not running! Run Oracle VM VirtualBox Manager ' \
+                    'as administrator and make sure "default" machine is "running".'
+            else:
+                msg = ''
+
+            raise IOError('{}\n\t{}'.format(err, msg))
 
         return tuple(line.replace('$Env:', 'set ')
                      .replace(' = ', '=')
@@ -1470,34 +1547,61 @@ libraries such as pyFOAM.</p></div>
 
         if tuple(p.stderr):
             for line in p.stderr:
-                print line
+                print(line)
             return
 
         for count, line in enumerate(p.stdout):
             if line.find('of_plus') > -1:
                 # find container
                 _id = line.split()[0]
-                print 'container id: {}'.format(_id)
+                print('container id: {}'.format(_id))
 
         self.__containerId = _id
 
-    def terminate(self):
-        """Kill all process under username ofuser."""
-        # This code failed but should return pid for the container
-        # docker inspect --format="{{ .State.Pid }}" e7a36e8e9eeb'
-        # for now I kill all process in docker.
-        # docker exec -i e7a36e8e9eeb killall -u ofuser
+    def getPid(self, command, timeout=5):
+        """Get pid of a command."""
         if not self.containerId:
             self.getContainerId()
-        killer = 'docker exec -i {} killall -u ofuser'.format(self.containerId)
+
+        self._pid = None
+        cmd = 'docker exec -i {} pgrep {}'.format(self.containerId, command)
+        cmds = '&'.join(self.shellinit + (cmd,))
+        sys.stdout.flush()
+        timeout_start = time.time()
+        while time.time() < timeout_start + timeout:
+            pids = Popen(cmds, shell=True, stdout=PIPE)
+            pp = [int(p) for p in tuple(pids.stdout)]
+            pp.sort()
+            if pp:
+                self._pid = int(pp[-1])
+                sys.stdout.flush()
+                return self._pid
+            else:
+                time.sleep(0.5)
+        sys.stdout.flush()
+
+    def terminate(self, pid=None, force=False):
+        """Kill the command using the pid."""
+        if not self.containerId:
+            self.getContainerId()
+        pid = pid or self.pid
+        if not pid:
+            return
+        if force:
+            killer = 'docker exec -i {} kill -9 {}'.format(self.containerId, pid)
+        else:
+            killer = 'docker exec -i {} kill {}'.format(self.containerId, pid)
 
         cmds = '&'.join(self.shellinit + (killer,))
-        p = Popen(cmds, shell=True)
+        sys.stdout.flush()
+        k = Popen(cmds, shell=True, stdout=PIPE)
+        print(''.join(tuple(k.stdout)))
 
     @property
     def __ofBatchFile(self):
         if Version.OFFullVer == 'v3.0+':
-            return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts\start_OF.bat'
+            return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts' \
+                '\start_OF.bat'
         else:
             return r'C:\Program Files (x86)\ESI\OpenFOAM\{}\\' \
                 'Windows\Scripts\start_OF.bat'.format(Version.OFFullVer[1:-1])
@@ -1523,10 +1627,9 @@ libraries such as pyFOAM.</p></div>
         return _base.format(self.__separator, self.dockerPath,
                             self.__separator.join(self.shellinit))
 
-    # TODO: Update controlDict.application for multiple commands
+    # TODO(): Update controlDict.application for multiple commands
     def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
-        """
-        Get command line for an OpenFOAM command in parallel or serial.
+        """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
@@ -1551,10 +1654,10 @@ libraries such as pyFOAM.</p></div>
                     decomposeParDict = None
                 try:
                     arg = args[count]
-                except:
+                except TypeError:
                     arg = args
 
-                logs[count] = self.__command(c, None, decomposeParDict,
+                logs[count] = self.__command(c, (arg,), decomposeParDict,
                                              includeHeader)
 
             command = '&'.join(log.cmd for log in logs)
@@ -1564,12 +1667,11 @@ libraries such as pyFOAM.</p></div>
             return res(command, logfiles, errorfiles)
 
     def __command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
-        """
-        Get command line for an OpenFOAM command in parallel or serial.
+        """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
-            args: List of optional arguments for command. e.g. ('c', 'latestTime')
+            args: List of optional arguments for command. e.g. ('-c', '-latestTime')
             decomposeParDict: decomposeParDict for parallel runs (default: None).
             includeHeader: Include header lines to set up the environment
                 (default: True).
@@ -1597,7 +1699,7 @@ libraries such as pyFOAM.</p></div>
             % (tee, self.logFolder, tee, self.errFolder)
 
         # join arguments for the command
-        arguments = '' if not args else '-{}'.format(' -'.join(args))
+        arguments = '' if not args else '{}'.format(' '.join(args))
 
         if decomposeParDict:
             # run in parallel
@@ -1647,11 +1749,20 @@ libraries such as pyFOAM.</p></div>
         # shell should be True to run multiple commands at the same time.
         log = namedtuple('log', 'process logfiles errorfiles')
         p = Popen(cmd, shell=True)
+        c = command.split()[0].strip()
+        if c in ('blockMesh', 'surfaceFeatureExtract', 'postProcess'):
+            timeout = 1
+        else:
+            timeout = 5
+        time.sleep(0.5)  # wait 0.5 second to make sure the command has started
+        ppid = self.getPid(command.split()[0], timeout)
+        print('Butterfly is running {}. PID: {}'.format(command, ppid))
         if wait:
             p.communicate()
-            # once over kill all processes. This is effective if the user has
-            # canceled the run, otherwise there is no process to kill.
-            self.terminate()
+            # once over try to kill the process if exist.
+            # This will ensure that the command will be terminated even if the
+            # user has canceled the run by closing the batch window.
+            self.terminate(ppid)
 
         return log(p, logfiles, errfiles)
 
@@ -1769,6 +1880,17 @@ libraries such as pyFOAM.</p></div>
 </div>
 
             </div>
+            <div class="item">
+            <p id="butterfly.runmanager.RunManager.pid" class="name">var <span class="ident">pid</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Return PID for the latest command.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
           <h3>Methods</h3>
             
   <div class="item">
@@ -1793,6 +1915,11 @@ libraries such as pyFOAM.</p></div>
         projectName: A string for project name.
     """
     assert os.name == 'nt', "Currently RunManager is only supported on Windows."
+    # make sure user has admin rights
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        raise UserNotAdminError(
+            'In order to run OpenFOAM using butterfly you must use an admin '
+            'account or run the program as administrator.')
     self.__projectName = projectName
     self.__separator = '&'
     self.isUsingDockerMachine = True \
@@ -1800,9 +1927,10 @@ libraries such as pyFOAM.</p></div>
         else False
     self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
         if self.isUsingDockerMachine \
-    else r'"C:\Program Files\Boot2Docker for Windows"'
+        else r'"C:\Program Files\Boot2Docker for Windows"'
     self.logFolder = './log'
     self.errFolder = './log'
+    self._pid = None
 </code></pre>
   </div>
 </div>
@@ -1903,8 +2031,7 @@ Returns:
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager.command', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.runmanager.RunManager.command" class="source">
     <pre><code>def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
-    """
-    Get command line for an OpenFOAM command in parallel or serial.
+    """Get command line for an OpenFOAM command in parallel or serial.
     Args:
         cmd: An OpenFOAM command.
         args: List of optional arguments for command. e.g. ('c', 'latestTime')
@@ -1928,9 +2055,9 @@ Returns:
                 decomposeParDict = None
             try:
                 arg = args[count]
-            except:
+            except TypeError:
                 arg = args
-            logs[count] = self.__command(c, None, decomposeParDict,
+            logs[count] = self.__command(c, (arg,), decomposeParDict,
                                          includeHeader)
         command = '&'.join(log.cmd for log in logs)
         logfiles = tuple(ff for log in logs for ff in log.logfiles)
@@ -1986,14 +2113,53 @@ Returns:
     p = Popen(cmds, shell=True, stdout=PIPE, stderr=PIPE)
     if tuple(p.stderr):
         for line in p.stderr:
-            print line
+            print(line)
         return
     for count, line in enumerate(p.stdout):
         if line.find('of_plus') > -1:
             # find container
             _id = line.split()[0]
-            print 'container id: {}'.format(_id)
+            print('container id: {}'.format(_id))
     self.__containerId = _id
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.runmanager.RunManager.getPid">
+    <p>def <span class="ident">getPid</span>(</p><p>self, command, timeout=5)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Get pid of a command.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager.getPid', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.runmanager.RunManager.getPid" class="source">
+    <pre><code>def getPid(self, command, timeout=5):
+    """Get pid of a command."""
+    if not self.containerId:
+        self.getContainerId()
+    self._pid = None
+    cmd = 'docker exec -i {} pgrep {}'.format(self.containerId, command)
+    cmds = '&'.join(self.shellinit + (cmd,))
+    sys.stdout.flush()
+    timeout_start = time.time()
+    while time.time() < timeout_start + timeout:
+        pids = Popen(cmds, shell=True, stdout=PIPE)
+        pp = [int(p) for p in tuple(pids.stdout)]
+        pp.sort()
+        if pp:
+            self._pid = int(pp[-1])
+            sys.stdout.flush()
+            return self._pid
+        else:
+            time.sleep(0.5)
+    sys.stdout.flush()
 </code></pre>
   </div>
 </div>
@@ -2025,11 +2191,14 @@ Returns:
         # older versions are using boot2docker
         process = Popen('boot2docker shellinit', shell=True, stdout=PIPE,
                         stderr=PIPE)
-    if tuple(process.stderr):
-        print 'ERROR!'
-        for line in process.stderr:
-            print line
-        # return
+    err = '\n'.join(process.stderr)
+    if err:
+        if err.find('Error checking TLS connection: Host is not running') != -1:
+            msg = ' Docker machine is not running! Run Oracle VM VirtualBox Manager ' \
+                'as administrator and make sure "default" machine is "running".'
+        else:
+            msg = ''
+        raise IOError('{}\n\t{}'.format(err, msg))
     return tuple(line.replace('$Env:', 'set ')
                  .replace(' = ', '=')
                  .replace('"', '').strip()
@@ -2095,11 +2264,20 @@ Returns:
     # shell should be True to run multiple commands at the same time.
     log = namedtuple('log', 'process logfiles errorfiles')
     p = Popen(cmd, shell=True)
+    c = command.split()[0].strip()
+    if c in ('blockMesh', 'surfaceFeatureExtract', 'postProcess'):
+        timeout = 1
+    else:
+        timeout = 5
+    time.sleep(0.5)  # wait 0.5 second to make sure the command has started
+    ppid = self.getPid(command.split()[0], timeout)
+    print('Butterfly is running {}. PID: {}'.format(command, ppid))
     if wait:
         p.communicate()
-        # once over kill all processes. This is effective if the user has
-        # canceled the run, otherwise there is no process to kill.
-        self.terminate()
+        # once over try to kill the process if exist.
+        # This will ensure that the command will be terminated even if the
+        # user has canceled the run by closing the batch window.
+        self.terminate(ppid)
     return log(p, logfiles, errfiles)
 </code></pre>
   </div>
@@ -2132,33 +2310,85 @@ Returns:
             
   <div class="item">
     <div class="name def" id="butterfly.runmanager.RunManager.terminate">
-    <p>def <span class="ident">terminate</span>(</p><p>self)</p>
+    <p>def <span class="ident">terminate</span>(</p><p>self, pid=None, force=False)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Kill all process under username ofuser.</p></div>
+    <div class="desc"><p>Kill the command using the pid.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.RunManager.terminate', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.runmanager.RunManager.terminate" class="source">
-    <pre><code>def terminate(self):
-    """Kill all process under username ofuser."""
-    # This code failed but should return pid for the container
-    # docker inspect --format="{{ .State.Pid }}" e7a36e8e9eeb'
-    # for now I kill all process in docker.
-    # docker exec -i e7a36e8e9eeb killall -u ofuser
+    <pre><code>def terminate(self, pid=None, force=False):
+    """Kill the command using the pid."""
     if not self.containerId:
         self.getContainerId()
-    killer = 'docker exec -i {} killall -u ofuser'.format(self.containerId)
+    pid = pid or self.pid
+    if not pid:
+        return
+    if force:
+        killer = 'docker exec -i {} kill -9 {}'.format(self.containerId, pid)
+    else:
+        killer = 'docker exec -i {} kill {}'.format(self.containerId, pid)
     cmds = '&'.join(self.shellinit + (killer,))
-    p = Popen(cmds, shell=True)
+    sys.stdout.flush()
+    k = Popen(cmds, shell=True, stdout=PIPE)
+    print(''.join(tuple(k.stdout)))
 </code></pre>
   </div>
 </div>
 
   </div>
   
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="butterfly.runmanager.UserNotAdminError" class="name">class <span class="ident">UserNotAdminError</span></p>
+      
+  
+    <div class="desc"><p>Exception for non-admin users.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.runmanager.UserNotAdminError', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.runmanager.UserNotAdminError" class="source">
+    <pre><code>class UserNotAdminError(Exception):
+    """Exception for non-admin users."""
+    pass
+</code></pre>
+  </div>
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#butterfly.runmanager.UserNotAdminError">UserNotAdminError</a></li>
+          <li>exceptions.Exception</li>
+          <li>exceptions.BaseException</li>
+          <li>__builtin__.object</li>
+          </ul>
+          <h3>Class variables</h3>
+            <div class="item">
+            <p id="butterfly.runmanager.UserNotAdminError.args" class="name">var <span class="ident">args</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.runmanager.UserNotAdminError.message" class="name">var <span class="ident">message</span></p>
+            
+
+            
+  
+  <div class="source_cont">
+</div>
+
+            </div>
       </div>
       </div>
 

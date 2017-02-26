@@ -3,8 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>butterfly.g API documentation</title>
-    <meta name="description" content="g[ravity] class." />
+    <title>butterfly_dynamo.refinementRegion API documentation</title>
+    <meta name="description" content="RefinementRegion for Dynamo." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -989,22 +989,15 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly.g.G">G</a></span>
+        <span class="class_name"><a href="#butterfly_dynamo.refinementRegion.RefinementRegionDS">RefinementRegionDS</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly.g.G.convertBoolValue">convertBoolValue</a></li>
-    <li class="mono"><a href="#butterfly.g.G.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly.g.G.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly.g.G.body">body</a></li>
-    <li class="mono"><a href="#butterfly.g.G.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly.g.G.fromFile">fromFile</a></li>
-    <li class="mono"><a href="#butterfly.g.G.getValueByParameter">getValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.g.G.header">header</a></li>
-    <li class="mono"><a href="#butterfly.g.G.save">save</a></li>
-    <li class="mono"><a href="#butterfly.g.G.setValueByParameter">setValueByParameter</a></li>
-    <li class="mono"><a href="#butterfly.g.G.toOpenFOAM">toOpenFOAM</a></li>
-    <li class="mono"><a href="#butterfly.g.G.updateValues">updateValues</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.refinementRegion.RefinementRegionDS.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.refinementRegion.RefinementRegionDS.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.refinementRegion.RefinementRegionDS.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.refinementRegion.RefinementRegionDS.toSTL">toSTL</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.refinementRegion.RefinementRegionDS.writeToStl">writeToStl</a></li>
   </ul>
 
         </li>
@@ -1022,42 +1015,36 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">butterfly.g</span> module</h1>
-  <p>g[ravity] class.</p>
+  <h1 class="title"><span class="name">butterfly_dynamo.refinementRegion</span> module</h1>
+  <p>RefinementRegion for Dynamo.</p>
   
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.refinementRegion', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.refinementRegion" class="source">
     <pre><code># coding=utf-8
-"""g[ravity] class."""
-from foamfile import FoamFile, foamFileFromFile
-from collections import OrderedDict
+"""RefinementRegion for Dynamo."""
+from butterfly.refinementRegion import RefinementRegion
+from .geometry import MeshDS
 
 
-class G(FoamFile):
-    """G (gravity) class."""
+class RefinementRegionDS(RefinementRegion):
+    """Butterfly refinement region in Dynamo.
 
-    # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['dimensions'] = '[0 1 -2 0 0 0 0]'
-    __defaultValues['#include'] = None
-    __defaultValues['value'] = '(0 0 -9.81)'
+    Attributes:
+        name: Name as a string (A-Z a-z 0-9).
+        geometries: A list of Dynamo meshes or Breps. All input geometries
+            will be converted as a joined mesh.
+        refinementMode: Refinement mode (0: inside, 1: outside, 2: distance)
+        meshingParameters: Dynamo meshing parameters for meshing brep geometries.
+            In case geometry is Mesh this input won't be used.
+    """
 
-    def __init__(self, values=None):
-        """Init class."""
-        FoamFile.__init__(self, name='g',
-                          cls='uniformDimensionedVectorField',
-                          location='constant',
-                          defaultValues=self.__defaultValues,
-                          values=values)
-
-    @classmethod
-    def fromFile(cls, filepath):
-        """Create a FoamFile from a file.
-
-        Args:
-            filepath: Full file path to dictionary.
-        """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+    def __init__(self, name, geometries, refinementMode, tolerance=-1,
+                 maxGridLines=512):
+        """Init Butterfly geometry."""
+        _mesh = MeshDS(geometries, tolerance, maxGridLines)
+        self.__geometry = _mesh.geometry
+        RefinementRegion.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
+                                  _mesh.normals, refinementMode)
 </code></pre>
   </div>
 
@@ -1069,38 +1056,39 @@ class G(FoamFile):
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
-      <p id="butterfly.g.G" class="name">class <span class="ident">G</span></p>
+      <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS" class="name">class <span class="ident">RefinementRegionDS</span></p>
       
   
-    <div class="desc"><p>G (gravity) class.</p></div>
+    <div class="desc"><p>Butterfly refinement region in Dynamo.</p>
+<p>Attributes:
+    name: Name as a string (A-Z a-z 0-9).
+    geometries: A list of Dynamo meshes or Breps. All input geometries
+        will be converted as a joined mesh.
+    refinementMode: Refinement mode (0: inside, 1: outside, 2: distance)
+    meshingParameters: Dynamo meshing parameters for meshing brep geometries.
+        In case geometry is Mesh this input won't be used.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G" class="source">
-    <pre><code>class G(FoamFile):
-    """G (gravity) class."""
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.refinementRegion.RefinementRegionDS', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.refinementRegion.RefinementRegionDS" class="source">
+    <pre><code>class RefinementRegionDS(RefinementRegion):
+    """Butterfly refinement region in Dynamo.
 
-    # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['dimensions'] = '[0 1 -2 0 0 0 0]'
-    __defaultValues['#include'] = None
-    __defaultValues['value'] = '(0 0 -9.81)'
+    Attributes:
+        name: Name as a string (A-Z a-z 0-9).
+        geometries: A list of Dynamo meshes or Breps. All input geometries
+            will be converted as a joined mesh.
+        refinementMode: Refinement mode (0: inside, 1: outside, 2: distance)
+        meshingParameters: Dynamo meshing parameters for meshing brep geometries.
+            In case geometry is Mesh this input won't be used.
+    """
 
-    def __init__(self, values=None):
-        """Init class."""
-        FoamFile.__init__(self, name='g',
-                          cls='uniformDimensionedVectorField',
-                          location='constant',
-                          defaultValues=self.__defaultValues,
-                          values=values)
-
-    @classmethod
-    def fromFile(cls, filepath):
-        """Create a FoamFile from a file.
-
-        Args:
-            filepath: Full file path to dictionary.
-        """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+    def __init__(self, name, geometries, refinementMode, tolerance=-1,
+                 maxGridLines=512):
+        """Init Butterfly geometry."""
+        _mesh = MeshDS(geometries, tolerance, maxGridLines)
+        self.__geometry = _mesh.geometry
+        RefinementRegion.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
+                                  _mesh.normals, refinementMode)
 </code></pre>
   </div>
 </div>
@@ -1109,103 +1097,105 @@ class G(FoamFile):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly.g.G">G</a></li>
-          <li>butterfly.foamfile.FoamFile</li>
+          <li><a href="#butterfly_dynamo.refinementRegion.RefinementRegionDS">RefinementRegionDS</a></li>
+          <li>butterfly.refinementRegion.RefinementRegion</li>
+          <li>butterfly.geometry._BFMesh</li>
           <li>__builtin__.object</li>
           </ul>
-          <h3>Static methods</h3>
-            
-  <div class="item">
-    <div class="name def" id="butterfly.g.G.convertBoolValue">
-    <p>def <span class="ident">convertBoolValue</span>(</p><p>v=True)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Convert Boolean values to on/off string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.convertBoolValue', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.convertBoolValue" class="source">
-    <pre><code>@staticmethod
-def convertBoolValue(v=True):
-    """Convert Boolean values to on/off string."""
-    _v = ('off', 'on')
-    if v in _v:
-        return v
-    if v:
-        return 'on'
-    else:
-        return 'off'
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly.g.G.isConstantFile" class="name">var <span class="ident">isConstantFile</span></p>
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.faceIndices" class="name">var <span class="ident">faceIndices</span></p>
             
 
             
   
-    <div class="desc"><p>Check if the file location is 'constant' folder.</p></div>
+    <div class="desc"><p>A flatten list of (a, b, c) for indices for each face.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.g.G.isFoamFile" class="name">var <span class="ident">isFoamFile</span></p>
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.isBFMesh" class="name">var <span class="ident">isBFMesh</span></p>
             
 
             
   
-    <div class="desc"><p>Return True for FoamFile.</p></div>
+    <div class="desc"><p>Return True for Butterfly meshes.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.g.G.isSystemFile" class="name">var <span class="ident">isSystemFile</span></p>
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.isRefinementRegion" class="name">var <span class="ident">isRefinementRegion</span></p>
             
 
             
   
-    <div class="desc"><p>Check if the file location is 'system' folder.</p></div>
+    <div class="desc"><p>Return True for Butterfly refinement region.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.g.G.isZeroFile" class="name">var <span class="ident">isZeroFile</span></p>
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.max" class="name">var <span class="ident">max</span></p>
             
 
             
   
-    <div class="desc"><p>Check if the file location is folder 0.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.g.G.parameters" class="name">var <span class="ident">parameters</span></p>
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.min" class="name">var <span class="ident">min</span></p>
             
 
             
   
-    <div class="desc"><p>Get list of parameters.</p></div>
   <div class="source_cont">
 </div>
 
             </div>
             <div class="item">
-            <p id="butterfly.g.G.values" class="name">var <span class="ident">values</span></p>
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.name" class="name">var <span class="ident">name</span></p>
             
 
             
   
-    <div class="desc"><p>Return values as a dictionary.</p></div>
+    <div class="desc"><p>Butterfly geometry name.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.normals" class="name">var <span class="ident">normals</span></p>
+            
+
+            
+  
+    <div class="desc"><p>A flatten list of (x, y, z) for normals.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.refinementMode" class="name">var <span class="ident">refinementMode</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Boundary condition.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly_dynamo.refinementRegion.RefinementRegionDS.vertices" class="name">var <span class="ident">vertices</span></p>
+            
+
+            
+  
+    <div class="desc"><p>A flatten list of (x, y, z) for vertices.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1213,24 +1203,24 @@ def convertBoolValue(v=True):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly.g.G.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, values=None)</p>
+    <div class="name def" id="butterfly_dynamo.refinementRegion.RefinementRegionDS.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, geometries, refinementMode, tolerance=-1, maxGridLines=512)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init class.</p></div>
+    <div class="desc"><p>Init Butterfly geometry.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.__init__" class="source">
-    <pre><code>def __init__(self, values=None):
-    """Init class."""
-    FoamFile.__init__(self, name='g',
-                      cls='uniformDimensionedVectorField',
-                      location='constant',
-                      defaultValues=self.__defaultValues,
-                      values=values)
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.refinementRegion.RefinementRegionDS.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.refinementRegion.RefinementRegionDS.__init__" class="source">
+    <pre><code>def __init__(self, name, geometries, refinementMode, tolerance=-1,
+             maxGridLines=512):
+    """Init Butterfly geometry."""
+    _mesh = MeshDS(geometries, tolerance, maxGridLines)
+    self.__geometry = _mesh.geometry
+    RefinementRegion.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
+                              _mesh.normals, refinementMode)
 </code></pre>
   </div>
 </div>
@@ -1239,7 +1229,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.g.G.ToString">
+    <div class="name def" id="butterfly_dynamo.refinementRegion.RefinementRegionDS.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -1248,8 +1238,8 @@ def convertBoolValue(v=True):
   
     <div class="desc"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.refinementRegion.RefinementRegionDS.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.refinementRegion.RefinementRegionDS.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -1261,48 +1251,7 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.g.G.body">
-    <p>def <span class="ident">body</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return body string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.body', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.body" class="source">
-    <pre><code>def body(self):
-    """Return body string."""
-    # remove None values
-    def removeNone(d):
-        if isinstance(d, (dict, collections.OrderedDict)):
-            return collections.OrderedDict(
-                (k, removeNone(v)) for k, v in d.iteritems()
-                if v == {} or (v and removeNone(v)))
-        elif isinstance(d, (list, tuple)):
-            return [removeNone(v) for v in d if v and removeNone(v)]
-        else:
-            return d
-        return removeNone
-    _values = removeNone(self.values)
-    # make python dictionary look like c++ dictionary!!
-    of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
-        .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
-        .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
-    # remove first and last {} and prettify[!] the file
-    content = (line[4:] if not line.endswith('{') else self._splitLine(line)
-               for line in of.split("\n")[1:-1])
-    return "\n\n".join(content)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.g.G.duplicate">
+    <div class="name def" id="butterfly_dynamo.refinementRegion.RefinementRegionDS.duplicate">
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
@@ -1311,8 +1260,8 @@ def convertBoolValue(v=True):
   
     <div class="desc"><p>Return a copy of this object.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.duplicate" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.refinementRegion.RefinementRegionDS.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.refinementRegion.RefinementRegionDS.duplicate" class="source">
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
@@ -1324,26 +1273,52 @@ def convertBoolValue(v=True):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.g.G.fromFile">
-    <p>def <span class="ident">fromFile</span>(</p><p>cls, filepath)</p>
+    <div class="name def" id="butterfly_dynamo.refinementRegion.RefinementRegionDS.toSTL">
+    <p>def <span class="ident">toSTL</span>(</p><p>self, convertToMeters=1)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Create a FoamFile from a file.</p>
+    <div class="desc"><p>Get STL definition for this geometry as a string.</p>
 <p>Args:
-    filepath: Full file path to dictionary.</p></div>
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.fromFile', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.fromFile" class="source">
-    <pre><code>@classmethod
-def fromFile(cls, filepath):
-    """Create a FoamFile from a file.
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.refinementRegion.RefinementRegionDS.toSTL', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.refinementRegion.RefinementRegionDS.toSTL" class="source">
+    <pre><code>def toSTL(self, convertToMeters=1):
+    """Get STL definition for this geometry as a string.
     Args:
-        filepath: Full file path to dictionary.
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
     """
-    return cls(values=foamFileFromFile(filepath, cls.__name__))
+    _hea = "solid {}".format(self.name)
+    _tale = "endsolid {}".format(self.name)
+    _body = "   facet normal {0} {1} {2}\n" \
+            "     outer loop\n" \
+            "       vertex {3} {4} {5}\n" \
+            "       vertex {6} {7} {8}\n" \
+            "       vertex {9} {10} {11}\n" \
+            "     endloop\n" \
+            "   endfacet"
+    _bodyCollector = tuple(_body.format(
+        self.__normals[count][0],
+        self.__normals[count][1],
+        self.__normals[count][2],
+        self.__vertices[faceInd[0]][0] * convertToMeters,
+        self.__vertices[faceInd[0]][1] * convertToMeters,
+        self.__vertices[faceInd[0]][2] * convertToMeters,
+        self.__vertices[faceInd[1]][0] * convertToMeters,
+        self.__vertices[faceInd[1]][1] * convertToMeters,
+        self.__vertices[faceInd[1]][2] * convertToMeters,
+        self.__vertices[faceInd[2]][0] * convertToMeters,
+        self.__vertices[faceInd[2]][1] * convertToMeters,
+        self.__vertices[faceInd[2]][2] * convertToMeters
+    ) for count, faceInd in enumerate(self.__faceIndices))
+    return "{}\n{}\n{}\n".format(
+        _hea, "\n".join(_bodyCollector), _tale
+    )
 </code></pre>
   </div>
 </div>
@@ -1352,237 +1327,28 @@ def fromFile(cls, filepath):
   
             
   <div class="item">
-    <div class="name def" id="butterfly.g.G.getValueByParameter">
-    <p>def <span class="ident">getValueByParameter</span>(</p><p>self, parameter)</p>
+    <div class="name def" id="butterfly_dynamo.refinementRegion.RefinementRegionDS.writeToStl">
+    <p>def <span class="ident">writeToStl</span>(</p><p>self, folder, convertToMeters=1)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Get values for a given parameter by parameter name.</p>
+    <div class="desc"><p>Save BFFace to a stl file. File name will be self.name.</p>
 <p>Args:
-    parameter: Name of a parameter as a string.</p></div>
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.getValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.getValueByParameter" class="source">
-    <pre><code>def getValueByParameter(self, parameter):
-    """Get values for a given parameter by parameter name.
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.refinementRegion.RefinementRegionDS.writeToStl', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.refinementRegion.RefinementRegionDS.writeToStl" class="source">
+    <pre><code>def writeToStl(self, folder, convertToMeters=1):
+    """Save BFFace to a stl file. File name will be self.name.
     Args:
-        parameter: Name of a parameter as a string.
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
     """
-    try:
-        return self.values[parameter]
-    except KeyError:
-        raise KeyError('{} is not available in {}.'.format(
-            parameter, self.__class__.__name__
-        ))
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.g.G.header">
-    <p>def <span class="ident">header</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return open foam style string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.header', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.header" class="source">
-    <pre><code>def header(self):
-    """Return open foam style string."""
-    if self.location:
-        return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tlocation\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.location,
-                     self.name)
-    else:
-        return Header.header() + \
-            "FoamFile\n{\n" \
-            "\tversion\t\t%s;\n" \
-            "\tformat\t\t%s;\n" \
-            "\tclass\t\t%s;\n" \
-            "\tobject\t\t%s;\n" \
-            "}\n" % (self.__version, self.format, self.cls, self.name)
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.g.G.save">
-    <p>def <span class="ident">save</span>(</p><p>self, projectFolder, subFolder=None, overwrite=True)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Save to file.</p>
-<p>Args:
-    projectFolder: Path to project folder as a string.
-    subFolder: Optional input for subFolder (default: self.location).</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.save', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.save" class="source">
-    <pre><code>def save(self, projectFolder, subFolder=None, overwrite=True):
-    """Save to file.
-    Args:
-        projectFolder: Path to project folder as a string.
-        subFolder: Optional input for subFolder (default: self.location).
-    """
-    subFolder = subFolder or self.location.replace('"', '')
-    fp = os.path.join(projectFolder, subFolder, self.name)
-    if not overwrite and os.path.isfile(fp):
-        return
-    with open(fp, "wb") as outf:
-        outf.write(self.toOpenFOAM())
-    return fp
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.g.G.setValueByParameter">
-    <p>def <span class="ident">setValueByParameter</span>(</p><p>self, parameter, value)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Set value for a parameter.</p>
-<p>Args:
-    parameter: Name of a parameter as a string.
-    value: Parameter value as a string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.setValueByParameter', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.setValueByParameter" class="source">
-    <pre><code>def setValueByParameter(self, parameter, value):
-    """Set value for a parameter.
-    Args:
-        parameter: Name of a parameter as a string.
-        value: Parameter value as a string.
-    """
-    self.values[parameter] = value
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.g.G.toOpenFOAM">
-    <p>def <span class="ident">toOpenFOAM</span>(</p><p>self)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Return OpenFOAM string.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.toOpenFOAM', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.toOpenFOAM" class="source">
-    <pre><code>def toOpenFOAM(self):
-    """Return OpenFOAM string."""
-    return "\n".join((self.header(), self.body()))
-</code></pre>
-  </div>
-</div>
-
-  </div>
-  
-            
-  <div class="item">
-    <div class="name def" id="butterfly.g.G.updateValues">
-    <p>def <span class="ident">updateValues</span>(</p><p>self, v, replace=False, mute=False)</p>
-    </div>
-    
-
-    
-  
-    <div class="desc"><p>Update current values from dictionary v.</p>
-<p>if key is not available in current values it will be added, if the key
-already exists it will be updated.</p>
-<p>Returns:
-    True is the dictionary is updated.</p></div>
-  <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.g.G.updateValues', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly.g.G.updateValues" class="source">
-    <pre><code>def updateValues(self, v, replace=False, mute=False):
-    """Update current values from dictionary v.
-    if key is not available in current values it will be added, if the key
-    already exists it will be updated.
-    Returns:
-        True is the dictionary is updated.
-    """
-    def logChanges(original, new):
-        """compare this dictionary with the current values."""
-        if original is None:
-            original = {}
-        for key, value in new.items():
-            if key not in original:
-                # there is a new key so dictionary has changed.
-                if not mute:
-                    msg = '{} :: New values are added for {}.' \
-                        .format('.'.join(self.__parents), key)
-                    print(msg)
-                self.__hasChanged = True
-                return
-            if isinstance(value, (dict, collections.OrderedDict)):
-                self.__parents.append(key)
-                logChanges(original[key], value)
-            elif str(original[key]) != str(value):
-                    # there is a change in value
-                    if not mute:
-                        msg = '{}.{} is changed from "{}" to "{}".'\
-                            .format('.'.join(self.__parents), key,
-                                    original[key] if len(str(original[key])) < 100
-                                    else '%s...' % str(original[key])[:100],
-                                    value if len(str(value)) < 100
-                                    else '%s...' % str(value)[:100])
-                        print(msg)
-                    self.__hasChanged = True
-                    return
-    def modifyDict(original, new):
-        """Modify a dictionary based on a new dictionary."""
-        for key, value in new.items():
-            if key in original and isinstance(value, dict):
-                if isinstance(original[key], dict):
-                    modifyDict(original[key], value)
-                else:
-                    # the value was not a dict, replce them with the new one
-                    original[key] = value
-            else:
-                original[key] = value
-        return original
-    assert isinstance(v, dict), 'Expected dictionary not {}!'.format(type(v))
-    self.__parents = [self.__class__.__name__]
-    self.__hasChanged = False
-    logChanges(self.__values, v)
-    if self.__hasChanged:
-        if replace:
-            self.__values.update(v)
-        else:
-            self.__values = modifyDict(self.__values, v)
-        return True
-    else:
-        return False
+    with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
+        outf.write(self.toSTL(convertToMeters))
 </code></pre>
   </div>
 </div>

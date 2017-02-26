@@ -3,8 +3,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 
-    <title>butterfly_grasshopper.geometry API documentation</title>
-    <meta name="description" content="BF Grasshopper geometry library." />
+    <title>butterfly_dynamo.geometry API documentation</title>
+    <meta name="description" content="BF Dynamo geometry library." />
 
   <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
 
@@ -988,9 +988,9 @@ table {
     <li class="set"><h3><a href="#header-functions">Functions</a></h3>
       
   <ul>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFMeshToMesh">BFMeshToMesh</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.xyzToPoint">xyzToPoint</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.xyzToVector">xyzToVector</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFMeshToMesh">BFMeshToMesh</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.xyzToPoint">xyzToPoint</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.xyzToVector">xyzToVector</a></li>
   </ul>
 
     </li>
@@ -998,39 +998,39 @@ table {
     <li class="set"><h3><a href="#header-classes">Classes</a></h3>
       <ul>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly_grasshopper.geometry.BFBlockGeometry_GH">BFBlockGeometry_GH</a></span>
+        <span class="class_name"><a href="#butterfly_dynamo.geometry.BFBlockGeometry_DS">BFBlockGeometry_DS</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFBlockGeometry_GH.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFBlockGeometry_GH.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFBlockGeometry_GH.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFBlockGeometry_GH.toSTL">toSTL</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFBlockGeometry_GH.writeToStl">writeToStl</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFBlockGeometry_DS.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFBlockGeometry_DS.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFBlockGeometry_DS.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFBlockGeometry_DS.toSTL">toSTL</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFBlockGeometry_DS.writeToStl">writeToStl</a></li>
   </ul>
 
         </li>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></span>
+        <span class="class_name"><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFGeometryGH.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFGeometryGH.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFGeometryGH.duplicate">duplicate</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFGeometryGH.toSTL">toSTL</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.BFGeometryGH.writeToStl">writeToStl</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFGeometryDS.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFGeometryDS.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFGeometryDS.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFGeometryDS.toSTL">toSTL</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.BFGeometryDS.writeToStl">writeToStl</a></li>
   </ul>
 
         </li>
         <li class="mono">
-        <span class="class_name"><a href="#butterfly_grasshopper.geometry.MeshGH">MeshGH</a></span>
+        <span class="class_name"><a href="#butterfly_dynamo.geometry.MeshDS">MeshDS</a></span>
         
           
   <ul>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.MeshGH.__init__">__init__</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.MeshGH.ToString">ToString</a></li>
-    <li class="mono"><a href="#butterfly_grasshopper.geometry.MeshGH.duplicate">duplicate</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.MeshDS.__init__">__init__</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.MeshDS.ToString">ToString</a></li>
+    <li class="mono"><a href="#butterfly_dynamo.geometry.MeshDS.duplicate">duplicate</a></li>
   </ul>
 
         </li>
@@ -1048,16 +1048,27 @@ table {
 
 
   <header id="section-intro">
-  <h1 class="title"><span class="name">butterfly_grasshopper.geometry</span> module</h1>
-  <p>BF Grasshopper geometry library.</p>
+  <h1 class="title"><span class="name">butterfly_dynamo.geometry</span> module</h1>
+  <p>BF Dynamo geometry library.</p>
   
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry" class="source">
     <pre><code># coding=utf-8
-"""BF Grasshopper geometry library."""
+"""BF Dynamo geometry library."""
 try:
-    import Rhino as rc
-    from scriptcontext import doc
+    import clr
+    import System
+    clr.AddReference('ProtoGeometry')
+    import Autodesk.DesignScript.Geometry as DSGeometry
+    _loc = tuple(a.Location
+                 for a in System.AppDomain.CurrentDomain.GetAssemblies()
+                 if 'MeshToolkit' in a.FullName)
+    assert len(_loc) != 0, \
+        'Failed to find MeshToolkit!\n' \
+        'You need to install MeshToolkit from package maneger to use Butterfly.'
+
+    clr.AddReferenceToFileAndPath(_loc)
+    import Autodesk.Dynamo.MeshToolkit as MeshToolkit
 except ImportError:
     pass
 
@@ -1065,22 +1076,32 @@ from copy import deepcopy
 from butterfly.geometry import BFGeometry
 
 
-class MeshGH(object):
-    """Base mesh class for Butterfly Grasshopper.
+class MeshDS(object):
+    """Base mesh class for Butterfly Dynamo.
 
     Attributes:
-        geometries: A list of Grasshopper meshes or Breps. All input geometries
+        geometries: A list of Dynamo meshes or Breps. All input geometries
             will be converted as a joined mesh.
-        meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
-            In case geometry is Mesh this input won't be used.
+        meshingParameters: A tuple for tolerance and maxGridLines (default: (-1, 512)).
     """
 
     def __init__(self, geometries, meshingParameters=None):
-        """Init Butterfly geometry in Grasshopper."""
+        """Init Butterfly geometry in Dynamo."""
         if not meshingParameters:
-            meshingParameters = rc.Geometry.MeshingParameters.Default
+            meshingParameters = -1, 512
+        try:
+            tolerance = int(meshingParameters[0])
+            maxGridLines = int(meshingParameters[1])
+        except Exception as e:
+            msg = 'Failed to read meshingParameters from {}:\n{}'.format(
+                meshingParameters, e
+            )
+            print(msg)
+            tolerance = -1
+            maxGridLines = 512
 
-        self.__meshingParameters = meshingParameters
+        self.__tolerance = tolerance
+        self.__maxGridLines = maxGridLines
         self.geometry = geometries
 
     @property
@@ -1095,56 +1116,57 @@ class MeshGH(object):
         Args:
             geo: A list of geometries
         """
-        _geo = rc.Geometry.Mesh()
-
         # if geo is not a mesh try to mesh it
         # this is useful for creating stl files
+        _geo = []
         for g in geo:
-            if isinstance(g, rc.Geometry.Brep):
-                for m in rc.Geometry.Mesh.CreateFromBrep(g, self.__meshingParameters):
-                    _geo.Append(m)
-            elif isinstance(g, rc.Geometry.Mesh):
-                _geo.Append(g)
-            else:
-                raise ValueError("Input geometry should be Mesh or Brep not {}"
-                                 .format(type(g)))
+            try:
+                if not hasattr(g, 'vertices'):
+                    # not a mesh
+                    _geo.append(
+                        MeshToolkit.Mesh.ByGeometry(
+                            g, self.__tolerance, self.__maxGridLines))
+                elif hasattr(g, 'vertices'):
+                    _geo.append(g)
+            except Exception as e:
+                raise ValueError(
+                    "Failed to create a mesh from {}:\n\t{}".format(type(g), e))
 
-        self.__geometry = self.__triangulateMesh(_geo)
+        self.__geometry = self.__joinMesh(_geo)
 
     @property
     def normals(self):
         """Mesh Face normals."""
-        return tuple((n.X, n.Y, n.Z) for n in self.geometry.FaceNormals)
+        return tuple((n.X, n.Y, n.Z) for n in self.geometry.TriangleNormals())
 
     @property
     def vertices(self):
         """Mesh Face normals."""
-        return tuple((v.X, v.Y, v.Z) for v in self.geometry.Vertices)
+        return tuple((v.X, v.Y, v.Z) for v in self.geometry.Vertices())
 
     @property
     def faceIndices(self):
         """Mesh Face Indices."""
-        return tuple((f.A, f.B, f.C) for f in self.geometry.Faces)
+        _ind = tuple(self.geometry.VertexIndicesByTri())
+        return tuple(_ind[3 * i: 3 * i + 3] for i in range(len(_ind) / 3))
 
-    def __triangulateMesh(self, mesh):
-        """Triangulate Rhino Mesh."""
-        triMesh = rc.Geometry.Mesh()
+    def __joinMesh(self, mesh):
+        """Join a list of meshes into a joined mesh."""
+        if len(mesh) == 1:
+            return mesh[0]
 
-        for i in xrange(mesh.Vertices.Count):
-            triMesh.Vertices.Add(mesh.Vertices[i])
-
-        for face in mesh.Faces:
-            triMesh.Faces.AddFace(face.A, face.B, face.C)
-            if face.IsQuad:
-                triMesh.Faces.AddFace(face.A, face.C, face.D)
-
-        # collect mesh faces, normals and indices
-        triMesh.FaceNormals.ComputeFaceNormals()
-        triMesh.FaceNormals.UnitizeFaceNormals()
-        return triMesh
+        # collect vertices of all the meshes
+        dsPts = (pt for m in mesh for pts in m.Vertices for pt in pts)
+        verCount = -mesh[0].VertexCount
+        ind = []
+        for m in mesh:
+            verCount += m.VertexCount
+            ind.extend((i + verCount for i in m.VertexIndicesByTri()))
+        joinedMesh = MeshToolkit.Mesh.ByVerticesAndIndices(dsPts, ind)
+        return joinedMesh
 
     def duplicate(self):
-        """Return a copy of GHMesh."""
+        """Return a copy of DSMesh."""
         return deepcopy(self)
 
     def ToString(self):
@@ -1152,31 +1174,31 @@ class MeshGH(object):
         return self.__repr__()
 
     def __repr__(self):
-        """GHMesh."""
+        """DSMesh."""
         return str(self.geometry)
 
 
-class BFGeometryGH(BFGeometry):
+class BFGeometryDS(BFGeometry):
     """Base geometry class for Butterfly.
 
     Attributes:
         name: Name as a string (A-Z a-z 0-9).
-        geometries: A list of Grasshopper meshes or Breps. All input geometries
+        geometries: A list of Dynamo meshes or Breps. All input geometries
             will be converted as a joined mesh.
         boundaryCondition: Boundary condition for this geometry
-        meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
+        meshingParameters: Dynamo meshing parameters for meshing brep geometries.
             In case geometry is Mesh this input won't be used.
     """
 
     def __init__(self, name, geometries, boundaryCondition=None,
-                 refinementLevels=None, nSurfaceLayers=None,
-                 meshingParameters=None):
-        """Init Butterfly geometry in Grasshopper."""
-        # convert input geometries to a butterfly GHMesh.
-        _mesh = MeshGH(geometries, meshingParameters)
+                 refinementLevels=None, nSurfaceLayers=None, tolerance=-1,
+                 maxGridLines=512):
+        """Init Butterfly geometry in Dynamo."""
+        # convert input geometries to a butterfly DSMesh.
+        _mesh = MeshDS(geometries, (tolerance, maxGridLines))
 
         self.__geometry = _mesh.geometry
-
+        # put indices in groups of three
         BFGeometry.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
                             _mesh.normals, boundaryCondition, refinementLevels,
                             nSurfaceLayers)
@@ -1187,7 +1209,7 @@ class BFGeometryGH(BFGeometry):
         return self.__geometry
 
 
-class BFBlockGeometry_GH(BFGeometryGH):
+class BFBlockGeometry_DS(BFGeometryDS):
     """Butterfly block geometry.
 
     Use this geometry to create geometries for blockMeshDict.
@@ -1202,13 +1224,11 @@ class BFBlockGeometry_GH(BFGeometryGH):
             the geometry.
     """
 
-    def __init__(self, name, geometries, boundaryCondition=None,
-                 meshingParameters=None):
-        """Init Butterfly block geometry in Grasshopper."""
-        BFGeometryGH.__init__(self, name, geometries, boundaryCondition,
-                              meshingParameters=meshingParameters)
-
-        self.__calculateBlockBorderVertices(geometries)
+    def __init__(self, name, geometries, boundaryCondition=None, tolerance=-1,
+                 maxGridLines=512):
+        """Init Butterfly block geometry in Dynamo."""
+        BFGeometryDS.__init__(self, name, geometries, boundaryCondition,
+                              tolerance=tolerance, maxGridLines=maxGridLines)
 
     @property
     def isBFBlockGeometry(self):
@@ -1218,59 +1238,41 @@ class BFBlockGeometry_GH(BFGeometryGH):
     @property
     def borderVertices(self):
         """Return list of border vertices."""
-        return self.__borderVertices
-
-    def __calculateBlockBorderVertices(self, geo):
-        """Get list of border vertices."""
-        self.__borderVertices = []
-        for g in geo:
-            if not isinstance(g, rc.Geometry.Brep):
-                raise TypeError('{} is not a Brep.'.format(g))
-
-            self.__borderVertices.extend(
-                tuple(tuple((v.X, v.Y, v.Z) for v in self.__getFaceBorderVertices(f))
-                      for f in g.Faces)
-            )
-
-    @staticmethod
-    def __getFaceBorderVertices(face):
-        """Get border vertices."""
-        srf = face.DuplicateFace(doc.ModelAbsoluteTolerance)
-        edgesJoined = rc.Geometry.Curve.JoinCurves(srf.DuplicateEdgeCurves(True))
-        return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
+        # BFBlockGeometry is planar so vertices of geometry are the same as
+        # vertices of meshed geometry
+        return self.geometry.vertices
 
 
+# TODO(): add coloring
 def BFMeshToMesh(bfMesh, color=None, scale=1):
-    """convert a BFMesh object to Grasshopper mesh."""
+    """convert a BFMesh object to Dynamo mesh."""
     assert hasattr(bfMesh, 'vertices'), \
         '\t{} is not a valid BFMesh.'.format(bfMesh)
     assert hasattr(bfMesh, 'faceIndices'), \
         '\t{} is not a valid BFMesh.'.format(bfMesh)
 
-    mesh = rc.Geometry.Mesh()
-    for v in bfMesh.vertices:
-        mesh.Vertices.Add(rc.Geometry.Point3d(*v))
-
-    for face in bfMesh.faceIndices:
-        mesh.Faces.AddFace(*face)
-
-    if color:
-        mesh.VertexColors.CreateMonotoneMesh(color)
+    dsPts = (DSGeometry.Point.ByCoordinates(*p) for p in bfMesh.vertices)
+    ind = (i for face in bfMesh.faceIndices for i in face)
+    mesh = MeshToolkit.Mesh.ByVerticesAndIndices(dsPts, ind)
 
     if scale != 1:
         mesh.Scale(scale)
+
+    # if color:
+    #   meshDisplay = MeshDisplay.ByMeshColor(mesh, color)
+    #   return meshDisplay
 
     return mesh
 
 
 def xyzToPoint(xyz, convertFromMeters=1):
     """Convert a xyz tuple to Point."""
-    return rc.Geometry.Point3d(*(i * convertFromMeters for i in xyz))
+    return DSGeometry.Point.ByCoordinates(*(i * convertFromMeters for i in xyz))
 
 
 def xyzToVector(xyz):
     """Convert a xyz tuple to Vector."""
-    return rc.Geometry.Vector3d(*xyz)
+    return DSGeometry.Vector.ByCoordinates(*xyz)
 </code></pre>
   </div>
 
@@ -1281,36 +1283,34 @@ def xyzToVector(xyz):
     <h2 class="section-title" id="header-functions">Functions</h2>
       
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFMeshToMesh">
+    <div class="name def" id="butterfly_dynamo.geometry.BFMeshToMesh">
     <p>def <span class="ident">BFMeshToMesh</span>(</p><p>bfMesh, color=None, scale=1)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>convert a BFMesh object to Grasshopper mesh.</p></div>
+    <div class="desc"><p>convert a BFMesh object to Dynamo mesh.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFMeshToMesh', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFMeshToMesh" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFMeshToMesh', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFMeshToMesh" class="source">
     <pre><code>def BFMeshToMesh(bfMesh, color=None, scale=1):
-    """convert a BFMesh object to Grasshopper mesh."""
+    """convert a BFMesh object to Dynamo mesh."""
     assert hasattr(bfMesh, 'vertices'), \
         '\t{} is not a valid BFMesh.'.format(bfMesh)
     assert hasattr(bfMesh, 'faceIndices'), \
         '\t{} is not a valid BFMesh.'.format(bfMesh)
 
-    mesh = rc.Geometry.Mesh()
-    for v in bfMesh.vertices:
-        mesh.Vertices.Add(rc.Geometry.Point3d(*v))
-
-    for face in bfMesh.faceIndices:
-        mesh.Faces.AddFace(*face)
-
-    if color:
-        mesh.VertexColors.CreateMonotoneMesh(color)
+    dsPts = (DSGeometry.Point.ByCoordinates(*p) for p in bfMesh.vertices)
+    ind = (i for face in bfMesh.faceIndices for i in face)
+    mesh = MeshToolkit.Mesh.ByVerticesAndIndices(dsPts, ind)
 
     if scale != 1:
         mesh.Scale(scale)
+
+    # if color:
+    #   meshDisplay = MeshDisplay.ByMeshColor(mesh, color)
+    #   return meshDisplay
 
     return mesh
 </code></pre>
@@ -1321,7 +1321,7 @@ def xyzToVector(xyz):
   
       
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.xyzToPoint">
+    <div class="name def" id="butterfly_dynamo.geometry.xyzToPoint">
     <p>def <span class="ident">xyzToPoint</span>(</p><p>xyz, convertFromMeters=1)</p>
     </div>
     
@@ -1330,11 +1330,11 @@ def xyzToVector(xyz):
   
     <div class="desc"><p>Convert a xyz tuple to Point.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.xyzToPoint', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.xyzToPoint" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.xyzToPoint', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.xyzToPoint" class="source">
     <pre><code>def xyzToPoint(xyz, convertFromMeters=1):
     """Convert a xyz tuple to Point."""
-    return rc.Geometry.Point3d(*(i * convertFromMeters for i in xyz))
+    return DSGeometry.Point.ByCoordinates(*(i * convertFromMeters for i in xyz))
 </code></pre>
   </div>
 </div>
@@ -1343,7 +1343,7 @@ def xyzToVector(xyz):
   
       
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.xyzToVector">
+    <div class="name def" id="butterfly_dynamo.geometry.xyzToVector">
     <p>def <span class="ident">xyzToVector</span>(</p><p>xyz)</p>
     </div>
     
@@ -1352,11 +1352,11 @@ def xyzToVector(xyz):
   
     <div class="desc"><p>Convert a xyz tuple to Vector.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.xyzToVector', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.xyzToVector" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.xyzToVector', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.xyzToVector" class="source">
     <pre><code>def xyzToVector(xyz):
     """Convert a xyz tuple to Vector."""
-    return rc.Geometry.Vector3d(*xyz)
+    return DSGeometry.Vector.ByCoordinates(*xyz)
 </code></pre>
   </div>
 </div>
@@ -1367,7 +1367,7 @@ def xyzToVector(xyz):
     <h2 class="section-title" id="header-classes">Classes</h2>
       
       <div class="item">
-      <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH" class="name">class <span class="ident">BFBlockGeometry_GH</span></p>
+      <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS" class="name">class <span class="ident">BFBlockGeometry_DS</span></p>
       
   
     <div class="desc"><p>Butterfly block geometry.</p>
@@ -1381,9 +1381,9 @@ def xyzToVector(xyz):
     borderVertices: List of lists of (x, y, z) values for each quad face of
         the geometry.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFBlockGeometry_GH', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFBlockGeometry_GH" class="source">
-    <pre><code>class BFBlockGeometry_GH(BFGeometryGH):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFBlockGeometry_DS', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFBlockGeometry_DS" class="source">
+    <pre><code>class BFBlockGeometry_DS(BFGeometryDS):
     """Butterfly block geometry.
 
     Use this geometry to create geometries for blockMeshDict.
@@ -1398,13 +1398,11 @@ def xyzToVector(xyz):
             the geometry.
     """
 
-    def __init__(self, name, geometries, boundaryCondition=None,
-                 meshingParameters=None):
-        """Init Butterfly block geometry in Grasshopper."""
-        BFGeometryGH.__init__(self, name, geometries, boundaryCondition,
-                              meshingParameters=meshingParameters)
-
-        self.__calculateBlockBorderVertices(geometries)
+    def __init__(self, name, geometries, boundaryCondition=None, tolerance=-1,
+                 maxGridLines=512):
+        """Init Butterfly block geometry in Dynamo."""
+        BFGeometryDS.__init__(self, name, geometries, boundaryCondition,
+                              tolerance=tolerance, maxGridLines=maxGridLines)
 
     @property
     def isBFBlockGeometry(self):
@@ -1414,26 +1412,9 @@ def xyzToVector(xyz):
     @property
     def borderVertices(self):
         """Return list of border vertices."""
-        return self.__borderVertices
-
-    def __calculateBlockBorderVertices(self, geo):
-        """Get list of border vertices."""
-        self.__borderVertices = []
-        for g in geo:
-            if not isinstance(g, rc.Geometry.Brep):
-                raise TypeError('{} is not a Brep.'.format(g))
-
-            self.__borderVertices.extend(
-                tuple(tuple((v.X, v.Y, v.Z) for v in self.__getFaceBorderVertices(f))
-                      for f in g.Faces)
-            )
-
-    @staticmethod
-    def __getFaceBorderVertices(face):
-        """Get border vertices."""
-        srf = face.DuplicateFace(doc.ModelAbsoluteTolerance)
-        edgesJoined = rc.Geometry.Curve.JoinCurves(srf.DuplicateEdgeCurves(True))
-        return (e.PointAtStart for e in edgesJoined[0].DuplicateSegments())
+        # BFBlockGeometry is planar so vertices of geometry are the same as
+        # vertices of meshed geometry
+        return self.geometry.vertices
 </code></pre>
   </div>
 </div>
@@ -1442,15 +1423,15 @@ def xyzToVector(xyz):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly_grasshopper.geometry.BFBlockGeometry_GH">BFBlockGeometry_GH</a></li>
-          <li><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></li>
+          <li><a href="#butterfly_dynamo.geometry.BFBlockGeometry_DS">BFBlockGeometry_DS</a></li>
+          <li><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></li>
           <li>butterfly.geometry.BFGeometry</li>
           <li>butterfly.geometry._BFMesh</li>
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.borderVertices" class="name">var <span class="ident">borderVertices</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.borderVertices" class="name">var <span class="ident">borderVertices</span></p>
             
 
             
@@ -1461,11 +1442,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.boundaryCondition" class="name">var <span class="ident">boundaryCondition</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.boundaryCondition" class="name">var <span class="ident">boundaryCondition</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.boundaryCondition">boundaryCondition</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.boundaryCondition">boundaryCondition</a></code>
     </p>
 
             
@@ -1476,11 +1457,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.faceIndices" class="name">var <span class="ident">faceIndices</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.faceIndices" class="name">var <span class="ident">faceIndices</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.faceIndices">faceIndices</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.faceIndices">faceIndices</a></code>
     </p>
 
             
@@ -1491,11 +1472,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.geometry" class="name">var <span class="ident">geometry</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.geometry" class="name">var <span class="ident">geometry</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.geometry">geometry</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.geometry">geometry</a></code>
     </p>
 
             
@@ -1506,7 +1487,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.isBFBlockGeometry" class="name">var <span class="ident">isBFBlockGeometry</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.isBFBlockGeometry" class="name">var <span class="ident">isBFBlockGeometry</span></p>
             
 
             
@@ -1517,11 +1498,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.isBFGeometry" class="name">var <span class="ident">isBFGeometry</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.isBFGeometry" class="name">var <span class="ident">isBFGeometry</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.isBFGeometry">isBFGeometry</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.isBFGeometry">isBFGeometry</a></code>
     </p>
 
             
@@ -1532,11 +1513,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.isBFMesh" class="name">var <span class="ident">isBFMesh</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.isBFMesh" class="name">var <span class="ident">isBFMesh</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.isBFMesh">isBFMesh</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.isBFMesh">isBFMesh</a></code>
     </p>
 
             
@@ -1547,11 +1528,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.max" class="name">var <span class="ident">max</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.max" class="name">var <span class="ident">max</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.max">max</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.max">max</a></code>
     </p>
 
             
@@ -1561,11 +1542,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.min" class="name">var <span class="ident">min</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.min" class="name">var <span class="ident">min</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.min">min</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.min">min</a></code>
     </p>
 
             
@@ -1575,11 +1556,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.nSurfaceLayers" class="name">var <span class="ident">nSurfaceLayers</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.nSurfaceLayers" class="name">var <span class="ident">nSurfaceLayers</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.nSurfaceLayers">nSurfaceLayers</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.nSurfaceLayers">nSurfaceLayers</a></code>
     </p>
 
             
@@ -1590,11 +1571,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.name" class="name">var <span class="ident">name</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.name" class="name">var <span class="ident">name</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.name">name</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.name">name</a></code>
     </p>
 
             
@@ -1605,11 +1586,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.normals" class="name">var <span class="ident">normals</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.normals" class="name">var <span class="ident">normals</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.normals">normals</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.normals">normals</a></code>
     </p>
 
             
@@ -1620,11 +1601,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.refinementLevels" class="name">var <span class="ident">refinementLevels</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.refinementLevels" class="name">var <span class="ident">refinementLevels</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.refinementLevels">refinementLevels</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.refinementLevels">refinementLevels</a></code>
     </p>
 
             
@@ -1635,11 +1616,11 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.vertices" class="name">var <span class="ident">vertices</span></p>
+            <p id="butterfly_dynamo.geometry.BFBlockGeometry_DS.vertices" class="name">var <span class="ident">vertices</span></p>
             
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.vertices">vertices</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.vertices">vertices</a></code>
     </p>
 
             
@@ -1652,27 +1633,26 @@ def xyzToVector(xyz):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, geometries, boundaryCondition=None, meshingParameters=None)</p>
+    <div class="name def" id="butterfly_dynamo.geometry.BFBlockGeometry_DS.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, geometries, boundaryCondition=None, tolerance=-1, maxGridLines=512)</p>
     </div>
     
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.__init__">__init__</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.__init__">__init__</a></code>
     </p>
 
     
   
-    <div class="desc"><p>Init Butterfly block geometry in Grasshopper.</p></div>
+    <div class="desc"><p>Init Butterfly block geometry in Dynamo.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.__init__" class="source">
-    <pre><code>def __init__(self, name, geometries, boundaryCondition=None,
-             meshingParameters=None):
-    """Init Butterfly block geometry in Grasshopper."""
-    BFGeometryGH.__init__(self, name, geometries, boundaryCondition,
-                          meshingParameters=meshingParameters)
-    self.__calculateBlockBorderVertices(geometries)
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFBlockGeometry_DS.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFBlockGeometry_DS.__init__" class="source">
+    <pre><code>def __init__(self, name, geometries, boundaryCondition=None, tolerance=-1,
+             maxGridLines=512):
+    """Init Butterfly block geometry in Dynamo."""
+    BFGeometryDS.__init__(self, name, geometries, boundaryCondition,
+                          tolerance=tolerance, maxGridLines=maxGridLines)
 </code></pre>
   </div>
 </div>
@@ -1681,21 +1661,21 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.ToString">
+    <div class="name def" id="butterfly_dynamo.geometry.BFBlockGeometry_DS.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.ToString">ToString</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.ToString">ToString</a></code>
     </p>
 
     
   
     <div class="desc inherited"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFBlockGeometry_DS.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFBlockGeometry_DS.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -1707,21 +1687,21 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.duplicate">
+    <div class="name def" id="butterfly_dynamo.geometry.BFBlockGeometry_DS.duplicate">
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.duplicate">duplicate</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.duplicate">duplicate</a></code>
     </p>
 
     
   
     <div class="desc inherited"><p>Return a copy of this object.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.duplicate" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFBlockGeometry_DS.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFBlockGeometry_DS.duplicate" class="source">
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
@@ -1733,13 +1713,13 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.toSTL">
+    <div class="name def" id="butterfly_dynamo.geometry.BFBlockGeometry_DS.toSTL">
     <p>def <span class="ident">toSTL</span>(</p><p>self, convertToMeters=1)</p>
     </div>
     
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.toSTL">toSTL</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.toSTL">toSTL</a></code>
     </p>
 
     
@@ -1749,8 +1729,8 @@ def xyzToVector(xyz):
     convertToMeters: A value to scale the geometry to meters. For isinstance
         if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.toSTL', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.toSTL" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFBlockGeometry_DS.toSTL', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFBlockGeometry_DS.toSTL" class="source">
     <pre><code>def toSTL(self, convertToMeters=1):
     """Get STL definition for this geometry as a string.
     Args:
@@ -1791,13 +1771,13 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFBlockGeometry_GH.writeToStl">
+    <div class="name def" id="butterfly_dynamo.geometry.BFBlockGeometry_DS.writeToStl">
     <p>def <span class="ident">writeToStl</span>(</p><p>self, folder, convertToMeters=1)</p>
     </div>
     
     <p class="inheritance">
      <strong>Inheritance:</strong>
-       <code><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></code>.<code><a href="#butterfly_grasshopper.geometry.BFGeometryGH.writeToStl">writeToStl</a></code>
+       <code><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></code>.<code><a href="#butterfly_dynamo.geometry.BFGeometryDS.writeToStl">writeToStl</a></code>
     </p>
 
     
@@ -1807,8 +1787,8 @@ def xyzToVector(xyz):
     convertToMeters: A value to scale the geometry to meters. For isinstance
         if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.writeToStl', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFBlockGeometry_GH.writeToStl" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFBlockGeometry_DS.writeToStl', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFBlockGeometry_DS.writeToStl" class="source">
     <pre><code>def writeToStl(self, folder, convertToMeters=1):
     """Save BFFace to a stl file. File name will be self.name.
     Args:
@@ -1827,41 +1807,41 @@ def xyzToVector(xyz):
       </div>
       
       <div class="item">
-      <p id="butterfly_grasshopper.geometry.BFGeometryGH" class="name">class <span class="ident">BFGeometryGH</span></p>
+      <p id="butterfly_dynamo.geometry.BFGeometryDS" class="name">class <span class="ident">BFGeometryDS</span></p>
       
   
     <div class="desc"><p>Base geometry class for Butterfly.</p>
 <p>Attributes:
     name: Name as a string (A-Z a-z 0-9).
-    geometries: A list of Grasshopper meshes or Breps. All input geometries
+    geometries: A list of Dynamo meshes or Breps. All input geometries
         will be converted as a joined mesh.
     boundaryCondition: Boundary condition for this geometry
-    meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
+    meshingParameters: Dynamo meshing parameters for meshing brep geometries.
         In case geometry is Mesh this input won't be used.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFGeometryGH', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFGeometryGH" class="source">
-    <pre><code>class BFGeometryGH(BFGeometry):
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFGeometryDS', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFGeometryDS" class="source">
+    <pre><code>class BFGeometryDS(BFGeometry):
     """Base geometry class for Butterfly.
 
     Attributes:
         name: Name as a string (A-Z a-z 0-9).
-        geometries: A list of Grasshopper meshes or Breps. All input geometries
+        geometries: A list of Dynamo meshes or Breps. All input geometries
             will be converted as a joined mesh.
         boundaryCondition: Boundary condition for this geometry
-        meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
+        meshingParameters: Dynamo meshing parameters for meshing brep geometries.
             In case geometry is Mesh this input won't be used.
     """
 
     def __init__(self, name, geometries, boundaryCondition=None,
-                 refinementLevels=None, nSurfaceLayers=None,
-                 meshingParameters=None):
-        """Init Butterfly geometry in Grasshopper."""
-        # convert input geometries to a butterfly GHMesh.
-        _mesh = MeshGH(geometries, meshingParameters)
+                 refinementLevels=None, nSurfaceLayers=None, tolerance=-1,
+                 maxGridLines=512):
+        """Init Butterfly geometry in Dynamo."""
+        # convert input geometries to a butterfly DSMesh.
+        _mesh = MeshDS(geometries, (tolerance, maxGridLines))
 
         self.__geometry = _mesh.geometry
-
+        # put indices in groups of three
         BFGeometry.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
                             _mesh.normals, boundaryCondition, refinementLevels,
                             nSurfaceLayers)
@@ -1878,14 +1858,14 @@ def xyzToVector(xyz):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly_grasshopper.geometry.BFGeometryGH">BFGeometryGH</a></li>
+          <li><a href="#butterfly_dynamo.geometry.BFGeometryDS">BFGeometryDS</a></li>
           <li>butterfly.geometry.BFGeometry</li>
           <li>butterfly.geometry._BFMesh</li>
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.boundaryCondition" class="name">var <span class="ident">boundaryCondition</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.boundaryCondition" class="name">var <span class="ident">boundaryCondition</span></p>
             
 
             
@@ -1896,7 +1876,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.faceIndices" class="name">var <span class="ident">faceIndices</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.faceIndices" class="name">var <span class="ident">faceIndices</span></p>
             
 
             
@@ -1907,7 +1887,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.geometry" class="name">var <span class="ident">geometry</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.geometry" class="name">var <span class="ident">geometry</span></p>
             
 
             
@@ -1918,7 +1898,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.isBFGeometry" class="name">var <span class="ident">isBFGeometry</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.isBFGeometry" class="name">var <span class="ident">isBFGeometry</span></p>
             
 
             
@@ -1929,7 +1909,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.isBFMesh" class="name">var <span class="ident">isBFMesh</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.isBFMesh" class="name">var <span class="ident">isBFMesh</span></p>
             
 
             
@@ -1940,7 +1920,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.max" class="name">var <span class="ident">max</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.max" class="name">var <span class="ident">max</span></p>
             
 
             
@@ -1950,7 +1930,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.min" class="name">var <span class="ident">min</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.min" class="name">var <span class="ident">min</span></p>
             
 
             
@@ -1960,7 +1940,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.nSurfaceLayers" class="name">var <span class="ident">nSurfaceLayers</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.nSurfaceLayers" class="name">var <span class="ident">nSurfaceLayers</span></p>
             
 
             
@@ -1971,7 +1951,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.name" class="name">var <span class="ident">name</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.name" class="name">var <span class="ident">name</span></p>
             
 
             
@@ -1982,7 +1962,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.normals" class="name">var <span class="ident">normals</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.normals" class="name">var <span class="ident">normals</span></p>
             
 
             
@@ -1993,7 +1973,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.refinementLevels" class="name">var <span class="ident">refinementLevels</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.refinementLevels" class="name">var <span class="ident">refinementLevels</span></p>
             
 
             
@@ -2004,7 +1984,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.BFGeometryGH.vertices" class="name">var <span class="ident">vertices</span></p>
+            <p id="butterfly_dynamo.geometry.BFGeometryDS.vertices" class="name">var <span class="ident">vertices</span></p>
             
 
             
@@ -2017,24 +1997,25 @@ def xyzToVector(xyz):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFGeometryGH.__init__">
-    <p>def <span class="ident">__init__</span>(</p><p>self, name, geometries, boundaryCondition=None, refinementLevels=None, nSurfaceLayers=None, meshingParameters=None)</p>
+    <div class="name def" id="butterfly_dynamo.geometry.BFGeometryDS.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, name, geometries, boundaryCondition=None, refinementLevels=None, nSurfaceLayers=None, tolerance=-1, maxGridLines=512)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init Butterfly geometry in Grasshopper.</p></div>
+    <div class="desc"><p>Init Butterfly geometry in Dynamo.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFGeometryGH.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFGeometryGH.__init__" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFGeometryDS.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFGeometryDS.__init__" class="source">
     <pre><code>def __init__(self, name, geometries, boundaryCondition=None,
-             refinementLevels=None, nSurfaceLayers=None,
-             meshingParameters=None):
-    """Init Butterfly geometry in Grasshopper."""
-    # convert input geometries to a butterfly GHMesh.
-    _mesh = MeshGH(geometries, meshingParameters)
+             refinementLevels=None, nSurfaceLayers=None, tolerance=-1,
+             maxGridLines=512):
+    """Init Butterfly geometry in Dynamo."""
+    # convert input geometries to a butterfly DSMesh.
+    _mesh = MeshDS(geometries, (tolerance, maxGridLines))
     self.__geometry = _mesh.geometry
+    # put indices in groups of three
     BFGeometry.__init__(self, name, _mesh.vertices, _mesh.faceIndices,
                         _mesh.normals, boundaryCondition, refinementLevels,
                         nSurfaceLayers)
@@ -2046,7 +2027,7 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFGeometryGH.ToString">
+    <div class="name def" id="butterfly_dynamo.geometry.BFGeometryDS.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -2055,8 +2036,8 @@ def xyzToVector(xyz):
   
     <div class="desc"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFGeometryGH.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFGeometryGH.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFGeometryDS.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFGeometryDS.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -2068,7 +2049,7 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFGeometryGH.duplicate">
+    <div class="name def" id="butterfly_dynamo.geometry.BFGeometryDS.duplicate">
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
@@ -2077,8 +2058,8 @@ def xyzToVector(xyz):
   
     <div class="desc"><p>Return a copy of this object.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFGeometryGH.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFGeometryGH.duplicate" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFGeometryDS.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFGeometryDS.duplicate" class="source">
     <pre><code>def duplicate(self):
     """Return a copy of this object."""
     return deepcopy(self)
@@ -2090,7 +2071,7 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFGeometryGH.toSTL">
+    <div class="name def" id="butterfly_dynamo.geometry.BFGeometryDS.toSTL">
     <p>def <span class="ident">toSTL</span>(</p><p>self, convertToMeters=1)</p>
     </div>
     
@@ -2102,8 +2083,8 @@ def xyzToVector(xyz):
     convertToMeters: A value to scale the geometry to meters. For isinstance
         if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFGeometryGH.toSTL', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFGeometryGH.toSTL" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFGeometryDS.toSTL', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFGeometryDS.toSTL" class="source">
     <pre><code>def toSTL(self, convertToMeters=1):
     """Get STL definition for this geometry as a string.
     Args:
@@ -2144,7 +2125,7 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.BFGeometryGH.writeToStl">
+    <div class="name def" id="butterfly_dynamo.geometry.BFGeometryDS.writeToStl">
     <p>def <span class="ident">writeToStl</span>(</p><p>self, folder, convertToMeters=1)</p>
     </div>
     
@@ -2156,8 +2137,8 @@ def xyzToVector(xyz):
     convertToMeters: A value to scale the geometry to meters. For isinstance
         if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.BFGeometryGH.writeToStl', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.BFGeometryGH.writeToStl" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.BFGeometryDS.writeToStl', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.BFGeometryDS.writeToStl" class="source">
     <pre><code>def writeToStl(self, folder, convertToMeters=1):
     """Save BFFace to a stl file. File name will be self.name.
     Args:
@@ -2176,34 +2157,43 @@ def xyzToVector(xyz):
       </div>
       
       <div class="item">
-      <p id="butterfly_grasshopper.geometry.MeshGH" class="name">class <span class="ident">MeshGH</span></p>
+      <p id="butterfly_dynamo.geometry.MeshDS" class="name">class <span class="ident">MeshDS</span></p>
       
   
-    <div class="desc"><p>Base mesh class for Butterfly Grasshopper.</p>
+    <div class="desc"><p>Base mesh class for Butterfly Dynamo.</p>
 <p>Attributes:
-    geometries: A list of Grasshopper meshes or Breps. All input geometries
+    geometries: A list of Dynamo meshes or Breps. All input geometries
         will be converted as a joined mesh.
-    meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
-        In case geometry is Mesh this input won't be used.</p></div>
+    meshingParameters: A tuple for tolerance and maxGridLines (default: (-1, 512)).</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.MeshGH', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.MeshGH" class="source">
-    <pre><code>class MeshGH(object):
-    """Base mesh class for Butterfly Grasshopper.
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.MeshDS', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.MeshDS" class="source">
+    <pre><code>class MeshDS(object):
+    """Base mesh class for Butterfly Dynamo.
 
     Attributes:
-        geometries: A list of Grasshopper meshes or Breps. All input geometries
+        geometries: A list of Dynamo meshes or Breps. All input geometries
             will be converted as a joined mesh.
-        meshingParameters: Grasshopper meshing parameters for meshing brep geometries.
-            In case geometry is Mesh this input won't be used.
+        meshingParameters: A tuple for tolerance and maxGridLines (default: (-1, 512)).
     """
 
     def __init__(self, geometries, meshingParameters=None):
-        """Init Butterfly geometry in Grasshopper."""
+        """Init Butterfly geometry in Dynamo."""
         if not meshingParameters:
-            meshingParameters = rc.Geometry.MeshingParameters.Default
+            meshingParameters = -1, 512
+        try:
+            tolerance = int(meshingParameters[0])
+            maxGridLines = int(meshingParameters[1])
+        except Exception as e:
+            msg = 'Failed to read meshingParameters from {}:\n{}'.format(
+                meshingParameters, e
+            )
+            print(msg)
+            tolerance = -1
+            maxGridLines = 512
 
-        self.__meshingParameters = meshingParameters
+        self.__tolerance = tolerance
+        self.__maxGridLines = maxGridLines
         self.geometry = geometries
 
     @property
@@ -2218,56 +2208,57 @@ def xyzToVector(xyz):
         Args:
             geo: A list of geometries
         """
-        _geo = rc.Geometry.Mesh()
-
         # if geo is not a mesh try to mesh it
         # this is useful for creating stl files
+        _geo = []
         for g in geo:
-            if isinstance(g, rc.Geometry.Brep):
-                for m in rc.Geometry.Mesh.CreateFromBrep(g, self.__meshingParameters):
-                    _geo.Append(m)
-            elif isinstance(g, rc.Geometry.Mesh):
-                _geo.Append(g)
-            else:
-                raise ValueError("Input geometry should be Mesh or Brep not {}"
-                                 .format(type(g)))
+            try:
+                if not hasattr(g, 'vertices'):
+                    # not a mesh
+                    _geo.append(
+                        MeshToolkit.Mesh.ByGeometry(
+                            g, self.__tolerance, self.__maxGridLines))
+                elif hasattr(g, 'vertices'):
+                    _geo.append(g)
+            except Exception as e:
+                raise ValueError(
+                    "Failed to create a mesh from {}:\n\t{}".format(type(g), e))
 
-        self.__geometry = self.__triangulateMesh(_geo)
+        self.__geometry = self.__joinMesh(_geo)
 
     @property
     def normals(self):
         """Mesh Face normals."""
-        return tuple((n.X, n.Y, n.Z) for n in self.geometry.FaceNormals)
+        return tuple((n.X, n.Y, n.Z) for n in self.geometry.TriangleNormals())
 
     @property
     def vertices(self):
         """Mesh Face normals."""
-        return tuple((v.X, v.Y, v.Z) for v in self.geometry.Vertices)
+        return tuple((v.X, v.Y, v.Z) for v in self.geometry.Vertices())
 
     @property
     def faceIndices(self):
         """Mesh Face Indices."""
-        return tuple((f.A, f.B, f.C) for f in self.geometry.Faces)
+        _ind = tuple(self.geometry.VertexIndicesByTri())
+        return tuple(_ind[3 * i: 3 * i + 3] for i in range(len(_ind) / 3))
 
-    def __triangulateMesh(self, mesh):
-        """Triangulate Rhino Mesh."""
-        triMesh = rc.Geometry.Mesh()
+    def __joinMesh(self, mesh):
+        """Join a list of meshes into a joined mesh."""
+        if len(mesh) == 1:
+            return mesh[0]
 
-        for i in xrange(mesh.Vertices.Count):
-            triMesh.Vertices.Add(mesh.Vertices[i])
-
-        for face in mesh.Faces:
-            triMesh.Faces.AddFace(face.A, face.B, face.C)
-            if face.IsQuad:
-                triMesh.Faces.AddFace(face.A, face.C, face.D)
-
-        # collect mesh faces, normals and indices
-        triMesh.FaceNormals.ComputeFaceNormals()
-        triMesh.FaceNormals.UnitizeFaceNormals()
-        return triMesh
+        # collect vertices of all the meshes
+        dsPts = (pt for m in mesh for pts in m.Vertices for pt in pts)
+        verCount = -mesh[0].VertexCount
+        ind = []
+        for m in mesh:
+            verCount += m.VertexCount
+            ind.extend((i + verCount for i in m.VertexIndicesByTri()))
+        joinedMesh = MeshToolkit.Mesh.ByVerticesAndIndices(dsPts, ind)
+        return joinedMesh
 
     def duplicate(self):
-        """Return a copy of GHMesh."""
+        """Return a copy of DSMesh."""
         return deepcopy(self)
 
     def ToString(self):
@@ -2275,7 +2266,7 @@ def xyzToVector(xyz):
         return self.__repr__()
 
     def __repr__(self):
-        """GHMesh."""
+        """DSMesh."""
         return str(self.geometry)
 </code></pre>
   </div>
@@ -2285,12 +2276,12 @@ def xyzToVector(xyz):
       <div class="class">
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
-          <li><a href="#butterfly_grasshopper.geometry.MeshGH">MeshGH</a></li>
+          <li><a href="#butterfly_dynamo.geometry.MeshDS">MeshDS</a></li>
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.MeshGH.faceIndices" class="name">var <span class="ident">faceIndices</span></p>
+            <p id="butterfly_dynamo.geometry.MeshDS.faceIndices" class="name">var <span class="ident">faceIndices</span></p>
             
 
             
@@ -2301,7 +2292,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.MeshGH.geometry" class="name">var <span class="ident">geometry</span></p>
+            <p id="butterfly_dynamo.geometry.MeshDS.geometry" class="name">var <span class="ident">geometry</span></p>
             
 
             
@@ -2311,7 +2302,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.MeshGH.normals" class="name">var <span class="ident">normals</span></p>
+            <p id="butterfly_dynamo.geometry.MeshDS.normals" class="name">var <span class="ident">normals</span></p>
             
 
             
@@ -2322,7 +2313,7 @@ def xyzToVector(xyz):
 
             </div>
             <div class="item">
-            <p id="butterfly_grasshopper.geometry.MeshGH.vertices" class="name">var <span class="ident">vertices</span></p>
+            <p id="butterfly_dynamo.geometry.MeshDS.vertices" class="name">var <span class="ident">vertices</span></p>
             
 
             
@@ -2335,22 +2326,33 @@ def xyzToVector(xyz):
           <h3>Methods</h3>
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.MeshGH.__init__">
+    <div class="name def" id="butterfly_dynamo.geometry.MeshDS.__init__">
     <p>def <span class="ident">__init__</span>(</p><p>self, geometries, meshingParameters=None)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Init Butterfly geometry in Grasshopper.</p></div>
+    <div class="desc"><p>Init Butterfly geometry in Dynamo.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.MeshGH.__init__', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.MeshGH.__init__" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.MeshDS.__init__', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.MeshDS.__init__" class="source">
     <pre><code>def __init__(self, geometries, meshingParameters=None):
-    """Init Butterfly geometry in Grasshopper."""
+    """Init Butterfly geometry in Dynamo."""
     if not meshingParameters:
-        meshingParameters = rc.Geometry.MeshingParameters.Default
-    self.__meshingParameters = meshingParameters
+        meshingParameters = -1, 512
+    try:
+        tolerance = int(meshingParameters[0])
+        maxGridLines = int(meshingParameters[1])
+    except Exception as e:
+        msg = 'Failed to read meshingParameters from {}:\n{}'.format(
+            meshingParameters, e
+        )
+        print(msg)
+        tolerance = -1
+        maxGridLines = 512
+    self.__tolerance = tolerance
+    self.__maxGridLines = maxGridLines
     self.geometry = geometries
 </code></pre>
   </div>
@@ -2360,7 +2362,7 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.MeshGH.ToString">
+    <div class="name def" id="butterfly_dynamo.geometry.MeshDS.ToString">
     <p>def <span class="ident">ToString</span>(</p><p>self)</p>
     </div>
     
@@ -2369,8 +2371,8 @@ def xyzToVector(xyz):
   
     <div class="desc"><p>Overwrite .NET ToString method.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.MeshGH.ToString', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.MeshGH.ToString" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.MeshDS.ToString', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.MeshDS.ToString" class="source">
     <pre><code>def ToString(self):
     """Overwrite .NET ToString method."""
     return self.__repr__()
@@ -2382,19 +2384,19 @@ def xyzToVector(xyz):
   
             
   <div class="item">
-    <div class="name def" id="butterfly_grasshopper.geometry.MeshGH.duplicate">
+    <div class="name def" id="butterfly_dynamo.geometry.MeshDS.duplicate">
     <p>def <span class="ident">duplicate</span>(</p><p>self)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Return a copy of GHMesh.</p></div>
+    <div class="desc"><p>Return a copy of DSMesh.</p></div>
   <div class="source_cont">
-  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.geometry.MeshGH.duplicate', this);">Show source &equiv;</a></p>
-  <div id="source-butterfly_grasshopper.geometry.MeshGH.duplicate" class="source">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_dynamo.geometry.MeshDS.duplicate', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly_dynamo.geometry.MeshDS.duplicate" class="source">
     <pre><code>def duplicate(self):
-    """Return a copy of GHMesh."""
+    """Return a copy of DSMesh."""
     return deepcopy(self)
 </code></pre>
   </div>

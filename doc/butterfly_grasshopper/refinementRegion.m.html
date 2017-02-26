@@ -1271,18 +1271,25 @@ class RefinementRegionGH(RefinementRegion):
             
   <div class="item">
     <div class="name def" id="butterfly_grasshopper.refinementRegion.RefinementRegionGH.toSTL">
-    <p>def <span class="ident">toSTL</span>(</p><p>self)</p>
+    <p>def <span class="ident">toSTL</span>(</p><p>self, convertToMeters=1)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Get STL definition for this geometry as a string.</p></div>
+    <div class="desc"><p>Get STL definition for this geometry as a string.</p>
+<p>Args:
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.refinementRegion.RefinementRegionGH.toSTL', this);">Show source &equiv;</a></p>
   <div id="source-butterfly_grasshopper.refinementRegion.RefinementRegionGH.toSTL" class="source">
-    <pre><code>def toSTL(self):
-    """Get STL definition for this geometry as a string."""
+    <pre><code>def toSTL(self, convertToMeters=1):
+    """Get STL definition for this geometry as a string.
+    Args:
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
+    """
     _hea = "solid {}".format(self.name)
     _tale = "endsolid {}".format(self.name)
     _body = "   facet normal {0} {1} {2}\n" \
@@ -1296,15 +1303,15 @@ class RefinementRegionGH(RefinementRegion):
         self.__normals[count][0],
         self.__normals[count][1],
         self.__normals[count][2],
-        self.__vertices[faceInd[0]][0],
-        self.__vertices[faceInd[0]][1],
-        self.__vertices[faceInd[0]][2],
-        self.__vertices[faceInd[1]][0],
-        self.__vertices[faceInd[1]][1],
-        self.__vertices[faceInd[1]][2],
-        self.__vertices[faceInd[2]][0],
-        self.__vertices[faceInd[2]][1],
-        self.__vertices[faceInd[2]][2]
+        self.__vertices[faceInd[0]][0] * convertToMeters,
+        self.__vertices[faceInd[0]][1] * convertToMeters,
+        self.__vertices[faceInd[0]][2] * convertToMeters,
+        self.__vertices[faceInd[1]][0] * convertToMeters,
+        self.__vertices[faceInd[1]][1] * convertToMeters,
+        self.__vertices[faceInd[1]][2] * convertToMeters,
+        self.__vertices[faceInd[2]][0] * convertToMeters,
+        self.__vertices[faceInd[2]][1] * convertToMeters,
+        self.__vertices[faceInd[2]][2] * convertToMeters
     ) for count, faceInd in enumerate(self.__faceIndices))
     return "{}\n{}\n{}\n".format(
         _hea, "\n".join(_bodyCollector), _tale
@@ -1318,20 +1325,27 @@ class RefinementRegionGH(RefinementRegion):
             
   <div class="item">
     <div class="name def" id="butterfly_grasshopper.refinementRegion.RefinementRegionGH.writeToStl">
-    <p>def <span class="ident">writeToStl</span>(</p><p>self, folder)</p>
+    <p>def <span class="ident">writeToStl</span>(</p><p>self, folder, convertToMeters=1)</p>
     </div>
     
 
     
   
-    <div class="desc"><p>Save BFFace to a stl file. File name will be self.name.</p></div>
+    <div class="desc"><p>Save BFFace to a stl file. File name will be self.name.</p>
+<p>Args:
+    convertToMeters: A value to scale the geometry to meters. For isinstance
+        if the mesh is in mm the value should be 0.001 (default: 1).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly_grasshopper.refinementRegion.RefinementRegionGH.writeToStl', this);">Show source &equiv;</a></p>
   <div id="source-butterfly_grasshopper.refinementRegion.RefinementRegionGH.writeToStl" class="source">
-    <pre><code>def writeToStl(self, folder):
-    """Save BFFace to a stl file. File name will be self.name."""
+    <pre><code>def writeToStl(self, folder, convertToMeters=1):
+    """Save BFFace to a stl file. File name will be self.name.
+    Args:
+        convertToMeters: A value to scale the geometry to meters. For isinstance
+            if the mesh is in mm the value should be 0.001 (default: 1).
+    """
     with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-        outf.write(self.toSTL())
+        outf.write(self.toSTL(convertToMeters))
 </code></pre>
   </div>
 </div>

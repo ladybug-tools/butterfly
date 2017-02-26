@@ -1105,13 +1105,13 @@ class WindTunnel(object):
 
         # update boundary condition of wall geometries
         for bfGeometry in geometries:
-            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
-                bfGeometry.boundaryCondition.refLevels
-            )
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition()
 
         tp = tunnelParameters
 
         # find xAxis
+        # project wind vector to XY Plane
+        windVector = (windVector[0], windVector[1], 0)
         zAxis = (0, 0, 1)
         xAxis = vm.crossProduct(windVector, zAxis)
         yAxis = vm.normalize(windVector)
@@ -1259,11 +1259,11 @@ class WindTunnel(object):
         else:
             raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
-    def toOpenFOAMCase(self):
+    def toOpenFOAMCase(self, make2dParameters=None):
         """Return a BF case for this wind tunnel."""
-        return Case.fromWindTunnel(self)
+        return Case.fromWindTunnel(self, make2dParameters)
 
-    def save(self, overwrite=False, minimum=True):
+    def save(self, overwrite=False, minimum=True, make2dParameters=None):
         """Save windTunnel to folder as an OpenFOAM case.
 
         Args:
@@ -1272,7 +1272,7 @@ class WindTunnel(object):
         Returns:
             A butterfly.Case.
         """
-        _case = self.toOpenFOAMCase()
+        _case = self.toOpenFOAMCase(make2dParameters)
         _case.save(overwrite, minimum)
         return _case
 
@@ -1311,7 +1311,7 @@ class TunnelParameters(object):
         """Check input values."""
         try:
             _inp = float(input)
-        except:
+        except TypeError:
             raise ValueError("Failed to convert %s to a number." % input)
         else:
             assert _inp > 0, "Value (%.2f) should be larger than 0." % _inp
@@ -1377,7 +1377,7 @@ class TunnelParameters(object):
         """Check input values."""
         try:
             _inp = float(input)
-        except:
+        except TypeError:
             raise ValueError("Failed to convert %s to a number." % input)
         else:
             assert _inp > 0, "Value (%.2f) should be larger than 0." % _inp
@@ -1605,13 +1605,13 @@ class TunnelParameters(object):
 
         # update boundary condition of wall geometries
         for bfGeometry in geometries:
-            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
-                bfGeometry.boundaryCondition.refLevels
-            )
+            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition()
 
         tp = tunnelParameters
 
         # find xAxis
+        # project wind vector to XY Plane
+        windVector = (windVector[0], windVector[1], 0)
         zAxis = (0, 0, 1)
         xAxis = vm.crossProduct(windVector, zAxis)
         yAxis = vm.normalize(windVector)
@@ -1759,11 +1759,11 @@ class TunnelParameters(object):
         else:
             raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
-    def toOpenFOAMCase(self):
+    def toOpenFOAMCase(self, make2dParameters=None):
         """Return a BF case for this wind tunnel."""
-        return Case.fromWindTunnel(self)
+        return Case.fromWindTunnel(self, make2dParameters)
 
-    def save(self, overwrite=False, minimum=True):
+    def save(self, overwrite=False, minimum=True, make2dParameters=None):
         """Save windTunnel to folder as an OpenFOAM case.
 
         Args:
@@ -1772,7 +1772,7 @@ class TunnelParameters(object):
         Returns:
             A butterfly.Case.
         """
-        _case = self.toOpenFOAMCase()
+        _case = self.toOpenFOAMCase(make2dParameters)
         _case.save(overwrite, minimum)
         return _case
 
@@ -2124,11 +2124,11 @@ def fromGeometriesWindVectorAndParameters(
     geos = tuple(cls.__checkInputGeometry(geo) for geo in geometries)
     # update boundary condition of wall geometries
     for bfGeometry in geometries:
-        bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition(
-            bfGeometry.boundaryCondition.refLevels
-        )
+        bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition()
     tp = tunnelParameters
     # find xAxis
+    # project wind vector to XY Plane
+    windVector = (windVector[0], windVector[1], 0)
     zAxis = (0, 0, 1)
     xAxis = vm.crossProduct(windVector, zAxis)
     yAxis = vm.normalize(windVector)
@@ -2188,7 +2188,7 @@ def fromGeometriesWindVectorAndParameters(
             
   <div class="item">
     <div class="name def" id="butterfly.windtunnel.WindTunnel.save">
-    <p>def <span class="ident">save</span>(</p><p>self, overwrite=False, minimum=True)</p>
+    <p>def <span class="ident">save</span>(</p><p>self, overwrite=False, minimum=True, make2dParameters=None)</p>
     </div>
     
 
@@ -2203,7 +2203,7 @@ Returns:
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel.save', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.WindTunnel.save" class="source">
-    <pre><code>def save(self, overwrite=False, minimum=True):
+    <pre><code>def save(self, overwrite=False, minimum=True, make2dParameters=None):
     """Save windTunnel to folder as an OpenFOAM case.
     Args:
         overwrite: If True all the current content will be overwritten
@@ -2211,7 +2211,7 @@ Returns:
     Returns:
         A butterfly.Case.
     """
-    _case = self.toOpenFOAMCase()
+    _case = self.toOpenFOAMCase(make2dParameters)
     _case.save(overwrite, minimum)
     return _case
 </code></pre>
@@ -2223,7 +2223,7 @@ Returns:
             
   <div class="item">
     <div class="name def" id="butterfly.windtunnel.WindTunnel.toOpenFOAMCase">
-    <p>def <span class="ident">toOpenFOAMCase</span>(</p><p>self)</p>
+    <p>def <span class="ident">toOpenFOAMCase</span>(</p><p>self, make2dParameters=None)</p>
     </div>
     
 
@@ -2233,9 +2233,9 @@ Returns:
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.windtunnel.WindTunnel.toOpenFOAMCase', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.windtunnel.WindTunnel.toOpenFOAMCase" class="source">
-    <pre><code>def toOpenFOAMCase(self):
+    <pre><code>def toOpenFOAMCase(self, make2dParameters=None):
     """Return a BF case for this wind tunnel."""
-    return Case.fromWindTunnel(self)
+    return Case.fromWindTunnel(self, make2dParameters)
 </code></pre>
   </div>
 </div>

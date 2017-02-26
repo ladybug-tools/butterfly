@@ -989,14 +989,10 @@ table {
 
     <li class="set"><h3><a href="#header-submodules">Sub-modules</a></h3>
       <ul>
-        <li class="mono"><a href="case.m.html">butterfly_grasshopper.case</a></li>
         <li class="mono"><a href="geometry.m.html">butterfly_grasshopper.geometry</a></li>
-        <li class="mono"><a href="postprocess.m.html">butterfly_grasshopper.postprocess</a></li>
         <li class="mono"><a href="refinementRegion.m.html">butterfly_grasshopper.refinementRegion</a></li>
         <li class="mono"><a href="timer.m.html">butterfly_grasshopper.timer</a></li>
         <li class="mono"><a href="unitconversion.m.html">butterfly_grasshopper.unitconversion</a></li>
-        <li class="mono"><a href="utilities.m.html">butterfly_grasshopper.utilities</a></li>
-        <li class="mono"><a href="windtunnel.m.html">butterfly_grasshopper.windtunnel</a></li>
       </ul>
     </li>
     </ul>
@@ -1025,9 +1021,10 @@ if 'butterfly' not in sys.modules:
 try:
     import butterfly
 except ImportError as e:
-    raise ImportError('Can\'t find butterfly in sys.path. ' \
-                      'You need to install butterfly to use butterfly-grasshopper.\n'\
-                      'You can download butterfly from here: https://github.com/mostaphaRoudsari/Butterfly')
+    raise ImportError('Can\'t find butterfly in sys.path.\n'
+                      'You need to install butterfly to use butterfly-grasshopper.\n'
+                      'You can download butterfly from\n'
+                      'https://github.com/mostaphaRoudsari/Butterfly')
 </code></pre>
   </div>
 
@@ -1039,24 +1036,10 @@ except ImportError as e:
 
     <h2 class="section-title" id="header-submodules">Sub-modules</h2>
       <div class="item">
-      <p class="name"><a href="case.m.html">butterfly_grasshopper.case</a></p>
-      
-  
-    <div class="desc"><p>OpemFOAM Case for Grasshopper.</p></div>
-
-      </div>
-      <div class="item">
       <p class="name"><a href="geometry.m.html">butterfly_grasshopper.geometry</a></p>
       
   
     <div class="desc"><p>BF Grasshopper geometry library.</p></div>
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="postprocess.m.html">butterfly_grasshopper.postprocess</a></p>
-      
-  
-    <div class="desc"><p>Grasshopper post process functions.</p></div>
 
       </div>
       <div class="item">
@@ -1078,19 +1061,6 @@ except ImportError as e:
       
   
     <div class="desc"><p>Unit conversion to meters for Grasshopper.</p></div>
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="utilities.m.html">butterfly_grasshopper.utilities</a></p>
-      
-  
-
-      </div>
-      <div class="item">
-      <p class="name"><a href="windtunnel.m.html">butterfly_grasshopper.windtunnel</a></p>
-      
-  
-    <div class="desc"><p>Butterfly wind tunnel class for Grasshopper.</p></div>
 
       </div>
   </section>

@@ -1015,14 +1015,18 @@ table {
     <li class="mono"><a href="#butterfly.case.Case.loadMesh">loadMesh</a></li>
     <li class="mono"><a href="#butterfly.case.Case.loadPoints">loadPoints</a></li>
     <li class="mono"><a href="#butterfly.case.Case.loadProbeValues">loadProbeValues</a></li>
+    <li class="mono"><a href="#butterfly.case.Case.loadProbes">loadProbes</a></li>
     <li class="mono"><a href="#butterfly.case.Case.purge">purge</a></li>
     <li class="mono"><a href="#butterfly.case.Case.removePolyMeshContent">removePolyMeshContent</a></li>
     <li class="mono"><a href="#butterfly.case.Case.removePostProcessingFolder">removePostProcessingFolder</a></li>
+    <li class="mono"><a href="#butterfly.case.Case.removeProcessorFolders">removeProcessorFolders</a></li>
     <li class="mono"><a href="#butterfly.case.Case.removeResultFolders">removeResultFolders</a></li>
     <li class="mono"><a href="#butterfly.case.Case.removeSnappyHexMeshFolders">removeSnappyHexMeshFolders</a></li>
     <li class="mono"><a href="#butterfly.case.Case.renameSnappyHexMeshFolders">renameSnappyHexMeshFolders</a></li>
+    <li class="mono"><a href="#butterfly.case.Case.sample">sample</a></li>
     <li class="mono"><a href="#butterfly.case.Case.save">save</a></li>
     <li class="mono"><a href="#butterfly.case.Case.snappyHexMesh">snappyHexMesh</a></li>
+    <li class="mono"><a href="#butterfly.case.Case.surfaceFeatureExtract">surfaceFeatureExtract</a></li>
     <li class="mono"><a href="#butterfly.case.Case.updateBCInZeroFolder">updateBCInZeroFolder</a></li>
   </ul>
 
@@ -1046,16 +1050,18 @@ table {
   
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.case" class="source">
-    <pre><code>"""Butterfly OpenFOAM Case."""
+    <pre><code>﻿"""Butterfly OpenFOAM Case."""
 import os
 import re  # to check input names
 from shutil import rmtree  # to remove case folders if needed
 from distutils.dir_util import copy_tree  # to copy sHM meshes over to tri
 from collections import namedtuple
 from copy import deepcopy
+from itertools import izip
 
 from .version import Version
-from .utilities import loadCaseFiles, loadProbeValuesFromFolder
+from .utilities import loadCaseFiles, loadProbeValuesFromFolder, \
+    loadProbesFromPostProcessingFile, loadProbesAndValuesFromSampleFile
 from .geometry import bfGeometryFromStlFile, calculateMinMaxFromBFGeometries
 from .refinementRegion import refinementRegionsFromStlFile
 from .meshingparameters import MeshingParameters
@@ -1089,6 +1095,7 @@ from .fvSchemes import FvSchemes
 from .fvSolution import FvSolution
 from .functions import Probes
 from .decomposeParDict import DecomposeParDict
+from .sampleDict import SampleDict
 
 from .runmanager import RunManager
 
@@ -1117,7 +1124,7 @@ class Case(object):
         """Init case."""
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
-        # limitation is addressed.
+        # limitation is addressed. The value wil be assigned in classmethod fromFile
         self.__originalName = None
 
         self.projectName = name
@@ -1142,36 +1149,47 @@ class Case(object):
         self.runmanager = RunManager(self.projectName)
 
     @classmethod
-    def fromFolder(cls, path, name=None):
+    def fromFolder(cls, path, name=None, convertFromMeters=1):
         """Create a Butterfly case from a case folder.
 
         Args:
             path: Full path to case folder.
             name: An optional new name for this case.
+            convertFromMeters: A number to be multiplied to stl file vertices
+                to be converted to the new units if not meters. This value will
+                be the inverse of convertToMeters.
         """
         # collect foam files
         __originalName = os.path.split(path)[-1]
         if not name:
             name = __originalName
 
-        _files = loadCaseFiles(path, True)
+        _files = loadCaseFiles(path, fullpath=True)
 
         # convert files to butterfly objects
-        ff = tuple(cls.__createFoamfileFromFile(p)
-                   for f in (_files.zero, _files.constant, _files.system)
-                   for p in f)
-
-        # add stl objects
-
-        # find snappyHexMeshDict
+        ff = []
+        for f in (_files.zero, _files.constant, _files.system):
+            for p in f:
+                if not p:
+                    continue
+                try:
+                    ff.append(cls.__createFoamfileFromFile(p, 1.0 / convertFromMeters))
+                    print('Imported {} from case.'.format(p))
+                except Exception as e:
+                    print('Failed to import {}:\n\t{}'.format(p, e))
         sHMD = cls.__getFoamFileByName('snappyHexMeshDict', ff)
 
-        sHMD.projectName = name
+        if sHMD:
+            sHMD.projectName = name
 
-        bfGeometries = tuple(geo for f in _files.stl
-                             for geo in bfGeometryFromStlFile(f)
-                             if os.path.split(f)[-1][:-4]
-                             in sHMD.stlFileNames)
+            stlfiles = tuple(f for f in _files.stl if f.lower().endswith('.stl'))
+            bfGeometries = tuple(
+                geo for f in stlfiles
+                for geo in bfGeometryFromStlFile(f, convertFromMeters)
+                if os.path.split(f)[-1][:-4] in sHMD.stlFileNames)
+
+        else:
+            bfGeometries = []
 
         _case = cls(name, ff, bfGeometries)
 
@@ -1182,20 +1200,23 @@ class Case(object):
                     f = ff.getBoundaryField(geo.name)
                 except AttributeError as e:
                     if not geo.name.endswith('Conditions'):
-                        print str(e)
+                        print(str(e))
                 else:
                     # set boundary condition for the field
-                    setattr(geo.boundaryCondition, ff.name,
-                            Field.fromDict(f))
+                    if not f:
+                        setattr(geo.boundaryCondition, ff.name, None)
+                    else:
+                        setattr(geo.boundaryCondition, ff.name, Field.fromDict(f))
 
-        refinementRegions = tuple(
-            ref for f in _files.stl
-            if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
-            for ref in refinementRegionsFromStlFile(
-                f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
-        )
+        if sHMD:
+            refinementRegions = tuple(
+                ref for f in _files.stl
+                if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
+                for ref in refinementRegionsFromStlFile(
+                    f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
+            )
 
-        _case.addRefinementRegions(refinementRegions)
+            _case.addRefinementRegions(refinementRegions)
 
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
@@ -1206,7 +1227,8 @@ class Case(object):
 
     @classmethod
     def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
-                         meshingParameters=None):
+                         meshingParameters=None, make2dParameters=None,
+                         convertToMeters=1):
         """Create a case from Butterfly geometries.
 
         foamFiles/dictionaries will be generated based on boundary condition of
@@ -1221,9 +1243,12 @@ class Case(object):
             blockMeshDict: Optional input for blockMeshDict. If blockMeshDict is
                 not provided, it will be calculated from geometries in XY
                 direction and boundary condition for faces will be set to
-                BoundingBoxBoundaryCondition. Use BlockMeshDict to create the blockMeshDict if your case is not aligned to XY direction or you
+                BoundingBoxBoundaryCondition. Use BlockMeshDict to create the
+                blockMeshDict if your case is not aligned to XY direction or you
                 need to assign different boundary condition to geometries.
             meshingParameters: Optional input for MeshingParameters.
+            make2dParameters: Optional input for make2dParameters to make a 2d
+                case.
         """
         geometries = cls.__checkInputGeometries(geometries)
 
@@ -1234,15 +1259,27 @@ class Case(object):
         # create foam files
         if not blockMeshDict:
             minPt, maxPt = calculateMinMaxFromBFGeometries(geometries)
-            blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt)
+            blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters)
+
+        if make2dParameters:
+            # create the 2D blockMeshDict
+            blockMeshDict.make2d(
+                make2dParameters.origin, make2dParameters.normal,
+                make2dParameters.width)
 
         blockMeshDict.updateMeshingParameters(meshingParameters)
 
+        # set the locationInMesh for snappyHexMeshDict
+        if make2dParameters:
+            meshingParameters.locationInMesh = make2dParameters.origin
         if not meshingParameters.locationInMesh:
             meshingParameters.locationInMesh = blockMeshDict.center
 
+        # rename name for snappyHexMeshDict and stl file if starts with a digit
+        normname = '_{}'.format(name) if name[0].isdigit() else name
         snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
-            name, geometries, meshingParameters)
+            normname, geometries, meshingParameters,
+            convertToMeters=blockMeshDict.convertToMeters)
 
         # constant folder
         if float(Version.OFVer) < 3:
@@ -1278,14 +1315,16 @@ class Case(object):
                      p_rgh, fvSchemes, fvSolution, controlDict, probes)
 
         # create case
-        return cls(name, foamFiles, geometries)
+        _cls = cls(name, foamFiles, geometries)
+        _cls.__originalName = normname
+        return _cls
 
     @classmethod
-    def fromWindTunnel(cls, windTunnel):
+    def fromWindTunnel(cls, windTunnel, make2dParameters=None):
         """Create case from wind tunnel."""
         _case = cls.fromBFGeometries(
             windTunnel.name, windTunnel.testGeomtries, windTunnel.blockMeshDict,
-            windTunnel.meshingParameters)
+            windTunnel.meshingParameters, make2dParameters)
 
         initialConditions = InitialConditions(
             Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
@@ -1297,16 +1336,16 @@ class Case(object):
 
         # include condition files in 0 folder files
         _case.U.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $flowVelocity'},
+                              'internalField': 'uniform $flowVelocity'},
                              mute=True)
         _case.p.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $pressure'},
+                              'internalField': 'uniform $pressure'},
                              mute=True)
         _case.k.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $turbulentKE'},
+                              'internalField': 'uniform $turbulentKE'},
                              mute=True)
         _case.epsilon.updateValues({'#include': '"initialConditions"',
-                                   'internalField': 'uniform $turbulentEpsilon'},
+                                    'internalField': 'uniform $turbulentEpsilon'},
                                    mute=True)
 
         if windTunnel.refinementRegions:
@@ -1336,7 +1375,10 @@ class Case(object):
     def geometries(self):
         """Butterfly geometries."""
         if hasattr(self, 'blockMeshDict'):
-            return self.__geometries + self.blockMeshDict.geometry
+            try:
+                return self.__geometries + self.blockMeshDict.geometry
+            except TypeError:
+                return tuple(self.__geometries) + self.blockMeshDict.geometry
 
         return self.__geometries
 
@@ -1519,7 +1561,7 @@ class Case(object):
         try:
             copy_tree(_s, self.polyMeshFolder)
         except Exception as e:
-            print "Failed to copy snappyHexMesh folder: {}".format(e)
+            print("Failed to copy snappyHexMesh folder: {}".format(e))
 
     def renameSnappyHexMeshFolders(self, add=True):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa.
@@ -1532,8 +1574,8 @@ class Case(object):
         if not add:
             _folders = (name for name in os.listdir(self.projectDir)
                         if (name.endswith('.org') and
-                        os.path.isdir(os.path.join(self.projectDir, name,
-                                                   'polyMesh'))))
+                            os.path.isdir(os.path.join(self.projectDir, name,
+                                                       'polyMesh'))))
 
             for f in _folders:
                 os.rename(os.path.join(self.projectDir, f),
@@ -1547,7 +1589,8 @@ class Case(object):
                     os.rename(os.path.join(self.projectDir, f),
                               os.path.join(self.projectDir, '%s.org' % f))
                 except Exception as e:
-                    raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
+                    raise Exception('Failed to rename snappyHexMesh folders: {}'
+                                    .format(e))
 
     def removeSnappyHexMeshFolders(self):
         """Remove snappyHexMesh numerical folders.
@@ -1561,7 +1604,7 @@ class Case(object):
             try:
                 rmtree(os.path.join(self.projectDir, f))
             except Exception as e:
-                print 'Failed to remove {}:\n{}'.format(f, e)
+                print('Failed to remove {}:\n{}'.format(f, e))
 
     def removeResultFolders(self):
         """Remove results folder."""
@@ -1570,7 +1613,7 @@ class Case(object):
             try:
                 rmtree(os.path.join(self.projectDir, _f))
             except Exception as e:
-                print 'Failed to remove {}:\n{}'.format(_f, e)
+                print('Failed to remove {}:\n{}'.format(_f, e))
 
     def removePostProcessingFolder(self):
         """Remove post postProcessing folder."""
@@ -1580,7 +1623,7 @@ class Case(object):
         try:
             rmtree(self.postProcessingFolder)
         except Exception as e:
-            print 'Failed to remove postProcessing folder:\n{}'.format(e)
+            print('Failed to remove postProcessing folder:\n{}'.format(e))
 
     def removePolyMeshContent(self):
         """Remove files inside polyMesh folder."""
@@ -1591,6 +1634,20 @@ class Case(object):
                     os.remove(_fp)
                 elif os.path.isdir(_fp):
                     rmtree(_fp)
+
+    def removeProcessorFolders(self):
+        """Remove processor folders for parallel runs."""
+
+        ff = (os.path.join(self.projectDir, d)
+              for d in os.listdir(self.projectDir)
+              if d.startswith('processor') and
+              os.path.isdir(os.path.join(self.projectDir, d)))
+
+        for f in ff:
+            try:
+                rmtree(f)
+            except Exception as e:
+                print('Failed to remove processor folder:\n{}'.format(e))
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
@@ -1652,9 +1709,14 @@ class Case(object):
         for f in foamFiles:
             f.save(self.projectDir)
 
+        # find blockMeshDict and convertToMeters so I can scale stl files to meters.
+        bmds = (ff for ff in self.foamFiles if ff.name == 'blockMeshDict')
+        bmd = bmds.next()
+        convertToMeters = bmd.convertToMeters
+
         # write bfgeometries to stl file. __geometries is geometries without
         # blockMesh geometry
-        stlStr = (geo.toSTL() for geo in self.__geometries)
+        stlStr = (geo.toSTL(convertToMeters) for geo in self.__geometries)
         stlName = self.__originalName or self.projectName
         with open(os.path.join(self.triSurfaceFolder,
                                '%s.stl' % stlName), 'wb') as stlf:
@@ -1662,16 +1724,19 @@ class Case(object):
 
         # write refinementRegions to stl files
         for ref in self.refinementRegions:
-            ref.writeToStl(self.triSurfaceFolder)
+            ref.writeToStl(self.triSurfaceFolder, convertToMeters)
 
-        print '{} is saved to: {}'.format(self.projectName, self.projectDir)
+        # add .foam file
+        with open(os.path.join(self.projectDir,
+                               self.projectName + '.foam'), 'wb') as ffile:
+            ffile.write('')
+
+        print('{} is saved to: {}'.format(self.projectName, self.projectDir))
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
         ur"""Run an OpenFOAM command for this case.
-
         This method creates a log and err file under logFolder for each command.
         The output will be logged as {cmd}.log and {cmd}.err.
-
         Args:
             cmd: OpenFOAM command.
             args: Command arguments.
@@ -1679,11 +1744,9 @@ class Case(object):
                 in parallel if desired.
             run: Run the command in shell.
             wait: Wait until the command is over.
-
         returns:
             If run is True returns a namedtuple for
                 (success, error, process, logfiles, errorfiles).
-
                 success: as a boolen.
                 error: None in case of success otherwise the error message as
                     a string.
@@ -1737,13 +1800,63 @@ class Case(object):
         return self.command('blockMesh', args, decomposeParDict=None,
                             wait=wait)
 
+    def surfaceFeatureExtract(self, args=None, wait=True):
+        """Run surfaceFeatureExtract command.
+
+        Args:
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(success, error, process, logfiles, errorfiles).
+        """
+        # create surfaceFeatureExtractDict if it's not created
+        return self.command('surfaceFeatureExtract', args, decomposeParDict=None,
+                            wait=wait)
+
+    # TODO(Mostapha): Sample for multiple fields.
+    # The reason we don't have it now is that I don't have the methods in place
+    # for dealing with lists of lists in Grasshopper.
+    def sample(self, name, points, field, wait=True):
+        """Sample the results for a certain field.
+
+        Args:
+            name: A unique name for this sample.
+            points: List of points as (x, y, z).
+            fields: List of fields (e.g. U, p).
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(probes, values).
+        """
+        sd = SampleDict.fromPoints(name, points, (field,))
+        sd.save(self.projectDir)
+
+        log = self.command(
+            'postProcess', args=('-func', 'sampleDict', '-latestTime'),
+            decomposeParDict=None, wait=wait)
+
+        if not log.success:
+            raise Exception("Failed to sample the case:\n\t%s"
+                            % log.error)
+
+        rf = list(int(f) for f in self.getResultFolders())
+        rf.sort()
+
+        fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', str(rf[-1]), f)
+                   for f in sd.outputFilenames)
+
+        if fp:
+            res = loadProbesAndValuesFromSampleFile(fp[0])
+            pts, values = izip(*(r for r in res))
+            res = namedtuple('Results', 'probes values')
+            return res(pts, values)
+
     def snappyHexMesh(self, args=None, wait=True):
         """Run snappyHexMesh.
 
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
-
         Returns:
             namedtuple(success, error, process, logfiles, errorfiles).
         """
@@ -1756,7 +1869,6 @@ class Case(object):
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
-
         Returns:
             namedtuple(success, error, process, logfiles, errorfiles).
         """
@@ -1771,7 +1883,7 @@ class Case(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            log = self.checkMesh(args=('latestTime',))
+            log = self.checkMesh(args=('-latestTime',))
             assert log.success, log.error
 
         f = os.path.join(self.logFolder, 'checkMesh.log')
@@ -1795,13 +1907,15 @@ class Case(object):
                 return f
 
     @staticmethod
-    def __createFoamfileFromFile(p):
-        """
-        Create a foamfile object from an OpenFOAM foamfile.
+    def __createFoamfileFromFile(p, convertToMeters=1):
+        """Create a foamfile object from an OpenFOAM foamfile.
 
         Args:
             p: Fullpath to file.
+        Return:
+            A Butterfly foam file.
         """
+        # Butterfly FoamFiles. This dictionary should be expanded.
         __foamfilescollection = {
             'turbulenceProperties': TurbulenceProperties,
             'RASProperties': RASProperties,
@@ -1816,12 +1930,16 @@ class Case(object):
         }
 
         name = os.path.split(p)[-1].split('.')[0]
-
-        if name in __foamfilescollection:
+        if name == 'blockMeshDict':
+            try:
+                return BlockMeshDict.fromFile(p, convertToMeters)
+            except Exception as e:
+                print('Failed to import {}:\n\t{}'.format(p, e))
+        elif name in __foamfilescollection:
             try:
                 return __foamfilescollection[name].fromFile(p)
             except Exception as e:
-                print 'Failed to import {}:\n\t{}'.format(p, e)
+                print('Failed to import {}:\n\t{}'.format(p, e))
         else:
             return FoamFile.fromFile(p)
 
@@ -1852,6 +1970,17 @@ class Case(object):
                                                            self.probes.fields))
 
         return loadProbeValuesFromFolder(self.probesFolder, field)
+
+    def loadProbes(self, field):
+        """Return OpenFOAM probes locations for a field."""
+        if self.probes.probesCount == 0:
+            return ()
+
+        if field not in self.probes.fields:
+            raise ValueError("Can't find {} in {}.".format(field,
+                                                           self.probes.fields))
+
+        return loadProbesFromPostProcessingFile(self.probesFolder, field)
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -1914,7 +2043,7 @@ class Case(object):
         """Init case."""
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
-        # limitation is addressed.
+        # limitation is addressed. The value wil be assigned in classmethod fromFile
         self.__originalName = None
 
         self.projectName = name
@@ -1939,36 +2068,47 @@ class Case(object):
         self.runmanager = RunManager(self.projectName)
 
     @classmethod
-    def fromFolder(cls, path, name=None):
+    def fromFolder(cls, path, name=None, convertFromMeters=1):
         """Create a Butterfly case from a case folder.
 
         Args:
             path: Full path to case folder.
             name: An optional new name for this case.
+            convertFromMeters: A number to be multiplied to stl file vertices
+                to be converted to the new units if not meters. This value will
+                be the inverse of convertToMeters.
         """
         # collect foam files
         __originalName = os.path.split(path)[-1]
         if not name:
             name = __originalName
 
-        _files = loadCaseFiles(path, True)
+        _files = loadCaseFiles(path, fullpath=True)
 
         # convert files to butterfly objects
-        ff = tuple(cls.__createFoamfileFromFile(p)
-                   for f in (_files.zero, _files.constant, _files.system)
-                   for p in f)
-
-        # add stl objects
-
-        # find snappyHexMeshDict
+        ff = []
+        for f in (_files.zero, _files.constant, _files.system):
+            for p in f:
+                if not p:
+                    continue
+                try:
+                    ff.append(cls.__createFoamfileFromFile(p, 1.0 / convertFromMeters))
+                    print('Imported {} from case.'.format(p))
+                except Exception as e:
+                    print('Failed to import {}:\n\t{}'.format(p, e))
         sHMD = cls.__getFoamFileByName('snappyHexMeshDict', ff)
 
-        sHMD.projectName = name
+        if sHMD:
+            sHMD.projectName = name
 
-        bfGeometries = tuple(geo for f in _files.stl
-                             for geo in bfGeometryFromStlFile(f)
-                             if os.path.split(f)[-1][:-4]
-                             in sHMD.stlFileNames)
+            stlfiles = tuple(f for f in _files.stl if f.lower().endswith('.stl'))
+            bfGeometries = tuple(
+                geo for f in stlfiles
+                for geo in bfGeometryFromStlFile(f, convertFromMeters)
+                if os.path.split(f)[-1][:-4] in sHMD.stlFileNames)
+
+        else:
+            bfGeometries = []
 
         _case = cls(name, ff, bfGeometries)
 
@@ -1979,20 +2119,23 @@ class Case(object):
                     f = ff.getBoundaryField(geo.name)
                 except AttributeError as e:
                     if not geo.name.endswith('Conditions'):
-                        print str(e)
+                        print(str(e))
                 else:
                     # set boundary condition for the field
-                    setattr(geo.boundaryCondition, ff.name,
-                            Field.fromDict(f))
+                    if not f:
+                        setattr(geo.boundaryCondition, ff.name, None)
+                    else:
+                        setattr(geo.boundaryCondition, ff.name, Field.fromDict(f))
 
-        refinementRegions = tuple(
-            ref for f in _files.stl
-            if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
-            for ref in refinementRegionsFromStlFile(
-                f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
-        )
+        if sHMD:
+            refinementRegions = tuple(
+                ref for f in _files.stl
+                if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
+                for ref in refinementRegionsFromStlFile(
+                    f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
+            )
 
-        _case.addRefinementRegions(refinementRegions)
+            _case.addRefinementRegions(refinementRegions)
 
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
@@ -2003,7 +2146,8 @@ class Case(object):
 
     @classmethod
     def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
-                         meshingParameters=None):
+                         meshingParameters=None, make2dParameters=None,
+                         convertToMeters=1):
         """Create a case from Butterfly geometries.
 
         foamFiles/dictionaries will be generated based on boundary condition of
@@ -2018,9 +2162,12 @@ class Case(object):
             blockMeshDict: Optional input for blockMeshDict. If blockMeshDict is
                 not provided, it will be calculated from geometries in XY
                 direction and boundary condition for faces will be set to
-                BoundingBoxBoundaryCondition. Use BlockMeshDict to create the blockMeshDict if your case is not aligned to XY direction or you
+                BoundingBoxBoundaryCondition. Use BlockMeshDict to create the
+                blockMeshDict if your case is not aligned to XY direction or you
                 need to assign different boundary condition to geometries.
             meshingParameters: Optional input for MeshingParameters.
+            make2dParameters: Optional input for make2dParameters to make a 2d
+                case.
         """
         geometries = cls.__checkInputGeometries(geometries)
 
@@ -2031,15 +2178,27 @@ class Case(object):
         # create foam files
         if not blockMeshDict:
             minPt, maxPt = calculateMinMaxFromBFGeometries(geometries)
-            blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt)
+            blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters)
+
+        if make2dParameters:
+            # create the 2D blockMeshDict
+            blockMeshDict.make2d(
+                make2dParameters.origin, make2dParameters.normal,
+                make2dParameters.width)
 
         blockMeshDict.updateMeshingParameters(meshingParameters)
 
+        # set the locationInMesh for snappyHexMeshDict
+        if make2dParameters:
+            meshingParameters.locationInMesh = make2dParameters.origin
         if not meshingParameters.locationInMesh:
             meshingParameters.locationInMesh = blockMeshDict.center
 
+        # rename name for snappyHexMeshDict and stl file if starts with a digit
+        normname = '_{}'.format(name) if name[0].isdigit() else name
         snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
-            name, geometries, meshingParameters)
+            normname, geometries, meshingParameters,
+            convertToMeters=blockMeshDict.convertToMeters)
 
         # constant folder
         if float(Version.OFVer) < 3:
@@ -2075,14 +2234,16 @@ class Case(object):
                      p_rgh, fvSchemes, fvSolution, controlDict, probes)
 
         # create case
-        return cls(name, foamFiles, geometries)
+        _cls = cls(name, foamFiles, geometries)
+        _cls.__originalName = normname
+        return _cls
 
     @classmethod
-    def fromWindTunnel(cls, windTunnel):
+    def fromWindTunnel(cls, windTunnel, make2dParameters=None):
         """Create case from wind tunnel."""
         _case = cls.fromBFGeometries(
             windTunnel.name, windTunnel.testGeomtries, windTunnel.blockMeshDict,
-            windTunnel.meshingParameters)
+            windTunnel.meshingParameters, make2dParameters)
 
         initialConditions = InitialConditions(
             Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
@@ -2094,16 +2255,16 @@ class Case(object):
 
         # include condition files in 0 folder files
         _case.U.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $flowVelocity'},
+                              'internalField': 'uniform $flowVelocity'},
                              mute=True)
         _case.p.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $pressure'},
+                              'internalField': 'uniform $pressure'},
                              mute=True)
         _case.k.updateValues({'#include': '"initialConditions"',
-                             'internalField': 'uniform $turbulentKE'},
+                              'internalField': 'uniform $turbulentKE'},
                              mute=True)
         _case.epsilon.updateValues({'#include': '"initialConditions"',
-                                   'internalField': 'uniform $turbulentEpsilon'},
+                                    'internalField': 'uniform $turbulentEpsilon'},
                                    mute=True)
 
         if windTunnel.refinementRegions:
@@ -2133,7 +2294,10 @@ class Case(object):
     def geometries(self):
         """Butterfly geometries."""
         if hasattr(self, 'blockMeshDict'):
-            return self.__geometries + self.blockMeshDict.geometry
+            try:
+                return self.__geometries + self.blockMeshDict.geometry
+            except TypeError:
+                return tuple(self.__geometries) + self.blockMeshDict.geometry
 
         return self.__geometries
 
@@ -2316,7 +2480,7 @@ class Case(object):
         try:
             copy_tree(_s, self.polyMeshFolder)
         except Exception as e:
-            print "Failed to copy snappyHexMesh folder: {}".format(e)
+            print("Failed to copy snappyHexMesh folder: {}".format(e))
 
     def renameSnappyHexMeshFolders(self, add=True):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa.
@@ -2329,8 +2493,8 @@ class Case(object):
         if not add:
             _folders = (name for name in os.listdir(self.projectDir)
                         if (name.endswith('.org') and
-                        os.path.isdir(os.path.join(self.projectDir, name,
-                                                   'polyMesh'))))
+                            os.path.isdir(os.path.join(self.projectDir, name,
+                                                       'polyMesh'))))
 
             for f in _folders:
                 os.rename(os.path.join(self.projectDir, f),
@@ -2344,7 +2508,8 @@ class Case(object):
                     os.rename(os.path.join(self.projectDir, f),
                               os.path.join(self.projectDir, '%s.org' % f))
                 except Exception as e:
-                    raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
+                    raise Exception('Failed to rename snappyHexMesh folders: {}'
+                                    .format(e))
 
     def removeSnappyHexMeshFolders(self):
         """Remove snappyHexMesh numerical folders.
@@ -2358,7 +2523,7 @@ class Case(object):
             try:
                 rmtree(os.path.join(self.projectDir, f))
             except Exception as e:
-                print 'Failed to remove {}:\n{}'.format(f, e)
+                print('Failed to remove {}:\n{}'.format(f, e))
 
     def removeResultFolders(self):
         """Remove results folder."""
@@ -2367,7 +2532,7 @@ class Case(object):
             try:
                 rmtree(os.path.join(self.projectDir, _f))
             except Exception as e:
-                print 'Failed to remove {}:\n{}'.format(_f, e)
+                print('Failed to remove {}:\n{}'.format(_f, e))
 
     def removePostProcessingFolder(self):
         """Remove post postProcessing folder."""
@@ -2377,7 +2542,7 @@ class Case(object):
         try:
             rmtree(self.postProcessingFolder)
         except Exception as e:
-            print 'Failed to remove postProcessing folder:\n{}'.format(e)
+            print('Failed to remove postProcessing folder:\n{}'.format(e))
 
     def removePolyMeshContent(self):
         """Remove files inside polyMesh folder."""
@@ -2388,6 +2553,20 @@ class Case(object):
                     os.remove(_fp)
                 elif os.path.isdir(_fp):
                     rmtree(_fp)
+
+    def removeProcessorFolders(self):
+        """Remove processor folders for parallel runs."""
+
+        ff = (os.path.join(self.projectDir, d)
+              for d in os.listdir(self.projectDir)
+              if d.startswith('processor') and
+              os.path.isdir(os.path.join(self.projectDir, d)))
+
+        for f in ff:
+            try:
+                rmtree(f)
+            except Exception as e:
+                print('Failed to remove processor folder:\n{}'.format(e))
 
     def purge(self, removePolyMeshContent=True,
               removeSnappyHexMeshFolders=True,
@@ -2449,9 +2628,14 @@ class Case(object):
         for f in foamFiles:
             f.save(self.projectDir)
 
+        # find blockMeshDict and convertToMeters so I can scale stl files to meters.
+        bmds = (ff for ff in self.foamFiles if ff.name == 'blockMeshDict')
+        bmd = bmds.next()
+        convertToMeters = bmd.convertToMeters
+
         # write bfgeometries to stl file. __geometries is geometries without
         # blockMesh geometry
-        stlStr = (geo.toSTL() for geo in self.__geometries)
+        stlStr = (geo.toSTL(convertToMeters) for geo in self.__geometries)
         stlName = self.__originalName or self.projectName
         with open(os.path.join(self.triSurfaceFolder,
                                '%s.stl' % stlName), 'wb') as stlf:
@@ -2459,16 +2643,19 @@ class Case(object):
 
         # write refinementRegions to stl files
         for ref in self.refinementRegions:
-            ref.writeToStl(self.triSurfaceFolder)
+            ref.writeToStl(self.triSurfaceFolder, convertToMeters)
 
-        print '{} is saved to: {}'.format(self.projectName, self.projectDir)
+        # add .foam file
+        with open(os.path.join(self.projectDir,
+                               self.projectName + '.foam'), 'wb') as ffile:
+            ffile.write('')
+
+        print('{} is saved to: {}'.format(self.projectName, self.projectDir))
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
         ur"""Run an OpenFOAM command for this case.
-
         This method creates a log and err file under logFolder for each command.
         The output will be logged as {cmd}.log and {cmd}.err.
-
         Args:
             cmd: OpenFOAM command.
             args: Command arguments.
@@ -2476,11 +2663,9 @@ class Case(object):
                 in parallel if desired.
             run: Run the command in shell.
             wait: Wait until the command is over.
-
         returns:
             If run is True returns a namedtuple for
                 (success, error, process, logfiles, errorfiles).
-
                 success: as a boolen.
                 error: None in case of success otherwise the error message as
                     a string.
@@ -2534,13 +2719,63 @@ class Case(object):
         return self.command('blockMesh', args, decomposeParDict=None,
                             wait=wait)
 
+    def surfaceFeatureExtract(self, args=None, wait=True):
+        """Run surfaceFeatureExtract command.
+
+        Args:
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(success, error, process, logfiles, errorfiles).
+        """
+        # create surfaceFeatureExtractDict if it's not created
+        return self.command('surfaceFeatureExtract', args, decomposeParDict=None,
+                            wait=wait)
+
+    # TODO(Mostapha): Sample for multiple fields.
+    # The reason we don't have it now is that I don't have the methods in place
+    # for dealing with lists of lists in Grasshopper.
+    def sample(self, name, points, field, wait=True):
+        """Sample the results for a certain field.
+
+        Args:
+            name: A unique name for this sample.
+            points: List of points as (x, y, z).
+            fields: List of fields (e.g. U, p).
+            args: Command arguments.
+            wait: Wait until command execution ends.
+        Returns:
+            namedtuple(probes, values).
+        """
+        sd = SampleDict.fromPoints(name, points, (field,))
+        sd.save(self.projectDir)
+
+        log = self.command(
+            'postProcess', args=('-func', 'sampleDict', '-latestTime'),
+            decomposeParDict=None, wait=wait)
+
+        if not log.success:
+            raise Exception("Failed to sample the case:\n\t%s"
+                            % log.error)
+
+        rf = list(int(f) for f in self.getResultFolders())
+        rf.sort()
+
+        fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', str(rf[-1]), f)
+                   for f in sd.outputFilenames)
+
+        if fp:
+            res = loadProbesAndValuesFromSampleFile(fp[0])
+            pts, values = izip(*(r for r in res))
+            res = namedtuple('Results', 'probes values')
+            return res(pts, values)
+
     def snappyHexMesh(self, args=None, wait=True):
         """Run snappyHexMesh.
 
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
-
         Returns:
             namedtuple(success, error, process, logfiles, errorfiles).
         """
@@ -2553,7 +2788,6 @@ class Case(object):
         Args:
             args: Command arguments.
             wait: Wait until command execution ends.
-
         Returns:
             namedtuple(success, error, process, logfiles, errorfiles).
         """
@@ -2568,7 +2802,7 @@ class Case(object):
         try case.setFvSchemes(averageOrthogonality)
         """
         if not useCurrntCheckMeshLog:
-            log = self.checkMesh(args=('latestTime',))
+            log = self.checkMesh(args=('-latestTime',))
             assert log.success, log.error
 
         f = os.path.join(self.logFolder, 'checkMesh.log')
@@ -2592,13 +2826,15 @@ class Case(object):
                 return f
 
     @staticmethod
-    def __createFoamfileFromFile(p):
-        """
-        Create a foamfile object from an OpenFOAM foamfile.
+    def __createFoamfileFromFile(p, convertToMeters=1):
+        """Create a foamfile object from an OpenFOAM foamfile.
 
         Args:
             p: Fullpath to file.
+        Return:
+            A Butterfly foam file.
         """
+        # Butterfly FoamFiles. This dictionary should be expanded.
         __foamfilescollection = {
             'turbulenceProperties': TurbulenceProperties,
             'RASProperties': RASProperties,
@@ -2613,12 +2849,16 @@ class Case(object):
         }
 
         name = os.path.split(p)[-1].split('.')[0]
-
-        if name in __foamfilescollection:
+        if name == 'blockMeshDict':
+            try:
+                return BlockMeshDict.fromFile(p, convertToMeters)
+            except Exception as e:
+                print('Failed to import {}:\n\t{}'.format(p, e))
+        elif name in __foamfilescollection:
             try:
                 return __foamfilescollection[name].fromFile(p)
             except Exception as e:
-                print 'Failed to import {}:\n\t{}'.format(p, e)
+                print('Failed to import {}:\n\t{}'.format(p, e))
         else:
             return FoamFile.fromFile(p)
 
@@ -2649,6 +2889,17 @@ class Case(object):
                                                            self.probes.fields))
 
         return loadProbeValuesFromFolder(self.probesFolder, field)
+
+    def loadProbes(self, field):
+        """Return OpenFOAM probes locations for a field."""
+        if self.probes.probesCount == 0:
+            return ()
+
+        if field not in self.probes.fields:
+            raise ValueError("Can't find {} in {}.".format(field,
+                                                           self.probes.fields))
+
+        return loadProbesFromPostProcessingFile(self.probesFolder, field)
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -2917,7 +3168,7 @@ class Case(object):
     """Init case."""
     # original name is a variable to address the current limitation to change
     # the name of stl file in snappyHexMeshDict. It will be removed once the
-    # limitation is addressed.
+    # limitation is addressed. The value wil be assigned in classmethod fromFile
     self.__originalName = None
     self.projectName = name
     self.__version = float(Version.OFVer)
@@ -3127,7 +3378,7 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
     try case.setFvSchemes(averageOrthogonality)
     """
     if not useCurrntCheckMeshLog:
-        log = self.checkMesh(args=('latestTime',))
+        log = self.checkMesh(args=('-latestTime',))
         assert log.success, log.error
     f = os.path.join(self.logFolder, 'checkMesh.log')
     assert os.path.isfile(f), 'Failed to find {}.'.format(f)
@@ -3156,8 +3407,8 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
     <div class="desc"><p>Run checkMesh.</p>
 <p>Args:
     args: Command arguments.
-    wait: Wait until command execution ends.</p>
-<p>Returns:
+    wait: Wait until command execution ends.
+Returns:
     namedtuple(success, error, process, logfiles, errorfiles).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.checkMesh', this);">Show source &equiv;</a></p>
@@ -3187,31 +3438,30 @@ try case.setFvSchemes(averageOrthogonality)</p></div>
 
     
   
-    <div class="desc"><p>Run an OpenFOAM command for this case.</p>
-<p>This method creates a log and err file under logFolder for each command.
-The output will be logged as {cmd}.log and {cmd}.err.</p>
-<p>Args:
+    <div class="desc"><p>Run an OpenFOAM command for this case.
+This method creates a log and err file under logFolder for each command.
+The output will be logged as {cmd}.log and {cmd}.err.
+Args:
     cmd: OpenFOAM command.
     args: Command arguments.
     decomposeParDict: Optional input for decomposeParDict to run analysis
         in parallel if desired.
     run: Run the command in shell.
-    wait: Wait until the command is over.</p>
-<p>returns:
+    wait: Wait until the command is over.
+returns:
     If run is True returns a namedtuple for
-        (success, error, process, logfiles, errorfiles).</p>
-<pre><code>    success: as a boolen.
-    error: None in case of success otherwise the error message as
-        a string.
-    process: Popen process.
-    logfiles: List of fullpath to log files.
-    errorfiles: List of fullpath to error files.
-else return a namedtuple for
-    (cmd, logfiles, errorfiles)
-    cmd: command lines.
-    logfiles: A tuple for log files.
-    errorfiles: A tuple for error files.
-</code></pre></div>
+        (success, error, process, logfiles, errorfiles).
+        success: as a boolen.
+        error: None in case of success otherwise the error message as
+            a string.
+        process: Popen process.
+        logfiles: List of fullpath to log files.
+        errorfiles: List of fullpath to error files.
+    else return a namedtuple for
+        (cmd, logfiles, errorfiles)
+        cmd: command lines.
+        logfiles: A tuple for log files.
+        errorfiles: A tuple for error files.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.command', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.case.Case.command" class="source">
@@ -3296,7 +3546,7 @@ else return a namedtuple for
     try:
         copy_tree(_s, self.polyMeshFolder)
     except Exception as e:
-        print "Failed to copy snappyHexMesh folder: {}".format(e)
+        print("Failed to copy snappyHexMesh folder: {}".format(e))
 </code></pre>
   </div>
 </div>
@@ -3328,7 +3578,7 @@ else return a namedtuple for
             
   <div class="item">
     <div class="name def" id="butterfly.case.Case.fromBFGeometries">
-    <p>def <span class="ident">fromBFGeometries</span>(</p><p>cls, name, geometries, blockMeshDict=None, meshingParameters=None)</p>
+    <p>def <span class="ident">fromBFGeometries</span>(</p><p>cls, name, geometries, blockMeshDict=None, meshingParameters=None, make2dParameters=None, convertToMeters=1)</p>
     </div>
     
 
@@ -3346,15 +3596,19 @@ overwrite them through the recipe.</p>
     blockMeshDict: Optional input for blockMeshDict. If blockMeshDict is
         not provided, it will be calculated from geometries in XY
         direction and boundary condition for faces will be set to
-        BoundingBoxBoundaryCondition. Use BlockMeshDict to create the blockMeshDict if your case is not aligned to XY direction or you
+        BoundingBoxBoundaryCondition. Use BlockMeshDict to create the
+        blockMeshDict if your case is not aligned to XY direction or you
         need to assign different boundary condition to geometries.
-    meshingParameters: Optional input for MeshingParameters.</p></div>
+    meshingParameters: Optional input for MeshingParameters.
+    make2dParameters: Optional input for make2dParameters to make a 2d
+        case.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.fromBFGeometries', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.case.Case.fromBFGeometries" class="source">
     <pre><code>@classmethod
 def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
-                     meshingParameters=None):
+                     meshingParameters=None, make2dParameters=None,
+                     convertToMeters=1):
     """Create a case from Butterfly geometries.
     foamFiles/dictionaries will be generated based on boundary condition of
     geometries. fvSolution and fvSchemes will be set to default can can be
@@ -3367,9 +3621,12 @@ def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
         blockMeshDict: Optional input for blockMeshDict. If blockMeshDict is
             not provided, it will be calculated from geometries in XY
             direction and boundary condition for faces will be set to
-            BoundingBoxBoundaryCondition. Use BlockMeshDict to create the blockMeshDict if your case is not aligned to XY direction or you
+            BoundingBoxBoundaryCondition. Use BlockMeshDict to create the
+            blockMeshDict if your case is not aligned to XY direction or you
             need to assign different boundary condition to geometries.
         meshingParameters: Optional input for MeshingParameters.
+        make2dParameters: Optional input for make2dParameters to make a 2d
+            case.
     """
     geometries = cls.__checkInputGeometries(geometries)
     # update meshingParameters
@@ -3378,12 +3635,23 @@ def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
     # create foam files
     if not blockMeshDict:
         minPt, maxPt = calculateMinMaxFromBFGeometries(geometries)
-        blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt)
+        blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters)
+    if make2dParameters:
+        # create the 2D blockMeshDict
+        blockMeshDict.make2d(
+            make2dParameters.origin, make2dParameters.normal,
+            make2dParameters.width)
     blockMeshDict.updateMeshingParameters(meshingParameters)
+    # set the locationInMesh for snappyHexMeshDict
+    if make2dParameters:
+        meshingParameters.locationInMesh = make2dParameters.origin
     if not meshingParameters.locationInMesh:
         meshingParameters.locationInMesh = blockMeshDict.center
+    # rename name for snappyHexMeshDict and stl file if starts with a digit
+    normname = '_{}'.format(name) if name[0].isdigit() else name
     snappyHexMeshDict = SnappyHexMeshDict.fromBFGeometries(
-        name, geometries, meshingParameters)
+        normname, geometries, meshingParameters,
+        convertToMeters=blockMeshDict.convertToMeters)
     # constant folder
     if float(Version.OFVer) < 3:
         turbulenceProperties = RASProperties()
@@ -3413,7 +3681,9 @@ def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
                  transportProperties, g, u, p, k, epsilon, nut, t, alphat,
                  p_rgh, fvSchemes, fvSolution, controlDict, probes)
     # create case
-    return cls(name, foamFiles, geometries)
+    _cls = cls(name, foamFiles, geometries)
+    _cls.__originalName = normname
+    return _cls
 </code></pre>
   </div>
 </div>
@@ -3423,7 +3693,7 @@ def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
             
   <div class="item">
     <div class="name def" id="butterfly.case.Case.fromFolder">
-    <p>def <span class="ident">fromFolder</span>(</p><p>cls, path, name=None)</p>
+    <p>def <span class="ident">fromFolder</span>(</p><p>cls, path, name=None, convertFromMeters=1)</p>
     </div>
     
 
@@ -3432,34 +3702,49 @@ def fromBFGeometries(cls, name, geometries, blockMeshDict=None,
     <div class="desc"><p>Create a Butterfly case from a case folder.</p>
 <p>Args:
     path: Full path to case folder.
-    name: An optional new name for this case.</p></div>
+    name: An optional new name for this case.
+    convertFromMeters: A number to be multiplied to stl file vertices
+        to be converted to the new units if not meters. This value will
+        be the inverse of convertToMeters.</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.fromFolder', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.case.Case.fromFolder" class="source">
     <pre><code>@classmethod
-def fromFolder(cls, path, name=None):
+def fromFolder(cls, path, name=None, convertFromMeters=1):
     """Create a Butterfly case from a case folder.
     Args:
         path: Full path to case folder.
         name: An optional new name for this case.
+        convertFromMeters: A number to be multiplied to stl file vertices
+            to be converted to the new units if not meters. This value will
+            be the inverse of convertToMeters.
     """
     # collect foam files
     __originalName = os.path.split(path)[-1]
     if not name:
         name = __originalName
-    _files = loadCaseFiles(path, True)
+    _files = loadCaseFiles(path, fullpath=True)
     # convert files to butterfly objects
-    ff = tuple(cls.__createFoamfileFromFile(p)
-               for f in (_files.zero, _files.constant, _files.system)
-               for p in f)
-    # add stl objects
-    # find snappyHexMeshDict
+    ff = []
+    for f in (_files.zero, _files.constant, _files.system):
+        for p in f:
+            if not p:
+                continue
+            try:
+                ff.append(cls.__createFoamfileFromFile(p, 1.0 / convertFromMeters))
+                print('Imported {} from case.'.format(p))
+            except Exception as e:
+                print('Failed to import {}:\n\t{}'.format(p, e))
     sHMD = cls.__getFoamFileByName('snappyHexMeshDict', ff)
-    sHMD.projectName = name
-    bfGeometries = tuple(geo for f in _files.stl
-                         for geo in bfGeometryFromStlFile(f)
-                         if os.path.split(f)[-1][:-4]
-                         in sHMD.stlFileNames)
+    if sHMD:
+        sHMD.projectName = name
+        stlfiles = tuple(f for f in _files.stl if f.lower().endswith('.stl'))
+        bfGeometries = tuple(
+            geo for f in stlfiles
+            for geo in bfGeometryFromStlFile(f, convertFromMeters)
+            if os.path.split(f)[-1][:-4] in sHMD.stlFileNames)
+    else:
+        bfGeometries = []
     _case = cls(name, ff, bfGeometries)
     # update each field of boundary condition for geometries
     for ff in _case.getFoamFilesFromLocation('0'):
@@ -3468,18 +3753,21 @@ def fromFolder(cls, path, name=None):
                 f = ff.getBoundaryField(geo.name)
             except AttributeError as e:
                 if not geo.name.endswith('Conditions'):
-                    print str(e)
+                    print(str(e))
             else:
                 # set boundary condition for the field
-                setattr(geo.boundaryCondition, ff.name,
-                        Field.fromDict(f))
-    refinementRegions = tuple(
-        ref for f in _files.stl
-        if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
-        for ref in refinementRegionsFromStlFile(
-            f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
-    )
-    _case.addRefinementRegions(refinementRegions)
+                if not f:
+                    setattr(geo.boundaryCondition, ff.name, None)
+                else:
+                    setattr(geo.boundaryCondition, ff.name, Field.fromDict(f))
+    if sHMD:
+        refinementRegions = tuple(
+            ref for f in _files.stl
+            if os.path.split(f)[-1][:-4] in sHMD.refinementRegionNames
+            for ref in refinementRegionsFromStlFile(
+                f, sHMD.refinementRegionMode(os.path.split(f)[-1][:-4]))
+        )
+        _case.addRefinementRegions(refinementRegions)
     # original name is a variable to address the current limitation to change
     # the name of stl file in snappyHexMeshDict. It will be removed once the
     # limitation is addressed.
@@ -3494,7 +3782,7 @@ def fromFolder(cls, path, name=None):
             
   <div class="item">
     <div class="name def" id="butterfly.case.Case.fromWindTunnel">
-    <p>def <span class="ident">fromWindTunnel</span>(</p><p>cls, windTunnel)</p>
+    <p>def <span class="ident">fromWindTunnel</span>(</p><p>cls, windTunnel, make2dParameters=None)</p>
     </div>
     
 
@@ -3505,11 +3793,11 @@ def fromFolder(cls, path, name=None):
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.fromWindTunnel', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.case.Case.fromWindTunnel" class="source">
     <pre><code>@classmethod
-def fromWindTunnel(cls, windTunnel):
+def fromWindTunnel(cls, windTunnel, make2dParameters=None):
     """Create case from wind tunnel."""
     _case = cls.fromBFGeometries(
         windTunnel.name, windTunnel.testGeomtries, windTunnel.blockMeshDict,
-        windTunnel.meshingParameters)
+        windTunnel.meshingParameters, make2dParameters)
     initialConditions = InitialConditions(
         Uref=windTunnel.flowSpeed, Zref=windTunnel.Zref, z0=windTunnel.z0)
     ablConditions = ABLConditions.fromWindTunnel(windTunnel)
@@ -3517,16 +3805,16 @@ def fromWindTunnel(cls, windTunnel):
     _case.addFoamFiles((initialConditions, ablConditions))
     # include condition files in 0 folder files
     _case.U.updateValues({'#include': '"initialConditions"',
-                         'internalField': 'uniform $flowVelocity'},
+                          'internalField': 'uniform $flowVelocity'},
                          mute=True)
     _case.p.updateValues({'#include': '"initialConditions"',
-                         'internalField': 'uniform $pressure'},
+                          'internalField': 'uniform $pressure'},
                          mute=True)
     _case.k.updateValues({'#include': '"initialConditions"',
-                         'internalField': 'uniform $turbulentKE'},
+                          'internalField': 'uniform $turbulentKE'},
                          mute=True)
     _case.epsilon.updateValues({'#include': '"initialConditions"',
-                               'internalField': 'uniform $turbulentEpsilon'},
+                                'internalField': 'uniform $turbulentEpsilon'},
                                mute=True)
     if windTunnel.refinementRegions:
         for region in windTunnel.refinementRegions:
@@ -3717,6 +4005,33 @@ def fromWindTunnel(cls, windTunnel):
   
             
   <div class="item">
+    <div class="name def" id="butterfly.case.Case.loadProbes">
+    <p>def <span class="ident">loadProbes</span>(</p><p>self, field)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Return OpenFOAM probes locations for a field.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.loadProbes', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.case.Case.loadProbes" class="source">
+    <pre><code>def loadProbes(self, field):
+    """Return OpenFOAM probes locations for a field."""
+    if self.probes.probesCount == 0:
+        return ()
+    if field not in self.probes.fields:
+        raise ValueError("Can't find {} in {}.".format(field,
+                                                       self.probes.fields))
+    return loadProbesFromPostProcessingFile(self.probesFolder, field)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
     <div class="name def" id="butterfly.case.Case.purge">
     <p>def <span class="ident">purge</span>(</p><p>self, removePolyMeshContent=True, removeSnappyHexMeshFolders=True, removeResultFolders=False, removePostProcessingFolder=False)</p>
     </div>
@@ -3795,7 +4110,37 @@ def fromWindTunnel(cls, windTunnel):
     try:
         rmtree(self.postProcessingFolder)
     except Exception as e:
-        print 'Failed to remove postProcessing folder:\n{}'.format(e)
+        print('Failed to remove postProcessing folder:\n{}'.format(e))
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.case.Case.removeProcessorFolders">
+    <p>def <span class="ident">removeProcessorFolders</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Remove processor folders for parallel runs.</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.removeProcessorFolders', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.case.Case.removeProcessorFolders" class="source">
+    <pre><code>def removeProcessorFolders(self):
+    """Remove processor folders for parallel runs."""
+    ff = (os.path.join(self.projectDir, d)
+          for d in os.listdir(self.projectDir)
+          if d.startswith('processor') and
+          os.path.isdir(os.path.join(self.projectDir, d)))
+    for f in ff:
+        try:
+            rmtree(f)
+        except Exception as e:
+            print('Failed to remove processor folder:\n{}'.format(e))
 </code></pre>
   </div>
 </div>
@@ -3822,7 +4167,7 @@ def fromWindTunnel(cls, windTunnel):
         try:
             rmtree(os.path.join(self.projectDir, _f))
         except Exception as e:
-            print 'Failed to remove {}:\n{}'.format(_f, e)
+            print('Failed to remove {}:\n{}'.format(_f, e))
 </code></pre>
   </div>
 </div>
@@ -3853,7 +4198,7 @@ def fromWindTunnel(cls, windTunnel):
         try:
             rmtree(os.path.join(self.projectDir, f))
         except Exception as e:
-            print 'Failed to remove {}:\n{}'.format(f, e)
+            print('Failed to remove {}:\n{}'.format(f, e))
 </code></pre>
   </div>
 </div>
@@ -3886,8 +4231,8 @@ def fromWindTunnel(cls, windTunnel):
     if not add:
         _folders = (name for name in os.listdir(self.projectDir)
                     if (name.endswith('.org') and
-                    os.path.isdir(os.path.join(self.projectDir, name,
-                                               'polyMesh'))))
+                        os.path.isdir(os.path.join(self.projectDir, name,
+                                                   'polyMesh'))))
         for f in _folders:
             os.rename(os.path.join(self.projectDir, f),
                       os.path.join(self.projectDir, f.replace('.org', '')))
@@ -3899,7 +4244,63 @@ def fromWindTunnel(cls, windTunnel):
                 os.rename(os.path.join(self.projectDir, f),
                           os.path.join(self.projectDir, '%s.org' % f))
             except Exception as e:
-                raise Exception('Failed to rename snappyHexMesh folders: {}'.format(e))
+                raise Exception('Failed to rename snappyHexMesh folders: {}'
+                                .format(e))
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.case.Case.sample">
+    <p>def <span class="ident">sample</span>(</p><p>self, name, points, field, wait=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Sample the results for a certain field.</p>
+<p>Args:
+    name: A unique name for this sample.
+    points: List of points as (x, y, z).
+    fields: List of fields (e.g. U, p).
+    args: Command arguments.
+    wait: Wait until command execution ends.
+Returns:
+    namedtuple(probes, values).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.sample', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.case.Case.sample" class="source">
+    <pre><code>def sample(self, name, points, field, wait=True):
+    """Sample the results for a certain field.
+    Args:
+        name: A unique name for this sample.
+        points: List of points as (x, y, z).
+        fields: List of fields (e.g. U, p).
+        args: Command arguments.
+        wait: Wait until command execution ends.
+    Returns:
+        namedtuple(probes, values).
+    """
+    sd = SampleDict.fromPoints(name, points, (field,))
+    sd.save(self.projectDir)
+    log = self.command(
+        'postProcess', args=('-func', 'sampleDict', '-latestTime'),
+        decomposeParDict=None, wait=wait)
+    if not log.success:
+        raise Exception("Failed to sample the case:\n\t%s"
+                        % log.error)
+    rf = list(int(f) for f in self.getResultFolders())
+    rf.sort()
+    fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', str(rf[-1]), f)
+               for f in sd.outputFilenames)
+    if fp:
+        res = loadProbesAndValuesFromSampleFile(fp[0])
+        pts, values = izip(*(r for r in res))
+        res = namedtuple('Results', 'probes values')
+        return res(pts, values)
 </code></pre>
   </div>
 </div>
@@ -3960,17 +4361,25 @@ def fromWindTunnel(cls, windTunnel):
         foamFiles = self.foamFiles
     for f in foamFiles:
         f.save(self.projectDir)
+    # find blockMeshDict and convertToMeters so I can scale stl files to meters.
+    bmds = (ff for ff in self.foamFiles if ff.name == 'blockMeshDict')
+    bmd = bmds.next()
+    convertToMeters = bmd.convertToMeters
     # write bfgeometries to stl file. __geometries is geometries without
     # blockMesh geometry
-    stlStr = (geo.toSTL() for geo in self.__geometries)
+    stlStr = (geo.toSTL(convertToMeters) for geo in self.__geometries)
     stlName = self.__originalName or self.projectName
     with open(os.path.join(self.triSurfaceFolder,
                            '%s.stl' % stlName), 'wb') as stlf:
         stlf.writelines(stlStr)
     # write refinementRegions to stl files
     for ref in self.refinementRegions:
-        ref.writeToStl(self.triSurfaceFolder)
-    print '{} is saved to: {}'.format(self.projectName, self.projectDir)
+        ref.writeToStl(self.triSurfaceFolder, convertToMeters)
+    # add .foam file
+    with open(os.path.join(self.projectDir,
+                           self.projectName + '.foam'), 'wb') as ffile:
+        ffile.write('')
+    print('{} is saved to: {}'.format(self.projectName, self.projectDir))
 </code></pre>
   </div>
 </div>
@@ -3989,8 +4398,8 @@ def fromWindTunnel(cls, windTunnel):
     <div class="desc"><p>Run snappyHexMesh.</p>
 <p>Args:
     args: Command arguments.
-    wait: Wait until command execution ends.</p>
-<p>Returns:
+    wait: Wait until command execution ends.
+Returns:
     namedtuple(success, error, process, logfiles, errorfiles).</p></div>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.snappyHexMesh', this);">Show source &equiv;</a></p>
@@ -4004,6 +4413,41 @@ def fromWindTunnel(cls, windTunnel):
         namedtuple(success, error, process, logfiles, errorfiles).
     """
     return self.command('snappyHexMesh', args, self.decomposeParDict,
+                        wait=wait)
+</code></pre>
+  </div>
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="butterfly.case.Case.surfaceFeatureExtract">
+    <p>def <span class="ident">surfaceFeatureExtract</span>(</p><p>self, args=None, wait=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Run surfaceFeatureExtract command.</p>
+<p>Args:
+    args: Command arguments.
+    wait: Wait until command execution ends.
+Returns:
+    namedtuple(success, error, process, logfiles, errorfiles).</p></div>
+  <div class="source_cont">
+  <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.case.Case.surfaceFeatureExtract', this);">Show source &equiv;</a></p>
+  <div id="source-butterfly.case.Case.surfaceFeatureExtract" class="source">
+    <pre><code>def surfaceFeatureExtract(self, args=None, wait=True):
+    """Run surfaceFeatureExtract command.
+    Args:
+        args: Command arguments.
+        wait: Wait until command execution ends.
+    Returns:
+        namedtuple(success, error, process, logfiles, errorfiles).
+    """
+    # create surfaceFeatureExtractDict if it's not created
+    return self.command('surfaceFeatureExtract', args, decomposeParDict=None,
                         wait=wait)
 </code></pre>
   </div>

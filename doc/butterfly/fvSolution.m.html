@@ -1122,7 +1122,7 @@ class FvSolution(FoamFile):
         """
         return cls(values=foamFileFromFile(filepath, cls.__name__))
 
-    # TODO: update to pass the recipe itself and not the code!
+    # TODO(): update to pass the recipe itself and not the code!
     @classmethod
     def fromRecipe(cls, recipe=0):
         """Generate fvSolution for a particular recipe.
@@ -1153,7 +1153,7 @@ class FvSolution(FoamFile):
                                   'solver': 'smoothSolver'}},
                 'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-4',
                                                'T': '1e-4'},
-                            'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
+                           'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
                 'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
 
         # update values based on the recipe.
@@ -1175,9 +1175,10 @@ class FvSolution(FoamFile):
         if not resControl:
             return
 
-        self.values['SIMPLE']['residualControl'] = {}
+        if not self.values['SIMPLE']['residualControl']:
+            self.values['SIMPLE']['residualControl'] = {}
 
-        for key, value in resControl.iteritems():
+        for key, value in resControl.values.iteritems():
             self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 
     @property
@@ -1195,24 +1196,31 @@ class FvSolution(FoamFile):
         if not relaxFact:
             return
 
-        self.values['relaxationFactors'] = {}
+        if not self.values['relaxationFactors']:
+            self.values['relaxationFactors'] = {}
 
-        for key, value in relaxFact.iteritems():
+        for key, value in relaxFact.values.iteritems():
             self.values['relaxationFactors'][str(key)] = str(value)
 
 
-class ResidualControl(dict):
+# TODO(Mostapha): This is not critical but it will be cleaner if I can find a
+# solution to keep ResidualControl as a subclass of dict and still get it to
+# work in Grasshopper and Dynamo.
+class ResidualControl(object):
     """Residual Control class.
 
     Attributes:
         values: Values as a dictionary.
     """
 
-    __slots__ = ()
+    __slots__ = ('values',)
 
     def __init__(self, values):
         """Init ResidualControl class."""
-        dict.__init__(self, values)
+        if not values:
+            self.values = {}
+        else:
+            self.values = values
 
     @property
     def isResidualControl(self):
@@ -1226,21 +1234,24 @@ class ResidualControl(dict):
     def __repr__(self):
         """Representation."""
         return 'residualControl\n{\n\t%s\n}' % (
-                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))
 
 
-class RelaxationFactors(dict):
+class RelaxationFactors(object):
     """relaxationFactors class.
 
     Attributes:
         values: Values as a dictionary.
     """
 
-    __slots__ = ()
+    __slots__ = ('values',)
 
     def __init__(self, values):
         """Init relaxationFactors class."""
-        dict.__init__(self, values)
+        if not values:
+            self.values = {}
+        else:
+            self.values = values
 
     @property
     def isRelaxationFactors(self):
@@ -1254,7 +1265,7 @@ class RelaxationFactors(dict):
     def __repr__(self):
         """Representation."""
         return 'relaxationFactors\n{\n\t%s\n}' % (
-                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))
 </code></pre>
   </div>
 
@@ -1341,7 +1352,7 @@ class RelaxationFactors(dict):
         """
         return cls(values=foamFileFromFile(filepath, cls.__name__))
 
-    # TODO: update to pass the recipe itself and not the code!
+    # TODO(): update to pass the recipe itself and not the code!
     @classmethod
     def fromRecipe(cls, recipe=0):
         """Generate fvSolution for a particular recipe.
@@ -1372,7 +1383,7 @@ class RelaxationFactors(dict):
                                   'solver': 'smoothSolver'}},
                 'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-4',
                                                'T': '1e-4'},
-                            'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
+                           'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
                 'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
 
         # update values based on the recipe.
@@ -1394,9 +1405,10 @@ class RelaxationFactors(dict):
         if not resControl:
             return
 
-        self.values['SIMPLE']['residualControl'] = {}
+        if not self.values['SIMPLE']['residualControl']:
+            self.values['SIMPLE']['residualControl'] = {}
 
-        for key, value in resControl.iteritems():
+        for key, value in resControl.values.iteritems():
             self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 
     @property
@@ -1414,9 +1426,10 @@ class RelaxationFactors(dict):
         if not relaxFact:
             return
 
-        self.values['relaxationFactors'] = {}
+        if not self.values['relaxationFactors']:
+            self.values['relaxationFactors'] = {}
 
-        for key, value in relaxFact.iteritems():
+        for key, value in relaxFact.values.iteritems():
             self.values['relaxationFactors'][str(key)] = str(value)
 </code></pre>
   </div>
@@ -1613,28 +1626,24 @@ def convertBoolValue(v=True):
     """Return body string."""
     # remove None values
     def removeNone(d):
-        if isinstance(d, (dict, OrderedDict)):
-            return OrderedDict((k, removeNone(v))
-                               for k, v in d.iteritems()
-                               if v and removeNone(v))
+        if isinstance(d, (dict, collections.OrderedDict)):
+            return collections.OrderedDict(
+                (k, removeNone(v)) for k, v in d.iteritems()
+                if v == {} or (v and removeNone(v)))
         elif isinstance(d, (list, tuple)):
             return [removeNone(v) for v in d if v and removeNone(v)]
         else:
             return d
         return removeNone
     _values = removeNone(self.values)
-    # add an empty dict for refinementRegions
-    if 'castellatedMeshControls' in _values:
-        if 'refinementRegions' not in _values['castellatedMeshControls']:
-            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
         .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
     # remove first and last {} and prettify[!] the file
-    l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-         for line in of.split("\n")[1:-1])
-    return "\n\n".join(l)
+    content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+               for line in of.split("\n")[1:-1])
+    return "\n\n".join(content)
 </code></pre>
   </div>
 </div>
@@ -1733,7 +1742,7 @@ def fromRecipe(cls, recipe=0):
                               'solver': 'smoothSolver'}},
             'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-4',
                                            'T': '1e-4'},
-                        'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
+                       'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
             'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
     # update values based on the recipe.
     _cls.updateValues(_values, mute=True)
@@ -1843,6 +1852,7 @@ def fromRecipe(cls, recipe=0):
         return
     with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
+    return fp
 </code></pre>
   </div>
 </div>
@@ -1932,22 +1942,24 @@ already exists it will be updated.</p>
             if key not in original:
                 # there is a new key so dictionary has changed.
                 if not mute:
-                    print '{} :: New values are added for {}.' \
+                    msg = '{} :: New values are added for {}.' \
                         .format('.'.join(self.__parents), key)
+                    print(msg)
                 self.__hasChanged = True
                 return
-            if isinstance(value, (dict, OrderedDict)):
+            if isinstance(value, (dict, collections.OrderedDict)):
                 self.__parents.append(key)
                 logChanges(original[key], value)
             elif str(original[key]) != str(value):
                     # there is a change in value
                     if not mute:
-                        print '{}.{} is changed from "{}" to "{}".'\
+                        msg = '{}.{} is changed from "{}" to "{}".'\
                             .format('.'.join(self.__parents), key,
                                     original[key] if len(str(original[key])) < 100
                                     else '%s...' % str(original[key])[:100],
                                     value if len(str(value)) < 100
                                     else '%s...' % str(value)[:100])
+                        print(msg)
                     self.__hasChanged = True
                     return
     def modifyDict(original, new):
@@ -1993,18 +2005,21 @@ already exists it will be updated.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.fvSolution.RelaxationFactors', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.fvSolution.RelaxationFactors" class="source">
-    <pre><code>class RelaxationFactors(dict):
+    <pre><code>class RelaxationFactors(object):
     """relaxationFactors class.
 
     Attributes:
         values: Values as a dictionary.
     """
 
-    __slots__ = ()
+    __slots__ = ('values',)
 
     def __init__(self, values):
         """Init relaxationFactors class."""
-        dict.__init__(self, values)
+        if not values:
+            self.values = {}
+        else:
+            self.values = values
 
     @property
     def isRelaxationFactors(self):
@@ -2018,7 +2033,7 @@ already exists it will be updated.</p>
     def __repr__(self):
         """Representation."""
         return 'relaxationFactors\n{\n\t%s\n}' % (
-                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))
 </code></pre>
   </div>
 </div>
@@ -2028,7 +2043,6 @@ already exists it will be updated.</p>
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
           <li><a href="#butterfly.fvSolution.RelaxationFactors">RelaxationFactors</a></li>
-          <li>__builtin__.dict</li>
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
@@ -2039,6 +2053,16 @@ already exists it will be updated.</p>
             
   
     <div class="desc"><p>Return True.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.fvSolution.RelaxationFactors.values" class="name">var <span class="ident">values</span></p>
+            
+
+            
+  
   <div class="source_cont">
 </div>
 
@@ -2059,7 +2083,10 @@ already exists it will be updated.</p>
   <div id="source-butterfly.fvSolution.RelaxationFactors.__init__" class="source">
     <pre><code>def __init__(self, values):
     """Init relaxationFactors class."""
-    dict.__init__(self, values)
+    if not values:
+        self.values = {}
+    else:
+        self.values = values
 </code></pre>
   </div>
 </div>
@@ -2101,18 +2128,21 @@ already exists it will be updated.</p>
   <div class="source_cont">
   <p class="source_link"><a href="javascript:void(0);" onclick="toggle('source-butterfly.fvSolution.ResidualControl', this);">Show source &equiv;</a></p>
   <div id="source-butterfly.fvSolution.ResidualControl" class="source">
-    <pre><code>class ResidualControl(dict):
+    <pre><code>class ResidualControl(object):
     """Residual Control class.
 
     Attributes:
         values: Values as a dictionary.
     """
 
-    __slots__ = ()
+    __slots__ = ('values',)
 
     def __init__(self, values):
         """Init ResidualControl class."""
-        dict.__init__(self, values)
+        if not values:
+            self.values = {}
+        else:
+            self.values = values
 
     @property
     def isResidualControl(self):
@@ -2126,7 +2156,7 @@ already exists it will be updated.</p>
     def __repr__(self):
         """Representation."""
         return 'residualControl\n{\n\t%s\n}' % (
-                '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.iteritems())))
+            '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))
 </code></pre>
   </div>
 </div>
@@ -2136,7 +2166,6 @@ already exists it will be updated.</p>
           <h3>Ancestors (in MRO)</h3>
           <ul class="class_list">
           <li><a href="#butterfly.fvSolution.ResidualControl">ResidualControl</a></li>
-          <li>__builtin__.dict</li>
           <li>__builtin__.object</li>
           </ul>
           <h3>Instance variables</h3>
@@ -2147,6 +2176,16 @@ already exists it will be updated.</p>
             
   
     <div class="desc"><p>Return True.</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.fvSolution.ResidualControl.values" class="name">var <span class="ident">values</span></p>
+            
+
+            
+  
   <div class="source_cont">
 </div>
 
@@ -2167,7 +2206,10 @@ already exists it will be updated.</p>
   <div id="source-butterfly.fvSolution.ResidualControl.__init__" class="source">
     <pre><code>def __init__(self, values):
     """Init ResidualControl class."""
-    dict.__init__(self, values)
+    if not values:
+        self.values = {}
+    else:
+        self.values = values
 </code></pre>
   </div>
 </div>

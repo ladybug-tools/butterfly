@@ -1029,7 +1029,8 @@ table {
   <div id="source-butterfly.controlDict" class="source">
     <pre><code># coding=utf-8
 """BlockMeshDict class."""
-from foamfile import FoamFile, foamFileFromFile
+from .foamfile import FoamFile, foamFileFromFile
+from .functions import Function
 from collections import OrderedDict
 
 
@@ -1055,6 +1056,7 @@ class ControlDict(FoamFile):
     __defaultValues['timeFormat'] = 'general'
     __defaultValues['timePrecision'] = '6'
     __defaultValues['runTimeModifiable'] = 'true'
+    __defaultValues['functions'] = OrderedDict()
 
     def __init__(self, values=None):
         """Init class."""
@@ -1132,6 +1134,19 @@ class ControlDict(FoamFile):
     @writeCompression.setter
     def writeCompression(self, value=True):
         self.values['writeCompression'] = self.convertBoolValue(value)
+
+    @property
+    def functions(self):
+        """Function objects."""
+        self.values['functions']
+
+    @functions.setter
+    def functions(self, funcObjects):
+        fos = (f if hasattr(f, 'isFunction') else Function.fromCppDictionary(f)
+               for f in funcObjects)
+        self.values['functions'] = OrderedDict()
+        for f in fos:
+            self.values['functions'].update(f.values)
 </code></pre>
   </div>
 
@@ -1172,6 +1187,7 @@ class ControlDict(FoamFile):
     __defaultValues['timeFormat'] = 'general'
     __defaultValues['timePrecision'] = '6'
     __defaultValues['runTimeModifiable'] = 'true'
+    __defaultValues['functions'] = OrderedDict()
 
     def __init__(self, values=None):
         """Init class."""
@@ -1249,6 +1265,19 @@ class ControlDict(FoamFile):
     @writeCompression.setter
     def writeCompression(self, value=True):
         self.values['writeCompression'] = self.convertBoolValue(value)
+
+    @property
+    def functions(self):
+        """Function objects."""
+        self.values['functions']
+
+    @functions.setter
+    def functions(self, funcObjects):
+        fos = (f if hasattr(f, 'isFunction') else Function.fromCppDictionary(f)
+               for f in funcObjects)
+        self.values['functions'] = OrderedDict()
+        for f in fos:
+            self.values['functions'].update(f.values)
 </code></pre>
   </div>
 </div>
@@ -1311,6 +1340,17 @@ def convertBoolValue(v=True):
             
   
     <div class="desc"><p>Set end timestep (default: 1000).</p></div>
+  <div class="source_cont">
+</div>
+
+            </div>
+            <div class="item">
+            <p id="butterfly.controlDict.ControlDict.functions" class="name">var <span class="ident">functions</span></p>
+            
+
+            
+  
+    <div class="desc"><p>Function objects.</p></div>
   <div class="source_cont">
 </div>
 
@@ -1491,28 +1531,24 @@ def convertBoolValue(v=True):
     """Return body string."""
     # remove None values
     def removeNone(d):
-        if isinstance(d, (dict, OrderedDict)):
-            return OrderedDict((k, removeNone(v))
-                               for k, v in d.iteritems()
-                               if v and removeNone(v))
+        if isinstance(d, (dict, collections.OrderedDict)):
+            return collections.OrderedDict(
+                (k, removeNone(v)) for k, v in d.iteritems()
+                if v == {} or (v and removeNone(v)))
         elif isinstance(d, (list, tuple)):
             return [removeNone(v) for v in d if v and removeNone(v)]
         else:
             return d
         return removeNone
     _values = removeNone(self.values)
-    # add an empty dict for refinementRegions
-    if 'castellatedMeshControls' in _values:
-        if 'refinementRegions' not in _values['castellatedMeshControls']:
-            _values['castellatedMeshControls']['refinementRegions'] = {}
     # make python dictionary look like c++ dictionary!!
     of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
         .replace('\\"', '@').replace('"\n', ";\n").replace('"', '') \
         .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
     # remove first and last {} and prettify[!] the file
-    l = (line[4:] if not line.endswith('{') else self._splitLine(line)
-         for line in of.split("\n")[1:-1])
-    return "\n\n".join(l)
+    content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+               for line in of.split("\n")[1:-1])
+    return "\n\n".join(content)
 </code></pre>
   </div>
 </div>
@@ -1668,6 +1704,7 @@ def fromFile(cls, filepath):
         return
     with open(fp, "wb") as outf:
         outf.write(self.toOpenFOAM())
+    return fp
 </code></pre>
   </div>
 </div>
@@ -1757,22 +1794,24 @@ already exists it will be updated.</p>
             if key not in original:
                 # there is a new key so dictionary has changed.
                 if not mute:
-                    print '{} :: New values are added for {}.' \
+                    msg = '{} :: New values are added for {}.' \
                         .format('.'.join(self.__parents), key)
+                    print(msg)
                 self.__hasChanged = True
                 return
-            if isinstance(value, (dict, OrderedDict)):
+            if isinstance(value, (dict, collections.OrderedDict)):
                 self.__parents.append(key)
                 logChanges(original[key], value)
             elif str(original[key]) != str(value):
                     # there is a change in value
                     if not mute:
-                        print '{}.{} is changed from "{}" to "{}".'\
+                        msg = '{}.{} is changed from "{}" to "{}".'\
                             .format('.'.join(self.__parents), key,
                                     original[key] if len(str(original[key])) < 100
                                     else '%s...' % str(original[key])[:100],
                                     value if len(str(value)) < 100
                                     else '%s...' % str(value)[:100])
+                        print(msg)
                     self.__hasChanged = True
                     return
     def modifyDict(original, new):
