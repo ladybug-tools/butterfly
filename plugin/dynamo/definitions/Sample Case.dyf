@@ -104,7 +104,7 @@ except Exception, e:
       <Symbol value="// A name for this smaple. The results will be saved under postProcessing&#xD;&#xA;// folder under &lt;name&gt;_&lt;field&gt;_sampleDict/&lt;latestTime&gt;/&lt;name&gt;_&lt;field&gt;.xy&#xD;&#xA;_name: string;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="04886c07-bf91-43c8-b12c-9c06ed9f9793" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_points" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="665">
-      <Symbol value="// A list of flattened points to be sampled.&#xD;&#xA;_points: Point[];"/>
+      <Symbol value="// A list of flattened points to be sampled.&#xD;&#xA;_points: Autodesk.Point[];"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4af053cf-7d05-4104-a80f-7c604914b54e" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_field" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="760">
       <Symbol value="// Filed of interest as a string (e.g. p, U).&#xD;&#xA;_field: string;"/>

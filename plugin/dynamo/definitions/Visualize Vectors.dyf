@@ -57,10 +57,10 @@
       <PortInfo index="1" default="False" />
     </Dynamo.Graph.Nodes.ZeroTouch.DSFunction>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="e51c88c9-14e1-4c7f-a38a-a2948803025f" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-61.6836234200041" y="110.350290086671" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="// list of vectors&#xD;&#xA;_vectors: Vector[];" />
+      <Symbol value="// list of vectors&#xD;&#xA;_vectors: Autodesk.Vector[];" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9842c8d1-628a-42a2-a8c8-fc99ae9bf115" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" nickname="Input" x="-59.3333333333335" y="11.3333333333334" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="True" IsFrozen="false" isPinned="false">
-      <Symbol value="// list of start points&#xD;&#xA;_startPts: Point[];" />
+      <Symbol value="// list of start points&#xD;&#xA;_startPts: Autodesk.Point[];" />
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="3835914b-ef02-408a-952f-462247ce0da0" type="Dynamo.Graph.Nodes.CustomNodes.Output" nickname="Output" x="3412.8720218306" y="17.969827971296" isVisible="true" isUpstreamVisible="true" lacing="Disabled" isSelectedInput="False" IsFrozen="false" isPinned="false">
       <PortInfo index="0" default="False" />

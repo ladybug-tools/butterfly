@@ -94,10 +94,10 @@ except Exception, e:
       <PortInfo default="false" index="3"/>
     </PythonNodeModels.PythonStringNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4eeb68fe-1e99-4509-891c-5bfc977ed7e9" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_origin" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="475">
-      <Symbol value="// Origin point for the 2d case cutting plane.&#xD;&#xA;_origin: Point;"/>
+      <Symbol value="// Origin point for the 2d case cutting plane.&#xD;&#xA;_origin: Autodesk.Point;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="5d3bc803-426b-43fd-a95c-87996eebc5ab" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_normal" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
-      <Symbol value="// Normal direction for the cutting plane as a vector.&#xD;&#xA;_normal: Vector;"/>
+      <Symbol value="// Normal direction for the cutting plane as a vector.&#xD;&#xA;_normal: Autodesk.Vector;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="bd1062be-d6e1-40c7-afc6-4ea96ad86d3f" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_width_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="665">
       <Symbol value="// Width of 2d case (default: 0.5)&#xD;&#xA;_width_: double = null;"/>

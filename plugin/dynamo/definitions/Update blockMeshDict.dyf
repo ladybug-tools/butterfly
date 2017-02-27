@@ -99,7 +99,7 @@ except Exception, e:
       <Symbol value="// A butterfly case.&#xD;&#xA;_case: System.Object;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="df1da74a-985b-4bbb-9f40-3e3468d76d5e" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_points" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
-      <Symbol value="// A list of 8 point.&#xD;&#xA;_points: Point[];"/>
+      <Symbol value="// A list of 8 point.&#xD;&#xA;_points: Autodesk.Point[];"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="df4de050-498b-4673-a21e-3d502babb0b7" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="xAxis_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="665">
       <Symbol value="// Optional vector to set xAxis for blockMeshDict (default: (1, 0, 0)).&#xD;&#xA;xAxis_: Autodesk.Vector = Autodesk.Vector.ByCoordinates(1,0,0);"/>

@@ -111,7 +111,7 @@ except Exception, e:
       <Symbol value="// Script variable createCaseFromTunnel&#xD;&#xA;refRegions_: System.Object[] = {};"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="bd877bfa-7627-4f46-af6f-b18443975d3b" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_windVector" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="760">
-      <Symbol value="// A vector that indicates speed and direction of wind. Length&#xD;&#xA;// of the vector will be used as windspeed and the unfied vector will be&#xD;&#xA;// used for wind direction. For wind tunnel vector will be projected to&#xD;&#xA;// XY plane.&#xD;&#xA;_windVector: Vector;"/>
+      <Symbol value="// A vector that indicates speed and direction of wind. Length&#xD;&#xA;// of the vector will be used as windspeed and the unfied vector will be&#xD;&#xA;// used for wind direction. For wind tunnel vector will be projected to&#xD;&#xA;// XY plane.&#xD;&#xA;_windVector: Autodesk.Vector;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c927e790-104a-46c6-b417-e31654ef218f" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_refWindHeight_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="855">
       <Symbol value="// Reference height for wind velocity (default: 10m).&#xD;&#xA;_refWindHeight_: double = 10;"/>

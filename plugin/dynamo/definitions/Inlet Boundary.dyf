@@ -94,7 +94,7 @@ except Exception, e:
       <PortInfo default="false" index="2"/>
     </PythonNodeModels.PythonStringNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="529cbb39-662c-445b-823e-3e32f5f670a3" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_velocityVec" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="475">
-      <Symbol value="// Velocity vector.&#xD;&#xA;_velocityVec: Vector;"/>
+      <Symbol value="// Velocity vector.&#xD;&#xA;_velocityVec: Autodesk.Vector;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="c06df109-ba5b-455c-a756-50c2617a6f9c" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="temperature_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
       <Symbol value="// Temperature in degrees celsius.&#xD;&#xA;temperature_: double = null;"/>

@@ -94,7 +94,7 @@ except Exception, e:
       <PortInfo default="false" index="3"/>
     </PythonNodeModels.PythonStringNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="9751245d-d66c-4636-9adf-37a8d4aa7fa1" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_points" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="475">
-      <Symbol value="// A flatten list of points that you're interested to collect the&#xD;&#xA;// values for.&#xD;&#xA;_points: Point[];"/>
+      <Symbol value="// A flatten list of points that you're interested to collect the&#xD;&#xA;// values for.&#xD;&#xA;_points: Autodesk.Point[];"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="fd4e8776-6a25-4cec-8e5b-2460f58a8d56" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_fields_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
       <Symbol value="// A list of fields such as U, p, k (default: U, p).&#xD;&#xA;_fields_: string[] = {};"/>
