@@ -69,7 +69,7 @@ try:
         '    import traceback\n' + \
         '    OUT = &quot;ERROR:\\n\\t{}&quot;.format(str(e)) + \\\n' + \
         '    &quot;\\n\\nIf you think this is a bug submit an issue on github.\\n&quot; + \\\n' + \
-        '    &quot;https://github.com/ladybug-analysis-tools/honeybee-plus/issues\\n&quot; +  \\\n' + \
+        '    &quot;https://github.com/ladybug-analysis-tools/butterfly/issues\\n&quot; +  \\\n' + \
         '    &quot;and include below error message:\\n\\n&quot; + \\\n' + \
         '    &quot;{}&quot;.format(traceback.format_exc())\n'
 
@@ -81,7 +81,7 @@ except Exception, e:
     import traceback
     OUT = &quot;ERROR:\n\t{}&quot;.format(str(e)) + \
         &quot;\n\nIf you think this is a bug submit an issue on github.\n&quot; + \
-        &quot;https://github.com/ladybug-analysis-tools/honeybee-plus/issues\n&quot; +  \
+        &quot;https://github.com/ladybug-analysis-tools/butterfly/issues\n&quot; +  \
         &quot;and include below error message:\n\n&quot; + \
         &quot;{}&quot;.format(traceback.format_exc())
 
@@ -95,13 +95,13 @@ except Exception, e:
       <PortInfo default="false" index="4"/>
     </PythonNodeModels.PythonStringNode>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="833f1cb6-c621-4799-af23-178e9bc0a2f0" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_cellSizeXYZ_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="475">
-      <Symbol value="// Cell size in (x, y, z) as a tuple (default: length / 5).&#xD;&#xA;// This value updates number of divisions in blockMeshDict.&#xD;&#xA;_cellSizeXYZ_: Point = null;"/>
+      <Symbol value="// Cell size in (x, y, z) as a tuple (default: length / 5).&#xD;&#xA;// This value updates number of divisions in blockMeshDict.&#xD;&#xA;_cellSizeXYZ_: Autodesk.Point = null;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="41c8f297-874f-433b-8b45-41c472315366" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_gradXYZ_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
       <Symbol value="// A simpleGrading (default: simpleGrading(1, 1, 1)). This value&#xD;&#xA;// updates grading in blockMeshDict.&#xD;&#xA;_gradXYZ_: var = null;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="d8e95c62-ab6a-467e-8a8c-2a04dae6aa7a" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_locationInMesh_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="665">
-      <Symbol value="// A tuple for the location of the mesh to be kept. This&#xD;&#xA;// value updates locationInMesh in snappyHexMeshDict.&#xD;&#xA;_locationInMesh_: Point = null;"/>
+      <Symbol value="// A tuple for the location of the mesh to be kept. This&#xD;&#xA;// value updates locationInMesh in snappyHexMeshDict.&#xD;&#xA;_locationInMesh_: Autodesk.Point = null;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="94f0081a-7053-4b29-874e-174218c838fb" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_globRefineLevel_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="760">
       <Symbol value="// A tuple of (min, max) values for global refinment.&#xD;&#xA;// This value updates globalRefinementLevel in snappyHexMeshDict.&#xD;&#xA;_globRefineLevel_: double[] = null;"/>

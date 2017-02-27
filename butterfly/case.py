@@ -790,6 +790,10 @@ class Case(object):
         rf = list(int(f) for f in self.getResultFolders())
         rf.sort()
 
+        assert len(rf) > 0, \
+            IOError('Found no results folder. Either you have not run the '
+                    'analysis or the run has faild. Check inside "log" folder.')
+
         fp = tuple(os.path.join(self.postProcessingFolder, 'sampleDict', str(rf[-1]), f)
                    for f in sd.outputFilenames)
 

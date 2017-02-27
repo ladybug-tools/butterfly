@@ -101,12 +101,13 @@ class MeshDS(object):
             return mesh[0]
 
         # collect vertices of all the meshes
-        dsPts = (pt for m in mesh for pts in m.Vertices for pt in pts)
-        verCount = -mesh[0].VertexCount
+        dsPts = (pt for m in mesh for pt in m.Vertices())
+        verCount = int(-mesh[0].VertexCount)
         ind = []
         for m in mesh:
-            verCount += m.VertexCount
-            ind.extend((i + verCount for i in m.VertexIndicesByTri()))
+            verCount += int(m.VertexCount)
+            ind.extend((int(i) + verCount for i in m.VertexIndicesByTri()))
+
         joinedMesh = MeshToolkit.Mesh.ByVerticesAndIndices(dsPts, ind)
         return joinedMesh
 

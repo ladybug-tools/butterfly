@@ -70,7 +70,7 @@ try:
         '    import traceback\n' + \
         '    OUT = &quot;ERROR:\\n\\t{}&quot;.format(str(e)) + \\\n' + \
         '    &quot;\\n\\nIf you think this is a bug submit an issue on github.\\n&quot; + \\\n' + \
-        '    &quot;https://github.com/ladybug-analysis-tools/honeybee-plus/issues\\n&quot; +  \\\n' + \
+        '    &quot;https://github.com/ladybug-analysis-tools/butterfly/issues\\n&quot; +  \\\n' + \
         '    &quot;and include below error message:\\n\\n&quot; + \\\n' + \
         '    &quot;{}&quot;.format(traceback.format_exc())\n'
 
@@ -82,7 +82,7 @@ except Exception, e:
     import traceback
     OUT = &quot;ERROR:\n\t{}&quot;.format(str(e)) + \
         &quot;\n\nIf you think this is a bug submit an issue on github.\n&quot; + \
-        &quot;https://github.com/ladybug-analysis-tools/honeybee-plus/issues\n&quot; +  \
+        &quot;https://github.com/ladybug-analysis-tools/butterfly/issues\n&quot; +  \
         &quot;and include below error message:\n\n&quot; + \
         &quot;{}&quot;.format(traceback.format_exc())
 
@@ -97,7 +97,7 @@ except Exception, e:
       <Symbol value="// Wind speed in m/s at a the reference height (_refWindHeight_).&#xD;&#xA;_windSpeed: double;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="1aa4ec8f-3267-4e23-a75f-bbf4d0f9137a" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_windDirection_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
-      <Symbol value="// Wind direction as Vector3D (default: 0, 1, 0).&#xD;&#xA;_windDirection_: Vector = Vector.ByCoordinates(0,1,0);"/>
+      <Symbol value="// Wind direction as Vector3D (default: 0, 1, 0).&#xD;&#xA;_windDirection_: Autodesk.Vector = Autodesk.Vector.ByCoordinates(0,1,0);"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CodeBlockNodeModel CodeText="out[0];" ShouldFocus="false" guid="0d6f866d-23d0-4692-a727-59a1ec137044" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="decompose outputs" type="Dynamo.Graph.Nodes.CodeBlockNodeModel" x="150" y="515"/>
     <Dynamo.Graph.Nodes.CustomNodes.Output guid="d27f249d-98bb-4080-baaa-7e9b18e1a1c5" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="windVector" type="Dynamo.Graph.Nodes.CustomNodes.Output" x="380" y="475">

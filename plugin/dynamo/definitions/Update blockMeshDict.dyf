@@ -70,7 +70,7 @@ try:
         '    import traceback\n' + \
         '    OUT = &quot;ERROR:\\n\\t{}&quot;.format(str(e)) + \\\n' + \
         '    &quot;\\n\\nIf you think this is a bug submit an issue on github.\\n&quot; + \\\n' + \
-        '    &quot;https://github.com/ladybug-analysis-tools/honeybee-plus/issues\\n&quot; +  \\\n' + \
+        '    &quot;https://github.com/ladybug-analysis-tools/butterfly/issues\\n&quot; +  \\\n' + \
         '    &quot;and include below error message:\\n\\n&quot; + \\\n' + \
         '    &quot;{}&quot;.format(traceback.format_exc())\n'
 
@@ -82,7 +82,7 @@ except Exception, e:
     import traceback
     OUT = &quot;ERROR:\n\t{}&quot;.format(str(e)) + \
         &quot;\n\nIf you think this is a bug submit an issue on github.\n&quot; + \
-        &quot;https://github.com/ladybug-analysis-tools/honeybee-plus/issues\n&quot; +  \
+        &quot;https://github.com/ladybug-analysis-tools/butterfly/issues\n&quot; +  \
         &quot;and include below error message:\n\n&quot; + \
         &quot;{}&quot;.format(traceback.format_exc())
 
@@ -102,7 +102,7 @@ except Exception, e:
       <Symbol value="// A list of 8 point.&#xD;&#xA;_points: Point[];"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="df4de050-498b-4673-a21e-3d502babb0b7" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="xAxis_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="665">
-      <Symbol value="// Optional vector to set xAxis for blockMeshDict (default: (1, 0, 0)).&#xD;&#xA;xAxis_: Vector = Vector.ByCoordinates(1,0,0);"/>
+      <Symbol value="// Optional vector to set xAxis for blockMeshDict (default: (1, 0, 0)).&#xD;&#xA;xAxis_: Autodesk.Vector = Autodesk.Vector.ByCoordinates(1,0,0);"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="8f22155c-f63f-4ebf-9ac7-ad5dc6c864e0" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_run" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="760">
       <Symbol value="// update blockMeshDict and save it folder.&#xD;&#xA;_run: bool;"/>

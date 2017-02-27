@@ -69,7 +69,7 @@ try:
         '    import traceback\n' + \
         '    OUT = "ERROR:\\n\\t{}".format(str(e)) + \\\n' + \
         '    "\\n\\nIf you think this is a bug submit an issue on github.\\n" + \\\n' + \
-        '    "https://github.com/ladybug-analysis-tools/honeybee-plus/issues\\n" +  \\\n' + \
+        '    "https://github.com/ladybug-analysis-tools/butterfly/issues\\n" +  \\\n' + \
         '    "and include below error message:\\n\\n" + \\\n' + \
         '    "{}".format(traceback.format_exc())\n'
 
@@ -81,7 +81,7 @@ except Exception, e:
     import traceback
     OUT = "ERROR:\n\t{}".format(str(e)) + \
         "\n\nIf you think this is a bug submit an issue on github.\n" + \
-        "https://github.com/ladybug-analysis-tools/honeybee-plus/issues\n" +  \
+        "https://github.com/ladybug-analysis-tools/butterfly/issues\n" +  \
         "and include below error message:\n\n" + \
         "{}".format(traceback.format_exc())
 
