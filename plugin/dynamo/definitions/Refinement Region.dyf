@@ -99,7 +99,7 @@ except Exception, e:
       <Symbol value="// Surface name.&#xD;&#xA;_name: string;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="b75e5e40-5140-4563-a4e4-aa9cdfa32827" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_geo" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
-      <Symbol value="// Dynamo geometries.&#xD;&#xA;_geo: Geometry[];"/>
+      <Symbol value="// Dynamo geometries.&#xD;&#xA;_geo: Autodesk.Geometry[];"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="8e0bf584-3023-4cb0-a6b0-ddb0b1525e5a" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_refMode" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="665">
       <Symbol value="// Refinement mode. Used locationRefMode or distanceRefMode components.&#xD;&#xA;_refMode: System.Object;"/>

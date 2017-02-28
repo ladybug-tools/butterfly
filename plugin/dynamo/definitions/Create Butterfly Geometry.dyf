@@ -101,7 +101,7 @@ except Exception, e:
       <Symbol value="// Geometry name.&#xD;&#xA;_name: string;"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="ce62a57f-2a76-4bc3-86d5-73269b2d5528" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_geo" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="570">
-      <Symbol value="// Dynamo geometries.&#xD;&#xA;_geo: Geometry[];"/>
+      <Symbol value="// Dynamo geometries.&#xD;&#xA;_geo: Autodesk.Geometry[];"/>
     </Dynamo.Graph.Nodes.CustomNodes.Symbol>
     <Dynamo.Graph.Nodes.CustomNodes.Symbol guid="4e81d5ba-9a7b-4302-a3ee-2d5cf47c2128" isFrozen="false" isPinned="false" isSelectedInput="true" isUpstreamVisible="true" isVisible="true" lacing="Disabled" nickname="_boundary_" type="Dynamo.Graph.Nodes.CustomNodes.Symbol" x="-750" y="665">
       <Symbol value="// Boundary for this surface (e.g. Inlet, Outlet, Wall)&#xD;&#xA;_boundary_: var = null;"/>
