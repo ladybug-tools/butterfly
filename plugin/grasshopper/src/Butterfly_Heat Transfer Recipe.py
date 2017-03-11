@@ -14,6 +14,8 @@ Heat Transfer Recipe.
     Args:
         _turbulenceProp_: Turbulence properties. This values will overwrite default
             values, and can be updated while the solution is running.
+        _temperature_: Reference temperature in degrees celsius. Default is set to
+            26.85 C (300 K) degrees.
         fvSchemes_: Optional input for fvSchemes to overwrite default fvSchemes.
         fvSolution_: Optional input for fvSolution to overwrite default fvSolution.
         residualControl_: residualControl values. This values will overwrite default
@@ -27,7 +29,7 @@ Heat Transfer Recipe.
 
 ghenv.Component.Name = "Butterfly_Heat Transfer Recipe"
 ghenv.Component.NickName = "heatTransfer"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_21_2017'
+ghenv.Component.Message = 'VER 0.0.03\nMAR_11_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "05::Recipe"
 ghenv.Component.AdditionalHelpFromDocStrings = "1"
@@ -43,8 +45,11 @@ except ImportError as e:
         
     raise ImportError('{}\n{}'.format(msg, e))
 
+if _temperature_:
+    _temperature_ += 273.15
+
 recipe = HeatTransfer(_turbulenceProp_, fvSchemes_, fvSolution_, residualControl_,
-                      _relaxationFactors_)
+                      _relaxationFactors_, TRef=_temperature_)
 
 l = len(recipe.quantities)
 q = ''.join(q + ' ..... ' if (c + 1) % 4 != 0 and c + 1 != l else q + '\n'

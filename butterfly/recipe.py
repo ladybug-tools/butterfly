@@ -385,13 +385,15 @@ class HeatTransfer(_SingleCommandRecipe):
     __residualFields = ('Ux', 'Uy', 'Uz', 'p_rgh', 'T', 'k', 'epsilon')
 
     def __init__(self, turbulenceProperties=None, fvSolution=None,
-                 fvSchemes=None, residualControl=None, relaxationFactors=None):
+                 fvSchemes=None, residualControl=None, relaxationFactors=None,
+                 TRef=None):
         """Initiate recipe."""
         turbulenceProperties = turbulenceProperties or TurbulenceProperties.RAS()
 
         # add inputs here, and initiate the class.
         fvSolution = fvSolution or FvSolution.fromRecipe(1)
         fvSchemes = fvSchemes or FvSchemes.fromRecipe(1)
+        self.temperature = TRef or 300
         quantities = self.__quantities
 
         _SingleCommandRecipe.__init__(
@@ -414,5 +416,8 @@ class HeatTransfer(_SingleCommandRecipe):
         # update pRefPoint to center locationInMesh for snappyHexMeshDict
         self.fvSolution.values['SIMPLE']['pRefPoint'] = \
             str(case.snappyHexMeshDict.locationInMesh).replace(',', ' ')
+
+        # updated TRef if it is provided
+        case.T.updateValues({'internalField': 'uniform %f' % self.temperature})
 
         super(HeatTransfer, self).prepareCase(case, overwrite, remove)
