@@ -57,13 +57,14 @@ class DecomposeParDict(FoamFile):
         """
         try:
             numberOfSubdomainsXYZ = tuple(numberOfSubdomainsXYZ)
-        except:
+        except Exception:
             numberOfSubdomainsXYZ = (2, 1, 1)
 
         numberOfSubdomains = numberOfSubdomainsXYZ[0] * \
             numberOfSubdomainsXYZ[1] * numberOfSubdomainsXYZ[2]
 
         values = {'method': 'simple',
+                  'numberOfSubdomains': str(numberOfSubdomains),
                   'simpleCoeffs':
                   {'numberOfSubdomains': str(numberOfSubdomains),
                    'n': str(numberOfSubdomainsXYZ).replace(',', ' '),
