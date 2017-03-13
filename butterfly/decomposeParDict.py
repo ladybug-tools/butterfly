@@ -66,8 +66,7 @@ class DecomposeParDict(FoamFile):
         values = {'method': 'simple',
                   'numberOfSubdomains': str(numberOfSubdomains),
                   'simpleCoeffs':
-                  {'numberOfSubdomains': str(numberOfSubdomains),
-                   'n': str(numberOfSubdomainsXYZ).replace(',', ' '),
+                  {'n': str(numberOfSubdomainsXYZ).replace(',', ' '),
                    'delta': str(delta)}}
 
         return cls(values=values)

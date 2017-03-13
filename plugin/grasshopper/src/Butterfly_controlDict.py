@@ -15,6 +15,8 @@ Set parameters for runDict
         _writeInterval_: Number of intervals between writing the results (default: 100)
         _writeCompression_: Set to True if you want the results to be compressed
             before being written to your machine (default: False).
+        _purgeWrite_: Number of results folder to be kept. 0 means that all the
+            result folder will be kept (default: 0).
         funcObjects_: A list of OpenFOAM function objects. Use functionObject
             component to create a butterfly function object from a cpp dictionary.
     Returns:
@@ -22,7 +24,7 @@ Set parameters for runDict
 """
 ghenv.Component.Name = "Butterfly_controlDict"
 ghenv.Component.NickName = "controlDict"
-ghenv.Component.Message = 'VER 0.0.03\nFEB_08_2017'
+ghenv.Component.Message = 'VER 0.0.03\nMAR_12_2017'
 ghenv.Component.Category = "Butterfly"
 ghenv.Component.SubCategory = "06::Solution"
 ghenv.Component.AdditionalHelpFromDocStrings = "2"
@@ -51,6 +53,9 @@ if _writeInterval_ is not None:
 
 if _writeCompression_ is not None:
     cd.writeCompression = _writeCompression_
+
+if _purgeWrite_ is not None:
+    cd.purgeWrite = _purgeWrite_
 
 if funcObjects_ and funcObjects_[0] is not None:
     cd.functions = funcObjects_

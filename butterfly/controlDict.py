@@ -94,6 +94,15 @@ class ControlDict(FoamFile):
         self.values['writeInterval'] = str(int(value))
 
     @property
+    def purgeWrite(self):
+        """Set the number of results folders to be kept (default: 0)."""
+        return self.values['purgeWrite']
+
+    @purgeWrite.setter
+    def purgeWrite(self, value=0):
+        self.values['purgeWrite'] = str(int(value))
+
+    @property
     def writeCompression(self):
         """Write results as .zip files.
 
