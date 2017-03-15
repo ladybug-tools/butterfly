@@ -1,5 +1,7 @@
 ![Screenshot](https://github.com/ladybug-tools/butterfly/blob/master/etc/graphics/logo/butterfly_100px.png)
 
+[![Code Health](https://landscape.io/github/ladybug-tools/butterfly/master/landscape.svg?style=flat)](https://landscape.io/github/ladybug-tools/butterfly/master)
+
 Butterfly
 ========================================
 A light python API for creating and running [OpenFoam](http://www.openfoam.org/) cases for CFD simulation.
