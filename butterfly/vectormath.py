@@ -73,10 +73,10 @@ def crossProduct(v1, v2, norm=True):
 
 def normalize(v):
     """Normalize a vector."""
-    l = length(v)
-    if l == 0:
+    ln = length(v)
+    if ln == 0:
         raise ValueError('A vector with length of 0 cannot be normalized.')
-    return tuple(c / l for c in v)
+    return tuple(c / ln for c in v)
 
 
 def move(p, v):
@@ -95,8 +95,7 @@ def sums(vectors):
 
 
 def rotate(origin, point, angle):
-    u"""
-    Rotate a point anitclockwise by a given angle around a given origin.
+    u"""Rotate a point anitclockwise by a given angle around a given origin.
 
     The angle should be given in degrees.
     modified from: http://stackoverflow.com/a/34374437/4394669

@@ -47,7 +47,7 @@ class BlockMeshDict(FoamFile):
         _cls = cls()
 
         with open(filepah, 'rb') as bf:
-            lines = CppDictParser._removeComments(bf.read())
+            lines = CppDictParser.removeComments(bf.read())
             bmd = ' '.join(lines.replace('\r\n', ' ').replace('\n', ' ').split())
 
         _cls.values['convertToMeters'] = convertToMeters

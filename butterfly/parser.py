@@ -14,7 +14,7 @@ class CppDictParser(object):
 
     def __init__(self, text):
         """Init an OpenFOAMDictParser."""
-        _t = self._removeComments(text)
+        _t = self.removeComments(text)
         _t = ''.join(_t.replace('\r\n', ' ').replace('\n', ' '))
         self.__values = self._convertToDict(self._parseNested(_t))
 
@@ -30,7 +30,7 @@ class CppDictParser(object):
         return self.__values
 
     @staticmethod
-    def _removeComments(code):
+    def removeComments(code):
         """Remove comments from c++ codes."""
         # remove all occurance streamed comments (/*COMMENT */) from string
         text = re.sub(re.compile('/\*.*?\*/', re.DOTALL), '', code)
@@ -144,8 +144,8 @@ class ResidualParser(object):
     def getResiduals(self, quantity, timeRange):
         """Get residuals for a quantity."""
         if quantity not in self.quantities:
-            print 'Invalid quantity [{}]. Try from the list below:\n{}' \
-                .format(quantity, self.quantities)
+            print ('Invalid quantity [{}]. Try from the list below:\n{}'
+                   .format(quantity, self.quantities))
             return ()
 
         if not timeRange:

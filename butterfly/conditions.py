@@ -12,7 +12,8 @@ class ABLConditions(Condition):
     __defaultValues = OrderedDict()
     __defaultValues['Uref'] = '0'   # wind velocity
     __defaultValues['Zref'] = '10'  # reference z value - usually 10 meters
-    __defaultValues['z0'] = 'uniform 1'  # roughness - default is set to 1 for urban environment
+    # roughness - default is set to 1 for urban environment
+    __defaultValues['z0'] = 'uniform 1'
     __defaultValues['flowDir'] = '(0 1 0)'  # direction of flow
     __defaultValues['zDir'] = '(0 0 1)'  # z direction (0 0 1) always for our cases
     __defaultValues['zGround'] = 'uniform 0'  # min z value of the bounding box
@@ -70,7 +71,7 @@ class InitialConditions(Condition):
     __defaultValues['flowVelocity'] = '(0 0 0)'
     __defaultValues['pressure'] = '0'
     __defaultValues['turbulentKE'] = None  # will be calculated based on input values
-    __defaultValues['turbulentEpsilon'] = None  # will be calculated based on input values
+    __defaultValues['turbulentEpsilon'] = None  # will be calculated based on inp values
     __defaultValues['#inputMode'] = 'merge'
 
     def __init__(self, values=None, Uref=0, Zref=10, z0=1, Cm=0.09, k=0.41):

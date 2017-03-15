@@ -38,11 +38,11 @@ class FoamFile(object):
             if self.location.replace('"', '') in self.__locations:
                 self.location = '"' + self.location.replace('"', '') + '"'
             else:
-                    raise ValueError(
-                        '{} is not a valid OpenFOAM location: {}'.format(
-                            self.location, self.__locations
-                        )
+                raise ValueError(
+                    '{} is not a valid OpenFOAM location: {}'.format(
+                        self.location, self.__locations
                     )
+                )
 
         # Initiate values
         if not values:
@@ -155,17 +155,17 @@ class FoamFile(object):
                     self.__parents.append(key)
                     logChanges(original[key], value)
                 elif str(original[key]) != str(value):
-                        # there is a change in value
-                        if not mute:
-                            msg = '{}.{} is changed from "{}" to "{}".'\
-                                .format('.'.join(self.__parents), key,
-                                        original[key] if len(str(original[key])) < 100
-                                        else '%s...' % str(original[key])[:100],
-                                        value if len(str(value)) < 100
-                                        else '%s...' % str(value)[:100])
-                            print(msg)
-                        self.__hasChanged = True
-                        return
+                    # there is a change in value
+                    if not mute:
+                        msg = '{}.{} is changed from "{}" to "{}".'\
+                            .format('.'.join(self.__parents), key,
+                                    original[key] if len(str(original[key])) < 100
+                                    else '%s...' % str(original[key])[:100],
+                                    value if len(str(value)) < 100
+                                    else '%s...' % str(value)[:100])
+                        print(msg)
+                    self.__hasChanged = True
+                    return
 
         def modifyDict(original, new):
             """Modify a dictionary based on a new dictionary."""

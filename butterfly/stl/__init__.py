@@ -1,13 +1,11 @@
 
 import ascii
 import binary
-
 from types import Solid, Facet, Vector3d
 
 
 def read_ascii_file(file):
-    """
-    Read an STL file in the *ASCII* format.
+    """Read an STL file in the *ASCII* format.
 
     Takes a :py:class:`file`-like object (supporting a ``read`` method)
     and returns a :py:class:`stl.Solid` object representing the data
@@ -20,8 +18,7 @@ def read_ascii_file(file):
 
 
 def read_binary_file(file):
-    """
-    Read an STL file in the *binary* format.
+    """Read an STL file in the *binary* format.
 
     Takes a :py:class:`file`-like object (supporting a ``read`` method)
     and returns a :py:class:`stl.Solid` object representing the data
@@ -34,9 +31,7 @@ def read_binary_file(file):
 
 
 def read_ascii_string(data):
-    """
-    Read geometry from a :py:class:`str` containing data in the STL *ASCII*
-    format.
+    """Read geometry from a :py:class:`str` containing data in the STL *ASCII* format.
 
     This is just a wrapper around :py:func:`read_ascii_file` that first wraps
     the provided string in a :py:class:`StringIO.StringIO` object.
@@ -46,9 +41,7 @@ def read_ascii_string(data):
 
 
 def read_binary_string(data):
-    """
-    Read geometry from a :py:class:`str` containing data in the STL *binary*
-    format.
+    """Read geometry from a :py:class:`str` containing data in the STL *binary* format.
 
     This is just a wrapper around :py:func:`read_binary_file` that first wraps
     the provided string in a :py:class:`StringIO.StringIO` object.

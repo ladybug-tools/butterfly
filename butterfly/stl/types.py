@@ -2,9 +2,7 @@ import math
 
 
 class Solid(object):
-    """
-    A solid object; the root element of an STL file.
-    """
+    """A solid object; the root element of an STL file."""
 
     #: The name given to the object by the STL file header.
     name = None
@@ -18,24 +16,20 @@ class Solid(object):
         self.facets = facets if facets is not None else []
 
     def add_facet(self, *args, **kwargs):
-        """
-        Append a new facet to the object. Takes the same arguments as the
-        :py:class:`stl.Facet` type.
+        """Append a new facet to the object.
+
+        Takes the same arguments as the :py:class:`stl.Facet` type.
         """
         self.facets.append(Facet(*args, **kwargs))
 
     @property
     def normals(self):
-        """
-        Get facet normals.
-        """
+        """Get facet normals."""
         return tuple(facet.normal for facet in self.facets)
-    
+
     @property
     def surface_area(self):
-        """
-        The sum of the areas of all facets in the object.
-        """
+        """The sum of the areas of all facets in the object."""
         return reduce(
             lambda accum, facet: accum + facet.area,
             self.facets,
@@ -44,14 +38,11 @@ class Solid(object):
 
     @property
     def vertices(self):
-        """
-        Unique vertices for all facets.
-        """
+        """Unique vertices for all facets."""
         return tuple(set(ver for facet in self.facets for ver in facet.vertices))
-    
+
     def write_binary(self, file):
-        """
-        Write this object to a file in STL *binary* format.
+        """Write this object to a file in STL *binary* format.
 
         ``file`` must be a file-like object (supporting a ``write`` method),
         to which the data will be written.
@@ -60,8 +51,7 @@ class Solid(object):
         write(self, file)
 
     def write_ascii(self, file):
-        """
-        Write this object to a file in STL *ascii* format.
+        """Write this object to a file in STL *ascii* format.
 
         ``file`` must be a file-like object (supporting a ``write`` method),
         to which the data will be written.
@@ -93,9 +83,7 @@ class Solid(object):
 
 
 class Facet(object):
-    """
-    A facet (triangle) from a :py:class:`stl.Solid`.
-    """
+    """A facet (triangle) from a :py:class:`stl.Solid`."""
 
     #: Raw binary attribute bytes. According to the STL spec these are unused
     #: and thus this should always be empty, but some modeling software
@@ -144,9 +132,7 @@ class Facet(object):
 
     @property
     def a(self):
-        """
-        The length the side of the facet between vertices[0] and vertices[1]
-        """
+        """The length the side of the facet between vertices[0] and vertices[1]."""
         return abs(
             math.sqrt(
                 pow((self.vertices[0].x - self.vertices[1].x), 2) +
@@ -157,9 +143,7 @@ class Facet(object):
 
     @property
     def b(self):
-        """
-        The length of the side of the facet between vertices[0] and vertices[2]
-        """
+        """The length of the side of the facet between vertices[0] and vertices[2]."""
         return abs(
             math.sqrt(
                 pow((self.vertices[0].x - self.vertices[2].x), 2) +
@@ -170,9 +154,7 @@ class Facet(object):
 
     @property
     def c(self):
-        """
-        The length of the side of the facet between vertices[1] and vertices[2]
-        """
+        """The length of the side of the facet between vertices[1] and vertices[2]."""
         return abs(
             math.sqrt(
                 pow((self.vertices[1].x - self.vertices[2].x), 2) +
@@ -183,23 +165,18 @@ class Facet(object):
 
     @property
     def perimeter(self):
-        """
-        The length of the perimeter of the facet.
-        """
+        """The length of the perimeter of the facet."""
         return self.a + self.b + self.c
 
     @property
     def area(self):
-        """
-        The surface area of the facet, as computed by Heron's Formula.
-        """
+        """The surface area of the facet, as computed by Heron's Formula."""
         p = self.perimeter / 2.0
         return abs(math.sqrt(p * (p - self.a) * (p - self.b) * (p - self.c)))
 
 
 class Vector3d(tuple):
-    """
-    Three-dimensional vector.
+    """Three-dimensional vector.
 
     Used to represent both normals and vertices of :py:class:`stl.Facet`
     objects.
@@ -216,9 +193,9 @@ class Vector3d(tuple):
 
     @property
     def x(self):
-        """
-        The X value of the vector, which most applications interpret
-        as the left-right axis.
+        """The X value of the vector.
+
+        which most applications interpret as the left-right axis.
         """
         return self[0]
 
@@ -228,9 +205,9 @@ class Vector3d(tuple):
 
     @property
     def y(self):
-        """
-        The Y value of the vector, which most applications interpret
-        as the in-out axis.
+        """The Y value of the vector.
+
+        which most applications interpret as the in-out axis.
         """
         return self[1]
 
@@ -240,9 +217,9 @@ class Vector3d(tuple):
 
     @property
     def z(self):
-        """
-        The Z value of the vector, which most applications interpret
-        as the up-down axis.
+        """The Z value of the vector.
+
+        which most applications interpret as the up-down axis.
         """
         return self[2]
 

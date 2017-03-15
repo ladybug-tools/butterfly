@@ -24,7 +24,8 @@ class FvSchemes(FoamFile):
     else:
         __defaultValues['divSchemes']['div((nuEff*dev2(T(grad(U)))))'] = 'Gauss linear'
 
-    __defaultValues['laplacianSchemes'] = {'default': 'Gauss linear limited corrected 0.333'}
+    __defaultValues['laplacianSchemes'] = \
+        {'default': 'Gauss linear limited corrected 0.333'}
     __defaultValues['interpolationSchemes'] = {'default': 'linear'}
     __defaultValues['snGradSchemes'] = {'default': 'limited corrected 0.333'}
     __defaultValues['fluxRequired'] = {'default': 'no', 'p': ''}
@@ -92,7 +93,7 @@ class FvSchemes(FoamFile):
         return cls(values=cls.getValuesFromMeshOrthogonality(
             averageOrthogonality))
 
-    # TODO: Add changes OpenFOAM version check for dev values.
+    # TODO(): OpenFOAM version check for dev vs dev2.
     @staticmethod
     def getValuesFromMeshOrthogonality(averageOrthogonality=45):
         """Get scheme values from orthogonality."""
