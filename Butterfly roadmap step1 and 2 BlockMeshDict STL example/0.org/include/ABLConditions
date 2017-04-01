@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  dev                                   |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+Uref                 2.8;
+Zref                 15;
+zDir                 (0 0 1);
+flowDir              (0 1 0);
+z0                   uniform 1;
+zGround              uniform 0;
+value                $internalField;
+
+// ************************************************************************* //
