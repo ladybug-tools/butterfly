@@ -77,7 +77,7 @@ class RunManager(object):
 
     def getShellinit(self):
         """Get shellinit for setting up initial environment for docker."""
-        os.environ['PATH'] += ';%s' % r'"C:\Program Files (x86)\Git\bin"'
+        os.environ['PATH'] += ';%s' % r'"C:\Program Files\Git\bin"'
         os.environ['PATH'] += ';%s' % self.dockerPath
 
         if self.isUsingDockerMachine:
