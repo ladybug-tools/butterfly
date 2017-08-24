@@ -49,16 +49,24 @@ from .runmanager import RunManager
 
 
 class Case(object):
-    """OpenFOAM Case.
+    """
+    Principal class for OpenFOAM Cases. This class can either be instantiated directly through the __init__ constructor
+    or through the following classmethods:
 
-    Attributes:
-        name: Case name as a string with no whitespace.
-        foamfiles: Collection of FoamFile objects (dictionaries) for this case.
-        geometries: Collection of geometry-like objects. Geometries should have
-            a name and toStlString method. The information related to boundary
-            condition should already be included in related foamfiles. If you
-            want to initiate the class form a folder or a number of BFGeometries
-            use fromFolder, and fromBFGeometries classmethods.
+        1. fromFolder: Create a Butterfly case from a case folder
+        2. fromBFGeometries: Create a case from Butterfly geometries.
+        3. fromWindTunnel: Create case from wind tunnel.
+
+
+    Notes for beginners:
+        What is an OpenFOAM case?
+            As defined by Andras Horvath in "OpenFOAM tutorial collection", a case is the combination of geometry
+            definition (the finite volume mesh), configuration files (called dictionaries in OpenFOAM language),
+            definition of boundary conditions and initial conditions, custom function and results all structured in
+            many files and directories. The 0-directory contains the initial- and boundary-conditions. The (initial)
+            mesh is in constant/polyMesh. Most cong les are in system/. Material and turbulence properties are in
+            constant/.
+
     """
 
     SUBFOLDERS = ('0', 'constant', 'constant\\polyMesh',
@@ -69,7 +77,24 @@ class Case(object):
                     'snappyHexMeshDict')
 
     def __init__(self, name, foamfiles, geometries):
-        """Init case."""
+        """Init case.
+
+        Attributes:
+        name: Case name as a string with no whitespace.
+
+        :type name: str
+
+        foamfiles: Collection of FoamFile objects (dictionaries) for this case.
+
+        :type   foamfiles: FoamFile
+
+        geometries: Collection of geometry-like objects. Geometries should have
+            a name and toStlString method. The information related to boundary
+            condition should already be included in related foamfiles. If you
+            want to initiate the class form a folder or a number of BFGeometries
+            use fromFolder, and fromBFGeometries classmethods.
+
+        """
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
         # limitation is addressed. The value wil be assigned in classmethod fromFile
