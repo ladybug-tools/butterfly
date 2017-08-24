@@ -51,7 +51,8 @@ class RunManager(object):
         self.__projectName = projectName
         self.__separator = '&'
         self.isUsingDockerMachine = True \
-            if hasattr(Version, 'isUsingDockerMachine') and Version.isUsingDockerMachine \
+            if hasattr(Version, 'isUsingDockerMachine') and \
+            Version.isUsingDockerMachine \
             else False
 
         self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
@@ -94,8 +95,9 @@ class RunManager(object):
         err = '\n'.join(process.stderr)
         if err:
             if err.find('Error checking TLS connection: Host is not running') != -1:
-                msg = ' Docker machine is not running! Run Oracle VM VirtualBox Manager ' \
-                    'as administrator and make sure "default" machine is "running".'
+                msg = ' Docker machine is not running! Run Oracle VM ' \
+                    'VirtualBox Manager as administrator and make sure ' \
+                    '"default" machine is "running".'
             else:
                 msg = ''
 
@@ -123,7 +125,7 @@ class RunManager(object):
             return
 
         for count, line in enumerate(p.stdout):
-            if line.find('of_plus') > -1:
+            if line.find('of_') > -1:
                 # find container
                 _id = line.split()[0]
                 print('container id: {}'.format(_id))
@@ -253,7 +255,7 @@ class RunManager(object):
         """
         tee = 'tee'
         res = namedtuple('log', 'cmd logfiles errorfiles')
-        _msg = 'Failed to find container id.' \
+        _msg = 'Failed to find container id. ' \
             'Do you have the OpenFOAM container running?\n' \
             'You can initiate OpenFOAM container by running start_OF.bat:\n{}' \
             .format(self.__ofBatchFile)
