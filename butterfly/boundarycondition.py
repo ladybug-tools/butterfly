@@ -11,21 +11,21 @@ from fields import AtmBoundaryLayerInletVelocity, AtmBoundaryLayerInletK, \
 
 class BoundaryCondition(object):
     """Boundary condition base class.
-
-    Attributes:
-        bcType: Boundary condition type. e.g.(patch, wall)
-        T: Optional input for temperature in Kelvin (300)
-        U: OpenFOAM value for U.
-        p: OpenFOAM value for p.
-        k: OpenFOAM value for k.
-        epsilon: OpenFOAM value for epsilon.
-        nut: OpenFOAM value for nut.
     """
 
     # TODO(Mostapha): Write a descriptor for field and replace all properties
     def __init__(self, bcType='patch', T=None, U=None, p=None, k=None,
                  epsilon=None, nut=None, alphat=None, p_rgh=None):
-        """Init bounday condition."""
+        """Instantiate boundary condition.
+        Attributes:
+                :param bcType: Boundary condition type. e.g.(patch, wall)
+                :param T: Optional input for temperature in Kelvin (300)
+                :param U: OpenFOAM value for U.
+                :param p: OpenFOAM value for p.
+                :param k: OpenFOAM value for k.
+                :param epsilon: OpenFOAM value for epsilon.
+                :param nut: OpenFOAM value for nut.
+        """
         self.__dict__['is{}'.format(self.__class__.__name__)] = True
         self.type = bcType
         # set default values
