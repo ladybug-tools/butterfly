@@ -68,7 +68,8 @@ class _RefinementMode(object):
                 'Length of each level ({}) should be 2.'.format(len(l))
 
         # sort levels based on first item for distance
-        self.__levels = tuple(tuple(l) for l in sorted(lev, key=lambda x: x[0]))
+        self.__levels = tuple(tuple(int(i) for i in l)
+                              for l in sorted(lev, key=lambda x: x[0]))
 
     def toOpenFOAMDict(self):
         """Return data as a dictionary."""
