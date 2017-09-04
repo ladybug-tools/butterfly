@@ -23,7 +23,7 @@ class Make2dParameters(object):
         self.width = width or 0.1
 
     @property
-    def isMake2dParameters(self):
+    def is_make2d_parameters(self):
         """Return True."""
         return True
 

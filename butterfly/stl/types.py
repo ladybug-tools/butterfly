@@ -60,7 +60,7 @@ class Solid(object):
         write(self, file)
 
     def __eq__(self, other):
-        if type(other) is Solid:
+        if isinstance(other, Solid):
             if self.name != other.name:
                 return False
             if len(self.facets) != len(other.facets):
@@ -112,7 +112,7 @@ class Facet(object):
             raise ValueError('Must pass exactly three vertices')
 
     def __eq__(self, other):
-        if type(other) is Facet:
+        if isinstance(other, Facet):
             return (
                 self.normal == other.normal and
                 self.vertices == other.vertices

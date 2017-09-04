@@ -5,7 +5,7 @@ from copy import deepcopy
 from .blockMeshDict import BlockMeshDict
 from .case import Case
 from .meshingparameters import MeshingParameters
-from .geometry import calculateMinMaxFromBFGeometries, BFBlockGeometry
+from .geometry import calculate_min_max_from_bf_geometries, BFBlockGeometry
 from .boundarycondition import WindTunnelGroundBoundaryCondition, \
     WindTunnelInletBoundaryCondition, WindTunnelOutletBoundaryCondition, \
     WindTunnelTopAndSidesBoundaryCondition, WindTunnelWallBoundaryCondition
@@ -23,7 +23,7 @@ class WindTunnel(object):
         sides: Left and right side geometries as butterfly geometries.
         top: Top face as buttefly geometry.
         ground: Ground face as butterfly geometry.
-        testGeomtries: A list of geometries as butterfly geometries that are located
+        test_geomtries: A list of geometries as butterfly geometries that are located
             within bounding box boundary.
         roughness: z0 (roughness) value.
                 '0.0002'  # sea
@@ -34,94 +34,94 @@ class WindTunnel(object):
                 '0.5'     # veryRough
                 '1.0'     # closed
                 '2.0'     # chaotic
-        Zref: Reference height for wind velocity in meters (default: 10).
+        zref: Reference height for wind velocity in meters (default: 10).
     """
 
-    def __init__(self, name, inlet, outlet, sides, top, ground, testGeomtries,
-                 roughness, meshingParameters=None, Zref=None, convertToMeters=1):
+    def __init__(self, name, inlet, outlet, sides, top, ground, test_geomtries,
+                 roughness, meshing_parameters=None, zref=None, convert_to_meters=1):
         """Init wind tunnel."""
         self.name = str(name)
-        self.inlet = self.__checkInputGeometry(inlet)
-        self.outlet = self.__checkInputGeometry(outlet)
-        self.sides = tuple(side for side in sides if self.__checkInputGeometry(side))
-        self.top = self.__checkInputGeometry(top)
-        self.ground = self.__checkInputGeometry(ground)
-        self.testGeomtries = tuple(geo for geo in testGeomtries
-                                   if self.__checkInputGeometry(geo))
+        self.inlet = self._check_input_geometry(inlet)
+        self.outlet = self._check_input_geometry(outlet)
+        self.sides = tuple(side for side in sides if self._check_input_geometry(side))
+        self.top = self._check_input_geometry(top)
+        self.ground = self._check_input_geometry(ground)
+        self.test_geomtries = tuple(geo for geo in test_geomtries
+                                    if self._check_input_geometry(geo))
         self.z0 = roughness if roughness > 0 else 0.0001
 
-        self.__blockMeshDict = BlockMeshDict.fromBFBlockGeometries(
-            self.boundingGeometries, convertToMeters)
+        self.__blockMeshDict = BlockMeshDict.from_bf_block_geometries(
+            self.bounding_geometries, convert_to_meters)
 
-        self.meshingParameters = meshingParameters or MeshingParameters()
+        self.meshing_parameters = meshing_parameters or MeshingParameters()
 
-        self.Zref = float(Zref) if Zref else 10
-        self.convertToMeters = convertToMeters
+        self.zref = float(zref) if zref else 10
+        self.convert_to_meters = convert_to_meters
 
         # place holder for refinment regions
-        self.__refinementRegions = []
+        self.__refinement_regions = []
 
     @classmethod
-    def fromGeometriesWindVectorAndParameters(
-            cls, name, geometries, windVector, tunnelParameters, roughness,
-            meshingParameters=None, Zref=None, convertToMeters=1):
-        """Create a windTunnel based on size, wind speed and wind direction."""
+    def from_geometries_wind_vector_and_parameters(
+            cls, name, geometries, wind_vector, tunnel_parameters, roughness,
+            meshing_parameters=None, zref=None, convert_to_meters=1):
+        """Create a wind_tunnel based on size, wind speed and wind direction."""
         # butterfly geometries
-        geos = tuple(cls.__checkInputGeometry(geo) for geo in geometries)
+        geos = tuple(cls._check_input_geometry(geo) for geo in geometries)
 
         # update boundary condition of wall geometries
         for bfGeometry in geometries:
-            bfGeometry.boundaryCondition = WindTunnelWallBoundaryCondition()
+            bfGeometry.boundary_condition = WindTunnelWallBoundaryCondition()
 
-        tp = tunnelParameters
+        tp = tunnel_parameters
 
-        # find xAxis
+        # find x_axis
         # project wind vector to XY Plane
-        windVector = (windVector[0], windVector[1], 0)
-        zAxis = (0, 0, 1)
-        xAxis = vm.crossProduct(windVector, zAxis)
-        yAxis = vm.normalize(windVector)
+        wind_vector = (wind_vector[0], wind_vector[1], 0)
+        z_axis = (0, 0, 1)
+        x_axis = vm.cross_product(wind_vector, z_axis)
+        y_axis = vm.normalize(wind_vector)
 
         # get size of bounding box from blockMeshDict
-        minPt, maxPt = calculateMinMaxFromBFGeometries(geos, xAxis)
-        _blockMeshDict = BlockMeshDict.fromMinMax(minPt, maxPt, convertToMeters,
-                                                  xAxis=xAxis)
+        min_pt, max_pt = calculate_min_max_from_bf_geometries(geos, x_axis)
+        _blockMeshDict = BlockMeshDict.from_min_max(min_pt, max_pt, convert_to_meters,
+                                                    x_axis=x_axis)
         # scale based on wind tunnel parameters
         ver = _blockMeshDict.vertices
         height = _blockMeshDict.height
-        v0 = vm.move(ver[0], vm.scale(yAxis, -tp.windward * height))
-        v0 = vm.move(v0, vm.scale(xAxis, -tp.side * height))
-        v1 = vm.move(ver[1], vm.scale(yAxis, -tp.windward * height))
-        v1 = vm.move(v1, vm.scale(xAxis, tp.side * height))
-        v2 = vm.move(ver[2], vm.scale(yAxis, tp.leeward * height))
-        v2 = vm.move(v2, vm.scale(xAxis, tp.side * height))
-        v3 = vm.move(ver[3], vm.scale(yAxis, tp.leeward * height))
-        v3 = vm.move(v3, vm.scale(xAxis, -tp.side * height))
-        v4 = vm.move(v0, vm.scale(zAxis, tp.top * height))
-        v5 = vm.move(v1, vm.scale(zAxis, tp.top * height))
-        v6 = vm.move(v2, vm.scale(zAxis, tp.top * height))
-        v7 = vm.move(v3, vm.scale(zAxis, tp.top * height))
+        v0 = vm.move(ver[0], vm.scale(y_axis, -tp.windward * height))
+        v0 = vm.move(v0, vm.scale(x_axis, -tp.side * height))
+        v1 = vm.move(ver[1], vm.scale(y_axis, -tp.windward * height))
+        v1 = vm.move(v1, vm.scale(x_axis, tp.side * height))
+        v2 = vm.move(ver[2], vm.scale(y_axis, tp.leeward * height))
+        v2 = vm.move(v2, vm.scale(x_axis, tp.side * height))
+        v3 = vm.move(ver[3], vm.scale(y_axis, tp.leeward * height))
+        v3 = vm.move(v3, vm.scale(x_axis, -tp.side * height))
+        v4 = vm.move(v0, vm.scale(z_axis, tp.top * height))
+        v5 = vm.move(v1, vm.scale(z_axis, tp.top * height))
+        v6 = vm.move(v2, vm.scale(z_axis, tp.top * height))
+        v7 = vm.move(v3, vm.scale(z_axis, tp.top * height))
 
         # create inlet, outlet, etc
-        ablConditions = ABLConditions.fromInputValues(
-            flowSpeed=vm.length(windVector), z0=roughness,
-            flowDir=vm.normalize(windVector), zGround=_blockMeshDict.minZ)
+        abl_conditions = ABLConditions.from_input_values(
+            flow_speed=vm.length(wind_vector), z0=roughness,
+            flow_dir=vm.normalize(wind_vector), z_ground=_blockMeshDict.min_z)
 
         _order = (range(4),)
         inlet = BFBlockGeometry(
             'inlet', (v0, v1, v5, v4), _order, ((v0, v1, v5, v4),),
-            WindTunnelInletBoundaryCondition(ablConditions))
+            WindTunnelInletBoundaryCondition(abl_conditions))
 
         outlet = BFBlockGeometry(
             'outlet', (v2, v3, v7, v6), _order, ((v2, v3, v7, v6),),
             WindTunnelOutletBoundaryCondition())
 
-        rightSide = BFBlockGeometry(
-            'rightSide', (v1, v2, v6, v5), _order, ((v1, v2, v6, v5),),
+        right_side = BFBlockGeometry(
+            'right_side', (v1, v2, v6, v5), _order, ((v1, v2, v6, v5),),
             WindTunnelTopAndSidesBoundaryCondition())
 
-        leftSide = BFBlockGeometry(
-            'leftSide', (v3, v0, v4, v7), _order, ((v3, v0, v4, v7),),
+        left_side = BFBlockGeometry(
+            'left_side', (v3, v0, v4, v7), _order, ((v3, v0, v4, v7),),
             WindTunnelTopAndSidesBoundaryCondition())
 
         top = BFBlockGeometry('top', (v4, v5, v6, v7), _order,
@@ -130,12 +130,12 @@ class WindTunnel(object):
 
         ground = BFBlockGeometry(
             'ground', (v3, v2, v1, v0), (range(4),), ((v3, v2, v1, v0),),
-            WindTunnelGroundBoundaryCondition(ablConditions))
+            WindTunnelGroundBoundaryCondition(abl_conditions))
 
         # return the class
-        wt = cls(name, inlet, outlet, (rightSide, leftSide), top, ground,
-                 geometries, roughness, meshingParameters, Zref,
-                 convertToMeters)
+        wt = cls(name, inlet, outlet, (right_side, left_side), top, ground,
+                 geometries, roughness, meshing_parameters, zref,
+                 convert_to_meters)
 
         return wt
 
@@ -155,30 +155,30 @@ class WindTunnel(object):
         return self.blockMeshDict.length
 
     @property
-    def boundingGeometries(self):
+    def bounding_geometries(self):
         """Return bounding geometries of wind tunnel."""
         return (self.inlet, self.outlet) + self.sides + \
                (self.top, self.ground)
 
     @property
-    def refinementRegions(self):
+    def refinement_regions(self):
         """Get refinement regions."""
-        return self.__refinementRegions
+        return self.__refinement_regions
 
     @property
-    def flowDir(self):
+    def flow_dir(self):
         """Get flow direction for this wind tunnel as a tuple (x, y, z)."""
-        return self.inlet.boundaryCondition.U.flowDir
+        return self.inlet.boundary_condition.U.flow_dir
 
     @property
-    def flowSpeed(self):
+    def flow_speed(self):
         """Get flow speed for this wind tunnel."""
-        return self.inlet.boundaryCondition.U.Uref
+        return self.inlet.boundary_condition.U.uref
 
     @property
-    def zGround(self):
+    def z_ground(self):
         """Minimum z value of the bounding box."""
-        return self.blockMeshDict.minZ
+        return self.blockMeshDict.min_z
 
     @property
     def blockMeshDict(self):
@@ -189,48 +189,48 @@ class WindTunnel(object):
     def ABLConditionsDict(self):
         """Get ABLCondition for this wind tunnel as a dictionary."""
         _ABLCDict = {}
-        _ABLCDict['Uref'] = str(self.flowSpeed)
+        _ABLCDict['Uref'] = str(self.flow_speed)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
-        _ABLCDict['flowDir'] = self.flowDir if isinstance(self.flowDir, str) \
-            else '({} {} {})'.format(*self.flowDir)
-        _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
+        _ABLCDict['flow_dir'] = self.flow_dir if isinstance(self.flow_dir, str) \
+            else '({} {} {})'.format(*self.flow_dir)
+        _ABLCDict['z_ground'] = 'uniform {}'.format(self.z_ground)
         return _ABLCDict
 
     @property
-    def meshingParameters(self):
+    def meshing_parameters(self):
         """Meshing parameters."""
-        return self.__meshingParameters
+        return self.__meshing_parameters
 
-    @meshingParameters.setter
-    def meshingParameters(self, mp):
+    @meshing_parameters.setter
+    def meshing_parameters(self, mp):
         """Update meshing parameters."""
         if not mp:
             return
         assert hasattr(mp, 'isMeshingParameters'), \
             'Excepted Meshingparameters not {}'.format(type(mp))
-        self.__meshingParameters = mp
-        self.blockMeshDict.updateMeshingParameters(mp)
+        self.__meshing_parameters = mp
+        self.blockMeshDict.update_meshing_parameters(mp)
 
-    def addRefinementRegion(self, refinementRegion):
+    def add_refinement_region(self, refinement_region):
         """Add refinement regions to this case."""
-        assert hasattr(refinementRegion, 'isRefinementRegion'), \
-            "{} is not a refinement region.".format(refinementRegion)
+        assert hasattr(refinement_region, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinement_region)
 
-        self.__refinementRegions.append(refinementRegion)
+        self.__refinement_regions.append(refinement_region)
 
     @staticmethod
-    def __checkInputGeometry(input):
+    def _check_input_geometry(input):
         if hasattr(input, 'isBFGeometry'):
             return input
         else:
             raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
-    def toOpenFOAMCase(self, make2dParameters=None):
+    def to_of_case(self, make2d_parameters=None):
         """Return a BF case for this wind tunnel."""
-        return Case.fromWindTunnel(self, make2dParameters)
+        return Case.from_wind_tunnel(self, make2d_parameters)
 
-    def save(self, overwrite=False, minimum=True, make2dParameters=None):
-        """Save windTunnel to folder as an OpenFOAM case.
+    def save(self, overwrite=False, minimum=True, make2d_parameters=None):
+        """Save wind_tunnel to folder as an OpenFOAM case.
 
         Args:
             overwrite: If True all the current content will be overwritten
@@ -238,7 +238,7 @@ class WindTunnel(object):
         Returns:
             A butterfly.Case.
         """
-        _case = self.toOpenFOAMCase(make2dParameters)
+        _case = self.to_ofCase(make2d_parameters)
         _case.save(overwrite, minimum)
         return _case
 
@@ -249,8 +249,8 @@ class WindTunnel(object):
     def __repr__(self):
         """Wind tunnel."""
         return "WindTunnel::%.2f * %.2f * %.2f::dir %s::%.3f m/s" % (
-            self.width, self.length, self.height, self.flowDir,
-            float(self.flowSpeed))
+            self.width, self.length, self.height, self.flow_dir,
+            float(self.flow_speed))
 
 
 class TunnelParameters(object):
@@ -267,13 +267,13 @@ class TunnelParameters(object):
 
     def __init__(self, windward=3, top=3, side=2, leeward=15):
         """Init wind tunnel parameters."""
-        self.windward = self.__checkInput(windward)
-        self.top = self.__checkInput(top)
-        self.side = self.__checkInput(side)
-        self.leeward = self.__checkInput(leeward)
+        self.windward = self.__check_input(windward)
+        self.top = self.__check_input(top)
+        self.side = self.__check_input(side)
+        self.leeward = self.__check_input(leeward)
 
     @staticmethod
-    def __checkInput(input):
+    def __check_input(input):
         """Check input values."""
         try:
             _inp = float(input)

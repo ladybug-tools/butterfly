@@ -1,4 +1,4 @@
-from types import *
+from types import Solid, Vector3d, Facet
 
 
 class KeywordToken(str):
@@ -10,8 +10,8 @@ class NumberToken(float):
 
 
 def _token_type_name(token_type):
-    NoneType = type(None)
-    if token_type is NoneType:
+    none_type = type(None)
+    if token_type is none_type:
         return 'end of file'
     elif token_type is KeywordToken:
         return 'keyword'
@@ -211,7 +211,7 @@ def parse(file):
             ret.facets.append(facet)
         else:
             got_token_type = _token_type_name(token_type)
-            expected_token_type = _token_type_name(token_type)
+            # expected_token_type = _token_type_name(token_type)
             raise SyntaxError(
                 "Unexpected %s %r at line %i, column %i" % (
                     got_token_type,

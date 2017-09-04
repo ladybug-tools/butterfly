@@ -1,6 +1,6 @@
 # coding=utf-8
 """sampleDict class."""
-from foamfile import Condition, foamFileFromFile
+from foamfile import Condition, foam_file_from_file
 from collections import OrderedDict
 
 
@@ -8,36 +8,36 @@ class SampleDict(Condition):
     """Probes function."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['libs'] = '("libsampling.so")'
-    __defaultValues['interpolationScheme'] = 'cellPoint'
-    __defaultValues['setFormat'] = 'raw'
-    __defaultValues['type'] = 'sets'
-    __defaultValues['fields'] = '(p U)'  # Fields
-    __defaultValues['sets'] = OrderedDict()
+    __default_values = OrderedDict()
+    __default_values['libs'] = '("libsampling.so")'
+    __default_values['interpolationScheme'] = 'cellPoint'
+    __default_values['setFormat'] = 'raw'
+    __default_values['type'] = 'sets'
+    __default_values['fields'] = '(p U)'  # Fields
+    __default_values['sets'] = OrderedDict()
 
     def __init__(self, values=None):
         """Init class."""
         super(SampleDict, self).__init__(
             name='sampleDict', cls='dictionary', location='system',
-            defaultValues=self.__defaultValues, values=values
+            default_values=self.__default_values, values=values
         )
         self._pts = None
         self._name = None
         self.filename = 'sampleName'
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
+        _cls = cls(values=foam_file_from_file(filepath, cls.__name__))
         return _cls
 
     @classmethod
-    def fromPoints(cls, name, points, fields):
+    def from_points(cls, name, points, fields):
         """Create sampleDict from points and fields."""
         cls_ = cls()
         cls_.filename = name
@@ -46,7 +46,7 @@ class SampleDict(Condition):
         return cls_
 
     @property
-    def pointsCount(self):
+    def points_count(self):
         """Get number of probes."""
         if not self.points:
             return 0
@@ -54,7 +54,7 @@ class SampleDict(Condition):
             return len(' '.join(self.points)[1:-1].split(')')) - 1
 
     @property
-    def outputFilenames(self):
+    def output_filenames(self):
         """A tuple of output file names."""
         return tuple('{}_{}.xy'.format(self.filename, f) for f in self.fields)
 
@@ -95,23 +95,23 @@ class SampleDict(Condition):
             .replace('(', '').replace(')', '').split()
 
     @fields.setter
-    def fields(self, fieldsList):
-        if not fieldsList:
+    def fields(self, fields_list):
+        if not fields_list:
             return
         self.values['fields'] = \
-            str(tuple(fieldsList)).replace(',', ' ') \
+            str(tuple(fields_list)).replace(',', ' ') \
             .replace("'", '').replace('"', '') \
             .replace("\\r", '').replace("\\n", ' ')
 
-    def save(self, projectFolder, subFolder=None):
+    def save(self, project_folder, sub_folder=None):
         """Save sampleDict file.
 
         The file will be named
         """
-        if self.pointsCount == 0:
+        if self.points_count == 0:
             return
         else:
-            fp = super(SampleDict, self).save(projectFolder, subFolder)
+            fp = super(SampleDict, self).save(project_folder, sub_folder)
             # update the sets{} for sets();
             # This is quite hacky but will work
             with open(fp, 'rb') as inf:

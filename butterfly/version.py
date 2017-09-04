@@ -34,7 +34,7 @@ class Header(object):
     """
 
     @staticmethod
-    def header(OpenFOAMVersion=Version.OFFullVer, ButterflyVersion=Version.BFVer):
+    def header(of_version=Version.OFFullVer, butterfly_version=Version.BFVer):
         """Retuen OpenFOAM file header."""
         header = \
             "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
@@ -47,7 +47,7 @@ class Header(object):
             "/* Butterfly {}                https://github.com/ladybug-tools/butterfly *\\\n" + \
             "\\*---------------------------------------------------------------------------*/\n"
 
-        return header.format(OpenFOAMVersion, ButterflyVersion)
+        return header.format(of_version, butterfly_version)
 
     def duplicate(self):
         """Return a copy of this object."""

@@ -4,7 +4,7 @@ from copy import deepcopy
 from collections import namedtuple, OrderedDict
 import os
 
-from .utilities import tail, loadSkippedProbes
+from .utilities import tail, load_skipped_probes
 from .parser import CppDictParser
 
 
@@ -17,15 +17,15 @@ class Solution(object):
         case: A butterfly case.
         recipe: A butterfly recipe.
         decomposeParDict: decomposeParDict for parallel run (default: None).
-        solutionParameter: A solutionParameter (default: None).
-        removeExtraFoamFiles: set to True if you want butterfly to remove all the
+        solution_parameter: A solution_parameter (default: None).
+        remove_extra_foam_files: set to True if you want butterfly to remove all the
             extra files in 0 folder once you update the recipe (default: False).
     """
 
-    def __init__(self, case, recipe, decomposeParDict=None, solutionParameter=None,
-                 removeExtraFoamFiles=False):
+    def __init__(self, case, recipe, decomposeParDict=None, solution_parameter=None,
+                 remove_extra_foam_files=False):
         """Init solution."""
-        self.__remove = removeExtraFoamFiles
+        self.__remove = remove_extra_foam_files
         assert hasattr(case, 'isCase'), \
             'ValueError:: {} is not a Butterfly.Case'.format(case)
         self.decomposeParDict = decomposeParDict
@@ -34,21 +34,21 @@ class Solution(object):
         self.case.decomposeParDict = self.decomposeParDict
 
         self.recipe = recipe
-        self.updateSolutionParams(solutionParameter)
+        self.update_solution_params(solution_parameter)
         # set internal properties for running the solution
 
         # place holder for residuals
-        self.__residualValues = OrderedDict.fromkeys(self.residualFields, 0)
+        self.__residualValues = OrderedDict.fromkeys(self.residual_fields, 0)
         self.__isRunStarted = False
         self.__isRunFinished = False
         self.__process = None
-        self.__logFiles = None
+        self.__log_files = None
         self.__errFiles = None
 
     @property
-    def projectName(self):
+    def project_name(self):
         """Get porject name."""
-        return self.case.projectName
+        return self.case.project_name
 
     @property
     def case(self):
@@ -65,8 +65,8 @@ class Solution(object):
         """set recipe."""
         assert hasattr(r, 'isRecipe'), '{} is not a recipe.'.format(r)
         self.__recipe = r
-        self.__recipe.prepareCase(self.case, overwrite=True,
-                                  remove=self.__remove)
+        self.__recipe.prepare_case(self.case, overwrite=True,
+                                   remove=self.__remove)
 
     @property
     def decomposeParDict(self):
@@ -82,19 +82,19 @@ class Solution(object):
         self.__decomposeParDict = dpd
 
     @property
-    def removeExtraFoamFiles(self):
+    def remove_extra_foam_files(self):
         """If True, solution will remove extra files everytime recipe changes."""
         return self.__remove
 
     @property
-    def projectDir(self):
+    def project_dir(self):
         """Get project directory."""
-        return self.case.projectDir
+        return self.case.project_dir
 
     @property
-    def residualFields(self):
+    def residual_fields(self):
         """Get list of residuals to be watched during the run."""
-        return self.recipe.residualFields
+        return self.recipe.residual_fields
 
     @property
     def controlDict(self):
@@ -102,9 +102,9 @@ class Solution(object):
         return self.__case.controlDict
 
     @property
-    def residualControl(self):
-        """Get residualControl values for this solution."""
-        return self.__case.fvSolution.residualControl
+    def residual_control(self):
+        """Get residual_control values for this solution."""
+        return self.__case.fv_solution.residual_control
 
     @property
     def probes(self):
@@ -112,27 +112,27 @@ class Solution(object):
         return self.__case.probes
 
     @property
-    def residualFile(self):
+    def residual_file(self):
         """Return address of the residual file."""
-        return os.path.join(self.case.logFolder, self.recipe.logFile)
+        return os.path.join(self.case.log_folder, self.recipe.log_file)
 
     @property
-    def logFiles(self):
+    def log_files(self):
         """Get full path to log files."""
-        return self.__logFiles
+        return self.__log_files
 
     @property
     def log(self):
         """Get the log report."""
-        isContent, content = self.case.runmanager.checkFileContents(self.logFiles)
+        isContent, content = self.case.runmanager.check_file_contents(self.log_files)
 
     @property
-    def errFiles(self):
+    def err_files(self):
         """Get full path to error files."""
         return self.__errFiles
 
     @property
-    def isRunning(self):
+    def is_running(self):
         """Check if the solution is still running."""
         if not self.__isRunStarted and not self.__isRunFinished:
             return False
@@ -140,38 +140,38 @@ class Solution(object):
             return True
         else:
             self.__isRunFinished = True
-            self.case.renameSnappyHexMeshFolders()
+            self.case.rename_snappy_hex_mesh_folders()
             # load errors if any
-            self.case.runmanager.checkFileContents(self.logFiles)
-            failed, err = self.case.runmanager.checkFileContents(self.errFiles)
+            self.case.runmanager.check_file_contents(self.log_files)
+            failed, err = self.case.runmanager.check_file_contents(self.err_files)
 
             assert not failed, err
 
     @property
     def timestep(self):
         """Get latest timestep for this solution."""
-        return self.__getLatestTime()
+        return self.__get_latest_time()
 
     @property
-    def residualValues(self, latestTime=True):
+    def residual_values(self, latest_time=True):
         """Get timestep and residual values as a tuple."""
-        if latestTime:
-            return self.__getInfo().residualValues
+        if latest_time:
+            return self.__get_info().residual_values
         else:
             raise NotImplementedError()
 
     @property
     def info(self):
         """Get timestep and residual values as a tuple."""
-        return self.__getInfo()
+        return self.__get_info()
 
-    def __getInfo(self):
+    def __get_info(self):
         i = namedtuple('Info', 'timestep residualValues')
         # get end of the log file
-        if not os.path.isfile(self.residualFile):
+        if not os.path.isfile(self.residual_file):
             return i(0, self.__residualValues.values())
 
-        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        text = tail(self.residual_file).split("\nTime =")[-1].split('\n')
         # get timestep
         try:
             t = int(text[0])
@@ -191,11 +191,11 @@ class Solution(object):
 
         return i(t, self.__residualValues.values())
 
-    def __getLatestTime(self):
+    def __get_latest_time(self):
         # get end of the log file
-        if not os.path.isfile(self.residualFile):
+        if not os.path.isfile(self.residual_file):
             return 0
-        text = tail(self.residualFile).split("\nTime =")[-1].split('\n')
+        text = tail(self.residual_file).split("\nTime =")[-1].split('\n')
         # get timestep
         try:
             t = int(text[0])
@@ -203,72 +203,72 @@ class Solution(object):
             t = 0
         return t
 
-    def updateFromRecipe(self, recipe):
+    def update_from_recipe(self, recipe):
         """Update solution from recipe inputs.
 
         This method creates a SolutionParameter from each recipe property, and
         uses updateSolutionParams to update the solution.
         """
-        tp = SolutionParameter.fromCppDictionary('turbulenceProperties',
-                                                 str(recipe.turbulenceProperties))
-        fvSc = SolutionParameter.fromCppDictionary('fvSchemes',
-                                                   str(recipe.fvSchemes))
-        fvSol = SolutionParameter.fromCppDictionary('fvSolution',
-                                                    str(recipe.fvSolution))
+        tp = SolutionParameter.from_cpp_dictionary('turbulence_properties',
+                                                   str(recipe.turbulence_properties))
+        fv_sc = SolutionParameter.from_cpp_dictionary('fv_schemes',
+                                                      str(recipe.fv_schemes))
+        fv_sol = SolutionParameter.from_cpp_dictionary('fv_solution',
+                                                       str(recipe.fv_solution))
 
-        self.updateSolutionParams((tp, fvSc, fvSol))
+        self.update_solution_params((tp, fv_sc, fv_sol))
 
-    def updateSolutionParams(self, solParams, timestep=None):
+    def update_solution_params(self, sol_params, timestep=None):
         """Update parameters.
 
         Attributes:
-            solParams: A list of solution parameters.
+            sol_params: A list of solution parameters.
         """
-        if not solParams:
+        if not sol_params:
             # if input is None return
             return
         # check input with the current and update them if there has been changes
-        for solPar in solParams:
+        for solPar in sol_params:
             assert hasattr(solPar, 'isSolutionParameter'), \
                 '{} is not a solution parameter.'.format(solPar)
 
             # check if this timestep in range of SolutionParameter time range
-            if timestep is not None and not solPar.isTimeInRange(timestep):
+            if timestep is not None and not solPar.is_time_in_range(timestep):
                 # not in time range! try the next one
                 continue
 
             try:
                 update = getattr(self.__case, solPar.filename) \
-                    .updateValues(solPar.values, solPar.replace)
+                    .update_values(solPar.values, solPar.replace)
             except AttributeError as e:
                 # probes can be empty at start
                 raise AttributeError(e)
 
             # check to remove functions if needed
             if solPar.filename == 'controlDict':
-                curFunc = self.__case.controlDict.values['functions'].keys()
-                newFunc = solPar.values['functions'].keys()
+                cur_func = self.__case.controlDict.values['functions'].keys()
+                new_func = solPar.values['functions'].keys()
 
-                for k in curFunc:
-                    if k not in newFunc:
+                for k in cur_func:
+                    if k not in new_func:
                         del(self.__case.controlDict.values['functions'][k])
                         update = True
 
             if update:
                 print('Updating {}...'.format(solPar.filename))
                 ffile = getattr(self.__case, solPar.filename)
-                ffile.save(self.projectDir)
+                ffile.save(self.project_dir)
 
                 # just in case probes was not there and now should be included
                 # in controlDict
                 if solPar.filename == 'probes':
                     if not self.controlDict.include:
                         self.controlDict.include = solPar.filename
-                        self.controlDict.save(self.projectDir)
+                        self.controlDict.save(self.project_dir)
 
     def run(self, wait=False):
         """Execute the solution."""
-        self.case.renameSnappyHexMeshFolders()
+        self.case.rename_snappy_hex_mesh_folders()
         log = self.case.command(
             cmd=self.recipe.application,
             args=None,
@@ -276,41 +276,41 @@ class Solution(object):
             run=True, wait=wait)
         self.__process = log.process
         self.__errFiles = log.errorfiles
-        self.__logFiles = log.logfiles
+        self.__log_files = log.logfiles
         self.__isRunStarted = True
         if not wait:
             self.__isRunFinished = False
         else:
             self.__isRunFinished = True
 
-    def purge(self, removePolyMeshContent=True,
-              removeSnappyHexMeshFolders=True,
-              removeResultFolders=False,
-              removePostProcessingFolder=False):
+    def purge(self, remove_poly_mesh_content=True,
+              remove_snappy_hex_mesh_folders=True,
+              remove_result_folders=False,
+              remove_post_processing_folder=False):
         """Purge solution's case folder."""
         self.case.purge(
-            removePolyMeshContent, removeSnappyHexMeshFolders,
-            removeResultFolders, removePostProcessingFolder)
+            remove_poly_mesh_content, remove_snappy_hex_mesh_folders,
+            remove_result_folders, remove_post_processing_folder)
 
     def terminate(self):
         """Cancel the solution."""
         self.case.runmanager.terminate()
         if self.decomposeParDict:
             # remove processor folders if they haven't been removed already.
-            self.case.removeProcessorFolders()
+            self.case.remove_processor_folders()
 
-    def loadProbeValues(self, field):
+    def load_probe_values(self, field):
         """Return OpenFOAM probes results for a given field (e.g. U)."""
-        return self.case.loadProbeValues(field)
+        return self.case.load_probe_values(field)
 
-    def loadProbes(self, field):
+    def load_probes(self, field):
         """Return OpenFOAM probes location for a given field (e.g. U)."""
-        return self.case.loadProbes(field)
+        return self.case.load_probes(field)
 
-    def skippedProbes(self):
+    def skipped_probes(self):
         """Get list of probes that are skipped from the solution."""
-        return loadSkippedProbes(os.path.join(self.case.logFolder,
-                                              self.recipe.logFile))
+        return load_skipped_probes(os.path.join(self.case.log_folder,
+                                                self.recipe.log_file))
 
     def sample(self, name, points, field, wait=True):
         """Sample the results for a certain field.
@@ -336,7 +336,7 @@ class Solution(object):
 
     def __repr__(self):
         """Solution representation."""
-        return "{}::{}".format(self.projectName, self.recipe)
+        return "{}::{}".format(self.project_name, self.recipe)
 
 
 class SolutionParameter(object):
@@ -346,44 +346,44 @@ class SolutionParameter(object):
 
     Attributes:
         filename: OpenFOAM filename that the values are belong to (e.g.
-            blockMeshDict, fvSchemes).
+            blockMeshDict, fv_schemes).
         values: New values as a python dictionary.
         replace: Set to True if you want the original dictionary to be replaced
             by new values. Default is False which means the original dictionary
             will be only updated by new values.
-        timeRange: Time range that this SolutioParameter is valid as a tuple
+        time_range: Time range that this SolutioParameter is valid as a tuple
             (default: (0, 1.0e+100)).
     """
 
-    _OFFilenames = ('epsilon', 'k', 'nut', 'p', 'U', 'T', 'turbulenceProperties',
-                    'transportProperties', 'blockMeshDict', 'controlDict',
-                    'fvSchemes', 'fvSolution', 'snappyHexMeshDict', 'probes')
+    _of_filenames = ('epsilon', 'k', 'nut', 'p', 'U', 'T', 'turbulence_properties',
+                     'transport_properties', 'blockMeshDict', 'controlDict',
+                     'fv_schemes', 'fv_solution', 'snappyHexMeshDict', 'probes')
 
-    def __init__(self, OFFilename, values, replace=False, timeRange=None):
+    def __init__(self, of_filename, values, replace=False, time_range=None):
         """Create solution parameter."""
-        self.filename = OFFilename
+        self.filename = of_filename
         self.values = values
         self.replace = replace
 
         try:
-            self.__t0 = int(timeRange[0])
-            self.__t1 = int(timeRange[1])
+            self.__t0 = int(time_range[0])
+            self.__t1 = int(time_range[1])
         except TypeError:
             self.__t0, self.__t1 = 0, 1.0e+100
         except ValueError:
             self.__t0, self.__t1 = 0, 1.0e+100
 
     @classmethod
-    def fromDictionaryFile(cls, OFFilename, filepath, replace=False,
-                           timeRange=None):
+    def from_dictionary_file(cls, of_filename, filepath, replace=False,
+                             time_range=None):
         """Create from an OpenFOAM dictionary file."""
         # convert values to python dictionary
-        values = CppDictParser.fromFile(filepath).values
-        return cls(OFFilename, values, replace, timeRange)
+        values = CppDictParser.from_file(filepath).values
+        return cls(of_filename, values, replace, time_range)
 
     @classmethod
-    def fromCppDictionary(cls, OFFilename, dictionary, replace=False,
-                          timeRange=None, header=False):
+    def from_cpp_dictionary(cls, of_filename, dictionary, replace=False,
+                            time_range=None, header=False):
         """Create from an OpenFOAM dictionary in text format."""
         # convert values to python dictionary
         values = CppDictParser(text=dictionary).values
@@ -391,10 +391,10 @@ class SolutionParameter(object):
         if not header and 'FoamFile' in values:
             del(values['FoamFile'])
 
-        return cls(OFFilename, values, replace, timeRange)
+        return cls(of_filename, values, replace, time_range)
 
     @property
-    def isSolutionParameter(self):
+    def is_solution_parameter(self):
         """Return True."""
         return True
 
@@ -416,18 +416,18 @@ class SolutionParameter(object):
 
     @filename.setter
     def filename(self, f):
-        assert f in self._OFFilenames, '{} is not a valid OpenFOAM dictionary ' \
+        assert f in self._of_filenames, '{} is not a valid OpenFOAM dictionary ' \
             'file. Try one of the files below:\n{}.' \
-            .format(f, '\n'.join(self._OFFilenames))
+            .format(f, '\n'.join(self._of_filenames))
 
         self.__filename = f
 
     @property
-    def timeRange(self):
+    def time_range(self):
         """Get time range."""
         return (self.__t0, self.__t1)
 
-    def isTimeInRange(self, time):
+    def is_time_in_range(self, time):
         """Check if time is in this SolutionParameter time range."""
         return self.__t0 <= float(time) < self.__t1
 
@@ -443,4 +443,4 @@ class SolutionParameter(object):
         """Class representation."""
         kv = '\n'.join('{}: {};'.format(k, v) for k, v in self.values.iteritems())
         return 'SolutionParameter::{}\n{}\n@{}'\
-            .format(self.filename, kv, self.timeRange)
+            .format(self.filename, kv, self.time_range)

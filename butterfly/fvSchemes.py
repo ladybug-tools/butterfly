@@ -1,7 +1,7 @@
 # coding=utf-8
 """Finite Volume Schemes class."""
 from version import Version
-from foamfile import FoamFile, foamFileFromFile
+from foamfile import FoamFile, foam_file_from_file
 from collections import OrderedDict
 
 
@@ -9,10 +9,10 @@ class FvSchemes(FoamFile):
     """Finite Volume Schemes class."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['ddtSchemes'] = {'default': 'steadyState'}
-    __defaultValues['gradSchemes'] = {'default': 'cellLimited leastSquares 1'}
-    __defaultValues['divSchemes'] = {
+    __default_values = OrderedDict()
+    __default_values['ddtSchemes'] = {'default': 'steadyState'}
+    __default_values['gradSchemes'] = {'default': 'cellLimited leastSquares 1'}
+    __default_values['divSchemes'] = {
         'default': 'none',
         'div(phi,U)': 'bounded Gauss linearUpwindV grad(U)',
         'div(phi,epsilon)': 'bounded Gauss linearUpwind grad(epsilon)',
@@ -20,15 +20,15 @@ class FvSchemes(FoamFile):
     }
 
     if float(Version.OFVer) < 3:
-        __defaultValues['divSchemes']['div((nuEff*dev(T(grad(U)))))'] = 'Gauss linear'
+        __default_values['divSchemes']['div((nuEff*dev(T(grad(U)))))'] = 'Gauss linear'
     else:
-        __defaultValues['divSchemes']['div((nuEff*dev2(T(grad(U)))))'] = 'Gauss linear'
+        __default_values['divSchemes']['div((nuEff*dev2(T(grad(U)))))'] = 'Gauss linear'
 
-    __defaultValues['laplacianSchemes'] = \
+    __default_values['laplacianSchemes'] = \
         {'default': 'Gauss linear limited corrected 0.333'}
-    __defaultValues['interpolationSchemes'] = {'default': 'linear'}
-    __defaultValues['snGradSchemes'] = {'default': 'limited corrected 0.333'}
-    __defaultValues['fluxRequired'] = {'default': 'no', 'p': ''}
+    __default_values['interpolationSchemes'] = {'default': 'linear'}
+    __default_values['snGradSchemes'] = {'default': 'limited corrected 0.333'}
+    __default_values['fluxRequired'] = {'default': 'no', 'p': ''}
 
     # first and second order of divSchemes
     divSchemesCollector = {
@@ -54,22 +54,22 @@ class FvSchemes(FoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        FoamFile.__init__(self, name='fvSchemes', cls='dictionary',
-                          location='system', defaultValues=self.__defaultValues,
+        FoamFile.__init__(self, name='fv_schemes', cls='dictionary',
+                          location='system', default_values=self.__default_values,
                           values=values)
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @classmethod
-    def fromRecipe(cls, recipe=0):
-        """Create an fvSchemes from recipe id.
+    def from_recipe(cls, recipe=0):
+        """Create an fv_schemes from recipe id.
 
         0 > SteadyIncompressible
         1 > HeatTransfer
@@ -84,20 +84,20 @@ class FvSchemes(FoamFile):
             return _cls
 
     @classmethod
-    def fromMeshOrthogonality(cls, averageOrthogonality=45):
-        """Init fvSchemes based on mesh orthogonality.
+    def from_mesh_orthogonality(cls, average_orthogonality=45):
+        """Init fv_schemes based on mesh orthogonality.
 
         Check pp. 45-50 of this document:
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf
         """
-        return cls(values=cls.getValuesFromMeshOrthogonality(
-            averageOrthogonality))
+        return cls(values=cls.get_values_from_mesh_orthogonality(
+            average_orthogonality))
 
     # TODO(): OpenFOAM version check for dev vs dev2.
     @staticmethod
-    def getValuesFromMeshOrthogonality(averageOrthogonality=45):
+    def get_values_from_mesh_orthogonality(average_orthogonality=45):
         """Get scheme values from orthogonality."""
-        if averageOrthogonality > 80:
+        if average_orthogonality > 80:
             _values = {
                 'gradSchemes': {
                     'default': 'faceLimited leastSquares 1.0',
@@ -120,7 +120,7 @@ class FvSchemes(FoamFile):
                     'default': 'limited 0.333'
                 }
             }
-        elif 70 <= averageOrthogonality <= 80:
+        elif 70 <= average_orthogonality <= 80:
             _values = {
                 'gradSchemes': {
                     'default': 'cellLimited leastSquares 1.0',
@@ -144,7 +144,7 @@ class FvSchemes(FoamFile):
                 }
             }
 
-        elif 60 <= averageOrthogonality < 70:
+        elif 60 <= average_orthogonality < 70:
             _values = {
                 'gradSchemes': {
                     'default': 'cellMDLimited Gauss linear 0.5',
@@ -167,7 +167,7 @@ class FvSchemes(FoamFile):
                     'default': 'limited 0.777'
                 }
             }
-        elif 40 <= averageOrthogonality < 60:
+        elif 40 <= average_orthogonality < 60:
             _values = {
                 'gradSchemes': {
                     'default': 'cellMDLimited Gauss linear 0.5',

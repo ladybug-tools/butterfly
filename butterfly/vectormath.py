@@ -1,7 +1,7 @@
 """Calculate anitclockwise angle between two vectors."""
 import math
 
-__all__ = ('angleAnitclockwise', 'crossProduct', 'project')
+__all__ = ('angle_anitclockwise', 'cross_product', 'project')
 
 
 def length(v):
@@ -12,7 +12,7 @@ def length(v):
     return math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
 
 
-def dotProduct(v, w):
+def dot_product(v, w):
     """calcualte dot product."""
     if len(v) == 2:
         v = (v[0], v[1], 0)
@@ -27,22 +27,22 @@ def determinant(v, w):
     return v[0] * w[1] - v[1] * w[0]
 
 
-def innerAngle(v, w):
+def inner_angle(v, w):
     """calculate inner angle between two vectors.
 
     modified from: http://stackoverflow.com/a/31735880
     """
-    cosx = dotProduct(v, w) / (length(v) * length(w))
+    cosx = dot_product(v, w) / (length(v) * length(w))
     rad = math.acos(cosx)  # in radians
     return rad * 180 / math.pi  # returns degrees
 
 
-def angleAnitclockwise(v1, v2):
+def angle_anitclockwise(v1, v2):
     """Calculate clockwise angle between two 2D vectors."""
     v1 = v1[:2]
     v2 = v2[:2]
 
-    inner = innerAngle(v1, v2)
+    inner = inner_angle(v1, v2)
     det = determinant(v1, v2)
 
     if inner % 360 == 0:
@@ -56,7 +56,7 @@ def angleAnitclockwise(v1, v2):
         return 360 - inner
 
 
-def crossProduct(v1, v2, norm=True):
+def cross_product(v1, v2, norm=True):
     """Calculate cross product of two 3d vector."""
     # handle 2D vectors
     v1 = (v1[0], v1[1], 0) if len(v1) == 2 else v1
@@ -126,5 +126,5 @@ def project(p, o, n):
         projected point as (x, y, z)
     """
     n = normalize(n)
-    dif = scale(n, dotProduct(subtract(p, o), n))
+    dif = scale(n, dot_product(subtract(p, o), n))
     return subtract(p, dif)

@@ -15,7 +15,7 @@ class Field(object):
         self.__values['type'] = self.type
 
     @classmethod
-    def fromDict(cls, d):
+    def from_dict(cls, d):
         """Create a field from a dictionary."""
         _cls = cls()
         assert isinstance(d, (OrderedDict, dict)), \
@@ -25,15 +25,15 @@ class Field(object):
         return _cls
 
     @classmethod
-    def fromString(cls, st):
+    def from_string(cls, st):
         """Create a field from a string."""
         d = {s.split()[0]: ' '.join(s.split()[1:])
              for s in st.replace('{', '').replace('}', '').split(';')
              if s.strip()}
-        return cls.fromDict(d)
+        return cls.from_dict(d)
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         return self.__values
 
@@ -48,7 +48,7 @@ class Field(object):
     def __repr__(self):
         """Representation."""
         return "\n".join(("{}        {};").format(key, value)
-                         for key, value in self.valueDict.iteritems())
+                         for key, value in self.value_dict.iteritems())
 
 
 class ZeroGradient(Field):
@@ -74,19 +74,19 @@ class Calculated(Field):
 
     Args:
         value: value.
-        isUnifrom: A boolean that indicates if the values is uniform.
+        is_unifrom: A boolean that indicates if the values is uniform.
     """
 
-    def __init__(self, value=None, isUnifrom=True):
+    def __init__(self, value=None, is_unifrom=True):
         """Init Calculated class."""
         Field.__init__(self)
         if value:
-            self.value = 'uniform {}'.format(str(value)) if isUnifrom else str(value)
+            self.value = 'uniform {}'.format(str(value)) if is_unifrom else str(value)
         else:
             self.value = None
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         if self.value:
@@ -105,18 +105,18 @@ class InletOutlet(Field):
     -inletoutlet-outletinlet-boundary-conditions.html
     """
 
-    def __init__(self, inletValue, value):
+    def __init__(self, inlet_value, value):
         """Init class."""
         Field.__init__(self)
-        self.inletValue = inletValue
+        self.inlet_value = inlet_value
         self.value = value
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
-        _d['inletValue'] = self.inletValue
+        _d['inlet_value'] = self.inlet_value
         _d['value'] = self.value
         return _d
 
@@ -128,18 +128,18 @@ class OutletInlet(Field):
     -inletoutlet-outletinlet-boundary-conditions.html
     """
 
-    def __init__(self, outletValue, value):
+    def __init__(self, outlet_value, value):
         """Init class."""
         Field.__init__(self)
-        self.outletValue = outletValue
+        self.outlet_value = outlet_value
         self.value = value
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
-        _d['outletValue'] = self.outletValue
+        _d['outlet_value'] = self.outlet_value
         _d['value'] = self.value
         return _d
 
@@ -148,64 +148,64 @@ class AtmBoundary(Field):
     """OpenFOAM AtmBoundaryLayerInletVelocity.
 
     Attributes:
-        Uref: Flow velocity as a float number.
-        Zref: Reference z value for flow velocity as a float number.
+        uref: Flow velocity as a float number.
+        zref: Reference z value for flow velocity as a float number.
         z0: Roughness (e.g. uniform 1).
-        flowDir: Velocity vector as a tuple.
+        flow_dir: Velocity vector as a tuple.
         zDir: Z direction (default:(0 0 1)).
-        zGround: Min z value of the bounding box (default: 0).
-        fromValues: True.
+        z_ground: Min z value of the bounding box (default: 0).
+        from_values: True.
     """
 
-    def __init__(self, Uref, Zref, z0, flowDir, zDir='(0 0 1)', zGround=0,
-                 fromValues=True):
+    def __init__(self, uref, zref, z0, flow_dir, zDir='(0 0 1)', z_ground=0,
+                 from_values=True):
         """Create from values.
 
         Args:
-            Uref: Flow velocity as a float number.
-            Zref: Reference z value for flow velocity as a float number.
+            uref: Flow velocity as a float number.
+            zref: Reference z value for flow velocity as a float number.
             z0: Roughness (e.g. uniform 1).
-            flowDir: Velocity vector as a tuple.
+            flow_dir: Velocity vector as a tuple.
             zDir: Z direction (default:(0 0 1)).
-            zGround: Min z value of the bounding box (default: 0).
+            z_ground: Min z value of the bounding box (default: 0).
         """
-        self.fromValues = fromValues
+        self.from_values = from_values
         Field.__init__(self)
-        self.Uref = Uref
-        self.Zref = Zref
+        self.uref = uref
+        self.zref = zref
         self.z0 = z0
-        self.flowDir = flowDir
+        self.flow_dir = flow_dir
         self.zDir = zDir
-        self.zGround = zGround
+        self.z_ground = z_ground
 
     @classmethod
-    def fromABLConditions(cls, ablConditions, value=None):
+    def from_ABLConditions(cls, ABLConditions, value=None):
         """Init class from a condition file."""
-        _cls = cls(ablConditions.values['Uref'], ablConditions.values['Zref'],
-                   ablConditions.values['z0'], ablConditions.values['flowDir'],
-                   ablConditions.values['zDir'], ablConditions.values['zGround'],
-                   fromValues=False)
+        _cls = cls(ABLConditions.values['Uref'], ABLConditions.values['zref'],
+                   ABLConditions.values['z0'], ABLConditions.values['flow_dir'],
+                   ABLConditions.values['zDir'], ABLConditions.values['z_ground'],
+                   from_values=False)
         _cls.value = value
-        _cls.ABLConditions = ablConditions
+        _cls.ABLConditions = ABLConditions
         return _cls
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
-        if not self.fromValues:
+        if not self.from_values:
             _d['#include'] = '"{}"'.format(self.ABLConditions.__class__.__name__)
             if self.value:
                 _d['value'] = str(self.value)
 
         else:
-            _d['Uref'] = self.Uref
-            _d['Zref'] = self.Zref
+            _d['Uref'] = self.uref
+            _d['zref'] = self.zref
             _d['z0'] = self.z0
-            _d['flowDir'] = self.flowDir
+            _d['flow_dir'] = self.flow_dir
             _d['zDir'] = self.zDir
-            _d['zGround'] = self.zGround
+            _d['z_ground'] = self.z_ground
 
         return _d
 
@@ -239,16 +239,16 @@ class FixedValue(Field):
 
     Args:
         value: value.
-        isUnifrom: A boolean that indicates if the values is uniform.
+        is_unifrom: A boolean that indicates if the values is uniform.
     """
 
-    def __init__(self, value, isUnifrom=True):
+    def __init__(self, value, is_unifrom=True):
         """Init the class."""
         Field.__init__(self)
-        self.value = 'uniform {}'.format(str(value)) if isUnifrom else str(value)
+        self.value = 'uniform {}'.format(str(value)) if is_unifrom else str(value)
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
@@ -265,31 +265,31 @@ class PressureInletOutletVelocity(FixedValue):
 class AlphatJayatillekeWallFunction(FixedValue):
     """alphatJayatillekeWallFunction."""
 
-    def __init__(self, value, isUniform=True, Prt=None):
+    def __init__(self, value, is_uniform=True, prt=None):
         """Init class."""
-        FixedValue.__init__(self, value, isUniform)
-        self.Prt = str(Prt) if Prt else '0.85'
+        FixedValue.__init__(self, value, is_uniform)
+        self.prt = str(prt) if prt else '0.85'
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
         _d['value'] = self.value
-        _d['Prt'] = self.Prt
+        _d['Prt'] = self.prt
         return _d
 
 
 class FixedFluxPressure(FixedValue):
     """FixedFluxPressure."""
 
-    def __init__(self, value, isUniform=True, rho=None):
+    def __init__(self, value, is_uniform=True, rho=None):
         """Init class."""
-        FixedValue.__init__(self, value, isUniform)
+        FixedValue.__init__(self, value, is_uniform)
         self.rho = rho if rho else 'rhok'
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
@@ -301,17 +301,17 @@ class FixedFluxPressure(FixedValue):
 class FlowRateInletVelocity(FixedValue):
     """FlowRateInletVelocity."""
 
-    def __init__(self, volumetricFlowRate, value, isUniform=True):
+    def __init__(self, volumetric_flow_rate, value, is_uniform=True):
         """Init class."""
-        FixedValue.__init__(self, value, isUniform)
-        self.volumetricFlowRate = volumetricFlowRate
+        FixedValue.__init__(self, value, is_uniform)
+        self.volumetric_flow_rate = volumetric_flow_rate
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
-        _d['volumetricFlowRate'] = self.volumetricFlowRate
+        _d['volumetric_flow_rate'] = self.volumetric_flow_rate
         _d['value'] = self.value
         return _d
 
@@ -333,27 +333,27 @@ class EpsilonWallFunction(WallFunction):
 
     Args:
         value:
-        Cmu: (default: None)
+        cmu: (default: None)
         kappa: (default: None)
         E: (default: None)
     """
 
-    # default values in OpenFOAM Cmu=0.09, kappa=0.41, E=9.8
-    def __init__(self, value, Cmu=None, kappa=None, E=None, isUnifrom=True):
+    # default values in OpenFOAM cmu=0.09, kappa=0.41, E=9.8
+    def __init__(self, value, cmu=None, kappa=None, E=None, is_unifrom=True):
         """Init EpsilonWallFunction."""
-        WallFunction.__init__(self, value, isUnifrom)
-        self.cmu = Cmu
+        WallFunction.__init__(self, value, is_unifrom)
+        self.cmu = cmu
         self.kappa = kappa
         self.e = E
 
     @property
-    def valueDict(self):
+    def value_dict(self):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = str(self.type)
         _d['value'] = str(self.value)
         if self.cmu:
-            _d['Cmu'] = str(self.cmu)
+            _d['cmu'] = str(self.cmu)
         if self.kappa:
             _d['kappa'] = str(self.kappa)
         if self.e:

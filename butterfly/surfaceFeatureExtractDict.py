@@ -1,6 +1,6 @@
 # coding=utf-8
 """Finite Volume Solution class."""
-from foamfile import FoamFile, foamFileFromFile
+from foamfile import FoamFile, foam_file_from_file
 from collections import OrderedDict
 
 
@@ -8,55 +8,55 @@ class SurfaceFeatureExtractDict(FoamFile):
     """surfaceFeatureExtractDict class."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
+    __default_values = OrderedDict()
 
     def __init__(self, values=None):
         """Init class."""
         FoamFile.__init__(self, name='surfaceFeatureExtractDict', cls='dictionary',
-                          location='system', defaultValues=self.__defaultValues,
+                          location='system', default_values=self.__default_values,
                           values=values)
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @classmethod
-    def fromStlFile(cls, fileName, extractionMethod='extractFromSurface',
-                    includedAngle=150, geometricTestOnly=True, writeObj=False):
-        """Generate fvSolution for a particular recipe.
+    def from_stl_file(cls, file_name, extraction_method='extractFromSurface',
+                      included_angle=150, geometric_test_only=True, write_obj=False):
+        """Generate fv_solution for a particular recipe.
 
         Args:
-            fileName: stl file name (e.g. project.stl)
-            extractionMethod: Indicate how to obtain raw features.
+            file_name: stl file name (e.g. project.stl)
+            extraction_method: Indicate how to obtain raw features.
                 extractFromFile or extractFromSurface
-            includedAngle: An integer for the max angle between the faces to
+            included_angle: An integer for the max angle between the faces to
                 be considered as two different faces and so the edge between
                 them will be considered as an edge. 0 > selects no edges and
                 180 > selects all edges (default: 150).
-            writeObj: A Boolean to write features to obj format for postprocessing.
+            write_obj: A Boolean to write features to obj format for postprocessing.
                 (default: True)
         """
         _cls = cls()
 
-        if not fileName.lower().endswith('.stl'):
-            fileName = fileName + '.stl'
+        if not file_name.lower().endswith('.stl'):
+            file_name = file_name + '.stl'
 
         _values = {
-            fileName: {
-                'extractionMethod': extractionMethod,
+            file_name: {
+                'extraction_method': extraction_method,
                 'extractFromSurfaceCoeffs': {
-                    'includedAngle': str(includedAngle),
-                    'geometricTestOnly': _cls.convertBoolValue(geometricTestOnly)
+                    'included_angle': str(included_angle),
+                    'geometric_test_only': _cls.convert_bool_value(geometric_test_only)
                 },
-                'writeObj': _cls.convertBoolValue(writeObj)
+                'write_obj': _cls.convert_bool_value(write_obj)
             }
         }
 
         # update values based on the recipe.
-        _cls.updateValues(_values, mute=True)
+        _cls.update_values(_values, mute=True)
         return _cls

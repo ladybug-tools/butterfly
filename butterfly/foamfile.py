@@ -1,7 +1,7 @@
 # coding=utf-8
 """Foam File Class."""
 from .version import Version, Header
-from .utilities import getBoundaryFieldFromGeometries
+from .utilities import get_boundary_field_from_geometries
 from .parser import CppDictParser
 import os
 import json
@@ -20,17 +20,17 @@ class FoamFile(object):
         OFClass: OpenFOAM class constructed from the data file
             concerned. Typically  dictionary  or a field, e.g. volVectorField
         location: Folder name (0, constant or system)
-        fileFormat: File format (ascii / binary) (default: ascii)
+        file_format: File format (ascii / binary) (default: ascii)
     """
 
     __locations = ('0', 'system', 'constant')
 
-    def __init__(self, name, cls, location=None, fileFormat="ascii",
-                 defaultValues=None, values=None):
+    def __init__(self, name, cls, location=None, file_format="ascii",
+                 default_values=None, values=None):
         """Init foam file."""
         self.__dict__['is{}'.format(self.__class__.__name__)] = True
         self.__version = str(Version().OFVer)
-        self.format = str(fileFormat)  # ascii / binary
+        self.format = str(file_format)  # ascii / binary
         self.cls = str(cls)  # dictionary or field
         self.name = str(name)
         self.location = location  # location is optional
@@ -47,20 +47,20 @@ class FoamFile(object):
         # Initiate values
         if not values:
             values = {}
-        if not defaultValues:
-            defaultValues = {}
-        self.__values = deepcopy(defaultValues)
-        self.updateValues(values, mute=True)
+        if not default_values:
+            default_values = {}
+        self.__values = deepcopy(default_values)
+        self.update_values(values, mute=True)
 
     @classmethod
-    def fromFile(cls, filepath, location=None):
+    def from_file(cls, filepath, location=None):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
             location: Optional folder name for location (0, constant or system)
         """
-        def _tryGetFoamFileValue(key):
+        def _try_get_foam_file_value(key):
             """Get values for FoamFile header."""
             try:
                 return _values['FoamFile'][key]
@@ -71,9 +71,9 @@ class FoamFile(object):
                 return default[key]
 
         assert not filepath.endswith('blockMeshDict'), \
-            'To parse blockMeshDict from file use BlockMeshDict.fromFile()'
+            'To parse blockMeshDict from file use BlockMeshDict.from_file()'
 
-        _values = CppDictParser.fromFile(filepath).values
+        _values = CppDictParser.from_file(filepath).values
         p, _name = os.path.split(filepath)
 
         default = {
@@ -84,37 +84,37 @@ class FoamFile(object):
         }
 
         # set up FoamFile dictionary
-        _name = _tryGetFoamFileValue('object')
-        _cls = _tryGetFoamFileValue('class')
-        _location = _tryGetFoamFileValue('location')
-        _fileFormat = _tryGetFoamFileValue('format')
+        _name = _try_get_foam_file_value('object')
+        _cls = _try_get_foam_file_value('class')
+        _location = _try_get_foam_file_value('location')
+        _file_format = _try_get_foam_file_value('format')
 
         if 'FoamFile' in _values:
             del(_values['FoamFile'])
 
-        return cls(_name, _cls, _location, _fileFormat, values=_values)
+        return cls(_name, _cls, _location, _file_format, values=_values)
 
     @property
-    def isFoamFile(self):
+    def is_foam_file(self):
         """Return True for FoamFile."""
         return True
 
     @property
-    def isZeroFile(self):
+    def is_zero_file(self):
         """Check if the file location is folder 0."""
         if not self.location:
             return False
         return self.location == "0"
 
     @property
-    def isConstantFile(self):
+    def is_constant_file(self):
         """Check if the file location is 'constant' folder."""
         if not self.location:
             return False
         return self.location == "constant"
 
     @property
-    def isSystemFile(self):
+    def is_system_file(self):
         """Check if the file location is 'system' folder."""
         if not self.location:
             return False
@@ -125,8 +125,8 @@ class FoamFile(object):
         """Return values as a dictionary."""
         return self.__values
 
-    # TODO(Mostapha): replace log changes with updateDict from utilities
-    def updateValues(self, v, replace=False, mute=False):
+    # TODO(Mostapha): replace log changes with update_dict from utilities
+    def update_values(self, v, replace=False, mute=False):
         """Update current values from dictionary v.
 
         if key is not available in current values it will be added, if the key
@@ -135,7 +135,7 @@ class FoamFile(object):
         Returns:
             True is the dictionary is updated.
         """
-        def logChanges(original, new):
+        def log_changes(original, new):
             """compare this dictionary with the current values."""
             if original is None:
                 original = {}
@@ -153,7 +153,7 @@ class FoamFile(object):
 
                 if isinstance(value, (dict, collections.OrderedDict)):
                     self.__parents.append(key)
-                    logChanges(original[key], value)
+                    log_changes(original[key], value)
                 elif str(original[key]) != str(value):
                     # there is a change in value
                     if not mute:
@@ -167,12 +167,12 @@ class FoamFile(object):
                     self.__hasChanged = True
                     return
 
-        def modifyDict(original, new):
+        def modify_dict(original, new):
             """Modify a dictionary based on a new dictionary."""
             for key, value in new.items():
                 if key in original and isinstance(value, dict):
                     if isinstance(original[key], dict):
-                        modifyDict(original[key], value)
+                        modify_dict(original[key], value)
                     else:
                         # the value was not a dict, replce them with the new one
                         original[key] = value
@@ -185,13 +185,13 @@ class FoamFile(object):
 
         self.__parents = [self.__class__.__name__]
         self.__hasChanged = False
-        logChanges(self.__values, v)
+        log_changes(self.__values, v)
 
         if self.__hasChanged:
             if replace:
                 self.__values.update(v)
             else:
-                self.__values = modifyDict(self.__values, v)
+                self.__values = modify_dict(self.__values, v)
             return True
         else:
             return False
@@ -201,7 +201,7 @@ class FoamFile(object):
         """Get list of parameters."""
         return self.values.keys()
 
-    def getValueByParameter(self, parameter):
+    def get_value_by_parameter(self, parameter):
         """Get values for a given parameter by parameter name.
 
         Args:
@@ -214,7 +214,7 @@ class FoamFile(object):
                 parameter, self.__class__.__name__
             ))
 
-    def setValueByParameter(self, parameter, value):
+    def set_value_by_parameter(self, parameter, value):
         """Set value for a parameter.
 
         Args:
@@ -245,7 +245,7 @@ class FoamFile(object):
                 "}\n" % (self.__version, self.format, self.cls, self.name)
 
     @staticmethod
-    def _splitLine(line):
+    def _split_line(line):
         """Split lines which ends with { to two lines."""
         return line[4:-1] + "\n" + \
             (len(line) - len(line.strip()) - 4) * ' ' + '{'
@@ -253,18 +253,18 @@ class FoamFile(object):
     def body(self):
         """Return body string."""
         # remove None values
-        def removeNone(d):
+        def remove_none(d):
             if isinstance(d, (dict, collections.OrderedDict)):
                 return collections.OrderedDict(
-                    (k, removeNone(v)) for k, v in d.iteritems()
-                    if v == {} or (v and removeNone(v)))
+                    (k, remove_none(v)) for k, v in d.iteritems()
+                    if v == {} or (v and remove_none(v)))
             elif isinstance(d, (list, tuple)):
-                return [removeNone(v) for v in d if v and removeNone(v)]
+                return [remove_none(v) for v in d if v and remove_none(v)]
             else:
                 return d
-            return removeNone
+            return remove_none
 
-        _values = removeNone(self.values)
+        _values = remove_none(self.values)
 
         # make python dictionary look like c++ dictionary!!
         of = json.dumps(_values, indent=4, separators=(";", "\t\t")) \
@@ -272,13 +272,13 @@ class FoamFile(object):
             .replace('};', '}').replace('\t\t{', '{').replace('@', '"')
 
         # remove first and last {} and prettify[!] the file
-        content = (line[4:] if not line.endswith('{') else self._splitLine(line)
+        content = (line[4:] if not line.endswith('{') else self._split_line(line)
                    for line in of.split("\n")[1:-1])
 
         return "\n\n".join(content)
 
     @staticmethod
-    def convertBoolValue(v=True):
+    def convert_bool_value(v=True):
         """Convert Boolean values to on/off string."""
         _v = ('off', 'on')
 
@@ -290,25 +290,25 @@ class FoamFile(object):
         else:
             return 'off'
 
-    def toOpenFOAM(self):
+    def to_of(self):
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
 
-    def save(self, projectFolder, subFolder=None, overwrite=True):
+    def save(self, project_folder, sub_folder=None, overwrite=True):
         """Save to file.
 
         Args:
-            projectFolder: Path to project folder as a string.
-            subFolder: Optional input for subFolder (default: self.location).
+            project_folder: Path to project folder as a string.
+            sub_folder: Optional input for sub_folder (default: self.location).
         """
-        subFolder = subFolder or self.location.replace('"', '')
-        fp = os.path.join(projectFolder, subFolder, self.name)
+        sub_folder = sub_folder or self.location.replace('"', '')
+        fp = os.path.join(project_folder, sub_folder, self.name)
 
         if not overwrite and os.path.isfile(fp):
             return
 
         with open(fp, "wb") as outf:
-            outf.write(self.toOpenFOAM())
+            outf.write(self.to_of())
         return fp
 
     def __eq__(self, other):
@@ -325,7 +325,7 @@ class FoamFile(object):
 
     def __repr__(self):
         """Class representation."""
-        return self.toOpenFOAM()
+        return self.to_of()
 
 
 class FoamFileZeroFolder(FoamFile):
@@ -337,22 +337,22 @@ class FoamFileZeroFolder(FoamFile):
     """
 
     @classmethod
-    def fromBFGeometries(cls, BFGeometries, values=None):
-        """Init class by BFGeometries."""
+    def from_bf_geometries(cls, bf_geometries, values=None):
+        """Init class by bf_geometries."""
         _cls = cls(values)
-        _cls.setBoundaryField(BFGeometries)
+        _cls.set_boundary_field(bf_geometries)
         return _cls
 
-    def setBoundaryField(self, BFGeometries):
-        """Set FoamFile boundaryField values from BFGeometries.
+    def set_boundary_field(self, bf_geometries):
+        """Set FoamFile boundaryField values from bf_geometries.
 
         Args:
-            BFGeometries: List of Butterfly geometries.
+            bf_geometries: List of Butterfly geometries.
         """
         self.values['boundaryField'] = \
-            getBoundaryFieldFromGeometries(BFGeometries, self.name)
+            get_boundary_field_from_geometries(bf_geometries, self.name)
 
-    def getBoundaryField(self, name):
+    def get_boundary_field(self, name):
         """Try to get boundaryField value for a geometry by name.
 
         Args:
@@ -369,7 +369,7 @@ class FoamFileZeroFolder(FoamFile):
 class Condition(FoamFile):
     """OpenFOAM conditions object.
 
-    Use this class to create conditions such as initialConditions and ABLConditions.
+    Use this class to create conditions such as initial_conditions and ABLConditions.
     Conditions don't have OpenFOAM header. It's only values.
     """
 
@@ -378,7 +378,7 @@ class Condition(FoamFile):
         return Header.header()
 
 
-def foamFileFromFile(filepath, name=None, header=False):
+def foam_file_from_file(filepath, name=None, header=False):
     """Load values from foamfile.
 
     Args:
@@ -391,7 +391,7 @@ def foamFileFromFile(filepath, name=None, header=False):
         assert _name.lower() == name.lower(), \
             'Illegal file input {} for creating {}'.format(_name, name)
 
-    _values = CppDictParser.fromFile(filepath).values
+    _values = CppDictParser.from_file(filepath).values
 
     if not header and 'FoamFile' in _values:
         del(_values['FoamFile'])

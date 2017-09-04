@@ -1,9 +1,9 @@
 # coding=utf-8
-"""turbulenceProperties class.
+"""turbulence_properties class.
 
-Use turbulenceProperties for versions prior to 3.0+
+Use turbulence_properties for versions prior to 3.0+
 """
-from foamfile import FoamFile, foamFileFromFile
+from foamfile import FoamFile, foam_file_from_file
 from collections import OrderedDict
 
 
@@ -11,30 +11,30 @@ class TurbulenceProperties(FoamFile):
     """Turbulence Properties class."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['simulationType'] = 'laminar'
-    __RASModels = ('LRR', 'LamBremhorstKE', 'LaunderSharmaKE', 'LienCubicKE',
-                   'LienLeschziner', 'RNGkEpsilon', 'SSG', 'ShihQuadraticKE',
-                   'SpalartAllmaras', 'kEpsilon', 'kOmega', 'kOmegaSSTSAS',
-                   'kkLOmega', 'qZeta', 'realizableKE', 'v2f', 'buoyantKEpsilon')
+    __default_values = OrderedDict()
+    __default_values['simulationType'] = 'laminar'
+    __RAS_models = ('LRR', 'LamBremhorstKE', 'LaunderSharmaKE', 'LienCubicKE',
+                    'LienLeschziner', 'RNGkEpsilon', 'SSG', 'ShihQuadraticKE',
+                    'SpalartAllmaras', 'kEpsilon', 'kOmega', 'kOmegaSSTSAS',
+                    'kkLOmega', 'qZeta', 'realizableKE', 'v2f', 'buoyantKEpsilon')
     __LESModels = ('DeardorffDiffStress', 'Smagorinsky', 'SpalartAllmarasDDES',
-                   'SpalartAllmarasDES', 'SpalartAllmarasIDDES', 'WALE',
-                   'dynamicKEqn', 'dynamicLagrangian', 'kEqn', 'kOmegaSSTDES')
+                    'SpalartAllmarasDES', 'SpalartAllmarasIDDES', 'WALE',
+                    'dynamicKEqn', 'dynamicLagrangian', 'kEqn', 'kOmegaSSTDES')
 
     def __init__(self, values=None):
         """Init class."""
-        FoamFile.__init__(self, name='turbulenceProperties', cls='dictionary',
-                          location='constant', defaultValues=self.__defaultValues,
+        FoamFile.__init__(self, name='turbulence_properties', cls='dictionary',
+                          location='constant', default_values=self.__default_values,
                           values=values)
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @classmethod
     def laminar(cls):
@@ -42,15 +42,15 @@ class TurbulenceProperties(FoamFile):
         return cls()
 
     @classmethod
-    def RAS(cls, RASModel='RNGkEpsilon', turbulence=True, printCoeffs=True,
-            RASModelCoeffs=None):
+    def RAS(cls, RAS_model='RNGkEpsilon', turbulence=True, print_coeffs=True,
+            RAS_model_coeffs=None):
         """Reynolds-averaged simulation (RAS) turbulence model.
 
         Read more: http://cfd.direct/openfoam/user-guide/turbulence/
         Watch this: https://www.youtube.com/watch?v=Eu_4ppppQmw
 
         Args:
-            RASModel: Name of RAS turbulence model (default: RNGkEpsilon).
+            RAS_model: Name of RAS turbulence model (default: RNGkEpsilon).
                 Incompressible RAS turbulence models:
                     LRR, LamBremhorstKE, LaunderSharmaKE, LienCubicKE,
                     LienLeschziner, RNGkEpsilon, SSG, ShihQuadraticKE,
@@ -62,30 +62,30 @@ class TurbulenceProperties(FoamFile):
                     realizableKE, v2f
             turbulence: Boolean switch to turn the solving of turbulence
                 modelling on/off (default: True).
-            printCoeffs: Boolean switch to print model coeffs to terminal at
+            print_coeffs: Boolean switch to print model coeffs to terminal at
                 simulation start up (default: True).
-            RASModelCoeffs: Optional dictionary of coefficients for the respective
-                RASModel, to override the default coefficients.
+            RAS_model_coeffs: Optional dictionary of coefficients for the respective
+                RAS_model, to override the default coefficients.
         """
-        # check RASModel input
-        assert RASModel in cls.__RASModels, \
-            '{} is not a valid input for RASModel.' \
-            ' Try one of the models below:\n{}'.format(RASModel, cls.__RASModels)
+        # check RAS_model input
+        assert RAS_model in cls.__RAS_models, \
+            '{} is not a valid input for RAS_model.' \
+            ' Try one of the models below:\n{}'.format(RAS_model, cls.__RAS_models)
 
         values = {'simulationType': 'RAS', 'RAS': {
-            'RASModel': RASModel,
-            'turbulence': FoamFile.convertBoolValue(turbulence),
-            'printCoeffs': FoamFile.convertBoolValue(printCoeffs)}
+            'RASModel': RAS_model,
+            'turbulence': FoamFile.convert_bool_value(turbulence),
+            'printCoeffs': FoamFile.convert_bool_value(print_coeffs)}
         }
 
-        if RASModelCoeffs:
-            values['RAS'].update({'%sCoeffs' % RASModel: RASModelCoeffs})
+        if RAS_model_coeffs:
+            values['RAS'].update({'%sCoeffs' % RAS_model: RAS_model_coeffs})
 
         return cls(values=values)
 
     @classmethod
     def LES(cls, LESModel='kEqn', delta='cubeRootVol', turbulence=True,
-            printCoeffs=True, LESModelCoeffs=None, deltaCoeffs=None):
+            print_coeffs=True, LESModel_coeffs=None, delta_coeffs=None):
         """Large eddy simulation (LES) modelling.
 
         Args:
@@ -101,11 +101,11 @@ class TurbulenceProperties(FoamFile):
             delta: Name of delta model.
             turbulence: Boolean switch to turn the solving of turbulence
                 modelling on/off (default: True).
-            printCoeffs: Boolean switch to print model coeffs to terminal at
+            print_coeffs: Boolean switch to print model coeffs to terminal at
                 simulation start up (default: True).
-            LESModelCoeffs: Dictionary of coefficients for the respective LESModel,
+            LESModel_coeffs: Dictionary of coefficients for the respective LESModel,
                 to override the default coefficients.
-            deltaCoeffs: Dictionary of coefficients for the delta model.
+            delta_coeffs: Dictionary of coefficients for the delta model.
         """
         assert LESModel in cls.__LESModels, \
             '{} is not a valid input for LESModels.' \
@@ -114,19 +114,19 @@ class TurbulenceProperties(FoamFile):
         values = {'simulationType': 'LES', 'LES': {
             'LESModel': LESModel,
             'delta': delta,
-            'turbulence': FoamFile.convertBoolValue(turbulence),
-            'printCoeffs': FoamFile.convertBoolValue(printCoeffs)}
+            'turbulence': FoamFile.convert_bool_value(turbulence),
+            'printCoeffs': FoamFile.convert_bool_value(print_coeffs)}
         }
 
-        if LESModelCoeffs:
-            values['LES'].update({'%sCoeffs' % LESModel: LESModelCoeffs})
+        if LESModel_coeffs:
+            values['LES'].update({'%sCoeffs' % LESModel: LESModel_coeffs})
 
-        if deltaCoeffs:
-            values['LES'].update({'%sCoeffs' % deltaCoeffs: deltaCoeffs})
+        if delta_coeffs:
+            values['LES'].update({'%sCoeffs' % delta_coeffs: delta_coeffs})
 
         return cls(values=values)
 
     @property
-    def isTurbulenceProperties(self):
+    def is_turbulence_properties(self):
         """Return True."""
         return True
