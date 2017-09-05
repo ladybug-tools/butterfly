@@ -29,7 +29,7 @@ class FoamFile(object):
                  default_values=None, values=None):
         """Init foam file."""
         self.__dict__['is{}'.format(self.__class__.__name__)] = True
-        self.__version = str(Version().OFVer)
+        self.__version = str(Version.of_ver)
         self.format = str(file_format)  # ascii / binary
         self.cls = str(cls)  # dictionary or field
         self.name = str(name)

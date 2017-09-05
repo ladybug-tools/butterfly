@@ -2,10 +2,10 @@
 """Butterfly recipes."""
 import os
 from copy import deepcopy
-from .turbulence_properties import TurbulenceProperties
-from .transport_properties import TransportProperties
-from .fv_solution import FvSolution, ResidualControl, RelaxationFactors
-from .fv_schemes import FvSchemes
+from .turbulenceProperties import TurbulenceProperties
+from .transportProperties import TransportProperties
+from .fvSolution import FvSolution, ResidualControl, RelaxationFactors
+from .fvSchemes import FvSchemes
 
 from .g import G
 

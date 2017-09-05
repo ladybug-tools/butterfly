@@ -50,13 +50,13 @@ class RunManager(object):
 
         self.__project_name = project_name
         self.__separator = '&'
-        self.isUsingDockerMachine = True \
-            if hasattr(Version, 'isUsingDockerMachine') and \
-            Version.isUsingDockerMachine \
+        self.is_using_docker_machine = True \
+            if hasattr(Version, 'is_using_docker_machine') and \
+            Version.is_using_docker_machine \
             else False
 
         self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
-            if self.isUsingDockerMachine \
+            if self.is_using_docker_machine \
             else r'"C:\Program Files\Boot2Docker for Windows"'
 
         self.log_folder = './log'
@@ -83,7 +83,7 @@ class RunManager(object):
         if self.dockerPath not in os.environ['PATH']:
             os.environ['PATH'] += ';%s' % self.dockerPath
 
-        if self.isUsingDockerMachine:
+        if self.is_using_docker_machine:
             # version 1606 and higher
             process = Popen('docker-machine env', shell=True, stdout=PIPE,
                             stderr=PIPE)
@@ -172,12 +172,12 @@ class RunManager(object):
 
     @property
     def __of_batch_file(self):
-        if Version.OFFullVer == 'v3.0+':
+        if Version.of_full_ver == 'v3.0+':
             return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts' \
                 '\start_OF.bat'
         else:
             return r'C:\Program Files (x86)\ESI\OpenFOAM\{}\\' \
-                'Windows\Scripts\start_OF.bat'.format(Version.OFFullVer[1:-1])
+                'Windows\Scripts\start_OF.bat'.format(Version.of_full_ver[1:-1])
 
     def start_of(self):
         """Start OpenFOAM for Windows image from batch file."""

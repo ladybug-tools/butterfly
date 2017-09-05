@@ -19,7 +19,7 @@ class FvSchemes(FoamFile):
         'div(phi,k)': 'bounded Gauss linearUpwind grad(k)'
     }
 
-    if float(Version.OFVer) < 3:
+    if float(Version.of_ver) < 3:
         __default_values['divSchemes']['div((nuEff*dev(T(grad(U)))))'] = 'Gauss linear'
     else:
         __default_values['divSchemes']['div((nuEff*dev2(T(grad(U)))))'] = 'Gauss linear'

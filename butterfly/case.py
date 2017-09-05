@@ -11,7 +11,7 @@ from .version import Version
 from .utilities import load_case_files, load_probe_values_from_folder, \
     load_probes_from_post_processing_file, load_probes_and_values_from_sample_file
 from .geometry import bf_geometry_from_stl_file, calculate_min_max_from_bf_geometries
-from .refinement_region import refinement_regions_from_stl_file
+from .refinementRegion import refinement_regions_from_stl_file
 from .meshingparameters import MeshingParameters
 from .fields import Field
 
@@ -19,9 +19,9 @@ from .fields import Field
 from .foamfile import FoamFile
 
 # constant folder objects
-from .turbulence_properties import TurbulenceProperties
+from .turbulenceProperties import TurbulenceProperties
 from .RASProperties import RASProperties
-from .transport_properties import TransportProperties
+from .transportProperties import TransportProperties
 from .g import G
 
 # 0 folder objects
@@ -38,9 +38,9 @@ from .conditions import ABLConditions, InitialConditions
 # # system folder objects
 from .blockMeshDict import BlockMeshDict
 from .controlDict import ControlDict
-from .snappy_hex_meshDict import SnappyHexMeshDict
-from .fv_schemes import FvSchemes
-from .fv_solution import FvSolution
+from .snappyHexMeshDict import SnappyHexMeshDict
+from .fvSchemes import FvSchemes
+from .fvSolution import FvSolution
 from .functions import Probes
 from .decomposeParDict import DecomposeParDict
 from .sampleDict import SampleDict
@@ -105,7 +105,7 @@ class Case(object):
         self.__originalName = None
 
         self.project_name = name
-        self.__version = float(Version.OFVer)
+        self.__version = float(Version.of_ver)
         self.decomposeParDict = None
 
         # optional input for changing working directory
@@ -262,7 +262,7 @@ class Case(object):
             convert_to_meters=blockMeshDict.convert_to_meters)
 
         # constant folder
-        if float(Version.OFVer) < 3:
+        if float(Version.of_ver) < 3:
             turbulence_properties = RASProperties()
         else:
             turbulence_properties = TurbulenceProperties()

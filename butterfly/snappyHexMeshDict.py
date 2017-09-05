@@ -6,7 +6,7 @@ import re
 from .foamfile import FoamFile, foam_file_from_file
 from .utilities import get_snappy_hex_mesh_geometry_feild, \
     get_snappy_hex_mesh_refinement_surfaces, get_snappy_hex_mesh_surface_layers
-from .refinement_region import refinement_mode_from_dict
+from .refinementRegion import refinement_mode_from_dict
 
 
 # TODO(mostapha): Move default values into a separate file.

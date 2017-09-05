@@ -7,11 +7,11 @@ from datetime import datetime
 class Version(object):
     """Version class."""
 
-    BFVer = "0.0.4"
-    OFVer = "4.0"
-    OFFullVer = "v1706+"
-    isUsingDockerMachine = True  # useful to run OpenFOAM container
-    lastUpdated = datetime(year=2017, month=8, day=24, hour=13, minute=40)
+    bf_ver = "0.0.4"
+    of_ver = "4.0"
+    of_full_ver = "v1706+"
+    is_using_docker_machine = True  # useful to run OpenFOAM container
+    last_updated = datetime(year=2017, month=8, day=24, hour=13, minute=40)
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -23,7 +23,7 @@ class Version(object):
 
     def __repr__(self):
         """Version."""
-        return 'Version::Butterfly{}::OpenFOAM{}'.format(self.BFVer, self.OFVer)
+        return 'Version::Butterfly{}::OpenFOAM{}'.format(self.bf_ver, self.OFVer)
 
 
 class Header(object):
@@ -34,7 +34,7 @@ class Header(object):
     """
 
     @staticmethod
-    def header(of_version=Version.OFFullVer, butterfly_version=Version.BFVer):
+    def header(of_version=Version.of_full_ver, butterfly_version=Version.bf_ver):
         """Retuen OpenFOAM file header."""
         header = \
             "/*--------------------------------*- C++ -*----------------------------------*\\\n" + \
