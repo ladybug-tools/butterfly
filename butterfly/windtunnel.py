@@ -265,7 +265,7 @@ class TunnelParameters(object):
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15):
+    def __init__(self, windward=3, top=5, side=5, leeward=15):
         """Init wind tunnel parameters."""
         self.windward = self.__checkInput(windward)
         self.top = self.__checkInput(top)

@@ -1,5 +1,6 @@
 # coding=utf-8
 """Butterfly refinement region."""
+import sys
 from copy import deepcopy
 from .geometry import _BFMesh
 from .geometry import bfGeometryFromStlFile
@@ -113,7 +114,7 @@ class Inside(_RefinementMode):
 
     def __init__(self, level):
         """Create an Inside RefinementMode."""
-        _RefinementMode.__init__(self, ((1e15, int(level)),))
+        _RefinementMode.__init__(self, ((sys.maxint - 100, int(level)),))
 
     def __repr__(self):
         """representation."""
@@ -137,7 +138,7 @@ def refinementModeFromDict(d):
     """Create a Refinement mode from a python dictionary.
 
     The dictionary should have two keys for model and levels.
-    {'levels': '((1000000000000000.0 4) )', 'mode': 'inside'}
+    {'levels': '((1000000000000000 4) )', 'mode': 'inside'}
     """
     mode = d['mode']
 
