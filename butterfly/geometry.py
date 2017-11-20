@@ -48,7 +48,7 @@ class _BFMesh(object):
         self.__name = n
 
     @property
-    def is_bf_mesh(self):
+    def isBFMesh(self):
         """Return True for Butterfly meshes."""
         return True
 
@@ -111,11 +111,11 @@ class _BFMesh(object):
         self.__min = min_pt
         self.__max = max_pt
 
-    def to_stl(self, convert_to_meters=1):
+    def to_stl(self, convertToMeters=1):
         """Get STL definition for this geometry as a string.
 
         Args:
-            convert_to_meters: A value to scale the geometry to meters. For isinstance
+            convertToMeters: A value to scale the geometry to meters. For isinstance
                 if the mesh is in mm the value should be 0.001 (default: 1).
         """
         _hea = "solid {}".format(self.name)
@@ -132,30 +132,30 @@ class _BFMesh(object):
             self.__normals[count][0],
             self.__normals[count][1],
             self.__normals[count][2],
-            self.__vertices[faceInd[0]][0] * convert_to_meters,
-            self.__vertices[faceInd[0]][1] * convert_to_meters,
-            self.__vertices[faceInd[0]][2] * convert_to_meters,
-            self.__vertices[faceInd[1]][0] * convert_to_meters,
-            self.__vertices[faceInd[1]][1] * convert_to_meters,
-            self.__vertices[faceInd[1]][2] * convert_to_meters,
-            self.__vertices[faceInd[2]][0] * convert_to_meters,
-            self.__vertices[faceInd[2]][1] * convert_to_meters,
-            self.__vertices[faceInd[2]][2] * convert_to_meters
+            self.__vertices[faceInd[0]][0] * convertToMeters,
+            self.__vertices[faceInd[0]][1] * convertToMeters,
+            self.__vertices[faceInd[0]][2] * convertToMeters,
+            self.__vertices[faceInd[1]][0] * convertToMeters,
+            self.__vertices[faceInd[1]][1] * convertToMeters,
+            self.__vertices[faceInd[1]][2] * convertToMeters,
+            self.__vertices[faceInd[2]][0] * convertToMeters,
+            self.__vertices[faceInd[2]][1] * convertToMeters,
+            self.__vertices[faceInd[2]][2] * convertToMeters
         ) for count, faceInd in enumerate(self.__face_indices))
 
         return "{}\n{}\n{}\n".format(
             _hea, "\n".join(_bodyCollector), _tale
         )
 
-    def write_to_stl(self, folder, convert_to_meters=1):
+    def write_to_stl(self, folder, convertToMeters=1):
         """Save BFFace to a stl file. File name will be self.name.
 
         Args:
-            convert_to_meters: A value to scale the geometry to meters. For isinstance
+            convertToMeters: A value to scale the geometry to meters. For isinstance
                 if the mesh is in mm the value should be 0.001 (default: 1).
         """
         with open(os.path.join(folder, "{}.stl".format(self.name)), "wb") as outf:
-            outf.write(self.to_stl(convert_to_meters))
+            outf.write(self.to_stl(convertToMeters))
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -188,20 +188,20 @@ class BFGeometry(_BFMesh):
                          face_indices=((0, 1, 2), (0, 2, 3)),
                          normals=((0, 0, 1), (0, 0, 1)))
 
-        print geo.toStlString()
+        print(geo.to_stl(convertToMeters=1))
     """
 
     def __init__(self, name, vertices, face_indices, normals=None,
-                 boundary_condition=None, refinement_levels=None,
-                 n_surface_layers=None):
+                 boundary_condition=None, refinementLevels=None,
+                 nSurfaceLayers=None):
         """Init Butterfly geometry."""
         _BFMesh.__init__(self, name, vertices, face_indices, normals)
         self.boundary_condition = boundary_condition
-        self.refinement_levels = refinement_levels
-        self.n_surface_layers = n_surface_layers
+        self.refinementLevels = refinementLevels
+        self.nSurfaceLayers = nSurfaceLayers
 
     @property
-    def is_bf_geometry(self):
+    def isBFGeometry(self):
         """Return True for Butterfly geometries."""
         return True
 
@@ -222,34 +222,34 @@ class BFGeometry(_BFMesh):
         self._check_boundary_and_layers()
 
     @property
-    def refinement_levels(self):
-        """refinement_levels for snappyHexMeshDict as (min, max)."""
-        return self.__refinement_levels
+    def refinementLevels(self):
+        """refinementLevels for snappyHexMeshDict as (min, max)."""
+        return self.__refinementLevels
 
-    @refinement_levels.setter
-    def refinement_levels(self, v):
+    @refinementLevels.setter
+    def refinementLevels(self, v):
         if not v:
-            self.__refinement_levels = None
+            self.__refinementLevels = None
         else:
-            self.__refinement_levels = tuple(v)
+            self.__refinementLevels = tuple(v)
 
     @property
-    def n_surface_layers(self):
+    def nSurfaceLayers(self):
         """Number of surface layers for snappyHexMeshDict addLayers."""
-        return self.__n_surface_layers
+        return self.__nSurfaceLayers
 
-    @n_surface_layers.setter
-    def n_surface_layers(self, v):
+    @nSurfaceLayers.setter
+    def nSurfaceLayers(self, v):
         if not v:
-            self.__n_surface_layers = None
+            self.__nSurfaceLayers = None
         else:
-            self.__n_surface_layers = int(v)
+            self.__nSurfaceLayers = int(v)
             self._check_boundary_and_layers()
 
     def _check_boundary_and_layers(self):
 
         try:
-            if not self.n_surface_layers:
+            if not self.nSurfaceLayers:
                 return
         except AttributeError:
             # not initiated yet
@@ -284,7 +284,7 @@ class BFBlockGeometry(BFGeometry):
         self.__border_vertices = border_vertices
 
     @property
-    def is_bf_block_geometry(self):
+    def isBFBlockGeometry(self):
         """Return True for Butterfly block geometries."""
         return True
 

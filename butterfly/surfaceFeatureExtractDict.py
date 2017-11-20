@@ -26,20 +26,21 @@ class SurfaceFeatureExtractDict(FoamFile):
         return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @classmethod
-    def from_stl_file(cls, file_name, extraction_method='extractFromSurface',
-                      included_angle=150, geometric_test_only=True, write_obj=False):
-        """Generate fv_solution for a particular recipe.
+    def from_stl_file(cls, file_name, extractionMethod='extractFromSurface',
+                      includedAngle=150, geometricTestOnly=True, writeObj=False):
+        """Generate fvSolution for a particular recipe.
 
         Args:
             file_name: stl file name (e.g. project.stl)
-            extraction_method: Indicate how to obtain raw features.
+            extractionMethod: Indicate how to obtain raw features.
                 extractFromFile or extractFromSurface
-            included_angle: An integer for the max angle between the faces to
+            includedAngle: An integer for the max angle between the faces to
                 be considered as two different faces and so the edge between
                 them will be considered as an edge. 0 > selects no edges and
                 180 > selects all edges (default: 150).
-            write_obj: A Boolean to write features to obj format for postprocessing.
-                (default: True)
+            geometricTestOnly: A Boolean (default: True).
+            writeObj: A Boolean to write features to obj format for postprocessing.
+                (default: False)
         """
         _cls = cls()
 
@@ -48,12 +49,12 @@ class SurfaceFeatureExtractDict(FoamFile):
 
         _values = {
             file_name: {
-                'extraction_method': extraction_method,
+                'extractionMethod': extractionMethod,
                 'extractFromSurfaceCoeffs': {
-                    'included_angle': str(included_angle),
-                    'geometric_test_only': _cls.convert_bool_value(geometric_test_only)
+                    'includedAngle': str(includedAngle),
+                    'geometricTestOnly': _cls.convert_bool_value(geometricTestOnly)
                 },
-                'write_obj': _cls.convert_bool_value(write_obj)
+                'writeObj': _cls.convert_bool_value(writeObj)
             }
         }
 

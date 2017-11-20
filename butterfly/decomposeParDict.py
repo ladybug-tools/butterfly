@@ -31,42 +31,42 @@ class DecomposeParDict(FoamFile):
         return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @property
-    def number_of_subdomains(self):
+    def numberOfSubdomains(self):
         """Get number of total subdomains."""
         return self.values['numberOfSubdomains']
 
     @classmethod
-    def scotch(cls, number_of_subdomains=2):
+    def scotch(cls, numberOfSubdomains=2):
         """Scotch method.
 
         Args:
-            number_of_subdomains: Total number of subdomains (default: 2).
+            numberOfSubdomains: Total number of subdomains (default: 2).
         """
         values = {'method': 'scotch',
-                  'numberOfSubdomains': str(number_of_subdomains)}
+                  'numberOfSubdomains': str(numberOfSubdomains)}
         return cls(values=values)
 
     @classmethod
-    def simple(cls, number_of_subdomains_xyz=None, delta=0.001):
+    def simple(cls, numberOfSubdomains_xyz=None, delta=0.001):
         """Simple method.
 
         Args:
-            number_of_subdomains_xyz: Number of subdomains in x, y, z as a tuple
+            numberOfSubdomains_xyz: Number of subdomains in x, y, z as a tuple
                 (default: (2, 1, 1))
             delta: Cell skew factor (default: 0.001).
         """
         try:
-            number_of_subdomains_xyz = tuple(number_of_subdomains_xyz)
+            numberOfSubdomains_xyz = tuple(numberOfSubdomains_xyz)
         except Exception:
-            number_of_subdomains_xyz = (2, 1, 1)
+            numberOfSubdomains_xyz = (2, 1, 1)
 
-        number_of_subdomains = number_of_subdomains_xyz[0] * \
-            number_of_subdomains_xyz[1] * number_of_subdomains_xyz[2]
+        numberOfSubdomains = numberOfSubdomains_xyz[0] * \
+            numberOfSubdomains_xyz[1] * numberOfSubdomains_xyz[2]
 
         values = {'method': 'simple',
-                  'numberOfSubdomains': str(number_of_subdomains),
+                  'numberOfSubdomains': str(numberOfSubdomains),
                   'simpleCoeffs':
-                  {'n': str(number_of_subdomains_xyz).replace(',', ' '),
+                  {'n': str(numberOfSubdomains_xyz).replace(',', ' '),
                    'delta': str(delta)}}
 
         return cls(values=values)

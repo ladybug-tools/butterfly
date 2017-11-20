@@ -1,5 +1,6 @@
 # coding=utf-8
 """Butterfly refinement region."""
+import sys
 from copy import deepcopy
 from .geometry import _BFMesh
 from .geometry import bf_geometry_from_stl_file
@@ -22,7 +23,7 @@ class RefinementRegion(_BFMesh):
         self.refinement_mode = refinement_mode
 
     @property
-    def is_refinement_region(self):
+    def isRefinementRegion(self):
         """Return True for Butterfly refinement region."""
         return True
 
@@ -52,7 +53,7 @@ class _RefinementMode(object):
         self.levels = levels
 
     @property
-    def is_refinement_mode(self):
+    def isRefinementMode(self):
         """Return True for Butterfly refinement mode."""
         return True
 
@@ -71,7 +72,7 @@ class _RefinementMode(object):
         self.__levels = tuple(tuple(int(i) for i in l)
                               for l in sorted(lev, key=lambda x: x[0]))
 
-    def to_of_dict(self):
+    def to_openfoam_dict(self):
         """Return data as a dictionary."""
         return {'mode': self.__class__.__name__.lower(),
                 'levels': str(self.levels).replace(',', ' ')}
@@ -113,7 +114,7 @@ class Inside(_RefinementMode):
 
     def __init__(self, level):
         """Create an Inside RefinementMode."""
-        _RefinementMode.__init__(self, ((1e15, int(level)),))
+        _RefinementMode.__init__(self, ((sys.maxint - 100, int(level)),))
 
     def __repr__(self):
         """representation."""
@@ -137,7 +138,7 @@ def refinement_mode_from_dict(d):
     """Create a Refinement mode from a python dictionary.
 
     The dictionary should have two keys for model and levels.
-    {'levels': '((1000000000000000.0 4) )', 'mode': 'inside'}
+    {'levels': '((1000000000000000 4) )', 'mode': 'inside'}
     """
     mode = d['mode']
 
@@ -154,7 +155,7 @@ def refinement_mode_from_dict(d):
         return Distance(levels)
 
 
-def refinement_regions_from_stl_file(filepath, refinement_mode):
+def refinementRegions_from_stl_file(filepath, refinement_mode):
     """Create a RefinementRegion form an stl file."""
     geos = bf_geometry_from_stl_file(filepath)
     return tuple(RefinementRegion(geo.name, geo.vertices, geo.face_indices,

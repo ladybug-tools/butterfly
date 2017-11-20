@@ -20,10 +20,10 @@ class Make2dParameters(object):
         """Init make2d parameters."""
         self.origin = tuple(origin)
         self.normal = tuple(normal)
-        self.width = width or 0.1
+        self.width = width or 0.5
 
     @property
-    def is_make2d_parameters(self):
+    def isMake2dParameters(self):
         """Return True."""
         return True
 

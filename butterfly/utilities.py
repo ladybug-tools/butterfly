@@ -9,7 +9,7 @@ from subprocess import Popen, PIPE
 import gzip
 
 
-def listfiles(folder, fullpath=False):
+def list_files(folder, fullpath=False):
     """list files in a folder."""
     if not os.path.isdir(folder):
         yield None
@@ -27,9 +27,9 @@ def listfiles(folder, fullpath=False):
 def load_case_files(folder, fullpath=False):
     """load openfoam files from a folder."""
     files = []
-    for p in ('0', 'constant', 'system', 'constant\\triSurface'):
+    for p in ('0', 'constant', 'system', 'constant/triSurface'):
         fp = os.path.join(folder, p)
-        files.append(tuple(listfiles(fp, fullpath)))
+        files.append(tuple(list_files(fp, fullpath)))
 
     Files = namedtuple('Files', 'zero constant system stl')
     return Files(*files)
@@ -51,7 +51,7 @@ def mkdir(directory, overwrite=True):
     return directory
 
 
-def wfile(full_path, content):
+def write_to_file(full_path, content):
     """write string content to a file."""
     try:
         with open(full_path, 'wb') as outf:
@@ -63,7 +63,7 @@ def wfile(full_path, content):
     return full_path
 
 
-def runbatchfile(filepath, wait=True):
+def run_batch_file(filepath, wait=True):
     """run an executable .bat file.
 
     args:
@@ -116,20 +116,20 @@ def tail(file_path, lines=20):
         return '\n'.join(all_read_text.splitlines()[-total_lines_wanted:])
 
 
-def read_last_line(filepath, BLOCK_SIZE=1024):
+def read_last_line(filepath, block_size=1024):
     """Read the last line of a file.
 
     Modified from: http://www.manugarg.com/2007/04/tailing-in-python.html
     Args:
         filepath: path to file
-        BLOCK_SIZE:  data is read in chunks of this size (optional, default=1024)
+        block_size:  data is read in chunks of this size (optional, default=1024)
 
     Raises:
         IOError if file cannot be processed.
     """
     # rU is to open it with Universal newline support
     f = open(filepath, 'rU')
-    offset = BLOCK_SIZE
+    offset = block_size
     try:
         f.seek(0, 2)
         file_size = f.tell()
@@ -152,7 +152,7 @@ def read_last_line(filepath, BLOCK_SIZE=1024):
             if offset == file_size:   # Reached the beginning
                 return read_str
 
-            offset += BLOCK_SIZE
+            offset += block_size
     except Exception as e:
         raise Exception(str(e))
     finally:
@@ -176,9 +176,9 @@ def update_dict(d, u):
     return d
 
 
-def get_snappy_hex_mesh_geometry_feild(project_name, bf_geometries,
-                                       meshing_type='triSurfaceMesh',
-                                       stl_file=None):
+def get_snappyHexMesh_geometry_feild(project_name, bf_geometries,
+                                     meshing_type='triSurfaceMesh',
+                                     stl_file=None):
     """Get data for Geometry as a dictionary.
 
     Args:
@@ -202,7 +202,7 @@ def get_snappy_hex_mesh_geometry_feild(project_name, bf_geometries,
     return _geo
 
 
-def get_snappy_hex_mesh_refinement_surfaces(
+def get_snappyHexMesh_refinement_surfaces(
         project_name, bf_geometries, global_levels=None):
     """Get data for MeshRefinementSurfaces as a dictionary.
 
@@ -219,17 +219,17 @@ def get_snappy_hex_mesh_refinement_surfaces(
     _ref[project_name]['level'] = '({} {})'.format(*(int(v) for v in global_levels))
     _ref[project_name]['regions'] = {}
     for bfgeo in bf_geometries:
-        if not bfgeo.refinement_levels:
+        if not bfgeo.refinementLevels:
             continue
         if bfgeo.name not in _ref[project_name]['regions']:
             _ref[project_name]['regions'][bfgeo.name] = \
-                {'level': '({} {})'.format(int(bfgeo.refinement_levels[0]),
-                                           int(bfgeo.refinement_levels[1]))}
+                {'level': '({} {})'.format(int(bfgeo.refinementLevels[0]),
+                                           int(bfgeo.refinementLevels[1]))}
 
     return _ref
 
 
-def get_snappy_hex_mesh_surface_layers(bf_geometries):
+def get_snappyHexMesh_surface_layers(bf_geometries):
     """Get data for n_surface_layers as a dictionary.
 
     Args:
@@ -239,10 +239,10 @@ def get_snappy_hex_mesh_surface_layers(bf_geometries):
     """
     _ref = OrderedDict()
     for bfgeo in bf_geometries:
-        if not bfgeo.n_surface_layers:
+        if not bfgeo.nSurfaceLayers:
             continue
         if bfgeo.name not in _ref:
-            _ref[bfgeo.name] = {'nSurfaceLayers': str(bfgeo.n_surface_layers)}
+            _ref[bfgeo.name] = {'nSurfaceLayers': str(bfgeo.nSurfaceLayers)}
 
     return _ref
 
@@ -284,7 +284,7 @@ def load_skipped_probes(log_file):
     return _pts
 
 
-def load_probes_from_post_processing_file(probes_folder, field):
+def load_probes_from_postProcessing_file(probes_folder, field):
     """Return a generator of probes as tuples.
 
     Args:

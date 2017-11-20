@@ -13,7 +13,7 @@ class BoundaryCondition(object):
     """Boundary condition base class.
     """
 
-    # TODO(Mostapha): Write a descriptor for field and replace all properties
+    # TODO(Mostapha): Write a descriptor for each field and replace all properties
     def __init__(self, bc_type='patch', T=None, U=None, p=None, k=None,
                  epsilon=None, nut=None, alphat=None, p_rgh=None):
         """Instantiate boundary condition.
@@ -110,7 +110,7 @@ class BoundaryCondition(object):
     def p_rgh(self, prgh):
         self._p_rgh = self.try_get_field(prgh or ZeroGradient())
 
-    def is_boundary_condition(self):
+    def isBoundaryCondition(self):
         """Return True for boundary conditions."""
         return True
 
@@ -211,7 +211,7 @@ class IndoorWallBoundaryCondition(BoundaryCondition):
         nut = nut or NutkWallFunction(0.01)
         T = T or ZeroGradient()
         alphat = alphat or AlphatJayatillekeWallFunction(
-            value='0', is_uniform=True, prt='0.85')
+            value='0', is_uniform=True, Prt='0.85')
 
         p_rgh = p_rgh or FixedFluxPressure(value='0', is_uniform=True, rho='rhok')
 
@@ -371,7 +371,7 @@ class WindTunnelInletBoundaryCondition(BoundaryCondition):
     def __repr__(self):
         """Bounday condition representatoin."""
         return "{}: {}\nvelocity {}".format(
-            self.__class__.__name__, self.type, self.U.uref)
+            self.__class__.__name__, self.type, self.U.Uref)
 
 
 class WindTunnelOutletBoundaryCondition(BoundaryCondition):

@@ -68,18 +68,18 @@ class Probes(Function):
     @property
     def probes_count(self):
         """Get number of probes."""
-        if not self.probe_locations:
+        if not self.probeLocations:
             return 0
         else:
-            return len(self.probe_locations[1:-1].split(')')) - 1
+            return len(self.probeLocations[1:-1].split(')')) - 1
 
     @property
-    def probe_locations(self):
+    def probeLocations(self):
         """Get and set probe locations from list of tuples."""
         return self.values['functions']['probes']['probeLocations']
 
-    @probe_locations.setter
-    def probe_locations(self, pts):
+    @probeLocations.setter
+    def probeLocations(self, pts):
         ptlist = (str(tuple(pt)).replace(',', ' ') for pt in pts)
         self.values['functions']['probes']['probeLocations'] = \
             '({})'.format(' '.join(ptlist))
@@ -113,12 +113,12 @@ class Probes(Function):
             .replace("\\r", '').replace("\\n", ' ')
 
     @property
-    def write_interval(self):
+    def writeInterval(self):
         """Set the number of intervals for writing the results (default: 100)."""
         return self.values['functions']['probes']['writeInterval']
 
-    @write_interval.setter
-    def write_interval(self, value):
+    @writeInterval.setter
+    def writeInterval(self, value):
         if not value:
             return
         self.values['functions']['probes']['writeInterval'] = str(int(value))
@@ -131,4 +131,4 @@ class Probes(Function):
 
     def __repr__(self):
         """Class representation."""
-        return self.to_of()
+        return self.to_openfoam()

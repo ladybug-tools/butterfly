@@ -54,7 +54,7 @@ class FvSchemes(FoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        FoamFile.__init__(self, name='fv_schemes', cls='dictionary',
+        FoamFile.__init__(self, name='fvSchemes', cls='dictionary',
                           location='system', default_values=self.__default_values,
                           values=values)
 
@@ -69,7 +69,7 @@ class FvSchemes(FoamFile):
 
     @classmethod
     def from_recipe(cls, recipe=0):
-        """Create an fv_schemes from recipe id.
+        """Create an fvSchemes from recipe id.
 
         0 > SteadyIncompressible
         1 > HeatTransfer
@@ -85,7 +85,7 @@ class FvSchemes(FoamFile):
 
     @classmethod
     def from_mesh_orthogonality(cls, average_orthogonality=45):
-        """Init fv_schemes based on mesh orthogonality.
+        """Init fvSchemes based on mesh orthogonality.
 
         Check pp. 45-50 of this document:
         http://www.dicat.unige.it/guerrero/oftraining/9tipsandtricks.pdf

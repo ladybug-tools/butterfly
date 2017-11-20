@@ -17,7 +17,7 @@ class FoamFile(object):
 
     Attributes:
         name: Filename (e.g. controlDict)
-        OFClass: OpenFOAM class constructed from the data file
+        cls: OpenFOAM class constructed from the data file
             concerned. Typically  dictionary  or a field, e.g. volVectorField
         location: Folder name (0, constant or system)
         file_format: File format (ascii / binary) (default: ascii)
@@ -95,7 +95,7 @@ class FoamFile(object):
         return cls(_name, _cls, _location, _file_format, values=_values)
 
     @property
-    def is_foam_file(self):
+    def isFoamFile(self):
         """Return True for FoamFile."""
         return True
 
@@ -290,7 +290,7 @@ class FoamFile(object):
         else:
             return 'off'
 
-    def to_of(self):
+    def to_openfoam(self):
         """Return OpenFOAM string."""
         return "\n".join((self.header(), self.body()))
 
@@ -308,7 +308,7 @@ class FoamFile(object):
             return
 
         with open(fp, "wb") as outf:
-            outf.write(self.to_of())
+            outf.write(self.to_openfoam())
         return fp
 
     def __eq__(self, other):
@@ -325,7 +325,7 @@ class FoamFile(object):
 
     def __repr__(self):
         """Class representation."""
-        return self.to_of()
+        return self.to_openfoam()
 
 
 class FoamFileZeroFolder(FoamFile):
@@ -369,7 +369,7 @@ class FoamFileZeroFolder(FoamFile):
 class Condition(FoamFile):
     """OpenFOAM conditions object.
 
-    Use this class to create conditions such as initial_conditions and ABLConditions.
+    Use this class to create conditions such as initialConditions and ABLConditions.
     Conditions don't have OpenFOAM header. It's only values.
     """
 

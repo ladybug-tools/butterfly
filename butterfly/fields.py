@@ -105,10 +105,10 @@ class InletOutlet(Field):
     -inletoutlet-outletinlet-boundary-conditions.html
     """
 
-    def __init__(self, inlet_value, value):
+    def __init__(self, inletValue, value):
         """Init class."""
         Field.__init__(self)
-        self.inlet_value = inlet_value
+        self.inletValue = inletValue
         self.value = value
 
     @property
@@ -116,7 +116,7 @@ class InletOutlet(Field):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
-        _d['inlet_value'] = self.inlet_value
+        _d['inletValue'] = self.inletValue
         _d['value'] = self.value
         return _d
 
@@ -128,10 +128,10 @@ class OutletInlet(Field):
     -inletoutlet-outletinlet-boundary-conditions.html
     """
 
-    def __init__(self, outlet_value, value):
+    def __init__(self, outletValue, value):
         """Init class."""
         Field.__init__(self)
-        self.outlet_value = outlet_value
+        self.outletValue = outletValue
         self.value = value
 
     @property
@@ -139,7 +139,7 @@ class OutletInlet(Field):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
-        _d['outlet_value'] = self.outlet_value
+        _d['outletValue'] = self.outletValue
         _d['value'] = self.value
         return _d
 
@@ -149,41 +149,41 @@ class AtmBoundary(Field):
 
     Attributes:
         uref: Flow velocity as a float number.
-        zref: Reference z value for flow velocity as a float number.
+        Zref: Reference z value for flow velocity as a float number.
         z0: Roughness (e.g. uniform 1).
-        flow_dir: Velocity vector as a tuple.
+        flowDir: Velocity vector as a tuple.
         zDir: Z direction (default:(0 0 1)).
-        z_ground: Min z value of the bounding box (default: 0).
+        zGround: Min z value of the bounding box (default: 0).
         from_values: True.
     """
 
-    def __init__(self, uref, zref, z0, flow_dir, zDir='(0 0 1)', z_ground=0,
+    def __init__(self, Uref, Zref, z0, flowDir, zDir='(0 0 1)', zGround=0,
                  from_values=True):
         """Create from values.
 
         Args:
-            uref: Flow velocity as a float number.
-            zref: Reference z value for flow velocity as a float number.
+            Uref: Flow velocity as a float number.
+            Zref: Reference z value for flow velocity as a float number.
             z0: Roughness (e.g. uniform 1).
-            flow_dir: Velocity vector as a tuple.
+            flowDir: Velocity vector as a tuple.
             zDir: Z direction (default:(0 0 1)).
-            z_ground: Min z value of the bounding box (default: 0).
+            zGround: Min z value of the bounding box (default: 0).
         """
         self.from_values = from_values
         Field.__init__(self)
-        self.uref = uref
-        self.zref = zref
+        self.Uref = Uref
+        self.Zref = Zref
         self.z0 = z0
-        self.flow_dir = flow_dir
+        self.flowDir = flowDir
         self.zDir = zDir
-        self.z_ground = z_ground
+        self.zGround = zGround
 
     @classmethod
     def from_ABLConditions(cls, ABLConditions, value=None):
         """Init class from a condition file."""
-        _cls = cls(ABLConditions.values['Uref'], ABLConditions.values['zref'],
-                   ABLConditions.values['z0'], ABLConditions.values['flow_dir'],
-                   ABLConditions.values['zDir'], ABLConditions.values['z_ground'],
+        _cls = cls(ABLConditions.values['Uref'], ABLConditions.values['Zref'],
+                   ABLConditions.values['z0'], ABLConditions.values['flowDir'],
+                   ABLConditions.values['zDir'], ABLConditions.values['zGround'],
                    from_values=False)
         _cls.value = value
         _cls.ABLConditions = ABLConditions
@@ -200,12 +200,12 @@ class AtmBoundary(Field):
                 _d['value'] = str(self.value)
 
         else:
-            _d['Uref'] = self.uref
-            _d['zref'] = self.zref
+            _d['Uref'] = self.Uref
+            _d['Zref'] = self.Zref
             _d['z0'] = self.z0
-            _d['flow_dir'] = self.flow_dir
+            _d['flowDir'] = self.flowDir
             _d['zDir'] = self.zDir
-            _d['z_ground'] = self.z_ground
+            _d['zGround'] = self.zGround
 
         return _d
 
@@ -265,10 +265,10 @@ class PressureInletOutletVelocity(FixedValue):
 class AlphatJayatillekeWallFunction(FixedValue):
     """alphatJayatillekeWallFunction."""
 
-    def __init__(self, value, is_uniform=True, prt=None):
+    def __init__(self, value, is_uniform=True, Prt=None):
         """Init class."""
         FixedValue.__init__(self, value, is_uniform)
-        self.prt = str(prt) if prt else '0.85'
+        self.Prt = str(Prt) if Prt else '0.85'
 
     @property
     def value_dict(self):
@@ -276,7 +276,7 @@ class AlphatJayatillekeWallFunction(FixedValue):
         _d = OrderedDict()
         _d['type'] = self.type
         _d['value'] = self.value
-        _d['Prt'] = self.prt
+        _d['Prt'] = self.Prt
         return _d
 
 
@@ -301,7 +301,7 @@ class FixedFluxPressure(FixedValue):
 class FlowRateInletVelocity(FixedValue):
     """FlowRateInletVelocity."""
 
-    def __init__(self, volumetric_flow_rate, value, is_uniform=True):
+    def __init__(self, volumetricFlowRate, value, is_uniform=True):
         """Init class."""
         FixedValue.__init__(self, value, is_uniform)
         self.volumetric_flow_rate = volumetric_flow_rate
@@ -311,7 +311,7 @@ class FlowRateInletVelocity(FixedValue):
         """Get fields as a dictionary."""
         _d = OrderedDict()
         _d['type'] = self.type
-        _d['volumetric_flow_rate'] = self.volumetric_flow_rate
+        _d['volumetricFlowRate'] = self.volumetricFlowRate
         _d['value'] = self.value
         return _d
 
@@ -344,7 +344,7 @@ class EpsilonWallFunction(WallFunction):
         WallFunction.__init__(self, value, is_unifrom)
         self.cmu = cmu
         self.kappa = kappa
-        self.e = E
+        self.E = E
 
     @property
     def value_dict(self):
@@ -356,8 +356,8 @@ class EpsilonWallFunction(WallFunction):
             _d['cmu'] = str(self.cmu)
         if self.kappa:
             _d['kappa'] = str(self.kappa)
-        if self.e:
-            _d['E'] = str(self.e)
+        if self.E:
+            _d['E'] = str(self.E)
 
         return _d
 

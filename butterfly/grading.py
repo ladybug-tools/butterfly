@@ -4,7 +4,7 @@ from copy import deepcopy
 
 
 class SimpleGrading(object):
-    """Block simple_grading in blockMeshDict.
+    """Block simpleGrading in blockMeshDict.
 
     Attributes:
         x_grading: Grading for X. The input can be a Grading or a MultiGrading
@@ -23,9 +23,9 @@ class SimpleGrading(object):
             Grading(0.2, 0.3, 0.25))
         )
 
-        print simple_grading(x_grading, y_grading, z_grading)
+        print(simpleGrading(x_grading, y_grading, z_grading))
 
-        >> simple_grading (
+        >> simpleGrading (
             1.0
             1.0
             (
@@ -37,13 +37,13 @@ class SimpleGrading(object):
     """
 
     def __init__(self, x_grading=1, y_grading=1, z_grading=1):
-        """Init simple_grading class."""
+        """Init simpleGrading class."""
         self.x_grading = self._try_read_grading(x_grading)
         self.y_grading = self._try_read_grading(y_grading)
         self.z_grading = self._try_read_grading(z_grading)
 
     @property
-    def is_simple_grading(self):
+    def isSimpleGrading(self):
         """Return True."""
         return True
 
@@ -53,7 +53,7 @@ class SimpleGrading(object):
             assert g.is_valid, \
                 'You cannot use grading {} as a single grading.' \
                 'Use this grading to create a MultiGrading and then use' \
-                'MultiGrading to create simple_grading.'.format(g)
+                'MultiGrading to create simpleGrading.'.format(g)
             return g
         elif str(g).isdigit():
             # create grading from a single value as expansion ratio
@@ -65,7 +65,7 @@ class SimpleGrading(object):
                 raise ValueError('Invalid input ({}). Grading should be a number '
                                  'or a tuple of numeric values.\n{}'.format(g, e))
 
-    def to_of(self):
+    def to_openfoam(self):
         """Get blockMeshDict string.
 
         Args:
@@ -73,7 +73,7 @@ class SimpleGrading(object):
             tolerance: Distance tolerance between input vertices and blockMesh
                 vertices.
         """
-        _body = "\nsimple_grading (\n\t{}\n\t{}\n\t{}\n\t)"
+        _body = "\nsimpleGrading (\n\t{}\n\t{}\n\t{}\n\t)"
 
         return _body.format(self.x_grading, self.y_grading, self.z_grading)
 
@@ -87,7 +87,7 @@ class SimpleGrading(object):
 
     def __repr__(self):
         """OpenFOAM blockMeshDict boundary."""
-        return self.to_of()
+        return self.to_openfoam()
 
 
 class MultiGrading(object):
@@ -120,7 +120,12 @@ class MultiGrading(object):
         return self.__gradings
 
     @property
-    def is_grading(self):
+    def isGrading(self):
+        """Return True."""
+        return True
+
+    @property
+    def isMultiGrading(self):
         """Return True."""
         return True
 
@@ -176,7 +181,7 @@ class Grading(object):
             return int(v)
 
     @property
-    def is_grading(self):
+    def isGrading(self):
         """Return True."""
         return True
 

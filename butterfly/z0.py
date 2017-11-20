@@ -17,6 +17,9 @@ class Z0(object):
         7: '2.0', 'chaotic': '2.0'
     }
 
+    def __init__(self):
+        pass
+
     @property
     def sea(self):
         """Roughness value for open sea or lake."""

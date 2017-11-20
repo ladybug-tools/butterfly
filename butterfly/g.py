@@ -29,3 +29,19 @@ class G(FoamFile):
             filepath: Full file path to dictionary.
         """
         return cls(values=foam_file_from_file(filepath, cls.__name__))
+
+    @property
+    def dimensions(self):
+        return self.values['dimensions']
+
+    @property
+    def value(self):
+        """Gravity vector."""
+        return eval(self.values['value'].replace(' ', ','))
+
+    @value.setter
+    def value(self, vec):
+        """Set gravity vector."""
+        assert len(vec) == 3, \
+            ValueError('Gravity vector must be a tuple with 3 values.')
+        self.values['value'] = '({})'.format(' '.join((str(v) for v in vec)))

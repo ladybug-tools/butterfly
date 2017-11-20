@@ -13,16 +13,16 @@ class MeshingParameters(object):
     Attributes:
         cell_size_xyz: Cell size in (x, y, z) as a tuple (default: length / 5).
             This value updates number of divisions in blockMeshDict.
-        grading: A simple_grading (default: simple_grading(1, 1, 1)). This value
+        grading: A simpleGrading (default: simpleGrading(1, 1, 1)). This value
             updates grading in blockMeshDict.
-        location_in_mesh: A tuple for the location of the mesh to be kept. This
-            value updates location_in_mesh in snappyHexMeshDict.
-        glob_refine_level: A tuple of (min, max) values for global refinment. This
+        locationInMesh: A tuple for the location of the mesh to be kept. This
+            value updates locationInMesh in snappyHexMeshDict.
+        globRefineLevel: A tuple of (min, max) values for global refinment. This
             value updates globalRefinementLevel in snappyHexMeshDict.
     """
 
-    def __init__(self, cell_size_xyz=None, grading=None, location_in_mesh=None,
-                 glob_refine_level=None):
+    def __init__(self, cell_size_xyz=None, grading=None, locationInMesh=None,
+                 globRefineLevel=None):
         """Init meshing parameters."""
         # blockMeshDict
         try:
@@ -34,27 +34,27 @@ class MeshingParameters(object):
         self.grading = grading  # blockMeshDict
         # snappyHexMeshDict
         try:
-            self.location_in_mesh = None if not location_in_mesh else tuple(
-                location_in_mesh)
+            self.locationInMesh = None if not locationInMesh else tuple(
+                locationInMesh)
         except TypeError:
             # Point in Dynamo is not iterable
-            self.location_in_mesh = (
-                location_in_mesh.X,
-                location_in_mesh.Y,
-                location_in_mesh.Z)
+            self.locationInMesh = (
+                locationInMesh.X,
+                locationInMesh.Y,
+                locationInMesh.Z)
 
         # snappyHexMeshDict
-        self.glob_refine_level = None if not glob_refine_level else tuple(
-            glob_refine_level)
+        self.globRefineLevel = None if not globRefineLevel else tuple(
+            globRefineLevel)
 
     @property
-    def is_meshing_parameters(self):
+    def isMeshingParameters(self):
         """Return True."""
         return True
 
     @property
     def grading(self):
-        """A simple_grading (default: simple_grading(1, 1, 1))."""
+        """A simpleGrading (default: simpleGrading(1, 1, 1))."""
         return self.__grading
 
     @grading.setter
@@ -62,7 +62,7 @@ class MeshingParameters(object):
         self.__grading = g if g else SimpleGrading()
 
         assert hasattr(self.grading, 'isSimpleGrading'), \
-            'grading input ({}) is not a valid simple_grading.'.format(g)
+            'grading input ({}) is not a valid simpleGrading.'.format(g)
 
     def duplicate(self):
         """Return a copy of this object."""

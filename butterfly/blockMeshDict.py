@@ -26,16 +26,19 @@ class BlockMeshDict(FoamFile):
                           values=values)
 
         self.__bf_block_geometries = None  # this will be overwritten in classmethods
-        self.__vertices = None
+        self.__vertices = []
         self.__isFromVertices = False
         # variables for 2d blockMeshDict
         self.__is2dInXDir = False
         self.__is2dInYDir = False
         self.__is2dInZDir = False
         self.__original3dVertices = None
+        self.__order = []
+        self.n_div_xyz = None
+        self.grading = None
 
     @classmethod
-    def from_file(cls, filepah, convert_to_meters=1):
+    def from_file(cls, filepah, convertToMeters=1):
         """Create a blockMeshDict from file.
 
         Args:
@@ -50,12 +53,12 @@ class BlockMeshDict(FoamFile):
             lines = CppDictParser.remove_comments(bf.read())
             bmd = ' '.join(lines.replace('\r\n', ' ').replace('\n', ' ').split())
 
-        _cls.values['convertToMeters'] = convert_to_meters
+        _cls.values['convertToMeters'] = convertToMeters
 
-        original_convert_to_meters = float(
+        original_convertToMeters = float(
             bmd.split('convertToMeters')[-1].split(';')[0])
 
-        conversion = convert_to_meters / original_convert_to_meters
+        conversion = convertToMeters / original_convertToMeters
 
         # find vertices
         vertices = list(eval(','.join(bmd.split('vertices')[-1]
@@ -68,19 +71,19 @@ class BlockMeshDict(FoamFile):
 
         # get blocks, order of vertices, n_div_xyz, grading
         blocks = bmd.split('blocks')[-1].split(';')[0].strip()
-        xyz, simple_grading = blocks.split('simple_grading')
+        xyz, simpleGrading = blocks.split('simpleGrading')
 
         _cls.__order, _cls.n_div_xyz = eval(','.join(xyz.split('hex')[-1].split()))
 
-        simple_grading = eval(','.join(simple_grading.strip()[:-1]
-                                       .replace('( ', '(')
-                                       .replace(' )', ')')
-                                       .split()))
+        simpleGrading = eval(','.join(simpleGrading.strip()[:-1]
+                                      .replace('( ', '(')
+                                      .replace(' )', ')')
+                                      .split()))
 
         _cls.grading = SimpleGrading(
             *(MultiGrading(tuple(Grading(*i) for i in g))
               if isinstance(g, tuple) else Grading(g)
-              for g in simple_grading))
+              for g in simpleGrading))
 
         # recreate boundary faces
         boundary_string = bmd.replace(' (', '(').replace(' )', ')') \
@@ -98,7 +101,7 @@ class BlockMeshDict(FoamFile):
         return _cls
 
     @classmethod
-    def from_origin_and_size(cls, origin, width, length, height, convert_to_meters=1,
+    def from_origin_and_size(cls, origin, width, length, height, convertToMeters=1,
                              n_div_xyz=None, grading=None, x_axis=None):
         """Create BlockMeshDict from bf_block_geometries.
 
@@ -107,9 +110,9 @@ class BlockMeshDict(FoamFile):
             width: Width in x direction.
             length: Length in y direction.
             height: Height in y direction.
-            convert_to_meters: Scaling factor for the vertex coordinates.
+            convertToMeters: Scaling factor for the vertex coordinates.
             n_div_xyz: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
-            grading: A simple_grading (default: simple_grading(1, 1, 1)).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
             x_axis: An optional tuple that indicates the x_axis direction
                 (default: (1, 0)).
         """
@@ -125,20 +128,20 @@ class BlockMeshDict(FoamFile):
                                             ))
             for i in range(2) for j in range(2) for k in range(2)]
 
-        return cls.from_vertices(vertices, convert_to_meters, n_div_xyz, grading,
+        return cls.from_vertices(vertices, convertToMeters, n_div_xyz, grading,
                                  x_axis)
 
     @classmethod
-    def from_min_max(cls, min_pt, max_pt, convert_to_meters=1, n_div_xyz=None,
+    def from_min_max(cls, min_pt, max_pt, convertToMeters=1, n_div_xyz=None,
                      grading=None, x_axis=None):
         """Create BlockMeshDict from minimum and maximum point.
 
         Args:
             min_pt: Minimum point of bounding box as (x, y, z).
             max_pt: Maximum point of bounding box as (x, y, z).
-            convert_to_meters: Scaling factor for the vertex coordinates.
+            convertToMeters: Scaling factor for the vertex coordinates.
             n_div_xyz: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
-            grading: A simple_grading (default: simple_grading(1, 1, 1)).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
             x_axis: An optional tuple that indicates the x_axis direction
                 (default: (1, 0)).
         """
@@ -161,24 +164,24 @@ class BlockMeshDict(FoamFile):
 
             for i in range(2) for j in range(2) for k in range(2)]
 
-        return cls.from_vertices(vertices, convert_to_meters, n_div_xyz, grading,
+        return cls.from_vertices(vertices, convertToMeters, n_div_xyz, grading,
                                  x_axis)
 
     @classmethod
-    def from_vertices(cls, vertices, convert_to_meters=1, n_div_xyz=None,
+    def from_vertices(cls, vertices, convertToMeters=1, n_div_xyz=None,
                       grading=None, x_axis=None):
         """Create BlockMeshDict from vertices.
 
         Args:
             vertices: 8 vertices to define the bounding box.
-            convert_to_meters: Scaling factor for the vertex coordinates.
+            convertToMeters: Scaling factor for the vertex coordinates.
             n_div_xyz: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
-            grading: A simple_grading (default: simple_grading(1, 1, 1)).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
             x_axis: An optional tuple that indicates the x_axis direction
                 (default: (1, 0)).
         """
         _cls = cls()
-        _cls.values['convertToMeters'] = convert_to_meters
+        _cls.values['convertToMeters'] = convertToMeters
         _cls.__rawvertices = vertices
 
         # sort vertices
@@ -199,20 +202,20 @@ class BlockMeshDict(FoamFile):
         return _cls
 
     @classmethod
-    def from_bf_block_geometries(cls, bf_block_geometries, convert_to_meters=1,
+    def from_bf_block_geometries(cls, bf_block_geometries, convertToMeters=1,
                                  n_div_xyz=None, grading=None, x_axis=None):
         """Create BlockMeshDict from bf_block_geometries.
 
         Args:
             bf_block_geometries: A collection of boundary surfaces for bounding box.
-            convert_to_meters: Scaling factor for the vertex coordinates.
+            convertToMeters: Scaling factor for the vertex coordinates.
             n_div_xyz: Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5).
-            grading: A simple_grading (default: simple_grading(1, 1, 1)).
+            grading: A simpleGrading (default: simpleGrading(1, 1, 1)).
             x_axis: An optional tuple that indicates the x_axis direction
                 (default: (1, 0)).
         """
         _cls = cls()
-        _cls.values['convertToMeters'] = convert_to_meters
+        _cls.values['convertToMeters'] = convertToMeters
         _cls.__bf_block_geometries = bf_block_geometries
 
         try:
@@ -242,8 +245,8 @@ class BlockMeshDict(FoamFile):
         return _cls
 
     @property
-    def convert_to_meters(self):
-        """Get convert_to_meters."""
+    def convertToMeters(self):
+        """Get convertToMeters."""
         return self.values['convertToMeters']
 
     @property
@@ -363,7 +366,7 @@ class BlockMeshDict(FoamFile):
 
     @property
     def grading(self):
-        """A simple_grading (default: simple_grading(1, 1, 1))."""
+        """A simpleGrading (default: simpleGrading(1, 1, 1))."""
         return self.__grading
 
     @grading.setter
@@ -371,7 +374,7 @@ class BlockMeshDict(FoamFile):
         self.__grading = g if g else SimpleGrading()
 
         assert hasattr(self.grading, 'isSimpleGrading'), \
-            'grading input ({}) is not a valid simple_grading.'.format(g)
+            'grading input ({}) is not a valid simpleGrading.'.format(g)
 
     def make3d(self):
         """Reload the 3d blockMeshDict if it has been converted to 2d."""
@@ -677,7 +680,7 @@ class BlockMeshDict(FoamFile):
             except AttributeError as e:
                 raise TypeError('Wrong input geometry!\n{}'.format(e))
 
-    def __boundary_to_of(self):
+    def __boundary_to_openfoam(self):
         _body = "   %s\n" \
                 "   {\n" \
                 "       type %s;\n" \
@@ -744,10 +747,10 @@ class BlockMeshDict(FoamFile):
         sorted_points = [(pt[0], pt[1], z) for z in z_values for pt in sorted_points2d]
         return sorted_points
 
-    def to_of(self):
+    def to_openfoam(self):
         """Return OpenFOAM representation as a string."""
         _hea = self.header()
-        _body = "\nconvert_to_meters %.4f;\n" \
+        _body = "\nconvertToMeters %.4f;\n" \
                 "\n" \
                 "vertices\n" \
                 "(\n\t%s\n);\n" \
@@ -765,14 +768,14 @@ class BlockMeshDict(FoamFile):
 
         return _hea + \
             _body % (
-                self.convert_to_meters,
+                self.convertToMeters,
                 "\n\t".join(tuple(str(ver).replace(",", "")
                                   for ver in self.vertices)),
                 str(self.vertices_order).replace(",", ""),
                 str(self.n_div_xyz).replace(",", ""),
                 self.grading,  # blocks
                 "\n",  # edges
-                self.__boundary_to_of(),  # boundary
+                self.__boundary_to_openfoam(),  # boundary
                 "\n")  # merge patch pair
 
     def ToString(self):
@@ -781,4 +784,4 @@ class BlockMeshDict(FoamFile):
 
     def __repr__(self):
         """BlockMeshDict representation."""
-        return self.to_of()
+        return self.to_openfoam()

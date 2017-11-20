@@ -174,12 +174,12 @@ class RunManager(object):
     def __of_batch_file(self):
         if Version.of_full_ver == 'v3.0+':
             return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts' \
-                '\start_OF.bat'
+                '\start_openfoam.bat'
         else:
             return r'C:\Program Files (x86)\ESI\OpenFOAM\{}\\' \
-                'Windows\Scripts\start_OF.bat'.format(Version.of_full_ver[1:-1])
+                'Windows\Scripts\start_openfoam.bat'.format(Version.of_full_ver[1:-1])
 
-    def start_of(self):
+    def start_openfoam(self):
         """Start OpenFOAM for Windows image from batch file."""
         Popen(self.__of_batch_file, shell=True)
 
@@ -206,7 +206,7 @@ class RunManager(object):
 
         Args:
             cmd: An OpenFOAM command.
-            args: List of optional arguments for command. e.g. ('c', 'latest_time')
+            args: List of optional arguments for command. e.g. ('c', 'latestTime')
             decomposeParDict: decomposeParDict for parallel runs (default: None).
             include_header: Include header lines to set up the environment
                 (default: True).
@@ -244,7 +244,7 @@ class RunManager(object):
 
         Args:
             cmd: An OpenFOAM command.
-            args: List of optional arguments for command. e.g. ('-c', '-latest_time')
+            args: List of optional arguments for command. e.g. ('-c', '-latestTime')
             decomposeParDict: decomposeParDict for parallel runs (default: None).
             include_header: Include header lines to set up the environment
                 (default: True).
@@ -256,7 +256,7 @@ class RunManager(object):
         res = namedtuple('log', 'cmd logfiles errorfiles')
         _msg = 'Failed to find container id. ' \
             'Do you have the OpenFOAM container running?\n' \
-            'You can initiate OpenFOAM container by running start_OF.bat:\n{}' \
+            'You can initiate OpenFOAM container by running start_openfoam.bat:\n{}' \
             .format(self.__of_batch_file)
 
         # try to get containerId

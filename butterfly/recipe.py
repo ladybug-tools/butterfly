@@ -27,36 +27,36 @@ class _Recipe(object):
         commands: A list of OpenFOAM commands. You can pass arguments for each
             command with each command as a string. e.g. ('blockMesh',
             'snappyHexMesh -constant')
-        turbulence_properties: Turbulence properties.
-        fv_solution: Optional input for fv_solution to overwrite default fv_solution.
-        fv_schemes: Optional input for fv_schemes to overwrite default fv_schemes.
+        turbulenceProperties: Turbulence properties.
+        fvSolution: Optional input for fvSolution to overwrite default fvSolution.
+        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.
         quantities: A collection of strings for quantities in this solution.
             ('U', 'p', 'k', 'epsilon')
-        residual_control: A dictionary of values for residual_control of quantities.
-        relaxation_factors: A list of values for relaxation_factors of quantities.
+        residualControl: A dictionary of values for residualControl of quantities.
+        relaxationFactors: A list of values for relaxationFactors of quantities.
     """
 
     __foamfilescollection = {'g': G, 'U': U, 'k': K, 'p': P, 'nut': Nut,
                              'epsilon': Epsilon, 'T': T, 'alphat': Alphat,
                              'p_rgh': P_rgh,
-                             'transport_properties': TransportProperties}
+                             'transportProperties': TransportProperties}
 
     __globalConvergence = 10 ** -4
 
-    def __init__(self, commands, turbulence_properties, fv_solution=None,
-                 fv_schemes=None, quantities=None, residual_control=None,
-                 relaxation_factors=None):
+    def __init__(self, commands, turbulenceProperties, fvSolution=None,
+                 fvSchemes=None, quantities=None, residualControl=None,
+                 relaxationFactors=None):
         """Initiate recipe."""
         self.commands = commands
-        self.turbulence_properties = turbulence_properties
-        self.fv_solution = fv_solution
-        self.fv_schemes = fv_schemes
+        self.turbulenceProperties = turbulenceProperties
+        self.fvSolution = fvSolution
+        self.fvSchemes = fvSchemes
         self.quantities = quantities
-        self.residual_control = residual_control
-        self.relaxation_factors = relaxation_factors
+        self.residualControl = residualControl
+        self.relaxationFactors = relaxationFactors
 
     @property
-    def is_recipe(self):
+    def isRecipe(self):
         """Return True for recipe."""
         return True
 
@@ -78,12 +78,12 @@ class _Recipe(object):
         self.__commands = cmds
 
     @property
-    def turbulence_properties(self):
+    def turbulenceProperties(self):
         """Get the OpenFOAM case."""
-        return self.__turbulence_properties
+        return self.__turbulenceProperties
 
-    @turbulence_properties.setter
-    def turbulence_properties(self, tp):
+    @turbulenceProperties.setter
+    def turbulenceProperties(self, tp):
         """Update turbulence file for the case."""
         if not tp:
             tp = TurbulenceProperties.RAS()
@@ -91,35 +91,35 @@ class _Recipe(object):
         assert hasattr(tp, 'isTurbulenceProperties'), \
             'Expected turbulencePropertise not {}.'.format(type(tp))
 
-        self.__turbulence_properties = tp
+        self.__turbulenceProperties = tp
 
     @property
-    def fv_solution(self):
-        """Get or set fv_solution."""
-        return self.__fv_solution
+    def fvSolution(self):
+        """Get or set fvSolution."""
+        return self.__fvSolution
 
-    @fv_solution.setter
-    def fv_solution(self, fvsln):
+    @fvSolution.setter
+    def fvSolution(self, fvsln):
         if fvsln:
             assert hasattr(fvsln, 'isFvSolution'), \
-                'fv_solution should be from type FvSolution not {}.' \
+                'fvSolution should be from type FvSolution not {}.' \
                 .format(type(fvsln))
 
-        self.__fv_solution = fvsln
+        self.__fvSolution = fvsln
 
     @property
-    def fv_schemes(self):
-        """Get fv_schemes."""
-        return self.__fv_schemes
+    def fvSchemes(self):
+        """Get fvSchemes."""
+        return self.__fvSchemes
 
-    @fv_schemes.setter
-    def fv_schemes(self, fvschm):
+    @fvSchemes.setter
+    def fvSchemes(self, fvschm):
         if fvschm:
             assert hasattr(fvschm, 'isFvSchemes'), \
-                'fv_solution should be from type FvSchemes not {}.' \
+                'fvSolution should be from type FvSchemes not {}.' \
                 .format(type(fvschm))
 
-        self.__fv_schemes = fvschm
+        self.__fvSchemes = fvschm
 
     @property
     def quantities(self):
@@ -135,52 +135,52 @@ class _Recipe(object):
             self.__quantities = q
 
     @property
-    def residual_control(self):
+    def residualControl(self):
         """A dictionary of residuals as quantity: residualValue."""
-        return self.__residual_control
+        return self.__residualControl
 
-    @residual_control.setter
-    def residual_control(self, res):
+    @residualControl.setter
+    def residualControl(self, res):
         if res is None:
             res = dict.fromkeys(self.quantities, self.__globalConvergence)
 
         # check the input to be dictionary and have values for all the input
         # otherwise use default value
         if isinstance(res, dict):
-            self.__residual_control = ResidualControl(res)
+            self.__residualControl = ResidualControl(res)
         elif isinstance(res, ResidualControl):
-            self.__residual_control = res
+            self.__residualControl = res
         else:
             raise TypeError(
-                'residual_control should be a dictionary not a {}.'.format(type(res))
+                'residualControl should be a dictionary not a {}.'.format(type(res))
             )
-        # update fv_solution
-        self.fv_solution.residual_control = self.residual_control
+        # update fvSolution
+        self.fvSolution.residualControl = self.residualControl
 
     @property
-    def relaxation_factors(self):
+    def relaxationFactors(self):
         """A dictionary of residuals as quantity: residualValue."""
-        return self.__relaxation_factors
+        return self.__relaxationFactors
 
-    @relaxation_factors.setter
-    def relaxation_factors(self, relax_fact):
+    @relaxationFactors.setter
+    def relaxationFactors(self, relax_fact):
         if relax_fact is None:
             relax_fact = {}
 
         # check the input to be dictionary and have values for all the input
         # otherwise use default value
         if isinstance(relax_fact, dict):
-            self.__relaxation_factors = RelaxationFactors(relax_fact)
+            self.__relaxationFactors = RelaxationFactors(relax_fact)
         elif isinstance(relax_fact, RelaxationFactors):
-            self.__relaxation_factors = relax_fact
+            self.__relaxationFactors = relax_fact
         else:
             raise TypeError(
-                'relaxation_factors should be a dictionary not a {}.'
+                'relaxationFactors should be a dictionary not a {}.'
                 .format(type(relax_fact))
             )
 
-        # update fv_solution
-        self.fv_solution.relaxation_factors = self.relaxation_factors
+        # update fvSolution
+        self.fvSolution.relaxationFactors = self.relaxationFactors
 
     def prepare_case(self, case, overwrite=False, remove=False):
         """Prepare a case for this recipe.
@@ -196,18 +196,18 @@ class _Recipe(object):
         """
         print('Preparing {} for {} study...'.format(case, self.__class__.__name__))
 
-        if self.fv_schemes and case.fv_schemes != self.fv_schemes:
-            case.fv_schemes = self.fv_schemes
-            case.fv_schemes.save(case.project_dir)
+        if self.fvSchemes and case.fvSchemes != self.fvSchemes:
+            case.fvSchemes = self.fvSchemes
+            case.fvSchemes.save(case.project_dir)
 
-        if self.fv_solution and case.fv_solution != self.fv_solution:
-            case.fv_solution = self.fv_solution
-            case.fv_solution.save(case.project_dir)
+        if self.fvSolution and case.fvSolution != self.fvSolution:
+            case.fvSolution = self.fvSolution
+            case.fvSolution.save(case.project_dir)
 
-        if self.turbulence_properties and \
-                case.turbulence_properties != self.turbulence_properties:
-            case.turbulence_properties = self.turbulence_properties
-            case.turbulence_properties.save(case.project_dir)
+        if self.turbulenceProperties and \
+                case.turbulenceProperties != self.turbulenceProperties:
+            case.turbulenceProperties = self.turbulenceProperties
+            case.turbulenceProperties.save(case.project_dir)
 
         if case.decomposeParDict:
             case.decomposeParDict.save(case.project_dir)
@@ -218,11 +218,11 @@ class _Recipe(object):
         if hasattr(case, 'ABLConditions'):
             case.ABLConditions.save(case.project_dir, overwrite=overwrite)
 
-        if hasattr(case, 'initial_conditions'):
-            case.initial_conditions.save(case.project_dir, overwrite=overwrite)
+        if hasattr(case, 'initialConditions'):
+            case.initialConditions.save(case.project_dir, overwrite=overwrite)
 
         # check neccasary files.
-        for q in (self.quantities + ('transport_properties', 'g')):
+        for q in (self.quantities + ('transportProperties', 'g')):
 
             if not hasattr(case, q):
                 # try to create the quantity
@@ -242,7 +242,7 @@ class _Recipe(object):
                 if f in self.quantities:
                     continue
                 if f.endswith('Conditions'):
-                    # do not remove ABLConditions and initial_conditions
+                    # do not remove ABLConditions and initialConditions
                     continue
                 p = os.path.join(case.zero_folder, f)
                 if not os.path.isfile(p):
@@ -269,24 +269,24 @@ class _SingleCommandRecipe(_Recipe):
 
     Attributes:
         commands: An OpenFOAM command (e.g. 'simpleFoam')
-        turbulence_properties: Turbulence properties.
-        fv_solution: Optional input for fv_solution to overwrite default fv_solution.
-        fv_schemes: Optional input for fv_schemes to overwrite default fv_schemes.
+        turbulenceProperties: Turbulence properties.
+        fvSolution: Optional input for fvSolution to overwrite default fvSolution.
+        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.
         quantities: A collection of strings for quantities in this solution. A
             separate file will be created in 0 folder for each quantity.
-        residual_control: A dictionary of values for residual_control of residuals.
-        relaxation_factors: A list of values for relaxation_factors of residuals.
+        residualControl: A dictionary of values for residualControl of residuals.
+        relaxationFactors: A list of values for relaxationFactors of residuals.
         residual_fields: List of quantities that should be watched during solution
             run ('Ux', 'Uy', 'Uz', 'p', 'k', 'epsilon').
     """
 
-    def __init__(self, command, turbulence_properties, fv_solution=None,
-                 fv_schemes=None, quantities=None, residual_control=None,
-                 relaxation_factors=None, residual_fields=None):
+    def __init__(self, command, turbulenceProperties, fvSolution=None,
+                 fvSchemes=None, quantities=None, residualControl=None,
+                 relaxationFactors=None, residual_fields=None):
         """Initiate recipe."""
-        _Recipe.__init__(self, (command,), turbulence_properties, fv_solution,
-                         fv_schemes, quantities, residual_control,
-                         relaxation_factors)
+        _Recipe.__init__(self, (command,), turbulenceProperties, fvSolution,
+                         fvSchemes, quantities, residualControl,
+                         relaxationFactors)
 
         self.__command = command
         self.__residual_fields = residual_fields or ('p')
@@ -338,11 +338,11 @@ class SteadyIncompressible(_SingleCommandRecipe):
     This recipe excutes simpleFoam for the input case.
 
     Attributes:
-        turbulence_properties: Turbulence properties.
-        fv_solution: Optional input for fv_solution to overwrite default fv_solution.
-        fv_schemes: Optional input for fv_schemes to overwrite default fv_schemes.
-        residual_control: A dictionary of values for residual_control of quantities.
-        relaxation_factors: A list of values for relaxation_factors of quantities.
+        turbulenceProperties: Turbulence properties.
+        fvSolution: Optional input for fvSolution to overwrite default fvSolution.
+        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.
+        residualControl: A dictionary of values for residualControl of quantities.
+        relaxationFactors: A list of values for relaxationFactors of quantities.
     """
 
     __command = 'simpleFoam'
@@ -351,18 +351,18 @@ class SteadyIncompressible(_SingleCommandRecipe):
     # Values for residual plot.
     __residual_fields = ('Ux', 'Uy', 'Uz', 'p', 'k', 'epsilon')
 
-    def __init__(self, turbulence_properties=None, fv_solution=None,
-                 fv_schemes=None, residual_control=None, relaxation_factors=None):
+    def __init__(self, turbulenceProperties=None, fvSolution=None,
+                 fvSchemes=None, residualControl=None, relaxationFactors=None):
         """Initiate recipe."""
-        turbulence_properties = turbulence_properties or TurbulenceProperties.RAS()
+        turbulenceProperties = turbulenceProperties or TurbulenceProperties.RAS()
         # add inputs here, and initiate the class.
-        fv_solution = fv_solution or FvSolution.from_recipe(0)
-        fv_schemes = fv_schemes or FvSchemes.from_recipe(0)
+        fvSolution = fvSolution or FvSolution.from_recipe(0)
+        fvSchemes = fvSchemes or FvSchemes.from_recipe(0)
         quantities = self.__quantities
 
         _SingleCommandRecipe.__init__(
-            self, self.__command, turbulence_properties, fv_solution, fv_schemes,
-            quantities, residual_control, relaxation_factors, self.__residual_fields)
+            self, self.__command, turbulenceProperties, fvSolution, fvSchemes,
+            quantities, residualControl, relaxationFactors, self.__residual_fields)
 
 
 class HeatTransfer(_SingleCommandRecipe):
@@ -371,11 +371,11 @@ class HeatTransfer(_SingleCommandRecipe):
     This recipe excutes buoyantBoussinesqSimpleFoam for the input case.
 
     Attributes:
-        turbulence_properties: Turbulence properties.
-        fv_solution: Optional input for fv_solution to overwrite default fv_solution.
-        fv_schemes: Optional input for fv_schemes to overwrite default fv_schemes.
-        residual_control: A dictionary of values for residual_control of quantities.
-        relaxation_factors: A list of values for relaxation_factors of quantities.
+        turbulenceProperties: Turbulence properties.
+        fvSolution: Optional input for fvSolution to overwrite default fvSolution.
+        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.
+        residualControl: A dictionary of values for residualControl of quantities.
+        relaxationFactors: A list of values for relaxationFactors of quantities.
     """
 
     __command = 'buoyantBoussinesqSimpleFoam'
@@ -384,21 +384,21 @@ class HeatTransfer(_SingleCommandRecipe):
     # values for residual plot.
     __residual_fields = ('Ux', 'Uy', 'Uz', 'p_rgh', 'T', 'k', 'epsilon')
 
-    def __init__(self, turbulence_properties=None, fv_solution=None,
-                 fv_schemes=None, residual_control=None, relaxation_factors=None,
-                 t_ref=None):
+    def __init__(self, turbulenceProperties=None, fvSolution=None,
+                 fvSchemes=None, residualControl=None, relaxationFactors=None,
+                 TRef=None):
         """Initiate recipe."""
-        turbulence_properties = turbulence_properties or TurbulenceProperties.RAS()
+        turbulenceProperties = turbulenceProperties or TurbulenceProperties.RAS()
 
         # add inputs here, and initiate the class.
-        fv_solution = fv_solution or FvSolution.from_recipe(1)
-        fv_schemes = fv_schemes or FvSchemes.from_recipe(1)
-        self.temperature = t_ref or 300
+        fvSolution = fvSolution or FvSolution.from_recipe(1)
+        fvSchemes = fvSchemes or FvSchemes.from_recipe(1)
+        self.temperature = TRef or 300
         quantities = self.__quantities
 
         _SingleCommandRecipe.__init__(
-            self, self.__command, turbulence_properties, fv_solution, fv_schemes,
-            quantities, residual_control, relaxation_factors, self.__residual_fields)
+            self, self.__command, turbulenceProperties, fvSolution, fvSchemes,
+            quantities, residualControl, relaxationFactors, self.__residual_fields)
 
     def prepare_case(self, case, overwrite=False, remove=False):
         """Prepare a case for this recipe.
@@ -413,11 +413,11 @@ class HeatTransfer(_SingleCommandRecipe):
             overwrite: Set to True to overwrite current files.
             remove: Set to True to remove extra files in the folder.
         """
-        # update pRefPoint to center location_in_mesh for snappyHexMeshDict
-        self.fv_solution.values['SIMPLE']['pRefPoint'] = \
-            str(case.snappy_hex_meshDict.location_in_mesh).replace(',', ' ')
+        # update pRefPoint to center locationInMesh for snappyHexMeshDict
+        self.fvSolution.values['SIMPLE']['pRefPoint'] = \
+            str(case.snappyHexMeshDict.locationInMesh).replace(',', ' ')
 
-        # updated t_ref if it is provided
+        # updated TRef if it is provided
         case.T.update_values({'internalField': 'uniform %f' % self.temperature})
 
         super(HeatTransfer, self).prepare_case(case, overwrite, remove)

@@ -34,11 +34,11 @@ class WindTunnel(object):
                 '0.5'     # veryRough
                 '1.0'     # closed
                 '2.0'     # chaotic
-        zref: Reference height for wind velocity in meters (default: 10).
+        Zref: Reference height for wind velocity in meters (default: 10).
     """
 
     def __init__(self, name, inlet, outlet, sides, top, ground, test_geomtries,
-                 roughness, meshing_parameters=None, zref=None, convert_to_meters=1):
+                 roughness, meshing_parameters=None, Zref=None, convertToMeters=1):
         """Init wind tunnel."""
         self.name = str(name)
         self.inlet = self._check_input_geometry(inlet)
@@ -48,23 +48,23 @@ class WindTunnel(object):
         self.ground = self._check_input_geometry(ground)
         self.test_geomtries = tuple(geo for geo in test_geomtries
                                     if self._check_input_geometry(geo))
-        self.z0 = roughness if roughness > 0 else 0.0001
+        self.z0 = roughness if roughness > 0 else 0.25
 
         self.__blockMeshDict = BlockMeshDict.from_bf_block_geometries(
-            self.bounding_geometries, convert_to_meters)
+            self.bounding_geometries, convertToMeters)
 
         self.meshing_parameters = meshing_parameters or MeshingParameters()
 
-        self.zref = float(zref) if zref else 10
-        self.convert_to_meters = convert_to_meters
+        self.Zref = float(Zref) if Zref else 10
+        self.convertToMeters = convertToMeters
 
         # place holder for refinment regions
-        self.__refinement_regions = []
+        self.__refinementRegions = []
 
     @classmethod
     def from_geometries_wind_vector_and_parameters(
             cls, name, geometries, wind_vector, tunnel_parameters, roughness,
-            meshing_parameters=None, zref=None, convert_to_meters=1):
+            meshing_parameters=None, Zref=None, convertToMeters=1):
         """Create a wind_tunnel based on size, wind speed and wind direction."""
         # butterfly geometries
         geos = tuple(cls._check_input_geometry(geo) for geo in geometries)
@@ -84,7 +84,7 @@ class WindTunnel(object):
 
         # get size of bounding box from blockMeshDict
         min_pt, max_pt = calculate_min_max_from_bf_geometries(geos, x_axis)
-        _blockMeshDict = BlockMeshDict.from_min_max(min_pt, max_pt, convert_to_meters,
+        _blockMeshDict = BlockMeshDict.from_min_max(min_pt, max_pt, convertToMeters,
                                                     x_axis=x_axis)
         # scale based on wind tunnel parameters
         ver = _blockMeshDict.vertices
@@ -105,7 +105,7 @@ class WindTunnel(object):
         # create inlet, outlet, etc
         abl_conditions = ABLConditions.from_input_values(
             flow_speed=vm.length(wind_vector), z0=roughness,
-            flow_dir=vm.normalize(wind_vector), z_ground=_blockMeshDict.min_z)
+            flowDir=vm.normalize(wind_vector), zGround=_blockMeshDict.min_z)
 
         _order = (range(4),)
         inlet = BFBlockGeometry(
@@ -134,8 +134,8 @@ class WindTunnel(object):
 
         # return the class
         wt = cls(name, inlet, outlet, (right_side, left_side), top, ground,
-                 geometries, roughness, meshing_parameters, zref,
-                 convert_to_meters)
+                 geometries, roughness, meshing_parameters, Zref,
+                 convertToMeters)
 
         return wt
 
@@ -161,22 +161,22 @@ class WindTunnel(object):
                (self.top, self.ground)
 
     @property
-    def refinement_regions(self):
+    def refinementRegions(self):
         """Get refinement regions."""
-        return self.__refinement_regions
+        return self.__refinementRegions
 
     @property
-    def flow_dir(self):
+    def flowDir(self):
         """Get flow direction for this wind tunnel as a tuple (x, y, z)."""
-        return self.inlet.boundary_condition.U.flow_dir
+        return self.inlet.boundary_condition.U.flowDir
 
     @property
     def flow_speed(self):
         """Get flow speed for this wind tunnel."""
-        return self.inlet.boundary_condition.U.uref
+        return self.inlet.boundary_condition.U.Uref
 
     @property
-    def z_ground(self):
+    def zGround(self):
         """Minimum z value of the bounding box."""
         return self.blockMeshDict.min_z
 
@@ -191,9 +191,9 @@ class WindTunnel(object):
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(self.flow_speed)
         _ABLCDict['z0'] = 'uniform {}'.format(self.z0)
-        _ABLCDict['flow_dir'] = self.flow_dir if isinstance(self.flow_dir, str) \
-            else '({} {} {})'.format(*self.flow_dir)
-        _ABLCDict['z_ground'] = 'uniform {}'.format(self.z_ground)
+        _ABLCDict['flowDir'] = self.flowDir if isinstance(self.flowDir, str) \
+            else '({} {} {})'.format(*self.flowDir)
+        _ABLCDict['zGround'] = 'uniform {}'.format(self.zGround)
         return _ABLCDict
 
     @property
@@ -211,12 +211,12 @@ class WindTunnel(object):
         self.__meshing_parameters = mp
         self.blockMeshDict.update_meshing_parameters(mp)
 
-    def add_refinement_region(self, refinement_region):
+    def add_refinementRegion(self, refinementRegion):
         """Add refinement regions to this case."""
-        assert hasattr(refinement_region, 'isRefinementRegion'), \
-            "{} is not a refinement region.".format(refinement_region)
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
 
-        self.__refinement_regions.append(refinement_region)
+        self.__refinementRegions.append(refinementRegion)
 
     @staticmethod
     def _check_input_geometry(input):
@@ -225,7 +225,7 @@ class WindTunnel(object):
         else:
             raise ValueError('{} is not a Butterfly geometry.'.format(input))
 
-    def to_of_case(self, make2d_parameters=None):
+    def to_openfoam_case(self, make2d_parameters=None):
         """Return a BF case for this wind tunnel."""
         return Case.from_wind_tunnel(self, make2d_parameters)
 
@@ -238,7 +238,7 @@ class WindTunnel(object):
         Returns:
             A butterfly.Case.
         """
-        _case = self.to_ofCase(make2d_parameters)
+        _case = self.to_openfoam_case(make2d_parameters)
         _case.save(overwrite, minimum)
         return _case
 
@@ -249,7 +249,7 @@ class WindTunnel(object):
     def __repr__(self):
         """Wind tunnel."""
         return "WindTunnel::%.2f * %.2f * %.2f::dir %s::%.3f m/s" % (
-            self.width, self.length, self.height, self.flow_dir,
+            self.width, self.length, self.height, self.flowDir,
             float(self.flow_speed))
 
 
@@ -260,12 +260,12 @@ class TunnelParameters(object):
 
     Args:
         windward: Multiplier value for windward extension (default: 3).
-        top: Multiplier value for top extension (default: 3).
-        side: Multiplier value for side extension (default: 2).
+        top: Multiplier value for top extension (default: 5).
+        side: Multiplier value for side extension (default: 5).
         leeward: Multiplier value for leeward extension (default: 15).
     """
 
-    def __init__(self, windward=3, top=3, side=2, leeward=15):
+    def __init__(self, windward=3, top=5, side=5, leeward=15):
         """Init wind tunnel parameters."""
         self.windward = self.__check_input(windward)
         self.top = self.__check_input(top)

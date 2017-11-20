@@ -59,7 +59,7 @@ class FvSolution(FoamFile):
 
     def __init__(self, values=None):
         """Init class."""
-        FoamFile.__init__(self, name='fv_solution', cls='dictionary',
+        FoamFile.__init__(self, name='fvSolution', cls='dictionary',
                           location='system', default_values=self.__default_values,
                           values=values)
 
@@ -75,7 +75,7 @@ class FvSolution(FoamFile):
     # TODO(): update to pass the recipe itself and not the code!
     @classmethod
     def from_recipe(cls, recipe=0):
-        """Generate fv_solution for a particular recipe.
+        """Generate fvSolution for a particular recipe.
 
         Args:
             recipe: 0: incompressible, 1: heat transfer.
@@ -102,7 +102,7 @@ class FvSolution(FoamFile):
                                   'nSweeps': '1', 'smoother': 'GaussSeidel',
                                   'solver': 'smoothSolver'}},
                 'SIMPLE': {'residualControl': {'p': None, 'p_rgh': '1e-4',
-                                                'T': '1e-4'},
+                                               'T': '1e-4'},
                            'pRefPoint': '(0 0 0)', 'pRefValue': '0'},
                 'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
 
@@ -111,12 +111,12 @@ class FvSolution(FoamFile):
         return _cls
 
     @property
-    def residual_control(self):
+    def residualControl(self):
         """Get and set residual controls."""
         return ResidualControl(self.values['SIMPLE']['residualControl'])
 
-    @residual_control.setter
-    def residual_control(self, res_control):
+    @residualControl.setter
+    def residualControl(self, res_control):
         """Set residual control values.
 
         Args:
@@ -132,12 +132,12 @@ class FvSolution(FoamFile):
             self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 
     @property
-    def relaxation_factors(self):
+    def relaxationFactors(self):
         """Get and set residual controls."""
         return RelaxationFactors(self.values['relaxationFactors'])
 
-    @relaxation_factors.setter
-    def relaxation_factors(self, relax_fact):
+    @relaxationFactors.setter
+    def relaxationFactors(self, relax_fact):
         """Set residual control values.
 
         Args:
@@ -155,7 +155,7 @@ class FvSolution(FoamFile):
 
 # TODO(Mostapha): This is not critical but it will be cleaner if I can find a
 # solution to keep ResidualControl as a subclass of dict and still get it to
-# work in GRASshopper and Dynamo.
+# work in Grasshopper and Dynamo.
 class ResidualControl(object):
     """Residual Control class.
 
@@ -173,7 +173,7 @@ class ResidualControl(object):
             self.values = values
 
     @property
-    def is_residual_control(self):
+    def isResidualControl(self):
         """Return True."""
         return True
 
@@ -183,12 +183,12 @@ class ResidualControl(object):
 
     def __repr__(self):
         """Representation."""
-        return 'residual_control\n{\n\t%s\n}' % (
+        return 'residualControl\n{\n\t%s\n}' % (
             '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))
 
 
 class RelaxationFactors(object):
-    """relaxation_factors class.
+    """relaxationFactors class.
 
     Attributes:
         values: Values as a dictionary.
@@ -197,14 +197,14 @@ class RelaxationFactors(object):
     __slots__ = ('values',)
 
     def __init__(self, values):
-        """Init relaxation_factors class."""
+        """Init relaxationFactors class."""
         if not values:
             self.values = {}
         else:
             self.values = values
 
     @property
-    def is_relaxation_factors(self):
+    def isRelaxationFactors(self):
         """Return True."""
         return True
 
@@ -214,5 +214,5 @@ class RelaxationFactors(object):
 
     def __repr__(self):
         """Representation."""
-        return 'relaxation_factors\n{\n\t%s\n}' % (
+        return 'relaxationFactors\n{\n\t%s\n}' % (
             '\n\t'.join(('{}\t{};'.format(k, v) for k, v in self.values.iteritems())))

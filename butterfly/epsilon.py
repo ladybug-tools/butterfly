@@ -29,3 +29,18 @@ class Epsilon(FoamFileZeroFolder):
             filepath: Full file path to dictionary.
         """
         return cls(values=foam_file_from_file(filepath, cls.__name__))
+
+    @property
+    def dimensions(self):
+        """Return dimensions."""
+        return self.values['dimensions']
+
+    @property
+    def internalField(self):
+        """Return internalField."""
+        return self.values['internalField']
+
+    @internalField.setter
+    def internalField(self, v):
+        """set internalField value."""
+        self.values['internalField'] = v

@@ -17,7 +17,7 @@ class Solution(object):
         case: A butterfly case.
         recipe: A butterfly recipe.
         decomposeParDict: decomposeParDict for parallel run (default: None).
-        solution_parameter: A solution_parameter (default: None).
+        solution_parameter: A SolutionParameter (default: None).
         remove_extra_foam_files: set to True if you want butterfly to remove all the
             extra files in 0 folder once you update the recipe (default: False).
     """
@@ -102,9 +102,9 @@ class Solution(object):
         return self.__case.controlDict
 
     @property
-    def residual_control(self):
-        """Get residual_control values for this solution."""
-        return self.__case.fv_solution.residual_control
+    def residualControl(self):
+        """Get residualControl values for this solution."""
+        return self.__case.fvSolution.residualControl
 
     @property
     def probes(self):
@@ -140,7 +140,7 @@ class Solution(object):
             return True
         else:
             self.__isRunFinished = True
-            self.case.rename_snappy_hex_mesh_folders()
+            self.case.rename_snappyHexMesh_folders()
             # load errors if any
             self.case.runmanager.check_file_contents(self.log_files)
             failed, err = self.case.runmanager.check_file_contents(self.err_files)
@@ -150,12 +150,12 @@ class Solution(object):
     @property
     def timestep(self):
         """Get latest timestep for this solution."""
-        return self.__get_latest_time()
+        return self.__get_latestTime()
 
     @property
-    def residual_values(self, latest_time=True):
+    def residual_values(self, latestTime=True):
         """Get timestep and residual values as a tuple."""
-        if latest_time:
+        if latestTime:
             return self.__get_info().residual_values
         else:
             raise NotImplementedError()
@@ -191,7 +191,7 @@ class Solution(object):
 
         return i(t, self.__residualValues.values())
 
-    def __get_latest_time(self):
+    def __get_latestTime(self):
         # get end of the log file
         if not os.path.isfile(self.residual_file):
             return 0
@@ -209,12 +209,12 @@ class Solution(object):
         This method creates a SolutionParameter from each recipe property, and
         uses updateSolutionParams to update the solution.
         """
-        tp = SolutionParameter.from_cpp_dictionary('turbulence_properties',
-                                                   str(recipe.turbulence_properties))
-        fv_sc = SolutionParameter.from_cpp_dictionary('fv_schemes',
-                                                      str(recipe.fv_schemes))
-        fv_sol = SolutionParameter.from_cpp_dictionary('fv_solution',
-                                                       str(recipe.fv_solution))
+        tp = SolutionParameter.from_cpp_dictionary('turbulenceProperties',
+                                                   str(recipe.turbulenceProperties))
+        fv_sc = SolutionParameter.from_cpp_dictionary('fvSchemes',
+                                                      str(recipe.fvSchemes))
+        fv_sol = SolutionParameter.from_cpp_dictionary('fvSolution',
+                                                       str(recipe.fvSolution))
 
         self.update_solution_params((tp, fv_sc, fv_sol))
 
@@ -268,7 +268,7 @@ class Solution(object):
 
     def run(self, wait=False):
         """Execute the solution."""
-        self.case.rename_snappy_hex_mesh_folders()
+        self.case.rename_snappyHexMesh_folders()
         log = self.case.command(
             cmd=self.recipe.application,
             args=None,
@@ -283,14 +283,14 @@ class Solution(object):
         else:
             self.__isRunFinished = True
 
-    def purge(self, remove_poly_mesh_content=True,
-              remove_snappy_hex_mesh_folders=True,
+    def purge(self, remove_polyMesh_content=True,
+              remove_snappyHexMesh_folders=True,
               remove_result_folders=False,
-              remove_post_processing_folder=False):
+              remove_postProcessing_folder=False):
         """Purge solution's case folder."""
         self.case.purge(
-            remove_poly_mesh_content, remove_snappy_hex_mesh_folders,
-            remove_result_folders, remove_post_processing_folder)
+            remove_polyMesh_content, remove_snappyHexMesh_folders,
+            remove_result_folders, remove_postProcessing_folder)
 
     def terminate(self):
         """Cancel the solution."""
@@ -346,7 +346,7 @@ class SolutionParameter(object):
 
     Attributes:
         filename: OpenFOAM filename that the values are belong to (e.g.
-            blockMeshDict, fv_schemes).
+            blockMeshDict, fvSchemes).
         values: New values as a python dictionary.
         replace: Set to True if you want the original dictionary to be replaced
             by new values. Default is False which means the original dictionary
@@ -355,9 +355,9 @@ class SolutionParameter(object):
             (default: (0, 1.0e+100)).
     """
 
-    _of_filenames = ('epsilon', 'k', 'nut', 'p', 'U', 'T', 'turbulence_properties',
-                     'transport_properties', 'blockMeshDict', 'controlDict',
-                     'fv_schemes', 'fv_solution', 'snappyHexMeshDict', 'probes')
+    _of_filenames = ('epsilon', 'k', 'nut', 'p', 'U', 'T', 'turbulenceProperties',
+                     'transportProperties', 'blockMeshDict', 'controlDict',
+                     'fvSchemes', 'fvSolution', 'snappyHexMeshDict', 'probes')
 
     def __init__(self, of_filename, values, replace=False, time_range=None):
         """Create solution parameter."""
@@ -394,7 +394,7 @@ class SolutionParameter(object):
         return cls(of_filename, values, replace, time_range)
 
     @property
-    def is_solution_parameter(self):
+    def isSolutionParameter(self):
         """Return True."""
         return True
 

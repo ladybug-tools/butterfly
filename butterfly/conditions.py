@@ -1,5 +1,5 @@
 # coding=utf-8
-"""ABL Conditions and initial_conditions class."""
+"""ABL Conditions and initialConditions class."""
 from .foamfile import Condition, foam_file_from_file
 from collections import OrderedDict
 import math
@@ -36,15 +36,15 @@ class ABLConditions(Condition):
         return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @classmethod
-    def from_input_values(cls, flow_speed, z0, flow_dir, z_ground):
+    def from_input_values(cls, flow_speed, z0, flowDir, zGround):
         """Get ABLCondition."""
         _ABLCDict = {}
         _ABLCDict['Uref'] = str(flow_speed)
         _ABLCDict['z0'] = 'uniform {}'.format(z0)
-        _ABLCDict['flowDir'] = flow_dir if isinstance(flow_dir, str) \
-            else '({} {} {})'.format(*flow_dir)
+        _ABLCDict['flowDir'] = flowDir if isinstance(flowDir, str) \
+            else '({} {} {})'.format(*flowDir)
 
-        _ABLCDict['zGround'] = 'uniform {}'.format(z_ground)
+        _ABLCDict['zGround'] = 'uniform {}'.format(zGround)
         return cls(_ABLCDict)
 
     @classmethod
@@ -53,14 +53,39 @@ class ABLConditions(Condition):
         return cls(values=wind_tunnel.ABLConditionsDict)
 
     @property
-    def flow_dir(self):
+    def flowDir(self):
         """Get flow dir as tuple (x, y, z)."""
         return eval(self.values['flowDir'])
 
     @property
     def flow_speed(self):
         """Get flow speed as a float."""
-        return float(self.values['Uref'])
+        return float(self.values['Uref'].replace(' ', ','))
+
+    @property
+    def Uref(self):
+        """Get flow speed as a float."""
+        return self.values['Uref']
+
+    @property
+    def Zref(self):
+        """Get reference z value for input wind speed- usually 10 meters"""
+        return self.values['Zref']
+
+    @property
+    def z0(self):
+        """roughness - default is set to 1 for urban environment"""
+        return self.values['z0']
+
+    @property
+    def zDir(self):
+        """z direction. (0 0 1) for wind tunnel"""
+        return eval(self.values['zDir'].replace(' ', ','))
+
+    @property
+    def zGround(self):
+        """Min z value of the bounding box (default: uniform 0)"""
+        return self.values['zGround']
 
 
 class InitialConditions(Condition):
@@ -89,7 +114,7 @@ class InitialConditions(Condition):
         self.__k = k
         self.calculate_k_epsilon(init=True)
         super(InitialConditions, self).__init__(
-            name='initial_conditions', cls='dictionary', location='0',
+            name='initialConditions', cls='dictionary', location='0',
             default_values=self.__default_values, values=values
         )
 

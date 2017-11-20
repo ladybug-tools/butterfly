@@ -4,8 +4,8 @@ from collections import OrderedDict
 import re
 
 from .foamfile import FoamFile, foam_file_from_file
-from .utilities import get_snappy_hex_mesh_geometry_feild, \
-    get_snappy_hex_mesh_refinement_surfaces, get_snappy_hex_mesh_surface_layers
+from .utilities import get_snappyHexMesh_geometry_feild, \
+    get_snappyHexMesh_refinement_surfaces, get_snappyHexMesh_surface_layers
 from .refinementRegion import refinement_mode_from_dict
 
 
@@ -89,7 +89,7 @@ class SnappyHexMeshDict(FoamFile):
 
     __default_values['debug'] = '0'
     __default_values['mergeTolerance'] = '1E-6'
-    __glob_refine_level = (0, 0)
+    __globRefineLevel = (0, 0)
 
     def __init__(self, values=None):
         """Init class."""
@@ -98,7 +98,7 @@ class SnappyHexMeshDict(FoamFile):
                           values=values)
         self.__geometries = None
         self.__isFeatureEdgeRefinementImplicit = True
-        self.convert_to_meters = 1.0  # This is useful to scale the location_in_mesh
+        self.convertToMeters = 1.0  # This is useful to scale the locationInMesh
 
     @classmethod
     def from_file(cls, filepath):
@@ -111,16 +111,16 @@ class SnappyHexMeshDict(FoamFile):
 
     @classmethod
     def from_bf_geometries(cls, project_name, geometries, meshing_parameters=None,
-                           convert_to_meters=1, values=None):
+                           convertToMeters=1, values=None):
         """Create snappyHexMeshDict from HBGeometries."""
         _cls = cls(values)
-        _cls.convert_to_meters = convert_to_meters
+        _cls.convertToMeters = convertToMeters
         _cls.project_name = project_name
         _cls.__geometries = cls._check_input_geometries(geometries)
         _cls.update_meshing_parameters(meshing_parameters)
         _cls.set_geometry()
-        _cls.set_refinement_surfaces()
-        _cls.setn_surface_layers()
+        _cls.seTRefinement_surfaces()
+        _cls.set_nSurfaceLayers()
         return _cls
 
     @property
@@ -148,16 +148,16 @@ class SnappyHexMeshDict(FoamFile):
         return self.__isFeatureEdgeRefinementImplicit
 
     @property
-    def location_in_mesh(self):
+    def locationInMesh(self):
         """A tuple for the location of the volume the should be meshed.
 
-        x, y, z values will be multiplied to self.convert_to_meters. If the units
-        are not Meters you can set the convert_to_meters using self.convert_to_meters
+        x, y, z values will be multiplied to self.convertToMeters. If the units
+        are not Meters you can set the convertToMeters using self.convertToMeters
         """
         return self.values['castellatedMeshControls']['locationInMesh']
 
-    @location_in_mesh.setter
-    def location_in_mesh(self, point):
+    @locationInMesh.setter
+    def locationInMesh(self, point):
         if not point:
             point = (0, 0, 0)
 
@@ -166,32 +166,32 @@ class SnappyHexMeshDict(FoamFile):
         except Exception:
             x, y, z = tuple(point)
 
-        # scale point based on convert_to_meters
-        point = x * self.convert_to_meters, \
-            y * self.convert_to_meters, \
-            z * self.convert_to_meters
+        # scale point based on convertToMeters
+        point = x * self.convertToMeters, \
+            y * self.convertToMeters, \
+            z * self.convertToMeters
 
         self.values['castellatedMeshControls']['locationInMesh'] = \
             str(tuple(point)).replace(',', "")
 
     @property
-    def glob_refine_level(self):
+    def globRefineLevel(self):
         """A tuple of (min, max) values for global refinment."""
-        return self.__glob_refine_level
+        return self.__globRefineLevel
 
-    @glob_refine_level.setter
-    def glob_refine_level(self, r):
-        self.__glob_refine_level = (0, 0) if not r else tuple(r)
-        if self.__glob_refine_level:
-            self.set_refinement_surfaces()
+    @globRefineLevel.setter
+    def globRefineLevel(self, r):
+        self.__globRefineLevel = (0, 0) if not r else tuple(r)
+        if self.__globRefineLevel:
+            self.seTRefinement_surfaces()
 
     @property
-    def castellated_mesh(self):
+    def castellatedMesh(self):
         """Set if castellatedMesh should be ran."""
         return self.values['castellatedMesh']
 
-    @castellated_mesh.setter
-    def castellated_mesh(self, value=True):
+    @castellatedMesh.setter
+    def castellatedMesh(self, value=True):
         value = value if isinstance(value, bool) else \
             bool(str(value).capitalize())
         self.values['castellatedMesh'] = str(value).lower()
@@ -208,12 +208,12 @@ class SnappyHexMeshDict(FoamFile):
         self.values['snap'] = str(value).lower()
 
     @property
-    def add_layers(self):
+    def addLayers(self):
         """Set if addLayers should be ran."""
         return self.values['addLayers']
 
-    @add_layers.setter
-    def add_layers(self, value=True):
+    @addLayers.setter
+    def addLayers(self, value=True):
         value = value if isinstance(value, bool) else \
             bool(str(value).capitalize())
         self.values['addLayers'] = str(value).lower()
@@ -229,31 +229,31 @@ class SnappyHexMeshDict(FoamFile):
         self.values['castellatedMeshControls']['features'] = str(value)
 
     @property
-    def extract_features_refine_level(self):
+    def extractFeaturesRefineLevel(self):
         """A refinment value for extract feature level."""
         return self.values['snapControls']['extractFeaturesRefineLevel']
 
-    @extract_features_refine_level.setter
-    def extract_features_refine_level(self, value=1):
+    @extractFeaturesRefineLevel.setter
+    def extractFeaturesRefineLevel(self, value=1):
         self.values['snapControls']['extractFeaturesRefineLevel'] = str(int(value))
 
     @property
-    def n_cells_between_levels(self):
+    def nCellsBetweenLevels(self):
         """Number of cells between levels for castellatedMeshControls (default: 3)."""
         return self.values['castellatedMeshControls']['nCellsBetweenLevels']
 
-    @n_cells_between_levels.setter
-    def n_cells_between_levels(self, value=3):
+    @nCellsBetweenLevels.setter
+    def nCellsBetweenLevels(self, value=3):
         value = value or 3
         self.values['castellatedMeshControls']['nCellsBetweenLevels'] = str(int(value))
 
     @property
-    def max_global_cells(self):
+    def maxGlobalCells(self):
         """Number of max global cells for castellatedMeshControls (default: 2000000)."""
         return self.values['castellatedMeshControls']['maxGlobalCells']
 
-    @max_global_cells.setter
-    def max_global_cells(self, value=2000000):
+    @maxGlobalCells.setter
+    def maxGlobalCells(self, value=2000000):
         value = value or 2000000
         self.values['castellatedMeshControls']['maxGlobalCells'] = str(int(value))
 
@@ -261,20 +261,20 @@ class SnappyHexMeshDict(FoamFile):
     def stl_file_names(self):
         """List of names for stl files if any.
 
-        This method doesn't return stl files for refinement_regions. You can use
-        self.refinement_region_names to get the names for refinment regions.
+        This method doesn't return stl files for refinementRegions. You can use
+        self.refinementRegion_names to get the names for refinment regions.
         """
         stl_f_names = self.values['geometry'].keys()
         return tuple(f[:-4] for f in stl_f_names
-                     if not f[:-4] in self.refinement_region_names)
+                     if not f[:-4] in self.refinementRegion_names)
 
     @property
-    def refinement_regions(self):
+    def refinementRegions(self):
         """Refinement regions."""
         return self.values['castellatedMeshControls']['refinementRegions']
 
     @property
-    def refinement_region_names(self):
+    def refinementRegion_names(self):
         """List of stl files if any."""
         return self.values['castellatedMeshControls']['refinementRegions'].keys()
 
@@ -286,40 +286,40 @@ class SnappyHexMeshDict(FoamFile):
         assert hasattr(meshing_parameters, 'isMeshingParameters'), \
             'Expected MeshingParameters not {}'.format(type(meshing_parameters))
 
-        if meshing_parameters.location_in_mesh:
-            self.location_in_mesh = meshing_parameters.location_in_mesh
+        if meshing_parameters.locationInMesh:
+            self.locationInMesh = meshing_parameters.locationInMesh
 
-        if meshing_parameters.glob_refine_level:
-            self.glob_refine_level = meshing_parameters.glob_refine_level
+        if meshing_parameters.globRefineLevel:
+            self.globRefineLevel = meshing_parameters.globRefineLevel
 
-    def refinement_region_mode(self, refinement_region_name):
+    def refinementRegion_mode(self, refinementRegion_name):
         """Refinement region mode for a refinement region."""
-        assert refinement_region_name in self.refinement_region_names, \
-            'Failed to find {} in {}'.format(refinement_region_name,
-                                             self.refinement_region_names)
+        assert refinementRegion_name in self.refinementRegion_names, \
+            'Failed to find {} in {}'.format(refinementRegion_name,
+                                             self.refinementRegion_names)
 
         c_mesh_control = self.values['castellatedMeshControls']
-        mode = c_mesh_control['refinementRegions'][refinement_region_name]
+        mode = c_mesh_control['refinementRegions'][refinementRegion_name]
         return refinement_mode_from_dict(mode)
 
     def set_geometry(self):
         """Set geometry from bf_geometries."""
-        _geoField = get_snappy_hex_mesh_geometry_feild(self.project_name,
-                                                       self.geometries,
-                                                       meshing_type='triSurfaceMesh')
+        _geoField = get_snappyHexMesh_geometry_feild(self.project_name,
+                                                     self.geometries,
+                                                     meshing_type='triSurfaceMesh')
         self.values['geometry'].update(_geoField)
 
-    def set_refinement_surfaces(self):
+    def seTRefinement_surfaces(self):
         """Set refinement values for geometries."""
-        _ref = get_snappy_hex_mesh_refinement_surfaces(self.project_name,
-                                                       self.geometries,
-                                                       self.glob_refine_level)
+        _ref = get_snappyHexMesh_refinement_surfaces(self.project_name,
+                                                     self.geometries,
+                                                     self.globRefineLevel)
 
         self.values['castellatedMeshControls']['refinementSurfaces'] = _ref
 
-    def setn_surface_layers(self):
+    def set_nSurfaceLayers(self):
         """Set number of surface layers for geometries."""
-        layers = get_snappy_hex_mesh_surface_layers(self.geometries)
+        layers = get_snappyHexMesh_surface_layers(self.geometries)
         self.values['addLayersControls']['layers'] = layers
 
     def set_feature_edge_refinement_to_implicit(self):
@@ -368,19 +368,19 @@ class SnappyHexMeshDict(FoamFile):
 
         self.values['geometry'].update(stl)
 
-    def add_refinement_region(self, refinement_region=None):
+    def add_refinementRegion(self, refinementRegion=None):
         """Add refinement region to snappyHexMeshDict."""
-        if refinement_region is None:
+        if refinementRegion is None:
             return
 
-        assert hasattr(refinement_region, 'isRefinementRegion'), \
-            '{} is not a refinement region.'.format(refinement_region)
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            '{} is not a refinement region.'.format(refinementRegion)
 
         # add geometry to stl
-        self.add_stl_geometry(refinement_region.name)
+        self.add_stl_geometry(refinementRegion.name)
 
-        rg = {refinement_region.name:
-              refinement_region.refinement_mode.to_of_dict()}
+        rg = {refinementRegion.name:
+              refinementRegion.refinement_mode.to_openfoam_dict()}
 
         self.values['castellatedMeshControls']['refinementRegions'].update(rg)
 

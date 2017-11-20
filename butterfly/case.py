@@ -9,9 +9,9 @@ from itertools import izip
 
 from .version import Version
 from .utilities import load_case_files, load_probe_values_from_folder, \
-    load_probes_from_post_processing_file, load_probes_and_values_from_sample_file
+    load_probes_from_postProcessing_file, load_probes_and_values_from_sample_file
 from .geometry import bf_geometry_from_stl_file, calculate_min_max_from_bf_geometries
-from .refinementRegion import refinement_regions_from_stl_file
+from .refinementRegion import refinementRegions_from_stl_file
 from .meshingparameters import MeshingParameters
 from .fields import Field
 
@@ -77,7 +77,7 @@ class Case(object):
                   'constant\\triSurface', 'system', 'log')
 
     # minimum list of files to be able to run blockMesh and snappyHexMesh
-    MINFOAMFIles = ('fv_schemes', 'fv_solution', 'controlDict', 'blockMeshDict',
+    MINFOAMFIles = ('fvSchemes', 'fvSolution', 'controlDict', 'blockMeshDict',
                     'snappyHexMeshDict')
 
     def __init__(self, name, foamfiles, geometries):
@@ -121,8 +121,8 @@ class Case(object):
         self.__geometries = self._check_input_geometries(geometries)
 
         # place holder for refinment regions
-        # use .add_refinement_regions to add regions to case
-        self.__refinement_regions = []
+        # use .add_refinementRegions to add regions to case
+        self.__refinementRegions = []
         self.runmanager = RunManager(self.project_name)
 
     @classmethod
@@ -134,7 +134,7 @@ class Case(object):
             name: An optional new name for this case.
             convert_from_meters: A number to be multiplied to stl file vertices
                 to be converted to the new units if not meters. This value will
-                be the inverse of convert_to_meters.
+                be the inverse of convertToMeters.
         """
         # collect foam files
         __originalName = os.path.split(path)[-1]
@@ -188,14 +188,14 @@ class Case(object):
                         setattr(geo.boundary_condition, ff.name, Field.from_dict(f))
 
         if s_hmd:
-            refinement_regions = tuple(
+            refinementRegions = tuple(
                 ref for f in _files.stl
-                if os.path.split(f)[-1][:-4] in s_hmd.refinement_region_names
-                for ref in refinement_regions_from_stl_file(
-                    f, s_hmd.refinement_region_mode(os.path.split(f)[-1][:-4]))
+                if os.path.split(f)[-1][:-4] in s_hmd.refinementRegion_names
+                for ref in refinementRegions_from_stl_file(
+                    f, s_hmd.refinementRegion_mode(os.path.split(f)[-1][:-4]))
             )
 
-            _case.add_refinement_regions(refinement_regions)
+            _case.add_refinementRegions(refinementRegions)
 
         # original name is a variable to address the current limitation to change
         # the name of stl file in snappyHexMeshDict. It will be removed once the
@@ -207,11 +207,11 @@ class Case(object):
     @classmethod
     def from_bf_geometries(cls, name, geometries, blockMeshDict=None,
                            meshing_parameters=None, make2d_parameters=None,
-                           convert_to_meters=1):
+                           convertToMeters=1):
         """Create a case from Butterfly geometries.
 
         foam_files/dictionaries will be generated based on boundary condition of
-        geometries. fv_solution and fv_schemes will be set to default can can be
+        geometries. fvSolution and fvSchemes will be set to default can can be
         overwritten once a Solution is created from a Case and a Recipe. You can
         overwrite them through the recipe.
 
@@ -239,7 +239,7 @@ class Case(object):
         if not blockMeshDict:
             min_pt, max_pt = calculate_min_max_from_bf_geometries(geometries)
             blockMeshDict = BlockMeshDict.from_min_max(
-                min_pt, max_pt, convert_to_meters)
+                min_pt, max_pt, convertToMeters)
 
         if make2d_parameters:
             # create the 2D blockMeshDict
@@ -249,24 +249,24 @@ class Case(object):
 
         blockMeshDict.update_meshing_parameters(meshing_parameters)
 
-        # set the location_in_mesh for snappyHexMeshDict
+        # set the locationInMesh for snappyHexMeshDict
         if make2d_parameters:
-            meshing_parameters.location_in_mesh = make2d_parameters.origin
-        if not meshing_parameters.location_in_mesh:
-            meshing_parameters.location_in_mesh = blockMeshDict.center
+            meshing_parameters.locationInMesh = make2d_parameters.origin
+        if not meshing_parameters.locationInMesh:
+            meshing_parameters.locationInMesh = blockMeshDict.center
 
         # rename name for snappyHexMeshDict and stl file if starts with a digit
         normname = '_{}'.format(name) if name[0].isdigit() else name
         snappyHexMeshDict = SnappyHexMeshDict.from_bf_geometries(
             normname, geometries, meshing_parameters,
-            convert_to_meters=blockMeshDict.convert_to_meters)
+            convertToMeters=blockMeshDict.convertToMeters)
 
         # constant folder
         if float(Version.of_ver) < 3:
-            turbulence_properties = RASProperties()
+            turbulenceProperties = RASProperties()
         else:
-            turbulence_properties = TurbulenceProperties()
-        transport_properties = TransportProperties()
+            turbulenceProperties = TurbulenceProperties()
+        transportProperties = TransportProperties()
         g = G()
 
         # 0 floder
@@ -285,14 +285,14 @@ class Case(object):
         p_rgh = P_rgh.from_bf_geometries(_geometries)
 
         # system folder
-        fv_schemes = FvSchemes()
-        fv_solution = FvSolution()
-        control_dict = ControlDict()
+        fvSchemes = FvSchemes()
+        fvSolution = FvSolution()
+        controlDict = ControlDict()
         probes = Probes()
 
-        foam_files = (blockMeshDict, snappyHexMeshDict, turbulence_properties,
-                      transport_properties, g, u, p, k, epsilon, nut, t, alphat,
-                      p_rgh, fv_schemes, fv_solution, control_dict, probes)
+        foam_files = (blockMeshDict, snappyHexMeshDict, turbulenceProperties,
+                      transportProperties, g, u, p, k, epsilon, nut, t, alphat,
+                      p_rgh, fvSchemes, fvSolution, controlDict, probes)
 
         # create case
         _cls = cls(name, foam_files, geometries)
@@ -306,36 +306,36 @@ class Case(object):
             wind_tunnel.name, wind_tunnel.test_geomtries, wind_tunnel.blockMeshDict,
             wind_tunnel.meshing_parameters, make2d_parameters)
 
-        initial_conditions = InitialConditions(
-            uref=wind_tunnel.flow_speed, zref=wind_tunnel.zref, z0=wind_tunnel.z0)
+        initialConditions = InitialConditions(
+            Uref=wind_tunnel.flow_speed, Zref=wind_tunnel.Zref, z0=wind_tunnel.z0)
 
         abl_conditions = ABLConditions.from_wind_tunnel(wind_tunnel)
 
-        # add initial_conditions and ABLConditions to _case
-        _case.add_foam_files((initial_conditions, abl_conditions))
+        # add initialConditions and ABLConditions to _case
+        _case.add_foam_files((initialConditions, abl_conditions))
 
         # include condition files in 0 folder files
-        _case.U.update_values({'#include': '"initial_conditions"',
+        _case.U.update_values({'#include': '"initialConditions"',
                                'internalField': 'uniform $flowVelocity'},
                               mute=True)
-        _case.p.update_values({'#include': '"initial_conditions"',
+        _case.p.update_values({'#include': '"initialConditions"',
                                'internalField': 'uniform $pressure'},
                               mute=True)
-        _case.k.update_values({'#include': '"initial_conditions"',
+        _case.k.update_values({'#include': '"initialConditions"',
                                'internalField': 'uniform $turbulentKE'},
                               mute=True)
-        _case.epsilon.update_values({'#include': '"initial_conditions"',
+        _case.epsilon.update_values({'#include': '"initialConditions"',
                                      'internalField': 'uniform $turbulentEpsilon'},
                                     mute=True)
 
-        if wind_tunnel.refinement_regions:
-            for region in wind_tunnel.refinement_regions:
-                _case.add_refinement_region(region)
+        if wind_tunnel.refinementRegions:
+            for region in wind_tunnel.refinementRegions:
+                _case.add_refinementRegion(region)
 
         return _case
 
     @property
-    def is_case(self):
+    def isCase(self):
         """return True."""
         return True
 
@@ -401,24 +401,24 @@ class Case(object):
         return os.path.join(self.project_dir, 'log')
 
     @property
-    def poly_mesh_folder(self):
+    def polyMesh_folder(self):
         """polyMesh folder fullpath."""
         return os.path.join(self.project_dir, 'constant\\polyMesh')
 
     @property
-    def tri_surface_folder(self):
+    def triSurface_folder(self):
         """triSurface folder fullpath."""
         return os.path.join(self.project_dir, 'constant\\triSurface')
 
     @property
-    def post_processing_folder(self):
+    def postProcessing_folder(self):
         """postProcessing folder fullpath."""
         return os.path.join(self.project_dir, 'postProcessing')
 
     @property
     def probes_folder(self):
         """Fullpath to probes folder."""
-        return os.path.join(self.post_processing_folder, 'probes')
+        return os.path.join(self.postProcessing_folder, 'probes')
 
     @property
     def foam_files(self):
@@ -426,14 +426,14 @@ class Case(object):
         return tuple(f for f in self.__foamfiles)
 
     @property
-    def refinement_regions(self):
+    def refinementRegions(self):
         """Get refinement regions."""
-        return self.__refinement_regions
+        return self.__refinementRegions
 
     @property
-    def is_poly_mesh_snappy_hex_mesh(self):
+    def is_polyMesh_snappyHexMesh(self):
         """Check if the mesh in polyMesh folder is snappyHexMesh."""
-        return len(os.listdir(self.poly_mesh_folder)) > 5
+        return len(os.listdir(self.polyMesh_folder)) > 5
 
     @property
     def probes(self):
@@ -457,7 +457,7 @@ class Case(object):
         """Get a foamfile by name."""
         return self.__get_foam_file_by_name(name, self.foam_files)
 
-    def get_snappy_hex_mesh_folders(self):
+    def get_snappyHexMesh_folders(self):
         """Return sorted list of numerical folders."""
         _f = sorted([int(name) for name in os.listdir(self.project_dir)
                      if (name.isdigit() and
@@ -506,44 +506,44 @@ class Case(object):
         except AttributeError as e:
             raise ValueError('Failed to add {}.\n\t{}'.format(foamfile, e))
 
-    def add_refinement_regions(self, refinement_regions):
+    def add_refinementRegions(self, refinementRegions):
         """Add a collections of refinement regions."""
-        for refinement_region in refinement_regions:
-            self.add_refinement_region(refinement_region)
+        for refinementRegion in refinementRegions:
+            self.add_refinementRegion(refinementRegion)
 
-    def add_refinement_region(self, refinement_region):
+    def add_refinementRegion(self, refinementRegion):
         """Add a refinement region."""
-        assert hasattr(refinement_region, 'isRefinementRegion'), \
-            "{} is not a refinement region.".format(refinement_region)
+        assert hasattr(refinementRegion, 'isRefinementRegion'), \
+            "{} is not a refinement region.".format(refinementRegion)
 
-        self.__refinement_regions.append(refinement_region)
+        self.__refinementRegions.append(refinementRegion)
         assert hasattr(self, 'snappyHexMeshDict'), \
-            'You can\'t add a refinement_region to a case with no snappyHexMeshDict.'
+            'You can\'t add a refinementRegion to a case with no snappyHexMeshDict.'
 
-        self.snappy_hex_meshDict.add_refinement_region(refinement_region)
+        self.snappyHexMeshDict.add_refinementRegion(refinementRegion)
 
-    def copy_snappy_hex_mesh(self, folder_number=None, overwrite=True):
+    def copy_snappyHexMesh(self, folder_number=None, overwrite=True):
         """Copy the results of snappyHexMesh to constant/polyMesh."""
         # pick the last numerical folder
         if folder_number:
             _s = os.path.join(self.project_dir, str(folder_number), 'polyMesh')
             assert os.path.isdir(_s), "Can't find {}.".format(_s)
         else:
-            _folders = self.get_snappy_hex_mesh_folders()
+            _folders = self.get_snappyHexMesh_folders()
             if not _folders:
                 return
             _s = os.path.join(self.project_dir, _folders[-1], 'polyMesh')
 
         # copy files to constant/polyMesh
         if overwrite:
-            self.remove_poly_mesh_content()
+            self.remove_polyMesh_content()
 
         try:
-            copy_tree(_s, self.poly_mesh_folder)
+            copy_tree(_s, self.polyMesh_folder)
         except Exception as e:
             print("Failed to copy snappyHexMesh folder: {}".format(e))
 
-    def rename_snappy_hex_mesh_folders(self, add=True):
+    def rename_snappyHexMesh_folders(self, add=True):
         """Rename snappyHexMesh numerical folders to name.org  and vice versa.
 
         Args:
@@ -561,7 +561,7 @@ class Case(object):
                 os.rename(os.path.join(self.project_dir, f),
                           os.path.join(self.project_dir, f.replace('.org', '')))
         else:
-            _folders = self.get_snappy_hex_mesh_folders()
+            _folders = self.get_snappyHexMesh_folders()
 
             # rename them starting from 1
             for f in _folders:
@@ -572,13 +572,13 @@ class Case(object):
                     raise Exception('Failed to rename snappyHexMesh folders: {}'
                                     .format(e))
 
-    def remove_snappy_hex_mesh_folders(self):
+    def remove_snappyHexMesh_folders(self):
         """Remove snappyHexMesh numerical folders.
 
         Use this to clean the folder.
         """
-        self.rename_snappy_hex_mesh_folders(add=False)
-        _folders = self.get_snappy_hex_mesh_folders()
+        self.rename_snappyHexMesh_folders(add=False)
+        _folders = self.get_snappyHexMesh_folders()
 
         for f in _folders:
             try:
@@ -595,21 +595,21 @@ class Case(object):
             except Exception as e:
                 print('Failed to remove {}:\n{}'.format(_f, e))
 
-    def remove_post_processing_folder(self):
+    def remove_postProcessing_folder(self):
         """Remove post postProcessing folder."""
-        if not os.path.isdir(self.post_processing_folder):
+        if not os.path.isdir(self.postProcessing_folder):
             return
 
         try:
-            rmtree(self.post_processing_folder)
+            rmtree(self.postProcessing_folder)
         except Exception as e:
             print('Failed to remove postProcessing folder:\n{}'.format(e))
 
-    def remove_poly_mesh_content(self):
+    def remove_polyMesh_content(self):
         """Remove files inside polyMesh folder."""
-        for _f in os.listdir(self.poly_mesh_folder):
+        for _f in os.listdir(self.polyMesh_folder):
             if _f != 'blockMeshDict':
-                _fp = os.path.join(self.poly_mesh_folder, _f)
+                _fp = os.path.join(self.polyMesh_folder, _f)
                 if os.path.isfile(_fp):
                     os.remove(_fp)
                 elif os.path.isdir(_fp):
@@ -629,19 +629,19 @@ class Case(object):
             except Exception as e:
                 print('Failed to remove processor folder:\n{}'.format(e))
 
-    def purge(self, remove_poly_mesh_content=True,
-              remove_snappy_hex_mesh_folders=True,
+    def purge(self, remove_polyMesh_content=True,
+              remove_snappyHexMesh_folders=True,
               remove_result_folders=False,
-              remove_post_processing_folder=False):
+              remove_postProcessing_folder=False):
         """Purge case folder."""
-        if remove_poly_mesh_content:
-            self.remove_poly_mesh_content()
-        if remove_snappy_hex_mesh_folders:
-            self.remove_snappy_hex_mesh_folders()
+        if remove_polyMesh_content:
+            self.remove_polyMesh_content()
+        if remove_snappyHexMesh_folders:
+            self.remove_snappyHexMesh_folders()
         if remove_result_folders:
             self.remove_result_folders()
-        if remove_post_processing_folder:
-            self.remove_post_processing_folder()
+        if remove_postProcessing_folder:
+            self.remove_postProcessing_folder()
 
     def update_bc_in_zero_folder(self):
         """Update boundary conditions in files in 0 folder.
@@ -659,7 +659,7 @@ class Case(object):
                 (default: False).
             minimum: Write minimum necessary files for case. These files will
                 be enough for meshing the case but not running any commands.
-                Files are ('fv_schemes', 'fv_solution', 'controlDict',
+                Files are ('fvSchemes', 'fvSolution', 'controlDict',
                 'blockMeshDict','snappyHexMeshDict'). Rest of the files will be
                 created from a Solution.
         """
@@ -689,22 +689,22 @@ class Case(object):
         for f in foam_files:
             f.save(self.project_dir)
 
-        # find blockMeshDict and convert_to_meters so I can scale stl files to meters.
+        # find blockMeshDict and convertToMeters so I can scale stl files to meters.
         bmds = (ff for ff in self.foam_files if ff.name == 'blockMeshDict')
         bmd = bmds.next()
-        convert_to_meters = bmd.convert_to_meters
+        convertToMeters = bmd.convertToMeters
 
         # write bfgeometries to stl file. __geometries is geometries without
         # blockMesh geometry
-        stl_str = (geo.to_stl(convert_to_meters) for geo in self.__geometries)
+        stl_str = (geo.to_stl(convertToMeters) for geo in self.__geometries)
         stl_name = self.__originalName or self.project_name
-        with open(os.path.join(self.tri_surface_folder,
+        with open(os.path.join(self.triSurface_folder,
                                '%s.stl' % stl_name), 'wb') as stlf:
             stlf.writelines(stl_str)
 
-        # write refinement_regions to stl files
-        for ref in self.refinement_regions:
-            ref.write_to_stl(self.tri_surface_folder, convert_to_meters)
+        # write refinementRegions to stl files
+        for ref in self.refinementRegions:
+            ref.write_to_stl(self.triSurface_folder, convertToMeters)
 
         # add .foam file
         with open(os.path.join(self.project_dir,
@@ -764,7 +764,7 @@ class Case(object):
                 # return a namedtuple assuming that the command is running fine.
                 return log(True, None, p, logfiles, errfiles)
 
-    def block_mesh(self, args=None, wait=True, overwrite=True,):
+    def blockMesh(self, args=None, wait=True, overwrite=True,):
         """Run blockMesh.
 
         Args:
@@ -775,7 +775,7 @@ class Case(object):
             namedtuple(success, error, process, logfiles, errorfiles).
         """
         if overwrite:
-            self.remove_poly_mesh_content()
+            self.remove_polyMesh_content()
 
         return self.command('blockMesh', args, decomposeParDict=None,
                             wait=wait)
@@ -812,7 +812,7 @@ class Case(object):
         sd.save(self.project_dir)
 
         log = self.command(
-            'postProcess', args=('-func', 'sampleDict', '-latest_time'),
+            'postProcess', args=('-func', 'sampleDict', '-latestTime'),
             decomposeParDict=None, wait=wait)
 
         if not log.success:
@@ -825,7 +825,7 @@ class Case(object):
             IOError('Found no results folder. Either you have not run the '
                     'analysis or the run has faild. Check inside "log" folder.')
 
-        fp = tuple(os.path.join(self.post_processing_folder, 'sampleDict', str(rf[-1]),
+        fp = tuple(os.path.join(self.postProcessing_folder, 'sampleDict', str(rf[-1]),
                                 f)
                    for f in sd.output_filenames)
 
@@ -835,7 +835,7 @@ class Case(object):
             res = namedtuple('Results', 'probes values')
             return res(pts, values)
 
-    def snappy_hex_mesh(self, args=None, wait=True):
+    def snappyHexMesh(self, args=None, wait=True):
         """Run snappyHexMesh.
 
         Args:
@@ -867,7 +867,7 @@ class Case(object):
         try case.setFvSchemes(average_orthogonality)
         """
         if not use_currnt_check_mesh_log:
-            log = self.check_mesh(args=('-latest_time',))
+            log = self.check_mesh(args=('-latestTime',))
             assert log.success, log.error
 
         f = os.path.join(self.log_folder, 'checkMesh.log')
@@ -891,7 +891,7 @@ class Case(object):
                 return f
 
     @staticmethod
-    def __create_foamfile_from_file(p, convert_to_meters=1):
+    def __create_foamfile_from_file(p, convertToMeters=1):
         """Create a foamfile object from an OpenFOAM foamfile.
 
         Args:
@@ -901,22 +901,22 @@ class Case(object):
         """
         # Butterfly FoamFiles. This dictionary should be expanded.
         __foamfilescollection = {
-            'turbulence_properties': TurbulenceProperties,
+            'turbulenceProperties': TurbulenceProperties,
             'RASProperties': RASProperties,
-            'transport_properties': TransportProperties, 'g': G,
+            'transportProperties': TransportProperties, 'g': G,
             'U': U, 'k': K, 'p': P, 'nut': Nut, 'epsilon': Epsilon, 'T': T,
             'alphat': Alphat, 'p_rgh': P_rgh, 'ABLConditions': ABLConditions,
-            'initial_conditions': InitialConditions,
+            'initialConditions': InitialConditions,
             'blockMeshDict': BlockMeshDict, 'snappyHexMeshDict': SnappyHexMeshDict,
-            'controlDict': ControlDict, 'fv_schemes': FvSchemes,
-            'fv_solution': FvSolution, 'probes': Probes,
+            'controlDict': ControlDict, 'fvSchemes': FvSchemes,
+            'fvSolution': FvSolution, 'probes': Probes,
             'decomposeParDict': DecomposeParDict
         }
 
         name = os.path.split(p)[-1].split('.')[0]
         if name == 'blockMeshDict':
             try:
-                return BlockMeshDict.from_file(p, convert_to_meters)
+                return BlockMeshDict.from_file(p, convertToMeters)
             except Exception as e:
                 print('Failed to import {}:\n\t{}'.format(p, e))
         elif name in __foamfilescollection:
@@ -964,7 +964,7 @@ class Case(object):
             raise ValueError("Can't find {} in {}.".format(field,
                                                            self.probes.fields))
 
-        return load_probes_from_post_processing_file(self.probes_folder, field)
+        return load_probes_from_postProcessing_file(self.probes_folder, field)
 
     def duplicate(self):
         """Return a copy of this object."""

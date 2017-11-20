@@ -13,7 +13,7 @@ class ControlDict(FoamFile):
     __default_values['#include'] = None
     # application will be updated based on recipe
     __default_values['application'] = None
-    __default_values['startFrom'] = 'latest_time'
+    __default_values['startFrom'] = 'latestTime'
     __default_values['startTime'] = '0'
     __default_values['stopAt'] = 'endTime'
     __default_values['endTime'] = '1000'
@@ -67,43 +67,43 @@ class ControlDict(FoamFile):
         self.values['application'] = str(value)
 
     @property
-    def start_time(self):
+    def startTime(self):
         """Set start timestep (default: 0)."""
         return self.values['startTime']
 
-    @start_time.setter
-    def start_time(self, value=0):
+    @startTime.setter
+    def startTime(self, value=0):
         self.values['startTime'] = str(int(value))
 
     @property
-    def end_time(self):
+    def endTime(self):
         """Set end timestep (default: 1000)."""
         return self.values['endTime']
 
-    @end_time.setter
-    def end_time(self, value=0):
+    @endTime.setter
+    def endTime(self, value=0):
         self.values['endTime'] = str(int(value))
 
     @property
-    def write_interval(self):
+    def writeInterval(self):
         """Set the number of intervals for writing the results (default: 100)."""
         return self.values['writeInterval']
 
-    @write_interval.setter
-    def write_interval(self, value=100):
+    @writeInterval.setter
+    def writeInterval(self, value=100):
         self.values['writeInterval'] = str(int(value))
 
     @property
-    def purge_write(self):
+    def purgeWrite(self):
         """Set the number of results folders to be kept (default: 0)."""
         return self.values['purgeWrite']
 
-    @purge_write.setter
-    def purge_write(self, value=0):
+    @purgeWrite.setter
+    def purgeWrite(self, value=0):
         self.values['purgeWrite'] = str(int(value))
 
     @property
-    def write_compression(self):
+    def writeCompression(self):
         """Write results as .zip files.
 
         Set to True to compress the results before writing to your machine
@@ -111,8 +111,8 @@ class ControlDict(FoamFile):
         """
         return self.values['writeCompression']
 
-    @write_compression.setter
-    def write_compression(self, value=True):
+    @writeCompression.setter
+    def writeCompression(self, value=True):
         self.values['writeCompression'] = self.convert_bool_value(value)
 
     @property
