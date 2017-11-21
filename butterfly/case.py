@@ -780,7 +780,7 @@ class Case(object):
         return self.command('blockMesh', args, decomposeParDict=None,
                             wait=wait)
 
-    def surface_feature_extract(self, args=None, wait=True):
+    def surfaceFeatureExtract(self, args=None, wait=True):
         """Run surfaceFeatureExtract command.
 
         Args:

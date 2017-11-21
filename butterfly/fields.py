@@ -304,7 +304,7 @@ class FlowRateInletVelocity(FixedValue):
     def __init__(self, volumetricFlowRate, value, is_uniform=True):
         """Init class."""
         FixedValue.__init__(self, value, is_uniform)
-        self.volumetric_flow_rate = volumetric_flow_rate
+        self.volumetricFlowRate = volumetricFlowRate
 
     @property
     def value_dict(self):

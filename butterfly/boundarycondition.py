@@ -270,10 +270,10 @@ class FixedOutletBoundaryCondition(BoundaryCondition):
                  alphat=None, p_rgh=None):
         """Init bounday condition."""
         # set default values for an inlet
-        U = U or InletOutlet(value='uniform (0 0 0)', inlet_value='uniform (0 0 0)')
+        U = U or InletOutlet(value='uniform (0 0 0)', inletValue='uniform (0 0 0)')
         p = p or FixedValue('0')
-        k = k or InletOutlet(value='uniform 0.1', inlet_value='uniform 0.1')
-        epsilon = epsilon or InletOutlet(value='uniform 0.1', inlet_value='uniform 0.1')
+        k = k or InletOutlet(value='uniform 0.1', inletValue='uniform 0.1')
+        epsilon = epsilon or InletOutlet(value='uniform 0.1', inletValue='uniform 0.1')
         nut = Calculated('0')
         T = T or ZeroGradient()
         alphat = alphat or ZeroGradient()

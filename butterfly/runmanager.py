@@ -276,7 +276,7 @@ class RunManager(object):
 
         if decomposeParDict:
             # run in parallel
-            n = decomposeParDict.number_of_subdomains
+            n = decomposeParDict.numberOfSubdomains
             arguments = arguments + ' -parallel'
 
             if cmd == 'snappyHexMesh':

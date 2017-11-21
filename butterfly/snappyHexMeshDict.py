@@ -143,7 +143,7 @@ class SnappyHexMeshDict(FoamFile):
         return self.__geometries
 
     @property
-    def is_feature_edge_refinement_implicit(self):
+    def is_featureEdgeRefinement_implicit(self):
         """Return True if implicit feature refinment is used."""
         return self.__isFeatureEdgeRefinementImplicit
 
@@ -322,7 +322,7 @@ class SnappyHexMeshDict(FoamFile):
         layers = get_snappyHexMesh_surface_layers(self.geometries)
         self.values['addLayersControls']['layers'] = layers
 
-    def set_feature_edge_refinement_to_implicit(self):
+    def set_featureEdgeRefinement_to_implicit(self):
         """Set meshing snap to implicitFeatureSnap."""
         self.values['snapControls']['implicitFeatureSnap'] = 'true'
         self.values['snapControls']['multiRegionFeatureSnap'] = 'true'
@@ -331,7 +331,7 @@ class SnappyHexMeshDict(FoamFile):
         self.values['castellatedMeshControls']['features'] = '()'
         self.__isFeatureEdgeRefinementImplicit = True
 
-    def set_feature_edge_refinement_to_explicit(self, file_name, refinement_level=2):
+    def set_featureEdgeRefinement_to_explicit(self, file_name, refinement_level=2):
         """Set meshing snap to explicitFeatureSnap.
 
         Args:
