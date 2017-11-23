@@ -69,8 +69,9 @@ class _RefinementMode(object):
                 'Length of each level ({}) should be 2.'.format(len(l))
 
         # sort levels based on first item for distance
-        self.__levels = tuple(tuple(int(i) for i in l)
-                              for l in sorted(lev, key=lambda x: x[0]))
+        self.__levels = tuple(
+            (round(l[0], 5), int(l[1])) for l in sorted(lev, key=lambda x: x[0])
+        )
 
     def to_openfoam_dict(self):
         """Return data as a dictionary."""
@@ -114,7 +115,8 @@ class Inside(_RefinementMode):
 
     def __init__(self, level):
         """Create an Inside RefinementMode."""
-        _RefinementMode.__init__(self, ((sys.maxint - 100, int(level)),))
+        # 1.0 will be ignored
+        _RefinementMode.__init__(self, ((1.0, int(level)),))
 
     def __repr__(self):
         """representation."""
@@ -138,7 +140,7 @@ def refinement_mode_from_dict(d):
     """Create a Refinement mode from a python dictionary.
 
     The dictionary should have two keys for model and levels.
-    {'levels': '((1000000000000000 4) )', 'mode': 'inside'}
+    {'levels': '((1.0 4) )', 'mode': 'inside'}
     """
     mode = d['mode']
 
