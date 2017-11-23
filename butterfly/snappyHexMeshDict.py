@@ -119,7 +119,7 @@ class SnappyHexMeshDict(FoamFile):
         _cls.__geometries = cls._check_input_geometries(geometries)
         _cls.update_meshing_parameters(meshing_parameters)
         _cls.set_geometry()
-        _cls.seTRefinement_surfaces()
+        _cls.set_refinement_surfaces()
         _cls.set_nSurfaceLayers()
         return _cls
 
@@ -183,7 +183,7 @@ class SnappyHexMeshDict(FoamFile):
     def globRefineLevel(self, r):
         self.__globRefineLevel = (0, 0) if not r else tuple(r)
         if self.__globRefineLevel:
-            self.seTRefinement_surfaces()
+            self.set_refinement_surfaces()
 
     @property
     def castellatedMesh(self):
@@ -309,7 +309,7 @@ class SnappyHexMeshDict(FoamFile):
                                                      meshing_type='triSurfaceMesh')
         self.values['geometry'].update(_geoField)
 
-    def seTRefinement_surfaces(self):
+    def set_refinement_surfaces(self):
         """Set refinement values for geometries."""
         _ref = get_snappyHexMesh_refinement_surfaces(self.project_name,
                                                      self.geometries,

@@ -42,11 +42,6 @@ class RunManager(object):
             project_name: A string for project name.
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
-        # make sure user has admin rights
-        if not ctypes.windll.shell32.IsUserAnAdmin():
-            raise UserNotAdminError(
-                'In order to run OpenFOAM using butterfly you must use an admin '
-                'account or run the program as administrator.')
 
         self.__project_name = project_name
         self.__separator = '&'
@@ -76,6 +71,26 @@ class RunManager(object):
         """Return PID for the latest command."""
         return self._pid
 
+    @property
+    def is_user_admin(self):
+        """Return True if user is admin."""
+        if ctypes.windll.shell32.IsUserAnAdmin():
+            return True
+        else:
+            return False
+
+    def ensure_user_is_admin(self):
+        """Ensure user is logged in as admin.
+
+        If user is not admin raise UserNotAdminError.
+        """
+        if self.is_user_admin:
+            raise UserNotAdminError(
+                'In order to run OpenFOAM using butterfly you must use an admin '
+                'account or run the program as administrator.')
+        else:
+            return True
+
     def get_shellinit(self):
         """Get shellinit for setting up initial environment for docker."""
         if r'"C:\Program Files (x86)\Git\bin"' not in os.environ['PATH']:
@@ -100,6 +115,13 @@ class RunManager(object):
                     '"default" machine is "running".'
             else:
                 msg = ''
+
+            if not self.is_user_admin:
+                msg = '{}\n{}'.format(
+                    msg, '\nIf OpenFOAM is installed correctly and the default is'
+                    ' running, you get this error most likely because you are not using'
+                    ' an administrator account. Try to run your '
+                    'application (Rhino, Revit, etc) as an Administrator!')
 
             raise IOError('{}\n\t{}'.format(err, msg))
 
