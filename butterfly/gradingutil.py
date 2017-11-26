@@ -1,6 +1,38 @@
 from collections import namedtuple
 
 
+def secant(f, x0, x1, eps, ds, ln, n):
+    """
+    The secant method to solve nonlinear equation to find expansion ratio.
+
+    From:
+    http://hplgit.github.io/Programming-for-Computations/pub/p4c/p4c-sphinx-Python/
+    ._pylight007.html
+    """
+    f_x0 = find_cc_ratio(x0, ds, ln, n)
+    f_x1 = find_cc_ratio(x1, ds, ln, n)
+    iteration_counter = 0
+    while abs(f_x1) > eps and iteration_counter < 100:
+        try:
+            denominator = float(f_x1 - f_x0) / (x1 - x0)
+            x = x1 - float(f_x1) / denominator
+        except ZeroDivisionError:
+            raise ZeroDivisionError('Error: denominator zero for x = {}'.format(x))
+        x0 = x1
+        x1 = x
+        f_x0 = f_x1
+        f_x1 = find_cc_ratio(x1, ds, ln, n)
+        iteration_counter += 1
+    # Here, either a solution is found, or too many iterations
+    if abs(f_x1) > eps:
+        iteration_counter = -1
+    return x, iteration_counter
+
+
+def find_cc_ratio(k, ds, ln, n):
+    return ds * (1 - k ** n) - ln * (1 - k)
+
+
 GradientProperties = namedtuple('GradientProperties', ['ln', 'k', 'r', 'n', 'ds', 'de'])
 
 
@@ -52,10 +84,8 @@ def grading_by_length_ds_ccratio(ln, ds, k):
         tl += ds * k ** n
         n += 1
     n -= 1
-    ln = sum(ds * k ** i for i in range(0, n))
-    r = k ** (n - 1)
-    de = r * ds
-    return GradientProperties(ln, k, r, n, ds, de)
+    de = ds * k ** n
+    return grading_by_length_ds_de(ln, ds, de)
 
 
 def grading_by_length_de_ccratio(ln, de, k, min_ds=1):
@@ -89,8 +119,7 @@ def grading_by_length_de_ccratio(ln, de, k, min_ds=1):
     n -= 1
     r = k ** (n - 1)
     ds = de / r
-    ln = sum(ds * k ** i for i in range(0, n))
-    return GradientProperties(ln, k, r, n, ds, de)
+    return grading_by_length_ds_de(ln, ds, de)
 
 
 def grading_by_length_ds_de(ln, ds, de):
@@ -122,11 +151,23 @@ def grading_by_length_ds_de(ln, ds, de):
 
     n -= 2
     # re-calculate the last option with closest length
-    k = r ** (1.0 / (n - 1))
-    ln = sum(ds * k ** i for i in range(0, n))
-    r = k ** (n - 1)
-    de = r * ds
+    x0 = 2 * k
+    x1 = k
+    eps = 1.0e-6
 
+    try:
+        new_k, no_iterations = secant(find_cc_ratio, x0, x1, eps, ds, ln, n)
+    except Exception:
+        k = r ** (1.0 / (n - 1))
+    else:
+        if no_iterations > 0:
+            k = new_k
+        else:
+            k = r ** (1.0 / (n - 1))
+    finally:
+        ln = sum(ds * k ** i for i in xrange(0, n))
+        r = k ** (n - 1)
+        de = r * ds
     return GradientProperties(ln, k, r, n, ds, de)
 
 

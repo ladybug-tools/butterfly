@@ -244,7 +244,7 @@ class WindTunnel(object):
         return x_values, y_values, z_values
 
     def calculate_grading(self, cell_size=1, expansion_ratio=1.2, wake_offset=2,
-                          z_mode=0):
+                          height_offset=5, z_mode=0):
         """Calculate simpleGrading for this wind tunnel based on best practice.
 
         This method calcutes grading for blockMeshDict based on the size of the wind
@@ -257,6 +257,8 @@ class WindTunnel(object):
                 interest (default: 1.2).
             wake_offset: The length to be added to the end of geometries bounding
                 box to be considerd as part of area of interest (default: 2).
+            height_offset: The length to be added to the topic of geometries bounding
+                box to be considerd as part of area of interest (default: 5).
             z_mode: If 0 special treatment will be considerd for the first 2 and 10
                 meters. The first 2 meters will be graded for each half meter and from
                 2-10 it will be graded 0.5-1, from 10 to maximum height it will be 1-5
@@ -270,6 +272,7 @@ class WindTunnel(object):
         x_dim, y_dim, z_dim = self.get_internal_dimensions()
         # adjust for wake offset
         y_dim = (y_dim[0], y_dim[1] + wake_offset, y_dim[2] - wake_offset)
+        z_dim = (z_dim[0], z_dim[1] + height_offset, z_dim[2] - height_offset)
 
         # calculate cell counts and grading for each direction
         # x direction
