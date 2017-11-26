@@ -10,7 +10,10 @@ from .boundarycondition import WindTunnelGroundBoundaryCondition, \
     WindTunnelInletBoundaryCondition, WindTunnelOutletBoundaryCondition, \
     WindTunnelTopAndSidesBoundaryCondition, WindTunnelWallBoundaryCondition
 from .conditions import ABLConditions
+
 import vectormath as vm
+import grading
+import gradingutil as gutil
 
 
 class WindTunnel(object):
@@ -210,6 +213,147 @@ class WindTunnel(object):
             'Excepted Meshingparameters not {}'.format(type(mp))
         self.__meshing_parameters = mp
         self.blockMeshDict.update_meshing_parameters(mp)
+
+    def get_internal_dimensions(self):
+        """Get internal dimensions of wind tunnel.
+
+        This method returns three tuples for x, y and z which are
+        (distance_to_geometry_bounding_box, geometry_bounding_box,
+         distance_after_geometry_bounding_box). This method is useful to get initial
+         values to calculate grading.
+        """
+        x_axis = self.blockMeshDict.x_axis
+        min_pt, max_pt = calculate_min_max_from_bf_geometries(self.test_geomtries,
+                                                              x_axis)
+        # rotate points to xy axis
+        angle = vm.angle_anitclockwise((1, 0, 0), x_axis)
+        min_pt = vm.rotate((0, 0, 0), min_pt, -angle)
+        max_pt = vm.rotate((0, 0, 0), max_pt, -angle)
+        wt_min_pt = vm.rotate((0, 0, 0), self.blockMeshDict.min_pt, -angle)
+        wt_max_pt = vm.rotate((0, 0, 0), self.blockMeshDict.max_pt, -angle)
+
+        x_values = \
+            (min_pt[0] - wt_min_pt[0], max_pt[0] - min_pt[0], wt_max_pt[0] - max_pt[0])
+
+        y_values = \
+            (min_pt[1] - wt_min_pt[1], max_pt[1] - min_pt[1], wt_max_pt[1] - max_pt[1])
+
+        z_values = \
+            (min_pt[2] - wt_min_pt[2], max_pt[2] - min_pt[2], wt_max_pt[2] - max_pt[2])
+
+        return x_values, y_values, z_values
+
+    def calculate_grading(self, cell_size=1, expansion_ratio=1.2, wake_offset=2,
+                          z_mode=0):
+        """Calculate simpleGrading for this wind tunnel based on best practice.
+
+        This method calcutes grading for blockMeshDict based on the size of the wind
+        tunnel and the bounding box of the geometries.
+
+
+        Args:
+            cell_size: Cell size in the area of interest (default: 1).
+            expansion_ratio: expansion ratio for the segments outside the area of
+                interest (default: 1.2).
+            wake_offset: The length to be added to the end of geometries bounding
+                box to be considerd as part of area of interest (default: 2).
+            z_mode: If 0 special treatment will be considerd for the first 2 and 10
+                meters. The first 2 meters will be graded for each half meter and from
+                2-10 it will be graded 0.5-1, from 10 to maximum height it will be 1-5
+                if expansion ration is less than expansion ratio then expansion ratio
+                will be used. After 10 meters normal expansion_ratio will be used.
+                If 1, z direction will be treated similar to x and y (default: 0).
+        Returns:
+            SimpleGrading, cell_count as (x_count, y_count, z_count)
+
+        """
+        x_dim, y_dim, z_dim = self.get_internal_dimensions()
+        # adjust for wake offset
+        y_dim = (y_dim[0], y_dim[1] + wake_offset, y_dim[2] - wake_offset)
+
+        # calculate cell counts and grading for each direction
+        # x direction
+        # before the area of interest
+        x_0_grd_data = gutil.grading_by_length_de_ccratio(
+            x_dim[0], cell_size, 1.0 / expansion_ratio, 0.01)
+        x_0_grd = grading.Grading(x_dim[0], x_0_grd_data.n, x_0_grd_data.r)
+        # area of interest
+        x_1_grd = grading.Grading(x_dim[1], int(x_dim[1] / cell_size), 1)
+        # after the area of interest
+        x_2_grd_data = gutil.grading_by_length_ds_ccratio(
+            x_dim[2], cell_size, expansion_ratio)
+        x_2_grd = grading.Grading(x_dim[2], x_2_grd_data.n, x_2_grd_data.r)
+        x_cell_count = x_0_grd_data.n + int(x_dim[1] / cell_size) + x_2_grd_data.n
+        x_grd = grading.MultiGrading((x_0_grd, x_1_grd, x_2_grd))
+        print('x_0: {}'.format(x_0_grd_data))
+        print('x_2: {}'.format(x_2_grd_data))
+
+        # y direction
+        # before the area of interest
+        y_0_grd_data = gutil.grading_by_length_de_ccratio(
+            y_dim[0], cell_size, 1.0 / expansion_ratio, 0.01)
+        y_0_grd = grading.Grading(y_dim[0], y_0_grd_data.n, y_0_grd_data.r)
+        # area of interest
+        y_1_grd = grading.Grading(y_dim[1], int(y_dim[1] / cell_size), 1)
+        # after the area of interest
+        y_2_grd_data = gutil.grading_by_length_ds_ccratio(
+            y_dim[2], cell_size, expansion_ratio)
+        y_2_grd = grading.Grading(y_dim[2], y_2_grd_data.n, y_2_grd_data.r)
+        y_cell_count = y_0_grd_data.n + int(y_dim[1] / cell_size) + y_2_grd_data.n
+        y_grd = grading.MultiGrading((y_0_grd, y_1_grd, y_2_grd))
+        print('y_0: {}'.format(y_0_grd_data))
+        print('y_2: {}'.format(y_2_grd_data))
+
+        # z direction
+        # before the area of interest
+        z_grd_col = []
+        z_cell_count = 0
+        if z_mode == 0:
+            z_0_grd = grading.Grading(2, 4, 1)  # 4 * 0.5 for the first 2 meters
+            z_grd_col.append(z_0_grd)
+            z_cell_count += 4
+            z_1_grd = grading.Grading(8, 11, 1.07)  # go from 0.5-1 up to 10 meters
+            z_grd_col.append(z_1_grd)
+            z_cell_count += 11
+
+            geometry_z = z_dim[0] + z_dim[1]
+            if geometry_z - 10 > 5 * expansion_ratio:
+                distance = geometry_z - 10
+                z_3_grd_data = gutil.grading_by_length_ds_de(
+                    distance, 1 * expansion_ratio, 5)
+                z_3_grd = grading.Grading(distance, z_3_grd_data.n, z_3_grd_data.r)
+                z_grd_col.append(z_3_grd)
+                z_cell_count += z_3_grd_data.n
+
+            # final part of the wind tunnel
+            z_4_grd_data = gutil.grading_by_length_ds_ccratio(
+                z_dim[2], cell_size, expansion_ratio)
+            z_4_grd = grading.Grading(z_dim[2], z_4_grd_data.n, z_4_grd_data.r)
+            z_cell_count += z_4_grd_data.n
+            z_grd_col.append(z_4_grd)
+        else:
+            if not z_dim[0] == 0:
+                z_0_grd_data = gutil.grading_by_length_de_ccratio(
+                    z_dim[0], cell_size, 1.0 / expansion_ratio, 0.01
+                )
+                z_0_grd = grading.Grading(z_dim[0], z_0_grd_data.n, z_0_grd_data.r)
+                z_grd_col.append(z_0_grd)
+                z_cell_count += z_0_grd_data.n
+            # area of interest
+            z_1_grd = grading.Grading(z_dim[1], int(y_dim[1] / cell_size), 1)
+            z_grd_col.append(z_1_grd)
+            z_cell_count += int(y_dim[0] / cell_size)
+
+            # after the area of interest
+            z_2_grd_data = gutil.grading_by_length_ds_ccratio(
+                y_dim[2], cell_size, expansion_ratio)
+            z_2_grd = grading.Grading(z_dim[2], z_2_grd_data.n, z_2_grd_data.r)
+            z_grd_col.append(z_2_grd)
+            z_cell_count += z_2_grd_data.n
+
+        z_grd = grading.MultiGrading(z_grd_col)
+        grd = grading.SimpleGrading(x_grd, y_grd, z_grd)
+        return grd, (x_cell_count, y_cell_count, z_cell_count)
 
     def add_refinementRegion(self, refinementRegion):
         """Add refinement regions to this case."""

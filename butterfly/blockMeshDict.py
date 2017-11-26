@@ -25,15 +25,16 @@ class BlockMeshDict(FoamFile):
                           location='system', default_values=self.__default_values,
                           values=values)
 
-        self.__bf_block_geometries = None  # this will be overwritten in classmethods
-        self.__vertices = []
-        self.__isFromVertices = False
+        self._bf_block_geometries = None  # this will be overwritten in classmethods
+        self._vertices = []
+        self._is_from_vertices = False
+        self._x_axis = None
         # variables for 2d blockMeshDict
-        self.__is2dInXDir = False
-        self.__is2dInYDir = False
-        self.__is2dInZDir = False
-        self.__original3dVertices = None
-        self.__order = []
+        self._is_2d_in_x_dir = False
+        self._is_2d_in_y_dir = False
+        self._is_2d_in_z_dir = False
+        self._original_3d_vertices = None
+        self._order = []
         self.n_div_xyz = None
         self.grading = None
 
@@ -66,14 +67,14 @@ class BlockMeshDict(FoamFile):
                                       .strip()[1:-1]
                                       .split())))
 
-        _cls.__vertices = list(tuple(i / conversion for i in v)
-                               for v in vertices)
+        _cls._vertices = list(tuple(i / conversion for i in v)
+                              for v in vertices)
 
         # get blocks, order of vertices, n_div_xyz, grading
         blocks = bmd.split('blocks')[-1].split(';')[0].strip()
         xyz, simpleGrading = blocks.split('simpleGrading')
 
-        _cls.__order, _cls.n_div_xyz = eval(','.join(xyz.split('hex')[-1].split()))
+        _cls._order, _cls.n_div_xyz = eval(','.join(xyz.split('hex')[-1].split()))
 
         simpleGrading = eval(','.join(simpleGrading.strip()[:-1]
                                       .replace('( ', '(')
@@ -182,23 +183,23 @@ class BlockMeshDict(FoamFile):
         """
         _cls = cls()
         _cls.values['convertToMeters'] = convertToMeters
-        _cls.__rawvertices = vertices
+        _cls._rawvertices = vertices
 
         # sort vertices
-        _cls.x_axis = x_axis[:2] if x_axis else (1, 0)
+        _cls.x_axis = x_axis
 
-        _cls.__vertices = _cls.__sort_vertices()
+        _cls._vertices = _cls._sort_vertices()
 
-        _cls.__order = tuple(range(8))
+        _cls._order = tuple(range(8))
 
         # update self.values['boundary']
-        _cls.__update_boundary_from_sorted_vertices()
+        _cls._update_boundary_from_sorted_vertices()
 
         _cls.n_div_xyz = n_div_xyz
 
         # assign grading
         _cls.grading = grading
-        _cls.__isFromVertices = True
+        _cls._is_from_vertices = True
         return _cls
 
     @classmethod
@@ -216,12 +217,12 @@ class BlockMeshDict(FoamFile):
         """
         _cls = cls()
         _cls.values['convertToMeters'] = convertToMeters
-        _cls.__bf_block_geometries = bf_block_geometries
+        _cls._bf_block_geometries = bf_block_geometries
 
         try:
             # collect uniqe vertices from all bf_geometries
-            _cls.__rawvertices = tuple(
-                set(v for f in _cls.__bf_block_geometries
+            _cls._rawvertices = tuple(
+                set(v for f in _cls._bf_block_geometries
                     for vgroup in f.border_vertices
                     for v in vgroup))
         except AttributeError as e:
@@ -230,12 +231,12 @@ class BlockMeshDict(FoamFile):
 
         # sort vertices
         _cls.x_axis = x_axis[:2] if x_axis else (1, 0)
-        _cls.__vertices = _cls.__sort_vertices()
+        _cls._vertices = _cls._sort_vertices()
 
         # update self.values['boundary']
         _cls.__update_boundary_from_bf_block_geometries()
 
-        _cls.__order = tuple(range(8))
+        _cls._order = tuple(range(8))
 
         _cls.n_div_xyz = n_div_xyz
 
@@ -257,41 +258,68 @@ class BlockMeshDict(FoamFile):
     @property
     def is2d_in_x_direction(self):
         """Return True if the case is 2d in X direction."""
-        return self.__is2dInXDir
+        return self._is_2d_in_x_dir
 
     @property
     def is2d_in_y_direction(self):
         """Return True if the case is 2d in Y direction."""
-        return self.__is2dInYDir
+        return self._is_2d_in_y_dir
 
     @property
     def is2d_in_z_direction(self):
         """Return True if the case is 2d in Z direction."""
-        return self.__is2dInZDir
+        return self._is_2d_in_z_dir
 
     @property
     def vertices(self):
         """Get the sorted list of vertices."""
-        return self.__vertices
+        return self._vertices
+
+    @property
+    def x_axis(self):
+        """X axis as a tuple."""
+        if self._x_axis:
+            return self._x_axis
+        else:
+            self._x_axis = vectormath.normalize(
+                vectormath.subtract(self.vertices[1], self.vertices[0])
+            )
+        return self._x_axis
+
+    @x_axis.setter
+    def x_axis(self, v):
+        """X axis."""
+        self._x_axis = vectormath.normalize((v[0], v[1], 0)) or (1, 0, 0)
+
+    @property
+    def y_axis(self):
+        """Y axis."""
+        return vectormath.cross_product(self.z_axis, self.x_axis)
+
+    @property
+    def z_axis(self):
+        """Z axis."""
+        return (0, 0, 1)
 
     def update_vertices(self, vertices, x_axis=None):
         """Update blockMeshDict vertices."""
-        self.__rawvertices = vertices
+        self._rawvertices = vertices
 
         # sort vertices
-        self.x_axis = x_axis[:2] if x_axis else (1, 0)
+        if x_axis:
+            self.x_axis = x_axis
 
-        self.__vertices = self.__sort_vertices()
+        self._vertices = self._sort_vertices()
 
-        self.__order = tuple(range(8))
+        self._order = tuple(range(8))
 
         # update self.values['boundary']
-        self.__update_boundary_from_sorted_vertices()
+        self._update_boundary_from_sorted_vertices()
 
     @property
     def vertices_order(self):
         """Get order of vertices in blocks."""
-        return self.__order
+        return self._order
 
     @property
     def geometry(self):
@@ -314,35 +342,45 @@ class BlockMeshDict(FoamFile):
             return BFGeometry(name, tuple(self.vertices[i] for i in uniuqe),
                               renumbered_indx, boundary_condition=bc)
 
-        if not self.__bf_block_geometries:
-            self.__bf_block_geometries = tuple(
+        if not self._bf_block_geometries:
+            self._bf_block_geometries = tuple(
                 _get_bf_geometry(name, attr)
                 for name, attr in self.boundary.iteritems())
 
-        return self.__bf_block_geometries
+        return self._bf_block_geometries
 
     @property
     def width(self):
         """Length of block in X direction."""
-        return self.__distance(self.vertices[self.vertices_order[0]],
-                               self.vertices[self.vertices_order[1]])
+        return self._distance(self.vertices[self.vertices_order[0]],
+                              self.vertices[self.vertices_order[1]])
 
     @property
     def length(self):
         """Length of block in Y direction."""
-        return self.__distance(self.vertices[self.vertices_order[0]],
-                               self.vertices[self.vertices_order[3]])
+        return self._distance(self.vertices[self.vertices_order[0]],
+                              self.vertices[self.vertices_order[3]])
 
     @property
     def height(self):
         """Length of block in Z direction."""
-        return self.__distance(self.vertices[self.vertices_order[0]],
-                               self.vertices[self.vertices_order[4]])
+        return self._distance(self.vertices[self.vertices_order[0]],
+                              self.vertices[self.vertices_order[4]])
 
     @property
     def center(self):
         """Get center of the block."""
-        return self.__average_verices()
+        return self._average_verices()
+
+    @property
+    def min_pt(self):
+        """Return minimum pt x, y, z in this block."""
+        return self.vertices[self.vertices_order[0]]
+
+    @property
+    def max_pt(self):
+        """Return maximum pt x, y, z in this block."""
+        return self.vertices[self.vertices_order[6]]
 
     @property
     def min_z(self):
@@ -352,39 +390,39 @@ class BlockMeshDict(FoamFile):
     @property
     def n_div_xyz(self):
         """Number of divisions in (x, y, z) as a tuple (default: 5, 5, 5)."""
-        return self.__n_div_xyz
+        return self._n_div_xyz
 
     @n_div_xyz.setter
     def n_div_xyz(self, d_xyz):
-        self.__n_div_xyz = tuple(int(v) for v in d_xyz) if d_xyz else (5, 5, 5)
-        if self.__is2dInXDir:
-            self.__n_div_xyz = 1, self.__n_div_xyz[1], self.__n_div_xyz[2]
-        elif self.__is2dInYDir:
-            self.__n_div_xyz = self.__n_div_xyz[0], 1, self.__n_div_xyz[2]
-        elif self.__is2dInZDir:
-            self.__n_div_xyz = self.__n_div_xyz[0], self.__n_div_xyz[1], 1
+        self._n_div_xyz = tuple(int(v) for v in d_xyz) if d_xyz else (5, 5, 5)
+        if self._is_2d_in_x_dir:
+            self._n_div_xyz = 1, self._n_div_xyz[1], self._n_div_xyz[2]
+        elif self._is_2d_in_y_dir:
+            self._n_div_xyz = self._n_div_xyz[0], 1, self._n_div_xyz[2]
+        elif self._is_2d_in_z_dir:
+            self._n_div_xyz = self._n_div_xyz[0], self._n_div_xyz[1], 1
 
     @property
     def grading(self):
         """A simpleGrading (default: simpleGrading(1, 1, 1))."""
-        return self.__grading
+        return self._grading
 
     @grading.setter
     def grading(self, g):
-        self.__grading = g if g else SimpleGrading()
+        self._grading = g if g else SimpleGrading()
 
         assert hasattr(self.grading, 'isSimpleGrading'), \
             'grading input ({}) is not a valid simpleGrading.'.format(g)
 
     def make3d(self):
         """Reload the 3d blockMeshDict if it has been converted to 2d."""
-        if not self.__original3dVertices:
+        if not self._original_3d_vertices:
             print('This blockMeshDict is already a 3d blockMeshDict.')
             return
-        self.__vertices = self.__original3dVertices
-        self.__is2dInXDir = False
-        self.__is2dInYDir = False
-        self.__is2dInZDir = False
+        self._vertices = self._original_3d_vertices
+        self._is_2d_in_x_dir = False
+        self._is_2d_in_y_dir = False
+        self._is_2d_in_z_dir = False
 
     def make2d(self, plane_origin, plane_normal, width=0.1):
         """Make the blockMeshDict two dimensional.
@@ -395,8 +433,8 @@ class BlockMeshDict(FoamFile):
             width: width of 2d blockMeshDict (default: 01).
         """
         # copy original vertices
-        if not self.__original3dVertices:
-            self.__original3dVertices = self.vertices
+        if not self._original_3d_vertices:
+            self._original_3d_vertices = self.vertices
         else:
             # load original 3d vertices
             self.make3d()
@@ -405,8 +443,8 @@ class BlockMeshDict(FoamFile):
 
         # project all vertices to plane and move them in direction of normal
         # by half of width
-        self.__vertices = [
-            self.__calculate2d_points(v, plane_origin, n, width)
+        self._vertices = [
+            self._calculate2d_points(v, plane_origin, n, width)
             for v in self.vertices]
 
         # set boundary condition to empty
@@ -414,24 +452,24 @@ class BlockMeshDict(FoamFile):
         minimum = min(self.width, self.length, self.height)
         if self.width == minimum:
             self.n_div_xyz = (1, self.n_div_xyz[1], self.n_div_xyz[2])
-            self.__is2dInXDir = True
+            self._is_2d_in_x_dir = True
             # set both sides to empty
-            self.__set_boundary_to_empty(4)
-            self.__set_boundary_to_empty(5)
+            self._set_boundary_to_empty(4)
+            self._set_boundary_to_empty(5)
 
         elif self.length == minimum:
             self.n_div_xyz = (self.n_div_xyz[0], 1, self.n_div_xyz[2])
-            self.__is2dInYDir = True
+            self._is_2d_in_y_dir = True
             # set inlet and outlet to empty
-            self.__set_boundary_to_empty(0)
-            self.__set_boundary_to_empty(1)
+            self._set_boundary_to_empty(0)
+            self._set_boundary_to_empty(1)
 
         elif self.height == minimum:
             self.n_div_xyz = (self.n_div_xyz[0], self.n_div_xyz[1], 1)
-            self.__is2dInZDir = True
+            self._is_2d_in_z_dir = True
             # set top and bottom to empty
-            self.__set_boundary_to_empty(2)
-            self.__set_boundary_to_empty(3)
+            self._set_boundary_to_empty(2)
+            self._set_boundary_to_empty(3)
 
     def expand_uniform_by_cells_count(self, count, renumber_division=True):
         """Expand blockMeshDict boundingbox for n cells from all sides.
@@ -471,8 +509,7 @@ class BlockMeshDict(FoamFile):
 
     def expand_x(self, dist):
         """Expand blockMeshDict boundingbox for dist in x and -x directions."""
-        _x_axis = (self.x_axis[0], self.x_axis[1], 0) if len(self.x_axis) == 2 \
-            else self.x_axis
+        _x_axis = self.x_axis
 
         for i in (0, 3, 7, 4):
             self.vertices[i] = vectormath.move(
@@ -484,8 +521,7 @@ class BlockMeshDict(FoamFile):
 
     def expand_y(self, dist):
         """Expand blockMeshDict boundingbox for dist in y and -y directions."""
-        _z_axis = (0, 0, 1)
-        _y_axis = vectormath.cross_product(_z_axis, self.x_axis)
+        _y_axis = self.y_axis
         for i in (0, 1, 5, 4):
             self.vertices[i] = vectormath.move(
                 self.vertices[i], vectormath.scale(_y_axis, -dist))
@@ -506,7 +542,7 @@ class BlockMeshDict(FoamFile):
                 self.vertices[i], vectormath.scale(_z_axis, dist))
 
     @staticmethod
-    def __calculate2d_points(v, o, n, w):
+    def _calculate2d_points(v, o, n, w):
         # project point
         p = vectormath.project(v, o, n)
         # move the projected point backwards for half of the width
@@ -626,7 +662,7 @@ class BlockMeshDict(FoamFile):
 
         return face_vertices[face_index]
 
-    def __set_boundary_to_empty(self, face_index):
+    def _set_boundary_to_empty(self, face_index):
         """Update boundary to empty for the face based on index.
 
         Args:
@@ -636,7 +672,7 @@ class BlockMeshDict(FoamFile):
         # get indices and vertices for the face_index
         ind = self.get_face_indices(face_index)
 
-        if self.__isFromVertices:
+        if self._is_from_vertices:
             if 'boundingbox_empty' not in self.values['boundary']:
                 self.values['boundary']['boundingbox_empty'] = \
                     {'type': 'empty', 'faces': ()}
@@ -653,12 +689,12 @@ class BlockMeshDict(FoamFile):
                 if ind in v['faces']:
                     v['type'] = 'empty'
 
-                    for geo in self.__bf_block_geometries:
+                    for geo in self._bf_block_geometries:
                         if geo.name == name:
                             geo.boundary_condition = EmptyBoundaryCondition()
                     break
 
-    def __update_boundary_from_sorted_vertices(self):
+    def _update_boundary_from_sorted_vertices(self):
         """Update boundary dictionary based ordered vertices."""
         self.values['boundary']['boundingbox'] = {
             'type': 'wall',
@@ -670,7 +706,7 @@ class BlockMeshDict(FoamFile):
 
     def __update_boundary_from_bf_block_geometries(self):
         """Update boundary dictionary based on bf_block_geometries input."""
-        for geo in self.__bf_block_geometries:
+        for geo in self._bf_block_geometries:
             try:
                 self.values['boundary'][geo.name] = {
                     'type': geo.boundary_condition.type,
@@ -701,24 +737,24 @@ class BlockMeshDict(FoamFile):
         return 'boundary\n(%s);\n' % '\n'.join(col)
 
     @staticmethod
-    def __distance(v1, v2):
+    def _distance(v1, v2):
         return sqrt(sum((x - y) ** 2 for x, y in zip(v1, v2)))
 
-    def __average_verices(self):
+    def _average_verices(self):
         _x, _y, _z = 0, 0, 0
 
-        for ver in self.__rawvertices:
+        for ver in self._rawvertices:
             _x += ver[0]
             _y += ver[1]
             _z += ver[2]
 
-        numofver = len(self.__rawvertices)
+        numofver = len(self._rawvertices)
         return _x / numofver, _y / numofver, _z / numofver
 
-    def __sort_vertices(self):
+    def _sort_vertices(self):
         """sort input vertices."""
         groups = {}
-        for p in self.__rawvertices:
+        for p in self._rawvertices:
             if p[2] not in groups:
                 groups[p[2]] = []
 

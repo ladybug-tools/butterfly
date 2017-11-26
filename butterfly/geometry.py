@@ -383,3 +383,17 @@ def calculate_min_max(geometry, angle):
 
     # rotate them back to XY coordinates
     return min_pt, max_pt
+
+
+def dimensions_from_min_max(min_pt, max_pt, x_axis=None):
+    """Calculate width, length and height for input x_axis."""
+    x_axis = x_axis or (1, 0, 0)
+    angle = angle_anitclockwise((1, 0, 0), x_axis)
+    min_pt = rotate((0, 0, 0), min_pt, -angle)
+    max_pt = rotate((0, 0, 0), max_pt, -angle)
+
+    width = max_pt[0] - min_pt[0]
+    length = max_pt[1] - min_pt[1]
+    height = max_pt[2] - min_pt[2]
+
+    return width, length, height
