@@ -144,6 +144,7 @@ def grading_by_length_ds_de(ln, ds, de):
     # try to find the cell count to get to this point
     n = 2
     tl = 0
+    k = 1
     while tl < ln:
         k = r ** (1.0 / (n - 1))
         tl = sum(ds * k ** i for i in range(0, n))

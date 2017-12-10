@@ -289,7 +289,8 @@ class BlockMeshDict(FoamFile):
     @x_axis.setter
     def x_axis(self, v):
         """X axis."""
-        self._x_axis = vectormath.normalize((v[0], v[1], 0)) or (1, 0, 0)
+        v = v or (1, 0, 0)
+        self._x_axis = vectormath.normalize((v[0], v[1], 0))
 
     @property
     def y_axis(self):
