@@ -7,23 +7,23 @@ class SimpleGrading(object):
     """Block simpleGrading in blockMeshDict.
 
     Attributes:
-        xGrading: Grading for X. The input can be a Grading or a MultiGrading
+        x_grading: Grading for X. The input can be a Grading or a MultiGrading
             (default: 1).
-        yGrading: Grading for Y. The input can be a Grading or a MultiGrading
+        y_grading: Grading for Y. The input can be a Grading or a MultiGrading
             (default: 1).
-        zGrading: Grading for Z. The input can be a Grading or a MultiGrading
+        z_grading: Grading for Z. The input can be a Grading or a MultiGrading
             (default: 1).
 
     Usage:
-        xGrading = Grading.fromExpansionRatio(1)
-        yGrading = Grading.fromExpansionRatio(1)
-        zGrading = MultiGrading(
+        x_grading = Grading.from_expansion_ratio(1)
+        y_grading = Grading.from_expansion_ratio(1)
+        z_grading = MultiGrading(
             (Grading(0.2, 0.3, 4),
             Grading(0.6, 0.4, 1),
             Grading(0.2, 0.3, 0.25))
         )
 
-        print simpleGrading(xGrading, yGrading, zGrading)
+        print(simpleGrading(x_grading, y_grading, z_grading))
 
         >> simpleGrading (
             1.0
@@ -36,28 +36,28 @@ class SimpleGrading(object):
             )
     """
 
-    def __init__(self, xGrading=1, yGrading=1, zGrading=1):
+    def __init__(self, x_grading=1, y_grading=1, z_grading=1):
         """Init simpleGrading class."""
-        self.xGrading = self._tryReadGrading(xGrading)
-        self.yGrading = self._tryReadGrading(yGrading)
-        self.zGrading = self._tryReadGrading(zGrading)
+        self.x_grading = self._try_read_grading(x_grading)
+        self.y_grading = self._try_read_grading(y_grading)
+        self.z_grading = self._try_read_grading(z_grading)
 
     @property
     def isSimpleGrading(self):
         """Return True."""
         return True
 
-    def _tryReadGrading(self, g):
+    def _try_read_grading(self, g):
         """Try to convert input value to grading."""
         if hasattr(g, 'isGrading'):
-            assert g.isValid, \
+            assert g.is_valid, \
                 'You cannot use grading {} as a single grading.' \
                 'Use this grading to create a MultiGrading and then use' \
                 'MultiGrading to create simpleGrading.'.format(g)
             return g
         elif str(g).isdigit():
             # create grading from a single value as expansion ratio
-            return Grading.fromExpansionRatio(g)
+            return Grading.from_expansion_ratio(g)
         else:
             try:
                 return Grading(*tuple(g))
@@ -65,7 +65,7 @@ class SimpleGrading(object):
                 raise ValueError('Invalid input ({}). Grading should be a number '
                                  'or a tuple of numeric values.\n{}'.format(g, e))
 
-    def toOpenFOAM(self):
+    def to_openfoam(self):
         """Get blockMeshDict string.
 
         Args:
@@ -75,7 +75,7 @@ class SimpleGrading(object):
         """
         _body = "\nsimpleGrading (\n\t{}\n\t{}\n\t{}\n\t)"
 
-        return _body.format(self.xGrading, self.yGrading, self.zGrading)
+        return _body.format(self.x_grading, self.y_grading, self.z_grading)
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -87,7 +87,7 @@ class SimpleGrading(object):
 
     def __repr__(self):
         """OpenFOAM blockMeshDict boundary."""
-        return self.toOpenFOAM()
+        return self.to_openfoam()
 
 
 class MultiGrading(object):
@@ -101,7 +101,7 @@ class MultiGrading(object):
 
     Attributes:
         gradings: A list of minimum two OpenFOAM Gradings. All the gradings
-            should have percentageLength and percentageCells values.
+            should have percentage_length and percentage_cells values.
     """
 
     def __init__(self, gradings):
@@ -109,8 +109,8 @@ class MultiGrading(object):
         assert len(gradings) > 1, 'Length of gradings should be at least 2.'
 
         for g in gradings:
-            assert hasattr(g, 'isGrading') and g.percentageCells \
-                and g.percentageLength, 'Invalid input: {}'.format(g)
+            assert hasattr(g, 'isGrading') and g.percentage_cells \
+                and g.percentage_length, 'Invalid input: {}'.format(g)
 
         self.__gradings = gradings
 
@@ -125,7 +125,12 @@ class MultiGrading(object):
         return True
 
     @property
-    def isValid(self):
+    def isMultiGrading(self):
+        """Return True."""
+        return True
+
+    @property
+    def is_valid(self):
         """Return True."""
         return True
 
@@ -146,28 +151,28 @@ class Grading(object):
     """OpenFOAM grading.
 
     Use this class to create OpenFOAM grading with either a single expansion
-    ration or (percentageLength, percentageCells, expansionRatio).
+    ration or (percentage_length, percentage_cells, expansion_ratio).
 
     Attributes:
-        percentageLength: Percentage of length of the block.
-        percentageCells: Percentage of cells to be included in this segment.
-        expansionRatio: Expansion ration in this segment (default: 1).
+        percentage_length: Percentage of length of the block.
+        percentage_cells: Percentage of cells to be included in this segment.
+        expansion_ratio: Expansion ration in this segment (default: 1).
     """
 
-    def __init__(self, percentageLength=None, percentageCells=None,
-                 expansionRatio=1):
+    def __init__(self, percentage_length=None, percentage_cells=None,
+                 expansion_ratio=1):
         """Init a grading."""
-        self.percentageLength = self._checkValues(percentageLength)
-        self.percentageCells = self._checkValues(percentageCells)
-        self.expansionRatio = self._checkValues(expansionRatio)
+        self.percentage_length = self._check_values(percentage_length)
+        self.percentage_cells = self._check_values(percentage_cells)
+        self.expansion_ratio = self._check_values(expansion_ratio)
 
     @classmethod
-    def fromExpansionRatio(cls, expansionRatio=1):
-        """Create a grading with only expansionRatio."""
-        return cls(expansionRatio=expansionRatio)
+    def from_expansion_ratio(cls, expansion_ratio=1):
+        """Create a grading with only expansion_ratio."""
+        return cls(expansion_ratio=expansion_ratio)
 
     @staticmethod
-    def _checkValues(v):
+    def _check_values(v):
         if not v:
             return
         try:
@@ -181,9 +186,9 @@ class Grading(object):
         return True
 
     @property
-    def isValid(self):
-        """Return True if grading is just an expansionRatio."""
-        return not self.percentageCells or not self.percentageLength
+    def is_valid(self):
+        """Return True if grading is just an expansion_ratio."""
+        return not self.percentage_cells or not self.percentage_length
 
     def duplicate(self):
         """Return a copy of this object."""
@@ -195,9 +200,9 @@ class Grading(object):
 
     def __repr__(self):
         """Grading."""
-        if not self.percentageCells or not self.percentageLength:
-            return str(self.expansionRatio)
+        if not self.percentage_cells or not self.percentage_length:
+            return str(self.expansion_ratio)
         else:
-            return '({} {} {})'.format(self.percentageLength,
-                                       self.percentageCells,
-                                       self.expansionRatio)
+            return '({} {} {})'.format(self.percentage_length,
+                                       self.percentage_cells,
+                                       self.expansion_ratio)

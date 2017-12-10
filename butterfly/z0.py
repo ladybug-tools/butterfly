@@ -17,6 +17,9 @@ class Z0(object):
         7: '2.0', 'chaotic': '2.0'
     }
 
+    def __init__(self):
+        pass
+
     @property
     def sea(self):
         """Roughness value for open sea or lake."""
@@ -33,7 +36,7 @@ class Z0(object):
         return self.__roughnessDict['open']
 
     @property
-    def roughlyOpen(self):
+    def roughly_open(self):
         """Roughness value for cultivated area with regular cover of low crops."""
         return self.__roughnessDict['roughlyOpen']
 
@@ -43,7 +46,7 @@ class Z0(object):
         return self.__roughnessDict['rough']
 
     @property
-    def veryRough(self):
+    def very_rough(self):
         """Roughness value for 'old' cultivated landscape."""
         return self.__roughnessDict['veryRough']
 

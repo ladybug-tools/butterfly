@@ -3,7 +3,7 @@
 import sys
 from copy import deepcopy
 from .geometry import _BFMesh
-from .geometry import bfGeometryFromStlFile
+from .geometry import bf_geometry_from_stl_file
 
 
 class RefinementRegion(_BFMesh):
@@ -12,15 +12,15 @@ class RefinementRegion(_BFMesh):
     Attributes:
         name: Name as a string (A-Z a-z 0-9 _).
         vertices: A flatten list of (x, y, z) for vertices.
-        faceIndices: A flatten list of (a, b, c) for indices for each face.
+        face_indices: A flatten list of (a, b, c) for indices for each face.
         normals: A flatten list of (x, y, z) for face normals.
-        refinementMode: Refinement mode (0: inside, 1: outside, 2: distance)
+        refinement_mode: Refinement mode (0: inside, 1: outside, 2: distance)
     """
 
-    def __init__(self, name, vertices, faceIndices, normals, refinementMode):
+    def __init__(self, name, vertices, face_indices, normals, refinement_mode):
         """Init Butterfly geometry."""
-        _BFMesh.__init__(self, name, vertices, faceIndices, normals)
-        self.refinementMode = refinementMode
+        _BFMesh.__init__(self, name, vertices, face_indices, normals)
+        self.refinement_mode = refinement_mode
 
     @property
     def isRefinementRegion(self):
@@ -28,16 +28,16 @@ class RefinementRegion(_BFMesh):
         return True
 
     @property
-    def refinementMode(self):
+    def refinement_mode(self):
         """Boundary condition."""
-        return self.__refinementMode
+        return self.__refinement_mode
 
-    @refinementMode.setter
-    def refinementMode(self, rm):
+    @refinement_mode.setter
+    def refinement_mode(self, rm):
         assert hasattr(rm, 'isRefinementMode'), \
             '{} is not a Butterfly refinement mode.'.format(rm)
 
-        self.__refinementMode = rm
+        self.__refinement_mode = rm
 
 
 class _RefinementMode(object):
@@ -69,10 +69,11 @@ class _RefinementMode(object):
                 'Length of each level ({}) should be 2.'.format(len(l))
 
         # sort levels based on first item for distance
-        self.__levels = tuple(tuple(int(i) for i in l)
-                              for l in sorted(lev, key=lambda x: x[0]))
+        self.__levels = tuple(
+            (round(l[0], 5), int(l[1])) for l in sorted(lev, key=lambda x: x[0])
+        )
 
-    def toOpenFOAMDict(self):
+    def to_openfoam_dict(self):
         """Return data as a dictionary."""
         return {'mode': self.__class__.__name__.lower(),
                 'levels': str(self.levels).replace(',', ' ')}
@@ -114,7 +115,8 @@ class Inside(_RefinementMode):
 
     def __init__(self, level):
         """Create an Inside RefinementMode."""
-        _RefinementMode.__init__(self, ((sys.maxint - 100, int(level)),))
+        # 1.0 will be ignored
+        _RefinementMode.__init__(self, ((1.0, int(level)),))
 
     def __repr__(self):
         """representation."""
@@ -134,11 +136,11 @@ class Outside(Inside):
     pass
 
 
-def refinementModeFromDict(d):
+def refinement_mode_from_dict(d):
     """Create a Refinement mode from a python dictionary.
 
     The dictionary should have two keys for model and levels.
-    {'levels': '((1000000000000000 4) )', 'mode': 'inside'}
+    {'levels': '((1.0 4) )', 'mode': 'inside'}
     """
     mode = d['mode']
 
@@ -155,9 +157,9 @@ def refinementModeFromDict(d):
         return Distance(levels)
 
 
-def refinementRegionsFromStlFile(filepath, refinementMode):
+def refinementRegions_from_stl_file(filepath, refinement_mode):
     """Create a RefinementRegion form an stl file."""
-    geos = bfGeometryFromStlFile(filepath)
-    return tuple(RefinementRegion(geo.name, geo.vertices, geo.faceIndices,
-                                  geo.normals, refinementMode)
+    geos = bf_geometry_from_stl_file(filepath)
+    return tuple(RefinementRegion(geo.name, geo.vertices, geo.face_indices,
+                                  geo.normals, refinement_mode)
                  for geo in geos)

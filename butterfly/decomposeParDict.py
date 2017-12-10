@@ -3,7 +3,7 @@
 
 Decompose parameters for parallel runs.
 """
-from foamfile import FoamFile, foamFileFromFile
+from foamfile import FoamFile, foam_file_from_file
 from collections import OrderedDict
 
 
@@ -11,24 +11,24 @@ class DecomposeParDict(FoamFile):
     """DecomposeParDict class."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['numberOfSubdomains'] = '2'
-    __defaultValues['method'] = 'scotch'
+    __default_values = OrderedDict()
+    __default_values['numberOfSubdomains'] = '2'
+    __default_values['method'] = 'scotch'
 
     def __init__(self, values=None):
         """Init class."""
         FoamFile.__init__(self, name='decomposeParDict', cls='dictionary',
-                          location='system', defaultValues=self.__defaultValues,
+                          location='system', default_values=self.__default_values,
                           values=values)
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @property
     def numberOfSubdomains(self):
@@ -47,26 +47,26 @@ class DecomposeParDict(FoamFile):
         return cls(values=values)
 
     @classmethod
-    def simple(cls, numberOfSubdomainsXYZ=None, delta=0.001):
+    def simple(cls, numberOfSubdomains_xyz=None, delta=0.001):
         """Simple method.
 
         Args:
-            numberOfSubdomainsXYZ: Number of subdomains in x, y, z as a tuple
+            numberOfSubdomains_xyz: Number of subdomains in x, y, z as a tuple
                 (default: (2, 1, 1))
             delta: Cell skew factor (default: 0.001).
         """
         try:
-            numberOfSubdomainsXYZ = tuple(numberOfSubdomainsXYZ)
+            numberOfSubdomains_xyz = tuple(numberOfSubdomains_xyz)
         except Exception:
-            numberOfSubdomainsXYZ = (2, 1, 1)
+            numberOfSubdomains_xyz = (2, 1, 1)
 
-        numberOfSubdomains = numberOfSubdomainsXYZ[0] * \
-            numberOfSubdomainsXYZ[1] * numberOfSubdomainsXYZ[2]
+        numberOfSubdomains = numberOfSubdomains_xyz[0] * \
+            numberOfSubdomains_xyz[1] * numberOfSubdomains_xyz[2]
 
         values = {'method': 'simple',
                   'numberOfSubdomains': str(numberOfSubdomains),
                   'simpleCoeffs':
-                  {'n': str(numberOfSubdomainsXYZ).replace(',', ' '),
+                  {'n': str(numberOfSubdomains_xyz).replace(',', ' '),
                    'delta': str(delta)}}
 
         return cls(values=values)

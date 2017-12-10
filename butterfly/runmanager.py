@@ -33,41 +33,36 @@ class RunManager(object):
     shellinit = None
     __containerId = None
 
-    def __init__(self, projectName):
+    def __init__(self, project_name):
         u"""Init run manager for project.
 
-        Project path will be set to: C:/Users/%USERNAME%/butterfly/projectName
+        Project path will be set to: C:/Users/%USERNAME%/butterfly/project_name
 
         Args:
-            projectName: A string for project name.
+            project_name: A string for project name.
         """
         assert os.name == 'nt', "Currently RunManager is only supported on Windows."
-        # make sure user has admin rights
-        if not ctypes.windll.shell32.IsUserAnAdmin():
-            raise UserNotAdminError(
-                'In order to run OpenFOAM using butterfly you must use an admin '
-                'account or run the program as administrator.')
 
-        self.__projectName = projectName
+        self.__project_name = project_name
         self.__separator = '&'
-        self.isUsingDockerMachine = True \
-            if hasattr(Version, 'isUsingDockerMachine') and \
-            Version.isUsingDockerMachine \
+        self.is_using_docker_machine = True \
+            if hasattr(Version, 'is_using_docker_machine') and \
+            Version.is_using_docker_machine \
             else False
 
         self.dockerPath = r'"C:\Program Files\Docker Toolbox"' \
-            if self.isUsingDockerMachine \
+            if self.is_using_docker_machine \
             else r'"C:\Program Files\Boot2Docker for Windows"'
 
-        self.logFolder = './log'
+        self.log_folder = './log'
         self.errFolder = './log'
         self._pid = None
 
     @property
-    def containerId(self):
+    def container_id(self):
         """Container ID."""
         if not self.__containerId:
-            self.getContainerId()
+            self.get_container_id()
 
         return self.__containerId
 
@@ -76,14 +71,34 @@ class RunManager(object):
         """Return PID for the latest command."""
         return self._pid
 
-    def getShellinit(self):
+    @property
+    def is_user_admin(self):
+        """Return True if user is admin."""
+        if ctypes.windll.shell32.IsUserAnAdmin():
+            return True
+        else:
+            return False
+
+    def ensure_user_is_admin(self):
+        """Ensure user is logged in as admin.
+
+        If user is not admin raise UserNotAdminError.
+        """
+        if self.is_user_admin:
+            raise UserNotAdminError(
+                'In order to run OpenFOAM using butterfly you must use an admin '
+                'account or run the program as administrator.')
+        else:
+            return True
+
+    def get_shellinit(self):
         """Get shellinit for setting up initial environment for docker."""
         if r'"C:\Program Files (x86)\Git\bin"' not in os.environ['PATH']:
             os.environ['PATH'] += ';%s' % r'"C:\Program Files (x86)\Git\bin"'
         if self.dockerPath not in os.environ['PATH']:
             os.environ['PATH'] += ';%s' % self.dockerPath
 
-        if self.isUsingDockerMachine:
+        if self.is_using_docker_machine:
             # version 1606 and higher
             process = Popen('docker-machine env', shell=True, stdout=PIPE,
                             stderr=PIPE)
@@ -101,6 +116,13 @@ class RunManager(object):
             else:
                 msg = ''
 
+            if not self.is_user_admin:
+                msg = '{}\n{}'.format(
+                    msg, '\nIf OpenFOAM is installed correctly and the default is'
+                    ' running, you get this error most likely because you are not using'
+                    ' an administrator account. Try to run your '
+                    'application (Rhino, Revit, etc) as an Administrator!')
+
             raise IOError('{}\n\t{}'.format(err, msg))
 
         return tuple(line.replace('$Env:', 'set ')
@@ -109,11 +131,11 @@ class RunManager(object):
                      for line in process.stdout
                      if not line.startswith('REM'))
 
-    def getContainerId(self):
+    def get_container_id(self):
         """Get OpenFOAM's container id."""
         _id = None
         if not self.shellinit:
-            self.shellinit = self.getShellinit()
+            self.shellinit = self.get_shellinit()
 
         cmds = '&'.join(self.shellinit + ('docker ps',))
 
@@ -132,20 +154,19 @@ class RunManager(object):
 
         self.__containerId = _id
 
-    def getPid(self, command, timeout=5):
+    def get_pid(self, command, timeout=5):
         """Get pid of a command."""
-        if not self.containerId:
-            self.getContainerId()
+        if not self.container_id:
+            self.get_container_id()
 
         self._pid = None
-        cmd = 'docker exec -i {} pgrep {}'.format(self.containerId, command)
+        cmd = 'docker exec -i {} pgrep {}'.format(self.container_id, command)
         cmds = '&'.join(self.shellinit + (cmd,))
         sys.stdout.flush()
         timeout_start = time.time()
         while time.time() < timeout_start + timeout:
             pids = Popen(cmds, shell=True, stdout=PIPE)
-            pp = [int(p) for p in tuple(pids.stdout)]
-            pp.sort()
+            pp = sorted([int(p) for p in tuple(pids.stdout)])
             if pp:
                 self._pid = int(pp[-1])
                 sys.stdout.flush()
@@ -156,15 +177,15 @@ class RunManager(object):
 
     def terminate(self, pid=None, force=False):
         """Kill the command using the pid."""
-        if not self.containerId:
-            self.getContainerId()
+        if not self.container_id:
+            self.get_container_id()
         pid = pid or self.pid
         if not pid:
             return
         if force:
-            killer = 'docker exec -i {} kill -9 {}'.format(self.containerId, pid)
+            killer = 'docker exec -i {} kill -9 {}'.format(self.container_id, pid)
         else:
-            killer = 'docker exec -i {} kill {}'.format(self.containerId, pid)
+            killer = 'docker exec -i {} kill {}'.format(self.container_id, pid)
 
         cmds = '&'.join(self.shellinit + (killer,))
         sys.stdout.flush()
@@ -172,22 +193,22 @@ class RunManager(object):
         print(''.join(tuple(k.stdout)))
 
     @property
-    def __ofBatchFile(self):
-        if Version.OFFullVer == 'v3.0+':
+    def __of_batch_file(self):
+        if Version.of_full_ver == 'v3.0+':
             return r'C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts' \
-                '\start_OF.bat'
+                '\start_openfoam.bat'
         else:
             return r'C:\Program Files (x86)\ESI\OpenFOAM\{}\\' \
-                'Windows\Scripts\start_OF.bat'.format(Version.OFFullVer[1:-1])
+                'Windows\Scripts\start_openfoam.bat'.format(Version.of_full_ver[1:-1])
 
-    def startOpenFOAM(self):
+    def start_openfoam(self):
         """Start OpenFOAM for Windows image from batch file."""
-        Popen(self.__ofBatchFile, shell=True)
+        Popen(self.__of_batch_file, shell=True)
 
     def header(self):
         """Get header for batch files."""
         if not self.shellinit:
-            self.shellinit = self.getShellinit()
+            self.shellinit = self.get_shellinit()
 
         _base = '@echo off{0}' \
                 'cd {1}{0}' \
@@ -202,28 +223,28 @@ class RunManager(object):
                             self.__separator.join(self.shellinit))
 
     # TODO(): Update controlDict.application for multiple commands
-    def command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
+    def command(self, cmd, args=None, decomposeParDict=None, include_header=True):
         """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
             args: List of optional arguments for command. e.g. ('c', 'latestTime')
             decomposeParDict: decomposeParDict for parallel runs (default: None).
-            includeHeader: Include header lines to set up the environment
+            include_header: Include header lines to set up the environment
                 (default: True).
             tee: Include tee in command line.
         Returns:
             (cmd, logfiles, errorfiles)
         """
         if isinstance(cmd, str):
-            return self.__command(cmd, args, decomposeParDict, includeHeader)
+            return self.__command(cmd, args, decomposeParDict, include_header)
         elif isinstance(cmd, (list, tuple)):
             # a list of commands
             res = namedtuple('log', 'cmd logfiles errorfiles')
             logs = range(len(cmd))  # create a place holder for commands
             for count, c in enumerate(cmd):
                 if count > 0:
-                    includeHeader = False
+                    include_header = False
                 if c == 'blockMesh':
                     decomposeParDict = None
                 try:
@@ -232,7 +253,7 @@ class RunManager(object):
                     arg = args
 
                 logs[count] = self.__command(c, (arg,), decomposeParDict,
-                                             includeHeader)
+                                             include_header)
 
             command = '&'.join(log.cmd for log in logs)
             logfiles = tuple(ff for log in logs for ff in log.logfiles)
@@ -240,14 +261,14 @@ class RunManager(object):
 
             return res(command, logfiles, errorfiles)
 
-    def __command(self, cmd, args=None, decomposeParDict=None, includeHeader=True):
+    def __command(self, cmd, args=None, decomposeParDict=None, include_header=True):
         """Get command line for an OpenFOAM command in parallel or serial.
 
         Args:
             cmd: An OpenFOAM command.
             args: List of optional arguments for command. e.g. ('-c', '-latestTime')
             decomposeParDict: decomposeParDict for parallel runs (default: None).
-            includeHeader: Include header lines to set up the environment
+            include_header: Include header lines to set up the environment
                 (default: True).
             tee: Include tee in command line.
         Returns:
@@ -257,20 +278,20 @@ class RunManager(object):
         res = namedtuple('log', 'cmd logfiles errorfiles')
         _msg = 'Failed to find container id. ' \
             'Do you have the OpenFOAM container running?\n' \
-            'You can initiate OpenFOAM container by running start_OF.bat:\n{}' \
-            .format(self.__ofBatchFile)
+            'You can initiate OpenFOAM container by running start_openfoam.bat:\n{}' \
+            .format(self.__of_batch_file)
 
         # try to get containerId
-        if not self.containerId:
-            self.getContainerId()
+        if not self.container_id:
+            self.get_container_id()
 
-        assert self.containerId, _msg
+        assert self.container_id, _msg
 
         # containerId is found. put the commands together
         _base = 'start /wait docker exec -i {} su - ofuser -c ' \
             '"cd /home/ofuser/workingDir/butterfly/{}; {}"'
-        _baseCmd = '{0} {1} > >(%s %s/{2}.log) 2> >(%s %s/{2}.err >&2)' \
-            % (tee, self.logFolder, tee, self.errFolder)
+        _basecmd = '{0} {1} > >(%s %s/{2}.log) 2> >(%s %s/{2}.err >&2)' \
+            % (tee, self.log_folder, tee, self.errFolder)
 
         # join arguments for the command
         arguments = '' if not args else '{}'.format(' '.join(args))
@@ -281,35 +302,35 @@ class RunManager(object):
             arguments = arguments + ' -parallel'
 
             if cmd == 'snappyHexMesh':
-                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
-                           'reconstructParMesh', 'rm')
-                argList = ('', arguments, '-constant', '-r proc*')
-                cmdNameList = ('decomposePar', cmd, 'reconstructParMesh', 'rm')
+                cmd_list = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                            'reconstructParMesh', 'rm')
+                arg_list = ('', arguments, '-constant', '-r proc*')
+                cmd_name_list = ('decomposePar', cmd, 'reconstructParMesh', 'rm')
             else:
-                cmdList = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
-                           'reconstructPar', 'rm')
-                argList = ('', arguments, '', '-r proc*')
-                cmdNameList = ('decomposePar', cmd, 'reconstructPar', 'rm')
+                cmd_list = ('decomposePar', 'mpirun -np %s %s' % (n, cmd),
+                            'reconstructPar', 'rm')
+                arg_list = ('', arguments, '', '-r proc*')
+                cmd_name_list = ('decomposePar', cmd, 'reconstructPar', 'rm')
 
             # join commands together
-            cmds = (_baseCmd.format(c, arg, name) for c, arg, name in
-                    zip(cmdList, argList, cmdNameList))
+            cmds = (_basecmd.format(c, arg, name) for c, arg, name in
+                    zip(cmd_list, arg_list, cmd_name_list))
 
-            cmds = _base.format(self.containerId, self.__projectName,
+            cmds = _base.format(self.container_id, self.__project_name,
                                 '; '.join(cmds))
 
             errfiles = tuple('{}/{}.err'.format(self.errFolder, name)
-                             for name in cmdNameList)
-            logfiles = tuple('{}/{}.log'.format(self.logFolder, name)
-                             for name in cmdNameList)
+                             for name in cmd_name_list)
+            logfiles = tuple('{}/{}.log'.format(self.log_folder, name)
+                             for name in cmd_name_list)
         else:
             # run is serial
-            cmds = _base.format(self.containerId, self.__projectName,
-                                _baseCmd.format(cmd, arguments, cmd))
+            cmds = _base.format(self.container_id, self.__project_name,
+                                _basecmd.format(cmd, arguments, cmd))
             errfiles = ('{}/{}.err'.format(self.errFolder, cmd),)
-            logfiles = ('{}/{}.log'.format(self.logFolder, cmd),)
+            logfiles = ('{}/{}.log'.format(self.log_folder, cmd),)
 
-        if includeHeader:
+        if include_header:
             return res(self.header() + self.__separator + cmds, logfiles, errfiles)
         else:
             return res(cmds, logfiles, errfiles)
@@ -329,7 +350,7 @@ class RunManager(object):
         else:
             timeout = 5
         time.sleep(0.5)  # wait 0.5 second to make sure the command has started
-        ppid = self.getPid(command.split()[0], timeout)
+        ppid = self.get_pid(command.split()[0], timeout)
         print('Butterfly is running {}. PID: {}'.format(command, ppid))
         if wait:
             p.communicate()
@@ -340,7 +361,7 @@ class RunManager(object):
 
         return log(p, logfiles, errfiles)
 
-    def checkFileContents(self, files, mute=False):
+    def check_file_contents(self, files, mute=False):
         """Check files for content and print them out if any.
 
         args:
@@ -351,7 +372,7 @@ class RunManager(object):
             hasContent: A boolean that shows if there is any contents.
             content: Files content if any
         """
-        def readFile(f):
+        def read_file(f):
             try:
                 with open(f, 'rb') as log:
                     return log.read().strip()
@@ -360,7 +381,7 @@ class RunManager(object):
                 print(err)
                 return ''
 
-        _lines = '\n'.join(tuple(readFile(f) for f in files)).strip()
+        _lines = '\n'.join(tuple(read_file(f) for f in files)).strip()
 
         if len(_lines) > 0:
             if not mute:
@@ -379,4 +400,4 @@ class RunManager(object):
 
     def __repr__(self):
         """Run manager representation."""
-        return """RunManager::{}""".format(self.__projectName)
+        return """RunManager::{}""".format(self.__project_name)

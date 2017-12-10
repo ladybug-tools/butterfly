@@ -1,6 +1,6 @@
 # coding=utf-8
 """A cllection of OpenFOAM functions such as Probes."""
-from .foamfile import FoamFile, foamFileFromFile
+from .foamfile import FoamFile, foam_file_from_file
 from .parser import CppDictParser
 from collections import OrderedDict
 
@@ -13,7 +13,7 @@ class Function(FoamFile):
     """
 
     @classmethod
-    def fromCppDictionary(cls, dictionary):
+    def from_cpp_dictionary(cls, dictionary):
         """Create a foamfile from an OpenFOAM dictionary in text format."""
         # convert values to python dictionary
         values = CppDictParser(text=dictionary).values
@@ -39,34 +39,34 @@ class Probes(Function):
     """Probes function."""
 
     # set default valus for this class
-    __defaultValues = {'functions': {'probes': OrderedDict()}}
-    __defaultValues['functions']['probes']['functionObjectLibs'] = '("libsampling.so")'
-    __defaultValues['functions']['probes']['type'] = 'probes'
-    __defaultValues['functions']['probes']['name'] = 'probes'
-    __defaultValues['functions']['probes']['fields'] = '(p U)'  # Fields to be probed
-    __defaultValues['functions']['probes']['probeLocations'] = None
-    __defaultValues['functions']['probes']['writeControl'] = 'timeStep'
-    __defaultValues['functions']['probes']['writeInterval'] = '1'
+    __default_values = {'functions': {'probes': OrderedDict()}}
+    __default_values['functions']['probes']['functionObjectLibs'] = '("libsampling.so")'
+    __default_values['functions']['probes']['type'] = 'probes'
+    __default_values['functions']['probes']['name'] = 'probes'
+    __default_values['functions']['probes']['fields'] = '(p U)'  # Fields to be probed
+    __default_values['functions']['probes']['probeLocations'] = None
+    __default_values['functions']['probes']['writeControl'] = 'timeStep'
+    __default_values['functions']['probes']['writeInterval'] = '1'
 
     def __init__(self, values=None):
         """Init class."""
         super(Probes, self).__init__(
             name='probes', cls='dictionary', location='system',
-            defaultValues=self.__defaultValues, values=values
+            default_values=self.__default_values, values=values
         )
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        _cls = cls(values=foamFileFromFile(filepath, cls.__name__))
+        _cls = cls(values=foam_file_from_file(filepath, cls.__name__))
         return _cls
 
     @property
-    def probesCount(self):
+    def probes_count(self):
         """Get number of probes."""
         if not self.probeLocations:
             return 0
@@ -104,11 +104,11 @@ class Probes(Function):
             .replace('(', '').replace(')', '').split()
 
     @fields.setter
-    def fields(self, fieldsList):
-        if not fieldsList:
+    def fields(self, fields_list):
+        if not fields_list:
             return
         self.values['functions']['probes']['fields'] = \
-            str(tuple(fieldsList)).replace(',', ' ') \
+            str(tuple(fields_list)).replace(',', ' ') \
             .replace("'", '').replace('"', '') \
             .replace("\\r", '').replace("\\n", ' ')
 
@@ -123,12 +123,12 @@ class Probes(Function):
             return
         self.values['functions']['probes']['writeInterval'] = str(int(value))
 
-    def save(self, projectFolder, subFolder=None):
-        if self.probesCount == 0:
+    def save(self, project_folder, sub_folder=None):
+        if self.probes_count == 0:
             return
         else:
-            super(Probes, self).save(projectFolder, subFolder)
+            super(Probes, self).save(project_folder, sub_folder)
 
     def __repr__(self):
         """Class representation."""
-        return self.toOpenFOAM()
+        return self.to_openfoam()

@@ -1,6 +1,6 @@
 # coding=utf-8
 """Finite Volume Solution class."""
-from foamfile import FoamFile, foamFileFromFile
+from foamfile import FoamFile, foam_file_from_file
 from collections import OrderedDict
 
 
@@ -8,9 +8,9 @@ class FvSolution(FoamFile):
     """Finite Volume Solution class."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['solvers'] = OrderedDict()
-    __defaultValues['solvers']['p'] = {
+    __default_values = OrderedDict()
+    __default_values['solvers'] = OrderedDict()
+    __default_values['solvers']['p'] = {
         'solver': 'GAMG',
         'tolerance': '1e-7',
         'relTol': '0.1',
@@ -23,7 +23,7 @@ class FvSolution(FoamFile):
         'mergeLevels': '1'
     }
 
-    __defaultValues['solvers']['U'] = {
+    __default_values['solvers']['U'] = {
         'solver': 'smoothSolver',
         'smoother': 'GaussSeidel',
         'tolerance': '1e-8',
@@ -31,7 +31,7 @@ class FvSolution(FoamFile):
         'nSweeps': '1'
     }
 
-    __defaultValues['solvers']['k'] = {
+    __default_values['solvers']['k'] = {
         'solver': 'smoothSolver',
         'smoother': 'GaussSeidel',
         'tolerance': '1e-8',
@@ -39,7 +39,7 @@ class FvSolution(FoamFile):
         'nSweeps': '1'
     }
 
-    __defaultValues['solvers']['epsilon'] = {
+    __default_values['solvers']['epsilon'] = {
         'solver': 'smoothSolver',
         'smoother': 'GaussSeidel',
         'tolerance': '1e-8',
@@ -47,34 +47,34 @@ class FvSolution(FoamFile):
         'nSweeps': '1'
     }
 
-    __defaultValues['SIMPLE'] = OrderedDict()
-    __defaultValues['SIMPLE']['nNonOrthogonalCorrectors'] = '2'
-    __defaultValues['SIMPLE']['residualControl'] = {}
+    __default_values['SIMPLE'] = OrderedDict()
+    __default_values['SIMPLE']['nNonOrthogonalCorrectors'] = '2'
+    __default_values['SIMPLE']['residualControl'] = {}
 
-    __defaultValues['relaxationFactors'] = {}
-    __defaultValues['relaxationFactors']['p'] = '0.3'
-    __defaultValues['relaxationFactors']['U'] = '0.7'
-    __defaultValues['relaxationFactors']['k'] = '0.7'
-    __defaultValues['relaxationFactors']['epsilon'] = '0.7'
+    __default_values['relaxationFactors'] = {}
+    __default_values['relaxationFactors']['p'] = '0.3'
+    __default_values['relaxationFactors']['U'] = '0.7'
+    __default_values['relaxationFactors']['k'] = '0.7'
+    __default_values['relaxationFactors']['epsilon'] = '0.7'
 
     def __init__(self, values=None):
         """Init class."""
         FoamFile.__init__(self, name='fvSolution', cls='dictionary',
-                          location='system', defaultValues=self.__defaultValues,
+                          location='system', default_values=self.__default_values,
                           values=values)
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     # TODO(): update to pass the recipe itself and not the code!
     @classmethod
-    def fromRecipe(cls, recipe=0):
+    def from_recipe(cls, recipe=0):
         """Generate fvSolution for a particular recipe.
 
         Args:
@@ -107,7 +107,7 @@ class FvSolution(FoamFile):
                 'relaxationFactors': {'p': None, 'p_rgh': '0.3', 'T': '0.5'}}
 
         # update values based on the recipe.
-        _cls.updateValues(_values, mute=True)
+        _cls.update_values(_values, mute=True)
         return _cls
 
     @property
@@ -116,19 +116,19 @@ class FvSolution(FoamFile):
         return ResidualControl(self.values['SIMPLE']['residualControl'])
 
     @residualControl.setter
-    def residualControl(self, resControl):
+    def residualControl(self, res_control):
         """Set residual control values.
 
         Args:
-            resControl: New residual control.
+            res_control: New residual control.
         """
-        if not resControl:
+        if not res_control:
             return
 
         if not self.values['SIMPLE']['residualControl']:
             self.values['SIMPLE']['residualControl'] = {}
 
-        for key, value in resControl.values.iteritems():
+        for key, value in res_control.values.iteritems():
             self.values['SIMPLE']['residualControl'][str(key)] = str(value)
 
     @property
@@ -137,19 +137,19 @@ class FvSolution(FoamFile):
         return RelaxationFactors(self.values['relaxationFactors'])
 
     @relaxationFactors.setter
-    def relaxationFactors(self, relaxFact):
+    def relaxationFactors(self, relax_fact):
         """Set residual control values.
 
         Args:
-            resControl: New residual control.
+            res_control: New residual control.
         """
-        if not relaxFact:
+        if not relax_fact:
             return
 
         if not self.values['relaxationFactors']:
             self.values['relaxationFactors'] = {}
 
-        for key, value in relaxFact.values.iteritems():
+        for key, value in relax_fact.values.iteritems():
             self.values['relaxationFactors'][str(key)] = str(value)
 
 

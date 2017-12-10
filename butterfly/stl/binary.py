@@ -1,5 +1,5 @@
 import struct
-from types import *
+from types import Vector3d, Solid
 
 
 class Reader(object):

@@ -1,6 +1,6 @@
 # coding=utf-8
 """BlockMeshDict class."""
-from .foamfile import FoamFile, foamFileFromFile
+from .foamfile import FoamFile, foam_file_from_file
 from .functions import Function
 from collections import OrderedDict
 
@@ -9,40 +9,40 @@ class ControlDict(FoamFile):
     """Control dict class."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['#include'] = None
+    __default_values = OrderedDict()
+    __default_values['#include'] = None
     # application will be updated based on recipe
-    __defaultValues['application'] = None
-    __defaultValues['startFrom'] = 'latestTime'
-    __defaultValues['startTime'] = '0'
-    __defaultValues['stopAt'] = 'endTime'
-    __defaultValues['endTime'] = '1000'
-    __defaultValues['deltaT'] = '1'
-    __defaultValues['writeControl'] = 'timeStep'
-    __defaultValues['writeInterval'] = '100'
-    __defaultValues['purgeWrite'] = '0'
-    __defaultValues['writeFormat'] = 'ascii'
-    __defaultValues['writePrecision'] = '7'
-    __defaultValues['writeCompression'] = 'off'
-    __defaultValues['timeFormat'] = 'general'
-    __defaultValues['timePrecision'] = '6'
-    __defaultValues['runTimeModifiable'] = 'true'
-    __defaultValues['functions'] = OrderedDict()
+    __default_values['application'] = None
+    __default_values['startFrom'] = 'latestTime'
+    __default_values['startTime'] = '0'
+    __default_values['stopAt'] = 'endTime'
+    __default_values['endTime'] = '1000'
+    __default_values['deltaT'] = '1'
+    __default_values['writeControl'] = 'timeStep'
+    __default_values['writeInterval'] = '100'
+    __default_values['purgeWrite'] = '0'
+    __default_values['writeFormat'] = 'ascii'
+    __default_values['writePrecision'] = '7'
+    __default_values['writeCompression'] = 'off'
+    __default_values['timeFormat'] = 'general'
+    __default_values['timePrecision'] = '6'
+    __default_values['runTimeModifiable'] = 'true'
+    __default_values['functions'] = OrderedDict()
 
     def __init__(self, values=None):
         """Init class."""
         FoamFile.__init__(self, name='controlDict', cls='dictionary',
-                          location='system', defaultValues=self.__defaultValues,
+                          location='system', default_values=self.__default_values,
                           values=values)
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @property
     def include(self):
@@ -50,9 +50,9 @@ class ControlDict(FoamFile):
         return self.values['#include']
 
     @include.setter
-    def include(self, fileName):
+    def include(self, file_name):
         """Add include to controlDict."""
-        self.values['#include'] = '"{}"'.format(fileName.replace('"', ''))
+        self.values['#include'] = '"{}"'.format(file_name.replace('"', ''))
 
     @property
     def application(self):
@@ -113,7 +113,7 @@ class ControlDict(FoamFile):
 
     @writeCompression.setter
     def writeCompression(self, value=True):
-        self.values['writeCompression'] = self.convertBoolValue(value)
+        self.values['writeCompression'] = self.convert_bool_value(value)
 
     @property
     def functions(self):
@@ -121,9 +121,9 @@ class ControlDict(FoamFile):
         self.values['functions']
 
     @functions.setter
-    def functions(self, funcObjects):
-        fos = (f if hasattr(f, 'isFunction') else Function.fromCppDictionary(f)
-               for f in funcObjects)
+    def functions(self, func_objects):
+        fos = (f if hasattr(f, 'isFunction') else Function.from_cpp_dictionary(f)
+               for f in func_objects)
         self.values['functions'] = OrderedDict()
         for f in fos:
             self.values['functions'].update(f.values)

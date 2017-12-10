@@ -1,6 +1,6 @@
 # coding=utf-8
 """ABL Conditions and initialConditions class."""
-from .foamfile import Condition, foamFileFromFile
+from .foamfile import Condition, foam_file_from_file
 from collections import OrderedDict
 import math
 
@@ -9,37 +9,37 @@ class ABLConditions(Condition):
     """ABL Conditions."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['Uref'] = '0'   # wind velocity
-    __defaultValues['Zref'] = '10'  # reference z value - usually 10 meters
+    __default_values = OrderedDict()
+    __default_values['Uref'] = '0'   # wind velocity
+    __default_values['Zref'] = '10'  # reference z value - usually 10 meters
     # roughness - default is set to 1 for urban environment
-    __defaultValues['z0'] = 'uniform 1'
-    __defaultValues['flowDir'] = '(0 1 0)'  # direction of flow
-    __defaultValues['zDir'] = '(0 0 1)'  # z direction (0 0 1) always for our cases
-    __defaultValues['zGround'] = 'uniform 0'  # min z value of the bounding box
-    __defaultValues['value'] = '$internalField'
+    __default_values['z0'] = 'uniform 1'
+    __default_values['flowDir'] = '(0 1 0)'  # direction of flow
+    __default_values['zDir'] = '(0 0 1)'  # z direction (0 0 1) always for our cases
+    __default_values['zGround'] = 'uniform 0'  # min z value of the bounding box
+    __default_values['value'] = '$internalField'
 
     def __init__(self, values=None):
         """Init class."""
         super(ABLConditions, self).__init__(
             name='ABLConditions', cls='dictionary', location='0',
-            defaultValues=self.__defaultValues, values=values
+            default_values=self.__default_values, values=values
         )
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
     @classmethod
-    def fromInputValues(cls, flowSpeed, z0, flowDir, zGround):
+    def from_input_values(cls, flow_speed, z0, flowDir, zGround):
         """Get ABLCondition."""
         _ABLCDict = {}
-        _ABLCDict['Uref'] = str(flowSpeed)
+        _ABLCDict['Uref'] = str(flow_speed)
         _ABLCDict['z0'] = 'uniform {}'.format(z0)
         _ABLCDict['flowDir'] = flowDir if isinstance(flowDir, str) \
             else '({} {} {})'.format(*flowDir)
@@ -48,9 +48,9 @@ class ABLConditions(Condition):
         return cls(_ABLCDict)
 
     @classmethod
-    def fromWindTunnel(cls, windTunnel):
+    def from_wind_tunnel(cls, wind_tunnel):
         """Init class from wind tunnel."""
-        return cls(values=windTunnel.ABLConditionsDict)
+        return cls(values=wind_tunnel.ABLConditionsDict)
 
     @property
     def flowDir(self):
@@ -58,23 +58,48 @@ class ABLConditions(Condition):
         return eval(self.values['flowDir'])
 
     @property
-    def flowSpeed(self):
+    def flow_speed(self):
         """Get flow speed as a float."""
-        return float(self.values['Uref'])
+        return float(self.values['Uref'].replace(' ', ','))
+
+    @property
+    def Uref(self):
+        """Get flow speed as a float."""
+        return self.values['Uref']
+
+    @property
+    def Zref(self):
+        """Get reference z value for input wind speed- usually 10 meters"""
+        return self.values['Zref']
+
+    @property
+    def z0(self):
+        """roughness - default is set to 1 for urban environment"""
+        return self.values['z0']
+
+    @property
+    def zDir(self):
+        """z direction. (0 0 1) for wind tunnel"""
+        return eval(self.values['zDir'].replace(' ', ','))
+
+    @property
+    def zGround(self):
+        """Min z value of the bounding box (default: uniform 0)"""
+        return self.values['zGround']
 
 
 class InitialConditions(Condition):
     """Initial conditions."""
 
     # set default valus for this class
-    __defaultValues = OrderedDict()
-    __defaultValues['flowVelocity'] = '(0 0 0)'
-    __defaultValues['pressure'] = '0'
-    __defaultValues['turbulentKE'] = None  # will be calculated based on input values
-    __defaultValues['turbulentEpsilon'] = None  # will be calculated based on inp values
-    __defaultValues['#inputMode'] = 'merge'
+    __default_values = OrderedDict()
+    __default_values['flowVelocity'] = '(0 0 0)'
+    __default_values['pressure'] = '0'
+    __default_values['turbulentKE'] = None  # will be calculated based on input values
+    __default_values['turbulentEpsilon'] = None  # will be calculated based on inp values
+    __default_values['#inputMode'] = 'merge'
 
-    def __init__(self, values=None, Uref=0, Zref=10, z0=1, Cm=0.09, k=0.41):
+    def __init__(self, values=None, Uref=0, Zref=10, z0=1, cm=0.09, k=0.41):
         """Init class.
 
         Args:
@@ -85,24 +110,24 @@ class InitialConditions(Condition):
         self.__Uref = float(Uref)
         self.__Zref = float(Zref)
         self.__z0 = float(z0)
-        self.__Cm = Cm
+        self.__cm = cm
         self.__k = k
-        self.calculateKEpsilon(init=True)
+        self.calculate_k_epsilon(init=True)
         super(InitialConditions, self).__init__(
             name='initialConditions', cls='dictionary', location='0',
-            defaultValues=self.__defaultValues, values=values
+            default_values=self.__default_values, values=values
         )
 
     @classmethod
-    def fromFile(cls, filepath):
+    def from_file(cls, filepath):
         """Create a FoamFile from a file.
 
         Args:
             filepath: Full file path to dictionary.
         """
-        return cls(values=foamFileFromFile(filepath, cls.__name__))
+        return cls(values=foam_file_from_file(filepath, cls.__name__))
 
-    def calculateKEpsilon(self, init=False):
+    def calculate_k_epsilon(self, init=False):
         """Calculate turbulentKE and turbulentEpsilon.
 
         Args:
@@ -111,11 +136,11 @@ class InitialConditions(Condition):
         """
         _Uabl = self.Uref * self.k / math.log((self.Zref + self.z0) / self.z0)
         epsilon = _Uabl ** 3 / (self.k * (self.Zref + self.z0))
-        k = _Uabl ** 2 / math.sqrt(self.Cm)
+        k = _Uabl ** 2 / math.sqrt(self.cm)
 
         if init:
-            self.__defaultValues['turbulentKE'] = '%.5f' % k
-            self.__defaultValues['turbulentEpsilon'] = '%.5f' % epsilon
+            self.__default_values['turbulentKE'] = '%.5f' % k
+            self.__default_values['turbulentEpsilon'] = '%.5f' % epsilon
         else:
             self.values['turbulentKE'] = str(k)
             self.values['turbulentEpsilon'] = str(epsilon)
@@ -129,7 +154,7 @@ class InitialConditions(Condition):
     def Uref(self, value):
         """Input velocity in m/s."""
         self.__Uref = float(value)
-        self.calculateKEpsilon()
+        self.calculate_k_epsilon()
 
     @property
     def Zref(self):
@@ -139,7 +164,7 @@ class InitialConditions(Condition):
     @Zref.setter
     def Zref(self, value):
         self.__Zref = float(value)
-        self.calculateKEpsilon()
+        self.calculate_k_epsilon()
 
     @property
     def z0(self):
@@ -149,20 +174,20 @@ class InitialConditions(Condition):
     @z0.setter
     def z0(self, value):
         self.__z0 = float(value)
-        self.calculateKEpsilon()
+        self.calculate_k_epsilon()
 
     @property
-    def Cm(self):
-        """Cm.
+    def cm(self):
+        """cm.
 
         default: 0.09
         """
-        return self.__Cm
+        return self.__cm
 
-    @Cm.setter
-    def Cm(self, value):
-        self.__Cm = float(value)
-        self.calculateKEpsilon()
+    @cm.setter
+    def cm(self, value):
+        self.__cm = float(value)
+        self.calculate_k_epsilon()
 
     @property
     def k(self):
@@ -175,4 +200,4 @@ class InitialConditions(Condition):
     @k.setter
     def k(self, value):
         self.__k = float(value)
-        self.calculateKEpsilon()
+        self.calculate_k_epsilon()

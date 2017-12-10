@@ -11,7 +11,7 @@ class MeshingParameters(object):
     """Meshing parameters.
 
     Attributes:
-        cellSizeXYZ: Cell size in (x, y, z) as a tuple (default: length / 5).
+        cell_size_xyz: Cell size in (x, y, z) as a tuple (default: length / 5).
             This value updates number of divisions in blockMeshDict.
         grading: A simpleGrading (default: simpleGrading(1, 1, 1)). This value
             updates grading in blockMeshDict.
@@ -21,26 +21,31 @@ class MeshingParameters(object):
             value updates globalRefinementLevel in snappyHexMeshDict.
     """
 
-    def __init__(self, cellSizeXYZ=None, grading=None, locationInMesh=None,
+    def __init__(self, cell_size_xyz=None, grading=None, locationInMesh=None,
                  globRefineLevel=None):
         """Init meshing parameters."""
         # blockMeshDict
         try:
-            self.cellSizeXYZ = None if not cellSizeXYZ else tuple(cellSizeXYZ)
+            self.cell_size_xyz = None if not cell_size_xyz else tuple(cell_size_xyz)
         except TypeError:
             # Point in Dynamo is not iterable
-            self.cellSizeXYZ = (cellSizeXYZ.X, cellSizeXYZ.Y, cellSizeXYZ.Z)
+            self.cell_size_xyz = (cell_size_xyz.X, cell_size_xyz.Y, cell_size_xyz.Z)
 
         self.grading = grading  # blockMeshDict
         # snappyHexMeshDict
         try:
-            self.locationInMesh = None if not locationInMesh else tuple(locationInMesh)
+            self.locationInMesh = None if not locationInMesh else tuple(
+                locationInMesh)
         except TypeError:
             # Point in Dynamo is not iterable
-            self.locationInMesh = (locationInMesh.X, locationInMesh.Y, locationInMesh.Z)
+            self.locationInMesh = (
+                locationInMesh.X,
+                locationInMesh.Y,
+                locationInMesh.Z)
 
         # snappyHexMeshDict
-        self.globRefineLevel = None if not globRefineLevel else tuple(globRefineLevel)
+        self.globRefineLevel = None if not globRefineLevel else tuple(
+            globRefineLevel)
 
     @property
     def isMeshingParameters(self):
@@ -71,5 +76,5 @@ class MeshingParameters(object):
         """Meshing parameters representation."""
         return "MeshingParameters::{}".format(
             '::'.join((str(i).replace('\n', '').replace('\t', ' ')
-                       for i in (self.cellSizeXYZ, self.grading) if i))
+                       for i in (self.cell_size_xyz, self.grading) if i))
         )
