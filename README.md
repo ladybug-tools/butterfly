@@ -10,10 +10,8 @@ A light python API for creating and running [OpenFoam](http://www.openfoam.org/)
 
 API documentation
 ========================================
-[Butterfly](http://ladybug-tools.github.io/butterfly/doc/butterfly).
-
-[Butterfly Grasshopper](http://ladybug-tools.github.io/butterfly/doc/butterfly_grasshopper).
-
-[Butterfly Dynamo](http://ladybug-tools.github.io/butterfly/doc/butterfly_dynamo/)
+[Butterfly](http://ladybug-tools.github.io/apidoc/butterfly).
 
 @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>
+
+![butterfly graphic](https://raw.githubusercontent.com/ladybug-tools/butterfly-plus/master/graphics.jpg)
