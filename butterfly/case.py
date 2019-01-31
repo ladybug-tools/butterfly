@@ -5,8 +5,11 @@ from shutil import rmtree  # to remove case folders if needed
 from distutils.dir_util import copy_tree  # to copy sHM meshes over to tri
 from collections import namedtuple
 from copy import deepcopy
-from itertools import izip
-
+try:
+    from itertools import izip as zip
+except:
+    # python 3
+    pass
 from .version import Version
 from .utilities import load_case_files, load_probe_values_from_folder, \
     load_probes_from_postProcessing_file, load_probes_and_values_from_sample_file
@@ -45,7 +48,12 @@ from .functions import Probes
 from .decomposeParDict import DecomposeParDict
 from .sampleDict import SampleDict
 
-from .runmanager import RunManager
+import butterfly
+
+if butterfly.config['runner'] == 'blueCFD':
+    from .runmanager_bluecfd import RunManagerBlueCFD as RunManager
+else:
+    from .runmanager import RunManager
 
 
 class Case(object):
@@ -714,7 +722,7 @@ class Case(object):
         print('{} is saved to: {}'.format(self.project_name, self.project_dir))
 
     def command(self, cmd, args=None, decomposeParDict=None, run=True, wait=True):
-        ur"""Run an OpenFOAM command for this case.
+        r"""Run an OpenFOAM command for this case.
         This method creates a log and err file under logFolder for each command.
         The output will be logged as {cmd}.log and {cmd}.err.
         Args:
@@ -831,7 +839,7 @@ class Case(object):
 
         if fp:
             res = load_probes_and_values_from_sample_file(fp[0])
-            pts, values = izip(*(r for r in res))
+            pts, values = zip(*(r for r in res))
             res = namedtuple('Results', 'probes values')
             return res(pts, values)
 

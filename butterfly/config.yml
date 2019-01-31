@@ -1,0 +1,7 @@
+# list of installations to be used. If the first one is not installed the library
+# will fall on the next option until the last available installation.
+# TODO(): add support for Windows10 docker installation as well as Bash on Ubuntu for
+# Windows.
+ofrunner:
+  - blueCFD
+  - ESI
