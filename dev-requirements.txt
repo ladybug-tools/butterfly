@@ -1,0 +1,9 @@
+coverage==4.5.3
+coveralls==1.7.0
+pytest==4.3.1
+pytest-cov==2.6.1
+Sphinx==1.8.5
+sphinx-bootstrap-theme==0.6.5
+sphinxcontrib-fulltoc==1.2.0
+sphinxcontrib-websupport==1.1.0
+twine==1.13.0

@@ -1,0 +1,36 @@
+language: python
+
+python: 
+- "2.7"
+- "3.6"
+
+install:
+ - pip install -r dev-requirements.txt
+
+script:
+  - py.test --cov=. ./tests/
+after_success:
+  - coverage report
+  - coveralls 
+
+jobs:
+  include:  
+  - stage: deploy
+    if: branch = master AND (NOT type IN (pull_request))
+    before_install:
+    - npm i -g npm@6.6.0
+    install:
+    - pip install -r dev-requirements.txt
+    - npm install @semantic-release/exec
+    script:
+    - git config --global user.email "releases@ladybug.tools"
+    - git config --global user.name "ladybugbot"
+    - npx semantic-release
+    deploy:
+      provider: pages
+      skip_cleanup: true
+      github-token: $GH_TOKEN
+      keep-history: false
+      local_dir: docs/_build/
+      on:
+        branch: master
