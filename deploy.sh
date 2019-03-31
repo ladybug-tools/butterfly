@@ -9,7 +9,7 @@ deploy_to_pypi() {
 
 build_docs() {
   echo "Building documentation files"
-  sphinx-apidoc -f -e -d 4 -o ./docs ./honeybee
+  sphinx-apidoc -f -e -d 4 -o ./docs ./butterfly
   sphinx-build -b html ./docs ./docs/_build/docs -D release=$1 -D version=$1
 }
 
