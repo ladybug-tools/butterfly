@@ -1,6 +1,6 @@
 ![Screenshot](https://github.com/ladybug-tools/butterfly/blob/master/etc/graphics/logo/butterfly_100px.png)
 
-[![Code Health](https://landscape.io/github/ladybug-tools/butterfly/master/landscape.svg)](https://landscape.io/github/ladybug-tools/butterfly/master)
+![Code Health](https://pbs.twimg.com/profile_images/694557051477856256/aGSr8eq2_400x400.png)
 
 Butterfly
 ========================================
