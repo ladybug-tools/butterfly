@@ -8,14 +8,11 @@ http://bluecfd.github.io/Core/Downloads/
 """
 import os
 import ctypes
-import time
-import sys
 import platform
 from subprocess import PIPE, Popen
 from collections import namedtuple
 from copy import deepcopy
 from .runmanagerenv import bluecfd as bcfdenv
-from .version import Version
 import butterfly
 
 
@@ -42,8 +39,9 @@ class RunManagerBlueCFD(object):
         self._blue_folder = butterfly.config['of_folder']
         self._env = bcfdenv(self._blue_folder)
         self._project_name = project_name
-        self._project_folder = r'c:\Users\{}\butterfly\{}'.format(
-            os.getenv('USERNAME'), self._project_name)
+        self._project_folder = os.path.join(
+            os.path.expanduser('~'), 'butterfly', self._project_name
+        )
         self.log_folder = './log'
         self.errFolder = './log'
         self._process = None

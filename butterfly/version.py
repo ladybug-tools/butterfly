@@ -7,7 +7,7 @@ from datetime import datetime
 class Version(object):
     """Version class."""
 
-    bf_ver = "0.0.4"
+    bf_ver = "0.0.5"
     of_ver = "4.0"
     of_full_ver = "v1706+"
     is_using_docker_machine = True  # useful to run OpenFOAM container
