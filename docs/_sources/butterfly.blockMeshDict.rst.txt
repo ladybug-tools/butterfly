@@ -1,0 +1,7 @@
+butterfly.blockMeshDict module
+==============================
+
+.. automodule:: butterfly.blockMeshDict
+    :members:
+    :undoc-members:
+    :show-inheritance:

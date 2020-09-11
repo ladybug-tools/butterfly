@@ -1,0 +1,7 @@
+butterfly.stl.types module
+==========================
+
+.. automodule:: butterfly.stl.types
+    :members:
+    :undoc-members:
+    :show-inheritance:

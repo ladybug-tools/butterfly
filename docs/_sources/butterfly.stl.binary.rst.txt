@@ -1,0 +1,7 @@
+butterfly.stl.binary module
+===========================
+
+.. automodule:: butterfly.stl.binary
+    :members:
+    :undoc-members:
+    :show-inheritance:

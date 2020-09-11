@@ -1,0 +1,7 @@
+butterfly.p\_rgh module
+=======================
+
+.. automodule:: butterfly.p_rgh
+    :members:
+    :undoc-members:
+    :show-inheritance:

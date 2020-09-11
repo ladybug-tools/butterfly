@@ -1,0 +1,7 @@
+butterfly.fvSolution module
+===========================
+
+.. automodule:: butterfly.fvSolution
+    :members:
+    :undoc-members:
+    :show-inheritance:

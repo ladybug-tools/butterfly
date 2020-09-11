@@ -1,0 +1,7 @@
+butterfly.runmanager module
+===========================
+
+.. automodule:: butterfly.runmanager
+    :members:
+    :undoc-members:
+    :show-inheritance:

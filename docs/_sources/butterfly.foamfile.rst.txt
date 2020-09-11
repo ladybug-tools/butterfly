@@ -1,0 +1,7 @@
+butterfly.foamfile module
+=========================
+
+.. automodule:: butterfly.foamfile
+    :members:
+    :undoc-members:
+    :show-inheritance:

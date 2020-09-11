@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.solution &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.solution</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Butterfly Solution.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">.utilities</span> <span class="kn">import</span> <span class="n">tail</span><span class="p">,</span> <span class="n">load_skipped_probes</span>
+<span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">CppDictParser</span>
+
+
+<div class="viewcode-block" id="Solution"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution">[docs]</a><span class="k">class</span> <span class="nc">Solution</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Butterfly Solution.</span>
+
+<span class="sd">    This class creates a solution from a recipe which is ready to run and monitor.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        case: A butterfly case.</span>
+<span class="sd">        recipe: A butterfly recipe.</span>
+<span class="sd">        decomposeParDict: decomposeParDict for parallel run (default: None).</span>
+<span class="sd">        solution_parameter: A SolutionParameter (default: None).</span>
+<span class="sd">        remove_extra_foam_files: set to True if you want butterfly to remove all the</span>
+<span class="sd">            extra files in 0 folder once you update the recipe (default: False).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">recipe</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">solution_parameter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">remove_extra_foam_files</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init solution.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__remove</span> <span class="o">=</span> <span class="n">remove_extra_foam_files</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s1">&#39;isCase&#39;</span><span class="p">),</span> \
+            <span class="s1">&#39;ValueError:: </span><span class="si">{}</span><span class="s1"> is not a Butterfly.Case&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decomposeParDict</span> <span class="o">=</span> <span class="n">decomposeParDict</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__case</span> <span class="o">=</span> <span class="n">case</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">decomposeParDict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">decomposeParDict</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span> <span class="o">=</span> <span class="n">recipe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_solution_params</span><span class="p">(</span><span class="n">solution_parameter</span><span class="p">)</span>
+        <span class="c1"># set internal properties for running the solution</span>
+
+        <span class="c1"># place holder for residuals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__residualValues</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_fields</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__isRunStarted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__isRunFinished</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__process</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_files</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__errFiles</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">project_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get porject name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">project_name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">case</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Case.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__case</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get recipe.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__recipe</span>
+
+    <span class="nd">@recipe</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;set recipe.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="s1">&#39;isRecipe&#39;</span><span class="p">),</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a recipe.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__recipe</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__recipe</span><span class="o">.</span><span class="n">prepare_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                   <span class="n">remove</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__remove</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">decomposeParDict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;DecomposeParDict.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__decomposeParDict</span>
+
+    <span class="nd">@decomposeParDict</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">decomposeParDict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dpd</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set decomposeParDict.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">dpd</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dpd</span><span class="p">,</span> <span class="s1">&#39;isDecomposeParDict&#39;</span><span class="p">),</span> \
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a DecomposeParDict.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dpd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__decomposeParDict</span> <span class="o">=</span> <span class="n">dpd</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">remove_extra_foam_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;If True, solution will remove extra files everytime recipe changes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__remove</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">project_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get project directory.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residual_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get list of residuals to be watched during the run.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">residual_fields</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">controlDict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get controlDict.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__case</span><span class="o">.</span><span class="n">controlDict</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residualControl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get residualControl values for this solution.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__case</span><span class="o">.</span><span class="n">fvSolution</span><span class="o">.</span><span class="n">residualControl</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">probes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get probes if any.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__case</span><span class="o">.</span><span class="n">probes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residual_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return address of the residual file.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">log_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get full path to log files.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__log_files</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the log report.&quot;&quot;&quot;</span>
+        <span class="n">isContent</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">check_file_contents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_files</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">err_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get full path to error files.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__errFiles</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the solution is still running.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__isRunStarted</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__isRunFinished</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__process</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__isRunFinished</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">rename_snappyHexMesh_folders</span><span class="p">()</span>
+            <span class="c1"># load errors if any</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">check_file_contents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_files</span><span class="p">)</span>
+            <span class="n">failed</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">check_file_contents</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">err_files</span><span class="p">)</span>
+
+            <span class="k">assert</span> <span class="ow">not</span> <span class="n">failed</span><span class="p">,</span> <span class="n">err</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">timestep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get latest timestep for this solution.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_latestTime</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residual_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">latestTime</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get timestep and residual values as a tuple.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">latestTime</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_info</span><span class="p">()</span><span class="o">.</span><span class="n">residual_values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get timestep and residual values as a tuple.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_info</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__get_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Info&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep residualValues&#39;</span><span class="p">)</span>
+        <span class="c1"># get end of the log file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_file</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">i</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__residualValues</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="n">text</span> <span class="o">=</span> <span class="n">tail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Time =&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># get timestep</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># read residual values</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># quantity, Initial residual, Final residual, No Iterations</span>
+                <span class="n">q</span><span class="p">,</span> <span class="n">ir</span><span class="p">,</span> <span class="n">fr</span><span class="p">,</span> <span class="n">ni</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:  Solving for &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                <span class="c1"># use final residual</span>
+                <span class="k">if</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__residualValues</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__residualValues</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">ir</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;= &#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">i</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__residualValues</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">__get_latestTime</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># get end of the log file</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_file</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">tail</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residual_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Time =&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># get timestep</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">text</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">t</span>
+
+<div class="viewcode-block" id="Solution.update_from_recipe"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.update_from_recipe">[docs]</a>    <span class="k">def</span> <span class="nf">update_from_recipe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recipe</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update solution from recipe inputs.</span>
+
+<span class="sd">        This method creates a SolutionParameter from each recipe property, and</span>
+<span class="sd">        uses updateSolutionParams to update the solution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tp</span> <span class="o">=</span> <span class="n">SolutionParameter</span><span class="o">.</span><span class="n">from_cpp_dictionary</span><span class="p">(</span><span class="s1">&#39;turbulenceProperties&#39;</span><span class="p">,</span>
+                                                   <span class="nb">str</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">turbulenceProperties</span><span class="p">))</span>
+        <span class="n">fv_sc</span> <span class="o">=</span> <span class="n">SolutionParameter</span><span class="o">.</span><span class="n">from_cpp_dictionary</span><span class="p">(</span><span class="s1">&#39;fvSchemes&#39;</span><span class="p">,</span>
+                                                      <span class="nb">str</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">fvSchemes</span><span class="p">))</span>
+        <span class="n">fv_sol</span> <span class="o">=</span> <span class="n">SolutionParameter</span><span class="o">.</span><span class="n">from_cpp_dictionary</span><span class="p">(</span><span class="s1">&#39;fvSolution&#39;</span><span class="p">,</span>
+                                                       <span class="nb">str</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">fvSolution</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_solution_params</span><span class="p">((</span><span class="n">tp</span><span class="p">,</span> <span class="n">fv_sc</span><span class="p">,</span> <span class="n">fv_sol</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Solution.update_solution_params"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.update_solution_params">[docs]</a>    <span class="k">def</span> <span class="nf">update_solution_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sol_params</span><span class="p">,</span> <span class="n">timestep</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update parameters.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            sol_params: A list of solution parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sol_params</span><span class="p">:</span>
+            <span class="c1"># if input is None return</span>
+            <span class="k">return</span>
+        <span class="c1"># check input with the current and update them if there has been changes</span>
+        <span class="k">for</span> <span class="n">solPar</span> <span class="ow">in</span> <span class="n">sol_params</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">solPar</span><span class="p">,</span> <span class="s1">&#39;isSolutionParameter&#39;</span><span class="p">),</span> \
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a solution parameter.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">solPar</span><span class="p">)</span>
+
+            <span class="c1"># check if this timestep in range of SolutionParameter time range</span>
+            <span class="k">if</span> <span class="n">timestep</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">solPar</span><span class="o">.</span><span class="n">is_time_in_range</span><span class="p">(</span><span class="n">timestep</span><span class="p">):</span>
+                <span class="c1"># not in time range! try the next one</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">update</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__case</span><span class="p">,</span> <span class="n">solPar</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span> \
+                    <span class="o">.</span><span class="n">update_values</span><span class="p">(</span><span class="n">solPar</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">solPar</span><span class="o">.</span><span class="n">replace</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># probes can be empty at start</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+            <span class="c1"># check to remove functions if needed</span>
+            <span class="k">if</span> <span class="n">solPar</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;controlDict&#39;</span><span class="p">:</span>
+                <span class="n">cur_func</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__case</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;functions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="n">new_func</span> <span class="o">=</span> <span class="n">solPar</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;functions&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cur_func</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_func</span><span class="p">:</span>
+                        <span class="k">del</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__case</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;functions&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+                        <span class="n">update</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="n">update</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Updating </span><span class="si">{}</span><span class="s1">...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">solPar</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
+                <span class="n">ffile</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__case</span><span class="p">,</span> <span class="n">solPar</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+                <span class="n">ffile</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+                <span class="c1"># just in case probes was not there and now should be included</span>
+                <span class="c1"># in controlDict</span>
+                <span class="k">if</span> <span class="n">solPar</span><span class="o">.</span><span class="n">filename</span> <span class="o">==</span> <span class="s1">&#39;probes&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">include</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="n">solPar</span><span class="o">.</span><span class="n">filename</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Solution.run"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Execute the solution.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">rename_snappyHexMesh_folders</span><span class="p">()</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">command</span><span class="p">(</span>
+            <span class="n">cmd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">decomposeParDict</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__decomposeParDict</span><span class="p">,</span>
+            <span class="n">run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__process</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">process</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__errFiles</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">errorfiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__log_files</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">logfiles</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__isRunStarted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wait</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__isRunFinished</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__isRunFinished</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Solution.purge"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.purge">[docs]</a>    <span class="k">def</span> <span class="nf">purge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remove_polyMesh_content</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">remove_snappyHexMesh_folders</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">remove_result_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">remove_postProcessing_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Purge solution&#39;s case folder.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">purge</span><span class="p">(</span>
+            <span class="n">remove_polyMesh_content</span><span class="p">,</span> <span class="n">remove_snappyHexMesh_folders</span><span class="p">,</span>
+            <span class="n">remove_result_folders</span><span class="p">,</span> <span class="n">remove_postProcessing_folder</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Solution.terminate"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cancel the solution.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">decomposeParDict</span><span class="p">:</span>
+            <span class="c1"># remove processor folders if they haven&#39;t been removed already.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">remove_processor_folders</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Solution.load_probe_values"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.load_probe_values">[docs]</a>    <span class="k">def</span> <span class="nf">load_probe_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM probes results for a given field (e.g. U).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">load_probe_values</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Solution.load_probes"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.load_probes">[docs]</a>    <span class="k">def</span> <span class="nf">load_probes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM probes location for a given field (e.g. U).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">load_probes</span><span class="p">(</span><span class="n">field</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Solution.skipped_probes"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.skipped_probes">[docs]</a>    <span class="k">def</span> <span class="nf">skipped_probes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get list of probes that are skipped from the solution.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">load_skipped_probes</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">log_folder</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="o">.</span><span class="n">log_file</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Solution.sample"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample the results for a certain field.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: A unique name for this sample.</span>
+<span class="sd">            points: List of points as (x, y, z).</span>
+<span class="sd">            fields: List of fields (e.g. U, p).</span>
+<span class="sd">            args: Command arguments.</span>
+<span class="sd">            wait: Wait until command execution ends.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple(probes, values).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">case</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Solution.duplicate"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Solution.ToString"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.Solution.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Solution representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">::</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipe</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SolutionParameter"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.SolutionParameter">[docs]</a><span class="k">class</span> <span class="nc">SolutionParameter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A solution parameter that can be changed during the solution.</span>
+
+<span class="sd">    Add solution parameter to to solution settings.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        filename: OpenFOAM filename that the values are belong to (e.g.</span>
+<span class="sd">            blockMeshDict, fvSchemes).</span>
+<span class="sd">        values: New values as a python dictionary.</span>
+<span class="sd">        replace: Set to True if you want the original dictionary to be replaced</span>
+<span class="sd">            by new values. Default is False which means the original dictionary</span>
+<span class="sd">            will be only updated by new values.</span>
+<span class="sd">        time_range: Time range that this SolutioParameter is valid as a tuple</span>
+<span class="sd">            (default: (0, 1.0e+100)).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_of_filenames</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;epsilon&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;nut&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;turbulenceProperties&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;transportProperties&#39;</span><span class="p">,</span> <span class="s1">&#39;blockMeshDict&#39;</span><span class="p">,</span> <span class="s1">&#39;controlDict&#39;</span><span class="p">,</span>
+                     <span class="s1">&#39;fvSchemes&#39;</span><span class="p">,</span> <span class="s1">&#39;fvSolution&#39;</span><span class="p">,</span> <span class="s1">&#39;snappyHexMeshDict&#39;</span><span class="p">,</span> <span class="s1">&#39;probes&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">of_filename</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">time_range</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create solution parameter.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">of_filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">replace</span> <span class="o">=</span> <span class="n">replace</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__t0</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__t1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__t0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__t1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0e+100</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__t0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__t1</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0e+100</span>
+
+<div class="viewcode-block" id="SolutionParameter.from_dictionary_file"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.SolutionParameter.from_dictionary_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dictionary_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">of_filename</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                             <span class="n">time_range</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create from an OpenFOAM dictionary file.&quot;&quot;&quot;</span>
+        <span class="c1"># convert values to python dictionary</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">CppDictParser</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">of_filename</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">time_range</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SolutionParameter.from_cpp_dictionary"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.SolutionParameter.from_cpp_dictionary">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_cpp_dictionary</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">of_filename</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">time_range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create from an OpenFOAM dictionary in text format.&quot;&quot;&quot;</span>
+        <span class="c1"># convert values to python dictionary</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="n">CppDictParser</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">dictionary</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">header</span> <span class="ow">and</span> <span class="s1">&#39;FoamFile&#39;</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="k">del</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;FoamFile&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">of_filename</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">replace</span><span class="p">,</span> <span class="n">time_range</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isSolutionParameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM file name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__values</span>
+
+    <span class="nd">@values</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s1">&#39;values should be a dictionary not a </span><span class="si">{}</span><span class="s1">.&#39;</span> \
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__values</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM file name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__filename</span>
+
+    <span class="nd">@filename</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_of_filenames</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid OpenFOAM dictionary &#39;</span> \
+            <span class="s1">&#39;file. Try one of the files below:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">.&#39;</span> \
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_of_filenames</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__filename</span> <span class="o">=</span> <span class="n">f</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">time_range</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get time range.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__t0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__t1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SolutionParameter.is_time_in_range"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.SolutionParameter.is_time_in_range">[docs]</a>    <span class="k">def</span> <span class="nf">is_time_in_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if time is in this SolutionParameter time range.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__t0</span> <span class="o">&lt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">__t1</span></div>
+
+<div class="viewcode-block" id="SolutionParameter.duplicate"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.SolutionParameter.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SolutionParameter.ToString"><a class="viewcode-back" href="../../butterfly.solution.html#butterfly.solution.SolutionParameter.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class representation.&quot;&quot;&quot;</span>
+        <span class="n">kv</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">: </span><span class="si">{}</span><span class="s1">;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">iteritems</span><span class="p">())</span>
+        <span class="k">return</span> <span class="s1">&#39;SolutionParameter::</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">@</span><span class="si">{}</span><span class="s1">&#39;</span>\
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">kv</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_range</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

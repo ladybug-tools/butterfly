@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.conditions &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.conditions</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;ABL Conditions and initialConditions class.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.foamfile</span> <span class="kn">import</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">foam_file_from_file</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+
+<div class="viewcode-block" id="ABLConditions"><a class="viewcode-back" href="../../butterfly.conditions.html#butterfly.conditions.ABLConditions">[docs]</a><span class="k">class</span> <span class="nc">ABLConditions</span><span class="p">(</span><span class="n">Condition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ABL Conditions.&quot;&quot;&quot;</span>
+
+    <span class="c1"># set default valus for this class</span>
+    <span class="n">__default_values</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;Uref&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>   <span class="c1"># wind velocity</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;Zref&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;10&#39;</span>  <span class="c1"># reference z value - usually 10 meters</span>
+    <span class="c1"># roughness - default is set to 1 for urban environment</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;z0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;uniform 1&#39;</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;flowDir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;(0 1 0)&#39;</span>  <span class="c1"># direction of flow</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;zDir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;(0 0 1)&#39;</span>  <span class="c1"># z direction (0 0 1) always for our cases</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;zGround&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;uniform 0&#39;</span>  <span class="c1"># min z value of the bounding box</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;$internalField&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init class.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ABLConditions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ABLConditions&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="s1">&#39;dictionary&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span>
+            <span class="n">default_values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__default_values</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="ABLConditions.from_file"><a class="viewcode-back" href="../../butterfly.conditions.html#butterfly.conditions.ABLConditions.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a FoamFile from a file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath: Full file path to dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">foam_file_from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ABLConditions.from_input_values"><a class="viewcode-back" href="../../butterfly.conditions.html#butterfly.conditions.ABLConditions.from_input_values">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_input_values</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">flow_speed</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">flowDir</span><span class="p">,</span> <span class="n">zGround</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get ABLCondition.&quot;&quot;&quot;</span>
+        <span class="n">_ABLCDict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">_ABLCDict</span><span class="p">[</span><span class="s1">&#39;Uref&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">flow_speed</span><span class="p">)</span>
+        <span class="n">_ABLCDict</span><span class="p">[</span><span class="s1">&#39;z0&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;uniform </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+        <span class="n">_ABLCDict</span><span class="p">[</span><span class="s1">&#39;flowDir&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">flowDir</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">flowDir</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> \
+            <span class="k">else</span> <span class="s1">&#39;(</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">flowDir</span><span class="p">)</span>
+
+        <span class="n">_ABLCDict</span><span class="p">[</span><span class="s1">&#39;zGround&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;uniform </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">zGround</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_ABLCDict</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ABLConditions.from_wind_tunnel"><a class="viewcode-back" href="../../butterfly.conditions.html#butterfly.conditions.ABLConditions.from_wind_tunnel">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_wind_tunnel</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">wind_tunnel</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init class from wind tunnel.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">wind_tunnel</span><span class="o">.</span><span class="n">ABLConditionsDict</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">flowDir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get flow dir as tuple (x, y, z).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;flowDir&#39;</span><span class="p">])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">flow_speed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get flow speed as a float.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;Uref&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">Uref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get flow speed as a float.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;Uref&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">Zref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get reference z value for input wind speed- usually 10 meters&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;Zref&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;roughness - default is set to 1 for urban environment&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;z0&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">zDir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;z direction. (0 0 1) for wind tunnel&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">eval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;zDir&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">zGround</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Min z value of the bounding box (default: uniform 0)&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;zGround&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="InitialConditions"><a class="viewcode-back" href="../../butterfly.conditions.html#butterfly.conditions.InitialConditions">[docs]</a><span class="k">class</span> <span class="nc">InitialConditions</span><span class="p">(</span><span class="n">Condition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Initial conditions.&quot;&quot;&quot;</span>
+
+    <span class="c1"># set default valus for this class</span>
+    <span class="n">__default_values</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;flowVelocity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;(0 0 0)&#39;</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;turbulentKE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># will be calculated based on input values</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;turbulentEpsilon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># will be calculated based on inp values</span>
+    <span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;#inputMode&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;merge&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Uref</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">Zref</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cm</span><span class="o">=</span><span class="mf">0.09</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mf">0.41</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            Uref: Reference wind velocity in m/s.</span>
+<span class="sd">            Zref: Reference height for wind velocity. Normally 10 m.</span>
+<span class="sd">            z0: Roughness (default: 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__Uref</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Uref</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__Zref</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Zref</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__z0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cm</span> <span class="o">=</span> <span class="n">cm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_k_epsilon</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">InitialConditions</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;initialConditions&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="s1">&#39;dictionary&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s1">&#39;0&#39;</span><span class="p">,</span>
+            <span class="n">default_values</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__default_values</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="InitialConditions.from_file"><a class="viewcode-back" href="../../butterfly.conditions.html#butterfly.conditions.InitialConditions.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a FoamFile from a file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath: Full file path to dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">foam_file_from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="InitialConditions.calculate_k_epsilon"><a class="viewcode-back" href="../../butterfly.conditions.html#butterfly.conditions.InitialConditions.calculate_k_epsilon">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_k_epsilon</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate turbulentKE and turbulentEpsilon.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            init: True if the method is called when the class is initiated</span>
+<span class="sd">                (default: False).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_Uabl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Uref</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">Zref</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">z0</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">z0</span><span class="p">)</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">_Uabl</span> <span class="o">**</span> <span class="mi">3</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Zref</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">z0</span><span class="p">))</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">_Uabl</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cm</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">init</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;turbulentKE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.5f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">k</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__default_values</span><span class="p">[</span><span class="s1">&#39;turbulentEpsilon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%.5f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">epsilon</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;turbulentKE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;turbulentEpsilon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">Uref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Input velocity in m/s.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__Uref</span>
+
+    <span class="nd">@Uref</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">Uref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Input velocity in m/s.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__Uref</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_k_epsilon</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">Zref</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Input height reference for input velocity in meters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__Zref</span>
+
+    <span class="nd">@Zref</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">Zref</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__Zref</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_k_epsilon</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">z0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Roughness.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__z0</span>
+
+    <span class="nd">@z0</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">z0</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__z0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_k_epsilon</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;cm.</span>
+
+<span class="sd">        default: 0.09</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cm</span>
+
+    <span class="nd">@cm</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">cm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_k_epsilon</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">k</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;k.</span>
+
+<span class="sd">        default: 0.41</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__k</span>
+
+    <span class="nd">@k</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">k</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__k</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_k_epsilon</span><span class="p">()</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

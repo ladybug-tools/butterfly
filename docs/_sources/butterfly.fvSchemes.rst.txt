@@ -1,0 +1,7 @@
+butterfly.fvSchemes module
+==========================
+
+.. automodule:: butterfly.fvSchemes
+    :members:
+    :undoc-members:
+    :show-inheritance:

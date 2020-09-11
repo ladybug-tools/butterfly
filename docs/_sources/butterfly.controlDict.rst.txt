@@ -1,0 +1,7 @@
+butterfly.controlDict module
+============================
+
+.. automodule:: butterfly.controlDict
+    :members:
+    :undoc-members:
+    :show-inheritance:

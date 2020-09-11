@@ -1,0 +1,7 @@
+butterfly.stl.ascii module
+==========================
+
+.. automodule:: butterfly.stl.ascii
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,7 @@
+butterfly.refinementRegion module
+=================================
+
+.. automodule:: butterfly.refinementRegion
+    :members:
+    :undoc-members:
+    :show-inheritance:

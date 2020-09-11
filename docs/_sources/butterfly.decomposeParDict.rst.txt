@@ -1,0 +1,7 @@
+butterfly.decomposeParDict module
+=================================
+
+.. automodule:: butterfly.decomposeParDict
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,7 @@
+butterfly.exception module
+==========================
+
+.. automodule:: butterfly.exception
+    :members:
+    :undoc-members:
+    :show-inheritance:

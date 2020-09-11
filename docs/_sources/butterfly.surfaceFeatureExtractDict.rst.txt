@@ -1,0 +1,7 @@
+butterfly.surfaceFeatureExtractDict module
+==========================================
+
+.. automodule:: butterfly.surfaceFeatureExtractDict
+    :members:
+    :undoc-members:
+    :show-inheritance:

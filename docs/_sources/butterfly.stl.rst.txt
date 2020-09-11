@@ -1,0 +1,19 @@
+butterfly.stl package
+=====================
+
+Submodules
+----------
+
+.. toctree::
+
+   butterfly.stl.ascii
+   butterfly.stl.binary
+   butterfly.stl.types
+
+Module contents
+---------------
+
+.. automodule:: butterfly.stl
+    :members:
+    :undoc-members:
+    :show-inheritance:

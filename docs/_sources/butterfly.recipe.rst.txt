@@ -1,0 +1,7 @@
+butterfly.recipe module
+=======================
+
+.. automodule:: butterfly.recipe
+    :members:
+    :undoc-members:
+    :show-inheritance:

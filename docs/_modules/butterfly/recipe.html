@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.recipe &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.recipe</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Butterfly recipes.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">.turbulenceProperties</span> <span class="kn">import</span> <span class="n">TurbulenceProperties</span>
+<span class="kn">from</span> <span class="nn">.transportProperties</span> <span class="kn">import</span> <span class="n">TransportProperties</span>
+<span class="kn">from</span> <span class="nn">.fvSolution</span> <span class="kn">import</span> <span class="n">FvSolution</span><span class="p">,</span> <span class="n">ResidualControl</span><span class="p">,</span> <span class="n">RelaxationFactors</span>
+<span class="kn">from</span> <span class="nn">.fvSchemes</span> <span class="kn">import</span> <span class="n">FvSchemes</span>
+
+<span class="kn">from</span> <span class="nn">.g</span> <span class="kn">import</span> <span class="n">G</span>
+
+<span class="c1"># 0 folder objects</span>
+<span class="kn">from</span> <span class="nn">.U</span> <span class="kn">import</span> <span class="n">U</span>
+<span class="kn">from</span> <span class="nn">.k</span> <span class="kn">import</span> <span class="n">K</span>
+<span class="kn">from</span> <span class="nn">.p</span> <span class="kn">import</span> <span class="n">P</span>
+<span class="kn">from</span> <span class="nn">.nut</span> <span class="kn">import</span> <span class="n">Nut</span>
+<span class="kn">from</span> <span class="nn">.epsilon</span> <span class="kn">import</span> <span class="n">Epsilon</span>
+<span class="kn">from</span> <span class="nn">.T</span> <span class="kn">import</span> <span class="n">T</span>
+<span class="kn">from</span> <span class="nn">.alphat</span> <span class="kn">import</span> <span class="n">Alphat</span>
+<span class="kn">from</span> <span class="nn">.p_rgh</span> <span class="kn">import</span> <span class="n">P_rgh</span>
+
+
+<span class="k">class</span> <span class="nc">_Recipe</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for recipes.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        commands: A list of OpenFOAM commands. You can pass arguments for each</span>
+<span class="sd">            command with each command as a string. e.g. (&#39;blockMesh&#39;,</span>
+<span class="sd">            &#39;snappyHexMesh -constant&#39;)</span>
+<span class="sd">        turbulenceProperties: Turbulence properties.</span>
+<span class="sd">        fvSolution: Optional input for fvSolution to overwrite default fvSolution.</span>
+<span class="sd">        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.</span>
+<span class="sd">        quantities: A collection of strings for quantities in this solution.</span>
+<span class="sd">            (&#39;U&#39;, &#39;p&#39;, &#39;k&#39;, &#39;epsilon&#39;)</span>
+<span class="sd">        residualControl: A dictionary of values for residualControl of quantities.</span>
+<span class="sd">        relaxationFactors: A list of values for relaxationFactors of quantities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__foamfilescollection</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="n">G</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">U</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="n">K</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span> <span class="s1">&#39;nut&#39;</span><span class="p">:</span> <span class="n">Nut</span><span class="p">,</span>
+                             <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span> <span class="n">Epsilon</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="s1">&#39;alphat&#39;</span><span class="p">:</span> <span class="n">Alphat</span><span class="p">,</span>
+                             <span class="s1">&#39;p_rgh&#39;</span><span class="p">:</span> <span class="n">P_rgh</span><span class="p">,</span>
+                             <span class="s1">&#39;transportProperties&#39;</span><span class="p">:</span> <span class="n">TransportProperties</span><span class="p">}</span>
+
+    <span class="n">__globalConvergence</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">4</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands</span><span class="p">,</span> <span class="n">turbulenceProperties</span><span class="p">,</span> <span class="n">fvSolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fvSchemes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quantities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residualControl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">relaxationFactors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initiate recipe.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">commands</span> <span class="o">=</span> <span class="n">commands</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turbulenceProperties</span> <span class="o">=</span> <span class="n">turbulenceProperties</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fvSolution</span> <span class="o">=</span> <span class="n">fvSolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fvSchemes</span> <span class="o">=</span> <span class="n">fvSchemes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">=</span> <span class="n">quantities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residualControl</span> <span class="o">=</span> <span class="n">residualControl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relaxationFactors</span> <span class="o">=</span> <span class="n">relaxationFactors</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isRecipe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True for recipe.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">commands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List of openfoam commands for this recipe.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__commands</span>
+
+    <span class="nd">@commands</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List of openfoam commands for this recipe.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmds</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span><span class="n">cmds</span><span class="p">,)</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmds</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)),</span> \
+            <span class="s1">&#39;Invalid input for commands: </span><span class="si">{}</span><span class="s1">. Should be a list or a tuple.&#39;</span> \
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmds</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__commands</span> <span class="o">=</span> <span class="n">cmds</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">turbulenceProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the OpenFOAM case.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__turbulenceProperties</span>
+
+    <span class="nd">@turbulenceProperties</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">turbulenceProperties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update turbulence file for the case.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tp</span><span class="p">:</span>
+            <span class="n">tp</span> <span class="o">=</span> <span class="n">TurbulenceProperties</span><span class="o">.</span><span class="n">RAS</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tp</span><span class="p">,</span> <span class="s1">&#39;isTurbulenceProperties&#39;</span><span class="p">),</span> \
+            <span class="s1">&#39;Expected turbulencePropertise not </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">tp</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__turbulenceProperties</span> <span class="o">=</span> <span class="n">tp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fvSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get or set fvSolution.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fvSolution</span>
+
+    <span class="nd">@fvSolution</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">fvSolution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fvsln</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">fvsln</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fvsln</span><span class="p">,</span> <span class="s1">&#39;isFvSolution&#39;</span><span class="p">),</span> \
+                <span class="s1">&#39;fvSolution should be from type FvSolution not </span><span class="si">{}</span><span class="s1">.&#39;</span> \
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fvsln</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__fvSolution</span> <span class="o">=</span> <span class="n">fvsln</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fvSchemes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get fvSchemes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__fvSchemes</span>
+
+    <span class="nd">@fvSchemes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">fvSchemes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fvschm</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">fvschm</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fvschm</span><span class="p">,</span> <span class="s1">&#39;isFvSchemes&#39;</span><span class="p">),</span> \
+                <span class="s1">&#39;fvSolution should be from type FvSchemes not </span><span class="si">{}</span><span class="s1">.&#39;</span> \
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fvschm</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__fvSchemes</span> <span class="o">=</span> <span class="n">fvschm</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List of quantities for the recipe.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__quantities</span>
+
+    <span class="nd">@quantities</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">quantities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List of quantities for the recipe.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">q</span><span class="p">:</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__quantities</span> <span class="o">=</span> <span class="n">q</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residualControl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A dictionary of residuals as quantity: residualValue.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__residualControl</span>
+
+    <span class="nd">@residualControl</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">residualControl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__globalConvergence</span><span class="p">)</span>
+
+        <span class="c1"># check the input to be dictionary and have values for all the input</span>
+        <span class="c1"># otherwise use default value</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__residualControl</span> <span class="o">=</span> <span class="n">ResidualControl</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">ResidualControl</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__residualControl</span> <span class="o">=</span> <span class="n">res</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;residualControl should be a dictionary not a </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="c1"># update fvSolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fvSolution</span><span class="o">.</span><span class="n">residualControl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">residualControl</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">relaxationFactors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A dictionary of residuals as quantity: residualValue.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__relaxationFactors</span>
+
+    <span class="nd">@relaxationFactors</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">relaxationFactors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">relax_fact</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">relax_fact</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">relax_fact</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># check the input to be dictionary and have values for all the input</span>
+        <span class="c1"># otherwise use default value</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">relax_fact</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__relaxationFactors</span> <span class="o">=</span> <span class="n">RelaxationFactors</span><span class="p">(</span><span class="n">relax_fact</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">relax_fact</span><span class="p">,</span> <span class="n">RelaxationFactors</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__relaxationFactors</span> <span class="o">=</span> <span class="n">relax_fact</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;relaxationFactors should be a dictionary not a </span><span class="si">{}</span><span class="s1">.&#39;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">relax_fact</span><span class="p">))</span>
+            <span class="p">)</span>
+
+        <span class="c1"># update fvSolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fvSolution</span><span class="o">.</span><span class="n">relaxationFactors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relaxationFactors</span>
+
+    <span class="k">def</span> <span class="nf">prepare_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare a case for this recipe.</span>
+
+<span class="sd">        This method double checks files under Zero folder for each quantities.</span>
+<span class="sd">        It creates, overwrites or removes the files if needed. Solution class</span>
+<span class="sd">        calls this method on initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            case: A Butterfly case.</span>
+<span class="sd">            overwrite: Set to True to overwrite current files.</span>
+<span class="sd">            remove: Set to True to remove extra files in the folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Preparing </span><span class="si">{}</span><span class="s1"> for </span><span class="si">{}</span><span class="s1"> study...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fvSchemes</span> <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">fvSchemes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fvSchemes</span><span class="p">:</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">fvSchemes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fvSchemes</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">fvSchemes</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fvSolution</span> <span class="ow">and</span> <span class="n">case</span><span class="o">.</span><span class="n">fvSolution</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fvSolution</span><span class="p">:</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">fvSolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fvSolution</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">fvSolution</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbulenceProperties</span> <span class="ow">and</span> \
+                <span class="n">case</span><span class="o">.</span><span class="n">turbulenceProperties</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbulenceProperties</span><span class="p">:</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">turbulenceProperties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">turbulenceProperties</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">turbulenceProperties</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">decomposeParDict</span><span class="p">:</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">decomposeParDict</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s1">&#39;probes&#39;</span><span class="p">):</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s1">&#39;ABLConditions&#39;</span><span class="p">):</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">ABLConditions</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s1">&#39;initialConditions&#39;</span><span class="p">):</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">initialConditions</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+        <span class="c1"># check neccasary files.</span>
+        <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">quantities</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;transportProperties&#39;</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">)):</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+                <span class="c1"># try to create the quantity</span>
+                <span class="k">assert</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__foamfilescollection</span><span class="p">,</span> \
+                    <span class="s1">&#39;Failed to find </span><span class="si">{0}</span><span class="s1"> method in </span><span class="si">{1}</span><span class="s1">.&#39;</span> \
+                    <span class="s1">&#39;</span><span class="si">{2}</span><span class="s1"> needs </span><span class="si">{0}</span><span class="s1"> foamfile to execute.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">q</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+                <span class="n">case</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> \
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__foamfilescollection</span><span class="p">[</span><span class="n">q</span><span class="p">]</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">geometries</span><span class="p">)</span>
+
+            <span class="n">case</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">q</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+
+        <span class="c1"># remove extra files.</span>
+        <span class="k">if</span> <span class="n">remove</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">zero_folder</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantities</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;Conditions&#39;</span><span class="p">):</span>
+                    <span class="c1"># do not remove ABLConditions and initialConditions</span>
+                    <span class="k">continue</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">zero_folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Unable to remove </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> Recipe&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_SingleCommandRecipe</span><span class="p">(</span><span class="n">_Recipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recipe for recipe&#39;s with a single OpenFOAM command (e.g. simpleFoam).</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        commands: An OpenFOAM command (e.g. &#39;simpleFoam&#39;)</span>
+<span class="sd">        turbulenceProperties: Turbulence properties.</span>
+<span class="sd">        fvSolution: Optional input for fvSolution to overwrite default fvSolution.</span>
+<span class="sd">        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.</span>
+<span class="sd">        quantities: A collection of strings for quantities in this solution. A</span>
+<span class="sd">            separate file will be created in 0 folder for each quantity.</span>
+<span class="sd">        residualControl: A dictionary of values for residualControl of residuals.</span>
+<span class="sd">        relaxationFactors: A list of values for relaxationFactors of residuals.</span>
+<span class="sd">        residual_fields: List of quantities that should be watched during solution</span>
+<span class="sd">            run (&#39;Ux&#39;, &#39;Uy&#39;, &#39;Uz&#39;, &#39;p&#39;, &#39;k&#39;, &#39;epsilon&#39;).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">turbulenceProperties</span><span class="p">,</span> <span class="n">fvSolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fvSchemes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">quantities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residualControl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">relaxationFactors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residual_fields</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initiate recipe.&quot;&quot;&quot;</span>
+        <span class="n">_Recipe</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">command</span><span class="p">,),</span> <span class="n">turbulenceProperties</span><span class="p">,</span> <span class="n">fvSolution</span><span class="p">,</span>
+                         <span class="n">fvSchemes</span><span class="p">,</span> <span class="n">quantities</span><span class="p">,</span> <span class="n">residualControl</span><span class="p">,</span>
+                         <span class="n">relaxationFactors</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__command</span> <span class="o">=</span> <span class="n">command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__residual_fields</span> <span class="o">=</span> <span class="n">residual_fields</span> <span class="ow">or</span> <span class="p">(</span><span class="s1">&#39;p&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">application</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;OpenFOAM application.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__command</span>
+
+    <span class="k">def</span> <span class="nf">prepare_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare a case for this recipe.</span>
+
+<span class="sd">        This method sets up the application in control dict and double checks</span>
+<span class="sd">        files under Zero folder for each quantities. It creates, overwrites or</span>
+<span class="sd">        removes the files if needed. Solution class calls this method on</span>
+<span class="sd">        initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            case: A Butterfly case.</span>
+<span class="sd">            overwrite: Set to True to overwrite current files.</span>
+<span class="sd">            remove: Set to True to remove extra files in the folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># update controlDict</span>
+        <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">application</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">:</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">application</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">application</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">_SingleCommandRecipe</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">prepare_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">remove</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residual_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List of values for residual plot.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__residual_fields</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return log file name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.log&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">application</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">err_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return error file name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.err&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">application</span>
+
+
+<div class="viewcode-block" id="SteadyIncompressible"><a class="viewcode-back" href="../../butterfly.recipe.html#butterfly.recipe.SteadyIncompressible">[docs]</a><span class="k">class</span> <span class="nc">SteadyIncompressible</span><span class="p">(</span><span class="n">_SingleCommandRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recipe for Steady Incompressible flows.</span>
+
+<span class="sd">    This recipe excutes simpleFoam for the input case.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        turbulenceProperties: Turbulence properties.</span>
+<span class="sd">        fvSolution: Optional input for fvSolution to overwrite default fvSolution.</span>
+<span class="sd">        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.</span>
+<span class="sd">        residualControl: A dictionary of values for residualControl of quantities.</span>
+<span class="sd">        relaxationFactors: A list of values for relaxationFactors of quantities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__command</span> <span class="o">=</span> <span class="s1">&#39;simpleFoam&#39;</span>
+    <span class="c1"># foam files in zero folder</span>
+    <span class="n">__quantities</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;epsilon&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;nut&#39;</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">)</span>
+    <span class="c1"># Values for residual plot.</span>
+    <span class="n">__residual_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Ux&#39;</span><span class="p">,</span> <span class="s1">&#39;Uy&#39;</span><span class="p">,</span> <span class="s1">&#39;Uz&#39;</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turbulenceProperties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fvSolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fvSchemes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residualControl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relaxationFactors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initiate recipe.&quot;&quot;&quot;</span>
+        <span class="n">turbulenceProperties</span> <span class="o">=</span> <span class="n">turbulenceProperties</span> <span class="ow">or</span> <span class="n">TurbulenceProperties</span><span class="o">.</span><span class="n">RAS</span><span class="p">()</span>
+        <span class="c1"># add inputs here, and initiate the class.</span>
+        <span class="n">fvSolution</span> <span class="o">=</span> <span class="n">fvSolution</span> <span class="ow">or</span> <span class="n">FvSolution</span><span class="o">.</span><span class="n">from_recipe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">fvSchemes</span> <span class="o">=</span> <span class="n">fvSchemes</span> <span class="ow">or</span> <span class="n">FvSchemes</span><span class="o">.</span><span class="n">from_recipe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__quantities</span>
+
+        <span class="n">_SingleCommandRecipe</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__command</span><span class="p">,</span> <span class="n">turbulenceProperties</span><span class="p">,</span> <span class="n">fvSolution</span><span class="p">,</span> <span class="n">fvSchemes</span><span class="p">,</span>
+            <span class="n">quantities</span><span class="p">,</span> <span class="n">residualControl</span><span class="p">,</span> <span class="n">relaxationFactors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__residual_fields</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HeatTransfer"><a class="viewcode-back" href="../../butterfly.recipe.html#butterfly.recipe.HeatTransfer">[docs]</a><span class="k">class</span> <span class="nc">HeatTransfer</span><span class="p">(</span><span class="n">_SingleCommandRecipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recipe for heat transfer.</span>
+
+<span class="sd">    This recipe excutes buoyantBoussinesqSimpleFoam for the input case.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        turbulenceProperties: Turbulence properties.</span>
+<span class="sd">        fvSolution: Optional input for fvSolution to overwrite default fvSolution.</span>
+<span class="sd">        fvSchemes: Optional input for fvSchemes to overwrite default fvSchemes.</span>
+<span class="sd">        residualControl: A dictionary of values for residualControl of quantities.</span>
+<span class="sd">        relaxationFactors: A list of values for relaxationFactors of quantities.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__command</span> <span class="o">=</span> <span class="s1">&#39;buoyantBoussinesqSimpleFoam&#39;</span>
+    <span class="c1"># foam files in zero folder</span>
+    <span class="n">__quantities</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;alphat&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;nut&#39;</span><span class="p">,</span> <span class="s1">&#39;p_rgh&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;U&#39;</span><span class="p">)</span>
+    <span class="c1"># values for residual plot.</span>
+    <span class="n">__residual_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Ux&#39;</span><span class="p">,</span> <span class="s1">&#39;Uy&#39;</span><span class="p">,</span> <span class="s1">&#39;Uz&#39;</span><span class="p">,</span> <span class="s1">&#39;p_rgh&#39;</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turbulenceProperties</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fvSolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">fvSchemes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">residualControl</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">relaxationFactors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">TRef</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initiate recipe.&quot;&quot;&quot;</span>
+        <span class="n">turbulenceProperties</span> <span class="o">=</span> <span class="n">turbulenceProperties</span> <span class="ow">or</span> <span class="n">TurbulenceProperties</span><span class="o">.</span><span class="n">RAS</span><span class="p">()</span>
+
+        <span class="c1"># add inputs here, and initiate the class.</span>
+        <span class="n">fvSolution</span> <span class="o">=</span> <span class="n">fvSolution</span> <span class="ow">or</span> <span class="n">FvSolution</span><span class="o">.</span><span class="n">from_recipe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">fvSchemes</span> <span class="o">=</span> <span class="n">fvSchemes</span> <span class="ow">or</span> <span class="n">FvSchemes</span><span class="o">.</span><span class="n">from_recipe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span> <span class="o">=</span> <span class="n">TRef</span> <span class="ow">or</span> <span class="mi">300</span>
+        <span class="n">quantities</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__quantities</span>
+
+        <span class="n">_SingleCommandRecipe</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__command</span><span class="p">,</span> <span class="n">turbulenceProperties</span><span class="p">,</span> <span class="n">fvSolution</span><span class="p">,</span> <span class="n">fvSchemes</span><span class="p">,</span>
+            <span class="n">quantities</span><span class="p">,</span> <span class="n">residualControl</span><span class="p">,</span> <span class="n">relaxationFactors</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__residual_fields</span><span class="p">)</span>
+
+<div class="viewcode-block" id="HeatTransfer.prepare_case"><a class="viewcode-back" href="../../butterfly.recipe.html#butterfly.recipe.HeatTransfer.prepare_case">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_case</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Prepare a case for this recipe.</span>
+
+<span class="sd">        This method sets up the application in control dict and double checks</span>
+<span class="sd">        files under Zero folder for each quantities. It creates, overwrites or</span>
+<span class="sd">        removes the files if needed. Solution class calls this method on</span>
+<span class="sd">        initialization.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            case: A Butterfly case.</span>
+<span class="sd">            overwrite: Set to True to overwrite current files.</span>
+<span class="sd">            remove: Set to True to remove extra files in the folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># update pRefPoint to center locationInMesh for snappyHexMeshDict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fvSolution</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;SIMPLE&#39;</span><span class="p">][</span><span class="s1">&#39;pRefPoint&#39;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="nb">str</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">snappyHexMeshDict</span><span class="o">.</span><span class="n">locationInMesh</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+        <span class="c1"># updated TRef if it is provided</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">update_values</span><span class="p">({</span><span class="s1">&#39;internalField&#39;</span><span class="p">:</span> <span class="s1">&#39;uniform </span><span class="si">%f</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature</span><span class="p">})</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">HeatTransfer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">prepare_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">remove</span><span class="p">)</span></div></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

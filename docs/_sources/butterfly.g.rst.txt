@@ -1,0 +1,7 @@
+butterfly.g module
+==================
+
+.. automodule:: butterfly.g
+    :members:
+    :undoc-members:
+    :show-inheritance:

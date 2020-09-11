@@ -1,0 +1,7 @@
+butterfly.RASProperties module
+==============================
+
+.. automodule:: butterfly.RASProperties
+    :members:
+    :undoc-members:
+    :show-inheritance:

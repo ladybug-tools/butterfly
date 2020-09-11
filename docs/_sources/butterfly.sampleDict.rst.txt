@@ -1,0 +1,7 @@
+butterfly.sampleDict module
+===========================
+
+.. automodule:: butterfly.sampleDict
+    :members:
+    :undoc-members:
+    :show-inheritance:

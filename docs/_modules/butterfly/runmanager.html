@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.runmanager &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.runmanager</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Runmanager for butterfly.</span>
+
+<span class="sd">Run manager is only useful for running OpenFOAM for Windows which runs in a</span>
+<span class="sd">docker container. For linux systems simply use .bash files or libraries such as</span>
+<span class="sd">pyFOAM.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">PIPE</span><span class="p">,</span> <span class="n">Popen</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">.version</span> <span class="kn">import</span> <span class="n">Version</span>
+
+
+<div class="viewcode-block" id="UserNotAdminError"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.UserNotAdminError">[docs]</a><span class="k">class</span> <span class="nc">UserNotAdminError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exception for non-admin users.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="RunManager"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager">[docs]</a><span class="k">class</span> <span class="nc">RunManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;RunManager to write and run OpenFOAM commands through batch files.</span>
+
+<span class="sd">    Run manager is currently only useful for running OpenFOAM for Windows which</span>
+<span class="sd">    runs in a docker container. For linux systems simply use .bash files or</span>
+<span class="sd">    libraries such as pyFOAM.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">shellinit</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">__containerId</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">):</span>
+        <span class="sa">u</span><span class="sd">&quot;&quot;&quot;Init run manager for project.</span>
+
+<span class="sd">        Project path will be set to: C:/Users/%USERNAME%/butterfly/project_name</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_name: A string for project name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">,</span> <span class="s2">&quot;Currently RunManager is only supported on Windows.&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__project_name</span> <span class="o">=</span> <span class="n">project_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__separator</span> <span class="o">=</span> <span class="s1">&#39;&amp;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_using_docker_machine</span> <span class="o">=</span> <span class="kc">True</span> \
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">Version</span><span class="p">,</span> <span class="s1">&#39;is_using_docker_machine&#39;</span><span class="p">)</span> <span class="ow">and</span> \
+            <span class="n">Version</span><span class="o">.</span><span class="n">is_using_docker_machine</span> \
+            <span class="k">else</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dockerPath</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;&quot;C:\Program Files\Docker Toolbox&quot;&#39;</span> \
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_using_docker_machine</span> \
+            <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;&quot;C:\Program Files\Boot2Docker for Windows&quot;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_folder</span> <span class="o">=</span> <span class="s1">&#39;./log&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errFolder</span> <span class="o">=</span> <span class="s1">&#39;./log&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pid</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">container_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Container ID.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__containerId</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_container_id</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__containerId</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return PID for the latest command.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pid</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_user_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True if user is admin.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">shell32</span><span class="o">.</span><span class="n">IsUserAnAdmin</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="RunManager.ensure_user_is_admin"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.ensure_user_is_admin">[docs]</a>    <span class="k">def</span> <span class="nf">ensure_user_is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Ensure user is logged in as admin.</span>
+
+<span class="sd">        If user is not admin raise UserNotAdminError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_user_admin</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UserNotAdminError</span><span class="p">(</span>
+                <span class="s1">&#39;In order to run OpenFOAM using butterfly you must use an admin &#39;</span>
+                <span class="s1">&#39;account or run the program as administrator.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RunManager.get_shellinit"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.get_shellinit">[docs]</a>    <span class="k">def</span> <span class="nf">get_shellinit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get shellinit for setting up initial environment for docker.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="sa">r</span><span class="s1">&#39;&quot;C:\Program Files (x86)\Git\bin&quot;&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="s1">&#39;;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="sa">r</span><span class="s1">&#39;&quot;C:\Program Files (x86)\Git\bin&quot;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dockerPath</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;PATH&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="s1">&#39;;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">dockerPath</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_using_docker_machine</span><span class="p">:</span>
+            <span class="c1"># version 1606 and higher</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;docker-machine env&#39;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span>
+                            <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># older versions are using boot2docker</span>
+            <span class="n">process</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="s1">&#39;boot2docker shellinit&#39;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span>
+                            <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+
+        <span class="n">err</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">process</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Error checking TLS connection: Host is not running&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39; Docker machine is not running! Run Oracle VM &#39;</span> \
+                    <span class="s1">&#39;VirtualBox Manager as administrator and make sure &#39;</span> \
+                    <span class="s1">&#39;&quot;default&quot; machine is &quot;running&quot;.&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_user_admin</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">msg</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">If OpenFOAM is installed correctly and the default is&#39;</span>
+                    <span class="s1">&#39; running, you get this error most likely because you are not using&#39;</span>
+                    <span class="s1">&#39; an administrator account. Try to run your &#39;</span>
+                    <span class="s1">&#39;application (Rhino, Revit, etc) as an Administrator!&#39;</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">msg</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$Env:&#39;</span><span class="p">,</span> <span class="s1">&#39;set &#39;</span><span class="p">)</span>
+                     <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39; = &#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                     <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">process</span><span class="o">.</span><span class="n">stdout</span>
+                     <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;REM&#39;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="RunManager.get_container_id"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.get_container_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_container_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get OpenFOAM&#39;s container id.&quot;&quot;&quot;</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shellinit</span><span class="p">()</span>
+
+        <span class="n">cmds</span> <span class="o">=</span> <span class="s1">&#39;&amp;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span> <span class="o">+</span> <span class="p">(</span><span class="s1">&#39;docker ps&#39;</span><span class="p">,))</span>
+
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">cmds</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;of_&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># find container</span>
+                <span class="n">_id</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;container id: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_id</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__containerId</span> <span class="o">=</span> <span class="n">_id</span></div>
+
+<div class="viewcode-block" id="RunManager.get_pid"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.get_pid">[docs]</a>    <span class="k">def</span> <span class="nf">get_pid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get pid of a command.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_container_id</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pid</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;docker exec -i </span><span class="si">{}</span><span class="s1"> pgrep </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="n">cmds</span> <span class="o">=</span> <span class="s1">&#39;&amp;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span> <span class="o">+</span> <span class="p">(</span><span class="n">cmd</span><span class="p">,))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">timeout_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">timeout_start</span> <span class="o">+</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="n">pids</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">cmds</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+            <span class="n">pp</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pids</span><span class="o">.</span><span class="n">stdout</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="n">pp</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_pid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pid</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RunManager.terminate"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.terminate">[docs]</a>    <span class="k">def</span> <span class="nf">terminate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Kill the command using the pid.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_container_id</span><span class="p">()</span>
+        <span class="n">pid</span> <span class="o">=</span> <span class="n">pid</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pid</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pid</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">force</span><span class="p">:</span>
+            <span class="n">killer</span> <span class="o">=</span> <span class="s1">&#39;docker exec -i </span><span class="si">{}</span><span class="s1"> kill -9 </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">killer</span> <span class="o">=</span> <span class="s1">&#39;docker exec -i </span><span class="si">{}</span><span class="s1"> kill </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
+
+        <span class="n">cmds</span> <span class="o">=</span> <span class="s1">&#39;&amp;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span> <span class="o">+</span> <span class="p">(</span><span class="n">killer</span><span class="p">,))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">cmds</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">stdout</span><span class="p">)))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">__of_batch_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">Version</span><span class="o">.</span><span class="n">of_full_ver</span> <span class="o">==</span> <span class="s1">&#39;v3.0+&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;C:\Program Files (x86)\ESI\OpenFOAM\v3.0+\Windows\Scripts&#39;</span> \
+                <span class="s1">&#39;\start_openfoam.bat&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">r</span><span class="s1">&#39;C:\Program Files (x86)\ESI\OpenFOAM\</span><span class="si">{}</span><span class="se">\\</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;Windows\Scripts\start_openfoam.bat&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Version</span><span class="o">.</span><span class="n">of_full_ver</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+<div class="viewcode-block" id="RunManager.start_openfoam"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.start_openfoam">[docs]</a>    <span class="k">def</span> <span class="nf">start_openfoam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start OpenFOAM for Windows image from batch file.&quot;&quot;&quot;</span>
+        <span class="n">Popen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__of_batch_file</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RunManager.header"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get header for batch files.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shellinit</span><span class="p">()</span>
+
+        <span class="n">_base</span> <span class="o">=</span> <span class="s1">&#39;@echo off</span><span class="si">{0}</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;cd </span><span class="si">{1}{0}</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;echo Setting up the environment to connect to docker...</span><span class="si">{0}</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;echo .</span><span class="si">{0}</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;</span><span class="si">{2}{0}</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;echo Done!</span><span class="si">{0}</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;echo Running OpenFOAM commands...</span><span class="si">{0}</span><span class="s1">&#39;</span> \
+                <span class="s1">&#39;echo .&#39;</span>
+
+        <span class="k">return</span> <span class="n">_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__separator</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dockerPath</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">__separator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shellinit</span><span class="p">))</span></div>
+
+    <span class="c1"># TODO(): Update controlDict.application for multiple commands</span>
+<div class="viewcode-block" id="RunManager.command"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.command">[docs]</a>    <span class="k">def</span> <span class="nf">command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get command line for an OpenFOAM command in parallel or serial.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd: An OpenFOAM command.</span>
+<span class="sd">            args: List of optional arguments for command. e.g. (&#39;c&#39;, &#39;latestTime&#39;)</span>
+<span class="sd">            decomposeParDict: decomposeParDict for parallel runs (default: None).</span>
+<span class="sd">            include_header: Include header lines to set up the environment</span>
+<span class="sd">                (default: True).</span>
+<span class="sd">            tee: Include tee in command line.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (cmd, logfiles, errorfiles)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="p">,</span> <span class="n">include_header</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="c1"># a list of commands</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;cmd logfiles errorfiles&#39;</span><span class="p">)</span>
+            <span class="n">logs</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cmd</span><span class="p">))</span>  <span class="c1"># create a place holder for commands</span>
+            <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">cmd</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">include_header</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="s1">&#39;blockMesh&#39;</span><span class="p">:</span>
+                    <span class="n">decomposeParDict</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">arg</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">count</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                    <span class="n">arg</span> <span class="o">=</span> <span class="n">args</span>
+
+                <span class="n">logs</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__command</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="p">(</span><span class="n">arg</span><span class="p">,),</span> <span class="n">decomposeParDict</span><span class="p">,</span>
+                                             <span class="n">include_header</span><span class="p">)</span>
+
+            <span class="n">command</span> <span class="o">=</span> <span class="s1">&#39;&amp;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">cmd</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">)</span>
+            <span class="n">logfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ff</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span> <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">log</span><span class="o">.</span><span class="n">logfiles</span><span class="p">)</span>
+            <span class="n">errorfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ff</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span> <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">log</span><span class="o">.</span><span class="n">errorfiles</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">res</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errorfiles</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_header</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get command line for an OpenFOAM command in parallel or serial.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cmd: An OpenFOAM command.</span>
+<span class="sd">            args: List of optional arguments for command. e.g. (&#39;-c&#39;, &#39;-latestTime&#39;)</span>
+<span class="sd">            decomposeParDict: decomposeParDict for parallel runs (default: None).</span>
+<span class="sd">            include_header: Include header lines to set up the environment</span>
+<span class="sd">                (default: True).</span>
+<span class="sd">            tee: Include tee in command line.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (cmd, logfiles, errorfiles)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tee</span> <span class="o">=</span> <span class="s1">&#39;tee&#39;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;cmd logfiles errorfiles&#39;</span><span class="p">)</span>
+        <span class="n">_msg</span> <span class="o">=</span> <span class="s1">&#39;Failed to find container id. &#39;</span> \
+            <span class="s1">&#39;Do you have the OpenFOAM container running?</span><span class="se">\n</span><span class="s1">&#39;</span> \
+            <span class="s1">&#39;You can initiate OpenFOAM container by running start_openfoam.bat:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span> \
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__of_batch_file</span><span class="p">)</span>
+
+        <span class="c1"># try to get containerId</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_container_id</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">,</span> <span class="n">_msg</span>
+
+        <span class="c1"># containerId is found. put the commands together</span>
+        <span class="n">_base</span> <span class="o">=</span> <span class="s1">&#39;start /wait docker exec -i </span><span class="si">{}</span><span class="s1"> su - ofuser -c &#39;</span> \
+            <span class="s1">&#39;&quot;cd /home/ofuser/workingDir/butterfly/</span><span class="si">{}</span><span class="s1">; </span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
+        <span class="n">_basecmd</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1"> &gt; &gt;(</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">/</span><span class="si">{2}</span><span class="s1">.log) 2&gt; &gt;(</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">/</span><span class="si">{2}</span><span class="s1">.err &gt;&amp;2)&#39;</span> \
+            <span class="o">%</span> <span class="p">(</span><span class="n">tee</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_folder</span><span class="p">,</span> <span class="n">tee</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">errFolder</span><span class="p">)</span>
+
+        <span class="c1"># join arguments for the command</span>
+        <span class="n">arguments</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">decomposeParDict</span><span class="p">:</span>
+            <span class="c1"># run in parallel</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">decomposeParDict</span><span class="o">.</span><span class="n">numberOfSubdomains</span>
+            <span class="n">arguments</span> <span class="o">=</span> <span class="n">arguments</span> <span class="o">+</span> <span class="s1">&#39; -parallel&#39;</span>
+
+            <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;snappyHexMesh&#39;</span><span class="p">:</span>
+                <span class="n">cmd_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;decomposePar&#39;</span><span class="p">,</span> <span class="s1">&#39;mpirun -np </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),</span>
+                            <span class="s1">&#39;reconstructParMesh&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">)</span>
+                <span class="n">arg_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="s1">&#39;-constant&#39;</span><span class="p">,</span> <span class="s1">&#39;-r proc*&#39;</span><span class="p">)</span>
+                <span class="n">cmd_name_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;decomposePar&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;reconstructParMesh&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cmd_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;decomposePar&#39;</span><span class="p">,</span> <span class="s1">&#39;mpirun -np </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),</span>
+                            <span class="s1">&#39;reconstructPar&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">)</span>
+                <span class="n">arg_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;-r proc*&#39;</span><span class="p">)</span>
+                <span class="n">cmd_name_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;decomposePar&#39;</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="s1">&#39;reconstructPar&#39;</span><span class="p">,</span> <span class="s1">&#39;rm&#39;</span><span class="p">)</span>
+
+            <span class="c1"># join commands together</span>
+            <span class="n">cmds</span> <span class="o">=</span> <span class="p">(</span><span class="n">_basecmd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span>
+                    <span class="nb">zip</span><span class="p">(</span><span class="n">cmd_list</span><span class="p">,</span> <span class="n">arg_list</span><span class="p">,</span> <span class="n">cmd_name_list</span><span class="p">))</span>
+
+            <span class="n">cmds</span> <span class="o">=</span> <span class="n">_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__project_name</span><span class="p">,</span>
+                                <span class="s1">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmds</span><span class="p">))</span>
+
+            <span class="n">errfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.err&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errFolder</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cmd_name_list</span><span class="p">)</span>
+            <span class="n">logfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_folder</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">cmd_name_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># run is serial</span>
+            <span class="n">cmds</span> <span class="o">=</span> <span class="n">_base</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__project_name</span><span class="p">,</span>
+                                <span class="n">_basecmd</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">cmd</span><span class="p">))</span>
+            <span class="n">errfiles</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.err&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">errFolder</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),)</span>
+            <span class="n">logfiles</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.log&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_folder</span><span class="p">,</span> <span class="n">cmd</span><span class="p">),)</span>
+
+        <span class="k">if</span> <span class="n">include_header</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__separator</span> <span class="o">+</span> <span class="n">cmds</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errfiles</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">res</span><span class="p">(</span><span class="n">cmds</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errfiles</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RunManager.run"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run OpenFOAM command.&quot;&quot;&quot;</span>
+        <span class="c1"># get the command as a single line</span>
+        <span class="n">cmd</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errfiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="p">)</span>
+
+        <span class="c1"># run the command.</span>
+        <span class="c1"># shell should be True to run multiple commands at the same time.</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;process logfiles errorfiles&#39;</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;blockMesh&#39;</span><span class="p">,</span> <span class="s1">&#39;surfaceFeatureExtract&#39;</span><span class="p">,</span> <span class="s1">&#39;postProcess&#39;</span><span class="p">):</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>  <span class="c1"># wait 0.5 second to make sure the command has started</span>
+        <span class="n">ppid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pid</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Butterfly is running </span><span class="si">{}</span><span class="s1">. PID: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ppid</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+            <span class="c1"># once over try to kill the process if exist.</span>
+            <span class="c1"># This will ensure that the command will be terminated even if the</span>
+            <span class="c1"># user has canceled the run by closing the batch window.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">terminate</span><span class="p">(</span><span class="n">ppid</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">log</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errfiles</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RunManager.check_file_contents"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.check_file_contents">[docs]</a>    <span class="k">def</span> <span class="nf">check_file_contents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">mute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check files for content and print them out if any.</span>
+
+<span class="sd">        args:</span>
+<span class="sd">            files: A list of ASCII files.</span>
+
+<span class="sd">        returns:</span>
+<span class="sd">            (hasContent, content)</span>
+<span class="sd">            hasContent: A boolean that shows if there is any contents.</span>
+<span class="sd">            content: Files content if any</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">read_file</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">log</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">log</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="s1">&#39;Failed to read </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">_lines</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">read_file</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_lines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mute</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">_lines</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">_lines</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">_lines</span></div>
+
+<div class="viewcode-block" id="RunManager.duplicate"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RunManager.ToString"><a class="viewcode-back" href="../../butterfly.runmanager.html#butterfly.runmanager.RunManager.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run manager representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;RunManager::</span><span class="si">{}</span><span class="s2">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__project_name</span><span class="p">)</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

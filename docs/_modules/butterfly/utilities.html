@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.utilities &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.utilities</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Collection of useful methods.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">subprocess</span> <span class="kn">import</span> <span class="n">Popen</span><span class="p">,</span> <span class="n">PIPE</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
+
+
+<div class="viewcode-block" id="list_files"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.list_files">[docs]</a><span class="k">def</span> <span class="nf">list_files</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;list files in a folder.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">fullpath</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">f</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">yield</span></div>
+
+
+<div class="viewcode-block" id="load_case_files"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_case_files">[docs]</a><span class="k">def</span> <span class="nf">load_case_files</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;load openfoam files from a folder.&quot;&quot;&quot;</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;constant/triSurface&#39;</span><span class="p">):</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">list_files</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">fullpath</span><span class="p">)))</span>
+
+    <span class="n">Files</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Files&#39;</span><span class="p">,</span> <span class="s1">&#39;zero constant system stl&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Files</span><span class="p">(</span><span class="o">*</span><span class="n">files</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mkdir"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.mkdir">[docs]</a><span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make a directory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        directory: directory as a string.</span>
+<span class="sd">        overwrite: A boolean to overwrite the folder if already exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">directory</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to create </span><span class="si">%s</span><span class="s1">:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">directory</span></div>
+
+
+<div class="viewcode-block" id="write_to_file"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.write_to_file">[docs]</a><span class="k">def</span> <span class="nf">write_to_file</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">content</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;write string content to a file.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
+            <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to create </span><span class="si">%s</span><span class="s1">:</span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">full_path</span></div>
+
+
+<div class="viewcode-block" id="run_batch_file"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.run_batch_file">[docs]</a><span class="k">def</span> <span class="nf">run_batch_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;run an executable .bat file.</span>
+
+<span class="sd">    args:</span>
+<span class="sd">        wait: Wait for analysis to finish (default: True).</span>
+
+<span class="sd">    returns:</span>
+<span class="sd">        Popen process.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot find </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">filepath</span><span class="p">)</span>
+
+    <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Popen</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">PIPE</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="s1">&#39;Y</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="tail"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.tail">[docs]</a><span class="k">def</span> <span class="nf">tail</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">lines</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get tail of the file.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">total_lines_wanted</span> <span class="o">=</span> <span class="n">lines</span>
+
+        <span class="n">BLOCK_SIZE</span> <span class="o">=</span> <span class="mi">1024</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">block_end_byte</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="n">lines_to_go</span> <span class="o">=</span> <span class="n">total_lines_wanted</span>
+        <span class="n">block_number</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="c1"># blocks of size BLOCK_SIZE, in reverse order starting from the end of</span>
+        <span class="c1"># the file</span>
+        <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="n">lines_to_go</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">block_end_byte</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">block_end_byte</span> <span class="o">-</span> <span class="n">BLOCK_SIZE</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="c1"># read the last block we haven&#39;t yet read</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">block_number</span> <span class="o">*</span> <span class="n">BLOCK_SIZE</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">BLOCK_SIZE</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># file too small, start from begining</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="c1"># only read what was not read</span>
+                <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">block_end_byte</span><span class="p">))</span>
+            <span class="n">lines_found</span> <span class="o">=</span> <span class="n">blocks</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">lines_to_go</span> <span class="o">-=</span> <span class="n">lines_found</span>
+            <span class="n">block_end_byte</span> <span class="o">-=</span> <span class="n">BLOCK_SIZE</span>
+            <span class="n">block_number</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">all_read_text</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">reversed</span><span class="p">(</span><span class="n">blocks</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">all_read_text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()[</span><span class="o">-</span><span class="n">total_lines_wanted</span><span class="p">:])</span></div>
+
+
+<div class="viewcode-block" id="read_last_line"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.read_last_line">[docs]</a><span class="k">def</span> <span class="nf">read_last_line</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">1024</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read the last line of a file.</span>
+
+<span class="sd">    Modified from: http://www.manugarg.com/2007/04/tailing-in-python.html</span>
+<span class="sd">    Args:</span>
+<span class="sd">        filepath: path to file</span>
+<span class="sd">        block_size:  data is read in chunks of this size (optional, default=1024)</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        IOError if file cannot be processed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># rU is to open it with Universal newline support</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;rU&#39;</span><span class="p">)</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="n">block_size</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">file_size</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">file_size</span> <span class="o">&lt;</span> <span class="n">offset</span><span class="p">:</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="n">file_size</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">offset</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">read_str</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span>
+
+            <span class="c1"># Remove newline at the end</span>
+            <span class="k">if</span> <span class="n">read_str</span><span class="p">[</span><span class="n">offset</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">:</span>
+                <span class="n">read_str</span> <span class="o">=</span> <span class="n">read_str</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">read_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Got a line</span>
+                <span class="k">return</span> <span class="n">lines</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">offset</span> <span class="o">==</span> <span class="n">file_size</span><span class="p">:</span>   <span class="c1"># Reached the beginning</span>
+                <span class="k">return</span> <span class="n">read_str</span>
+
+            <span class="n">offset</span> <span class="o">+=</span> <span class="n">block_size</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="update_dict"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.update_dict">[docs]</a><span class="k">def</span> <span class="nf">update_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Update a dictionary witout overwriting the currect values.</span>
+
+<span class="sd">    source: http://stackoverflow.com/a/3233356/4394669</span>
+<span class="sd">    Args:</span>
+<span class="sd">        d: original dictionary.</span>
+<span class="sd">        u: new dictionary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">u</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">update_dict</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">{}),</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">d</span></div>
+
+
+<div class="viewcode-block" id="get_snappyHexMesh_geometry_feild"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.get_snappyHexMesh_geometry_feild">[docs]</a><span class="k">def</span> <span class="nf">get_snappyHexMesh_geometry_feild</span><span class="p">(</span><span class="n">project_name</span><span class="p">,</span> <span class="n">bf_geometries</span><span class="p">,</span>
+                                     <span class="n">meshing_type</span><span class="o">=</span><span class="s1">&#39;triSurfaceMesh&#39;</span><span class="p">,</span>
+                                     <span class="n">stl_file</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get data for Geometry as a dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        project_name: Name of OpenFOAM case.</span>
+<span class="sd">        bf_geometries: List of Butterfly geometries.</span>
+<span class="sd">        meshing_type: Meshing type. (Default: triSurfaceMesh)</span>
+<span class="sd">        stl_file: Name of .stl file if it is different from project_name.stl</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of data that can be passed to snappyHexMeshDict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stl_file</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.stl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">stl_file</span> <span class="k">else</span> <span class="n">stl_file</span>
+    <span class="n">_geo</span> <span class="o">=</span> <span class="p">{</span><span class="n">stl_file</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">()}</span>
+    <span class="n">_geo</span><span class="p">[</span><span class="n">stl_file</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">meshing_type</span>
+    <span class="n">_geo</span><span class="p">[</span><span class="n">stl_file</span><span class="p">][</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">project_name</span>
+    <span class="n">_geo</span><span class="p">[</span><span class="n">stl_file</span><span class="p">][</span><span class="s1">&#39;regions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">bfgeo</span> <span class="ow">in</span> <span class="n">bf_geometries</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_geo</span><span class="p">[</span><span class="n">stl_file</span><span class="p">][</span><span class="s1">&#39;regions&#39;</span><span class="p">]:</span>
+            <span class="n">_geo</span><span class="p">[</span><span class="n">stl_file</span><span class="p">][</span><span class="s1">&#39;regions&#39;</span><span class="p">][</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">_geo</span></div>
+
+
+<div class="viewcode-block" id="get_snappyHexMesh_refinement_surfaces"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.get_snappyHexMesh_refinement_surfaces">[docs]</a><span class="k">def</span> <span class="nf">get_snappyHexMesh_refinement_surfaces</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="p">,</span> <span class="n">bf_geometries</span><span class="p">,</span> <span class="n">global_levels</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get data for MeshRefinementSurfaces as a dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        project_name: Name of OpenFOAM case.</span>
+<span class="sd">        bf_geometries: List of Butterfly geometries.</span>
+<span class="sd">        global_levels: Default Min, max level of geometry mesh refinement.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of data that can be passed to snappyHexMeshDict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">global_levels</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">global_levels</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">global_levels</span><span class="p">)</span>
+    <span class="n">_ref</span> <span class="o">=</span> <span class="p">{</span><span class="n">project_name</span><span class="p">:</span> <span class="n">OrderedDict</span><span class="p">()}</span>
+    <span class="n">_ref</span><span class="p">[</span><span class="n">project_name</span><span class="p">][</span><span class="s1">&#39;level&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;(</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">global_levels</span><span class="p">))</span>
+    <span class="n">_ref</span><span class="p">[</span><span class="n">project_name</span><span class="p">][</span><span class="s1">&#39;regions&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">bfgeo</span> <span class="ow">in</span> <span class="n">bf_geometries</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bfgeo</span><span class="o">.</span><span class="n">refinementLevels</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ref</span><span class="p">[</span><span class="n">project_name</span><span class="p">][</span><span class="s1">&#39;regions&#39;</span><span class="p">]:</span>
+            <span class="n">_ref</span><span class="p">[</span><span class="n">project_name</span><span class="p">][</span><span class="s1">&#39;regions&#39;</span><span class="p">][</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="p">{</span><span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="s1">&#39;(</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">refinementLevels</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                                           <span class="nb">int</span><span class="p">(</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">refinementLevels</span><span class="p">[</span><span class="mi">1</span><span class="p">]))}</span>
+
+    <span class="k">return</span> <span class="n">_ref</span></div>
+
+
+<div class="viewcode-block" id="get_snappyHexMesh_surface_layers"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.get_snappyHexMesh_surface_layers">[docs]</a><span class="k">def</span> <span class="nf">get_snappyHexMesh_surface_layers</span><span class="p">(</span><span class="n">bf_geometries</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get data for n_surface_layers as a dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bf_geometries: List of Butterfly geometries.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of data that can be passed to snappyHexMeshDict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_ref</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">bfgeo</span> <span class="ow">in</span> <span class="n">bf_geometries</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bfgeo</span><span class="o">.</span><span class="n">nSurfaceLayers</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_ref</span><span class="p">:</span>
+            <span class="n">_ref</span><span class="p">[</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;nSurfaceLayers&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">nSurfaceLayers</span><span class="p">)}</span>
+
+    <span class="k">return</span> <span class="n">_ref</span></div>
+
+
+<div class="viewcode-block" id="get_boundary_field_from_geometries"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.get_boundary_field_from_geometries">[docs]</a><span class="k">def</span> <span class="nf">get_boundary_field_from_geometries</span><span class="p">(</span><span class="n">bf_geometries</span><span class="p">,</span> <span class="n">field</span><span class="o">=</span><span class="s1">&#39;U&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get data for boundaryField as a dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bf_geometries: List of Butterfly geometries.</span>
+<span class="sd">        parameter: One of the fileds as a string (U , p, k , epsilon, nut)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary of data that can be passed to snappyHexMeshDict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_bou</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">bfgeo</span> <span class="ow">in</span> <span class="n">bf_geometries</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_bou</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">boundary_condition</span><span class="p">,</span> <span class="s1">&#39;isBoundingBoxBoundaryCondition&#39;</span><span class="p">):</span>
+                <span class="c1"># bounding box for meshing. should not be included in files</span>
+                <span class="k">continue</span>
+            <span class="n">_bc</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">boundary_condition</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
+            <span class="n">_bou</span><span class="p">[</span><span class="n">bfgeo</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_bc</span><span class="o">.</span><span class="n">value_dict</span>
+
+    <span class="k">return</span> <span class="n">_bou</span></div>
+
+
+<div class="viewcode-block" id="load_skipped_probes"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_skipped_probes">[docs]</a><span class="k">def</span> <span class="nf">load_skipped_probes</span><span class="p">(</span><span class="n">log_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return list of skipped points as tuples.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">log_file</span><span class="p">),</span> <span class="s2">&quot;Can&#39;t find </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_file</span><span class="p">)</span>
+    <span class="n">_pts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">inf</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">inf</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">while</span> <span class="n">line</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;Time = &#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;    Did not find location&#39;</span><span class="p">):</span>
+                <span class="n">_pts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;)&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">inf</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">_pts</span></div>
+
+
+<div class="viewcode-block" id="load_probes_from_postProcessing_file"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_probes_from_postProcessing_file">[docs]</a><span class="k">def</span> <span class="nf">load_probes_from_postProcessing_file</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a generator of probes as tuples.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        probes_folder: full path to probes folder.</span>
+<span class="sd">        field: Probes field (e.g. U, p, T).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;Failed to find probes folder folder at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">))</span>
+
+    <span class="n">folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">)</span>
+               <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span> <span class="ow">and</span>
+                   <span class="n">f</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())]</span>
+
+    <span class="c1"># sort based on last modified</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">folders</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">folder</span><span class="p">:</span>
+                     <span class="nb">max</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span><span class="o">.</span><span class="n">st_mtime</span>
+                               <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">))))</span>
+
+    <span class="c1"># load the last line in the file</span>
+    <span class="n">_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">folders</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">field</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">_f</span><span class="p">),</span> <span class="s1">&#39;Cannot find </span><span class="si">{}</span><span class="s1">!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_f</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_f</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">inf</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">inf</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#        Probe&#39;</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">yield</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="load_probe_values_from_folder"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_probe_values_from_folder">[docs]</a><span class="k">def</span> <span class="nf">load_probe_values_from_folder</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return OpenFOAM probe values for a field for the last timestep.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        field: Probes field (e.g. U, p, T).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s1">&#39;Failed to find probes folder folder at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">))</span>
+
+    <span class="n">folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">)</span>
+               <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span> <span class="ow">and</span>
+                   <span class="n">f</span><span class="o">.</span><span class="n">isdigit</span><span class="p">())]</span>
+
+    <span class="c1"># sort based on last modified</span>
+    <span class="n">folders</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">folders</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">folder</span><span class="p">:</span>
+                     <span class="nb">max</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span><span class="o">.</span><span class="n">st_mtime</span>
+                               <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">))))</span>
+
+    <span class="c1"># load the last line in the file</span>
+    <span class="n">_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">probes_folder</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">folders</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">field</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">_f</span><span class="p">),</span> <span class="s1">&#39;Cannot find </span><span class="si">{}</span><span class="s1">!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_f</span><span class="p">)</span>
+    <span class="n">_res</span> <span class="o">=</span> <span class="n">read_last_line</span><span class="p">(</span><span class="n">_f</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="c1"># convert values to tuple or number</span>
+    <span class="n">_rawres</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">read_last_line</span><span class="p">(</span><span class="n">_f</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">strip</span><span class="p">())[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># it&#39;s a number</span>
+        <span class="n">_res</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">_rawres</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># it&#39;s a vector</span>
+            <span class="n">_res</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_rawres</span><span class="p">[</span><span class="mi">3</span> <span class="o">*</span> <span class="n">i</span><span class="p">:</span> <span class="mi">3</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]))</span>
+                         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_rawres</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Failed to load probes:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">_res</span></div>
+
+
+<div class="viewcode-block" id="load_probes_and_values_from_sample_file"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_probes_and_values_from_sample_file">[docs]</a><span class="k">def</span> <span class="nf">load_probes_and_values_from_sample_file</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load probes and respected values from the results of a sample file.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">inf</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">inf</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span> <span class="n">v</span></div>
+
+
+<div class="viewcode-block" id="load_of_points_file"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_of_points_file">[docs]</a><span class="k">def</span> <span class="nf">load_of_points_file</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return points as a generator of tuples.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">),</span> \
+        <span class="s1">&#39;Failed to find points file at </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">path_to_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
+        <span class="n">pfile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">pfile</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">pfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="load_of_faces_file"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_of_faces_file">[docs]</a><span class="k">def</span> <span class="nf">load_of_faces_file</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="n">inner_mesh</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return faces indecies as a generator of tuples.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">),</span> \
+        <span class="s1">&#39;Failed to find faces file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">path_to_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.gz&#39;</span><span class="p">):</span>
+        <span class="n">ffile</span> <span class="o">=</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ffile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">inner_mesh</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span>
+        <span class="n">fins</span> <span class="o">=</span> <span class="n">load_of_boundary_file</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;faces&#39;</span><span class="p">,</span> <span class="s1">&#39;boundary&#39;</span><span class="p">)))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fin</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ffile</span><span class="p">:</span>
+                <span class="n">tl</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">tl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;(&#39;</span> <span class="ow">and</span> <span class="n">tl</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">):</span>
+                        <span class="n">fin</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># add to face number</span>
+                        <span class="k">if</span> <span class="n">fin</span> <span class="ow">in</span> <span class="n">fins</span><span class="p">:</span>
+                            <span class="k">yield</span> <span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tl</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">ffile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ffile</span><span class="p">:</span>
+                <span class="n">tl</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">tl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;(&#39;</span> <span class="ow">and</span> <span class="n">tl</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;)&#39;</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="nb">eval</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">tl</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">split</span><span class="p">()))</span>
+                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">ffile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="load_of_boundary_file"><a class="viewcode-back" href="../../butterfly.utilities.html#butterfly.utilities.load_of_boundary_file">[docs]</a><span class="k">def</span> <span class="nf">load_of_boundary_file</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return Face indecies for boundary faces as a set.&quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">),</span> \
+        <span class="s1">&#39;Failed to find boundary file: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">)</span>
+
+    <span class="n">ind</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">bf</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">bf</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;nFaces&#39;</span><span class="p">):</span>
+                <span class="n">count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">nl</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">bf</span><span class="p">)</span>
+                <span class="n">st</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nl</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">ind</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xrange</span><span class="p">(</span><span class="n">st</span><span class="p">,</span> <span class="n">st</span> <span class="o">+</span> <span class="n">count</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="n">i</span> <span class="k">for</span> <span class="n">rng</span> <span class="ow">in</span> <span class="n">ind</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rng</span><span class="p">}</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

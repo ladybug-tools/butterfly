@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.case module &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="butterfly.conditions module" href="butterfly.conditions.html" />
+    <link rel="prev" title="butterfly.boundarycondition module" href="butterfly.boundarycondition.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="butterfly.boundarycondition.html" title="Previous Chapter: butterfly.boundarycondition module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; butterfly.bou...</span>
+    </a>
+  </li>
+  <li>
+    <a href="butterfly.conditions.html" title="Next Chapter: butterfly.conditions module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">butterfly.con... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/butterfly.case.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <div class="section" id="module-butterfly.case">
+<span id="butterfly-case-module"></span><h1>butterfly.case module<a class="headerlink" href="#module-butterfly.case" title="Permalink to this headline">¶</a></h1>
+<p>Butterfly OpenFOAM Case.</p>
+<dl class="class">
+<dt id="butterfly.case.Case">
+<em class="property">class </em><code class="descclassname">butterfly.case.</code><code class="descname">Case</code><span class="sig-paren">(</span><em>name</em>, <em>foamfiles</em>, <em>geometries</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Principal class for OpenFOAM Cases.</p>
+<p>This class can either be instantiated directly through the __init__ constructor or
+through the following classmethods:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>from_folder: Create a Butterfly case from a case folder</li>
+<li>from_bf_geometries: Create a case from Butterfly geometries.</li>
+<li>from_wind_tunnel: Create case from wind tunnel.</li>
+</ol>
+</div></blockquote>
+<dl class="docutils">
+<dt>Notes for beginners:</dt>
+<dd><dl class="first last docutils">
+<dt>What is an OpenFOAM case?</dt>
+<dd>As defined by AndRAS Horvath in “OpenFOAM tutorial collection”, a case is the
+combination of geometry definition (the finite volume mesh), configuration
+files (called dictionaries in OpenFOAM language), definition of boundary
+conditions and initial conditions, custom function and results all structured
+in many files and directories. The 0-directory contains the initial- and
+boundary-conditions. The (initial) mesh is in constant/polyMesh. Most config
+files are in system/. Material and turbulence properties are in
+constant/.</dd>
+</dl>
+</dd>
+</dl>
+<dl class="attribute">
+<dt id="butterfly.case.Case.MINFOAMFIles">
+<code class="descname">MINFOAMFIles</code><em class="property"> = ('fvSchemes', 'fvSolution', 'controlDict', 'blockMeshDict', 'snappyHexMeshDict')</em><a class="headerlink" href="#butterfly.case.Case.MINFOAMFIles" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.SUBFOLDERS">
+<code class="descname">SUBFOLDERS</code><em class="property"> = ('0', 'constant', 'constant\\polyMesh', 'constant\\triSurface', 'system', 'log')</em><a class="headerlink" href="#butterfly.case.Case.SUBFOLDERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.ToString">
+<code class="descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.add_foam_file">
+<code class="descname">add_foam_file</code><span class="sig-paren">(</span><em>foamfile</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.add_foam_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.add_foam_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a foamfile to the case.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.add_foam_files">
+<code class="descname">add_foam_files</code><span class="sig-paren">(</span><em>foamfiles</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.add_foam_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.add_foam_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add foamfiles to the Case.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.add_refinementRegion">
+<code class="descname">add_refinementRegion</code><span class="sig-paren">(</span><em>refinementRegion</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.add_refinementRegion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.add_refinementRegion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a refinement region.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.add_refinementRegions">
+<code class="descname">add_refinementRegions</code><span class="sig-paren">(</span><em>refinementRegions</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.add_refinementRegions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.add_refinementRegions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a collections of refinement regions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.blockMesh">
+<code class="descname">blockMesh</code><span class="sig-paren">(</span><em>args=None</em>, <em>wait=True</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.blockMesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.blockMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run blockMesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> – Command arguments.</li>
+<li><strong>wait</strong> – Wait until command execution ends.</li>
+<li><strong>overwrite</strong> – Overwrite current content of the folder.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">namedtuple(success, error, process, logfiles, errorfiles).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.calculate_mesh_orthogonality">
+<code class="descname">calculate_mesh_orthogonality</code><span class="sig-paren">(</span><em>use_currnt_check_mesh_log=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.calculate_mesh_orthogonality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.calculate_mesh_orthogonality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate max and average mesh orthogonality.</p>
+<p>If average values is more than 80, try to generate a better mesh.
+You can use this values to set discretization schemes.
+try case.setFvSchemes(average_orthogonality)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.check_mesh">
+<code class="descname">check_mesh</code><span class="sig-paren">(</span><em>args=None</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.check_mesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.check_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run checkMesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> – Command arguments.</li>
+<li><strong>wait</strong> – Wait until command execution ends.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">namedtuple(success, error, process, logfiles, errorfiles).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.command">
+<code class="descname">command</code><span class="sig-paren">(</span><em>cmd</em>, <em>args=None</em>, <em>decomposeParDict=None</em>, <em>run=True</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run an OpenFOAM command for this case.
+This method creates a log and err file under logFolder for each command.
+The output will be logged as {cmd}.log and {cmd}.err.
+:param cmd: OpenFOAM command.
+:param args: Command arguments.
+:param decomposeParDict: Optional input for decomposeParDict to run analysis</p>
+<blockquote>
+<div>in parallel if desired.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>run</strong> – Run the command in shell.</li>
+<li><strong>wait</strong> – Wait until the command is over.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><dl class="docutils">
+<dt>If run is True returns a namedtuple for</dt>
+<dd><p class="first">(success, error, process, logfiles, errorfiles).
+success: as a boolen.
+error: None in case of success otherwise the error message as</p>
+<blockquote>
+<div><p>a string.</p>
+</div></blockquote>
+<p class="last">process: Popen process.
+logfiles: List of fullpath to log files.
+errorfiles: List of fullpath to error files.</p>
+</dd>
+<dt>else return a namedtuple for</dt>
+<dd><p class="first last">(cmd, logfiles, errorfiles)
+cmd: command lines.
+logfiles: A tuple for log files.
+errorfiles: A tuple for error files.</p>
+</dd>
+</dl>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.constant_folder">
+<code class="descname">constant_folder</code><a class="headerlink" href="#butterfly.case.Case.constant_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>constant folder fullpath.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.copy_snappyHexMesh">
+<code class="descname">copy_snappyHexMesh</code><span class="sig-paren">(</span><em>folder_number=None</em>, <em>overwrite=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.copy_snappyHexMesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.copy_snappyHexMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy the results of snappyHexMesh to constant/polyMesh.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.duplicate">
+<code class="descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.foam_files">
+<code class="descname">foam_files</code><a class="headerlink" href="#butterfly.case.Case.foam_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the foam_files.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="butterfly.case.Case.from_bf_geometries">
+<em class="property">classmethod </em><code class="descname">from_bf_geometries</code><span class="sig-paren">(</span><em>name</em>, <em>geometries</em>, <em>blockMeshDict=None</em>, <em>meshing_parameters=None</em>, <em>make2d_parameters=None</em>, <em>convertToMeters=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.from_bf_geometries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.from_bf_geometries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a case from Butterfly geometries.</p>
+<p>foam_files/dictionaries will be generated based on boundary condition of
+geometries. fvSolution and fvSchemes will be set to default can can be
+overwritten once a Solution is created from a Case and a Recipe. You can
+overwrite them through the recipe.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> – Case name as a string with no whitespace.</li>
+<li><strong>geometries</strong> – Collection of bf_geometries. FoamFiles/dictionaries will
+be generated based on boundary condition of geometries.</li>
+<li><strong>blockMeshDict</strong> – Optional input for blockMeshDict. If blockMeshDict is
+not provided, it will be calculated from geometries in XY
+direction and boundary condition for faces will be set to
+BoundingBoxBoundaryCondition. Use BlockMeshDict to create the
+blockMeshDict if your case is not aligned to XY direction or you
+need to assign different boundary condition to geometries.</li>
+<li><strong>meshing_parameters</strong> – Optional input for MeshingParameters.</li>
+<li><strong>make2d_parameters</strong> – Optional input for make2d_parameters to make a 2d
+case.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="butterfly.case.Case.from_folder">
+<em class="property">classmethod </em><code class="descname">from_folder</code><span class="sig-paren">(</span><em>path</em>, <em>name=None</em>, <em>convert_from_meters=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.from_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.from_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Butterfly case from a case folder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>path</strong> – Full path to case folder.</li>
+<li><strong>name</strong> – An optional new name for this case.</li>
+<li><strong>convert_from_meters</strong> – A number to be multiplied to stl file vertices
+to be converted to the new units if not meters. This value will
+be the inverse of convertToMeters.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="butterfly.case.Case.from_wind_tunnel">
+<em class="property">classmethod </em><code class="descname">from_wind_tunnel</code><span class="sig-paren">(</span><em>wind_tunnel</em>, <em>make2d_parameters=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.from_wind_tunnel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.from_wind_tunnel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create case from wind tunnel.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.geometries">
+<code class="descname">geometries</code><a class="headerlink" href="#butterfly.case.Case.geometries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Butterfly geometries.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.get_foam_file_by_name">
+<code class="descname">get_foam_file_by_name</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.get_foam_file_by_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.get_foam_file_by_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a foamfile by name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.get_foam_files_from_location">
+<code class="descname">get_foam_files_from_location</code><span class="sig-paren">(</span><em>location=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.get_foam_files_from_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.get_foam_files_from_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get foam_files in a specific location (0, constant, system).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.get_result_folders">
+<code class="descname">get_result_folders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.get_result_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.get_result_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return sorted list of numerical folders.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.get_snappyHexMesh_folders">
+<code class="descname">get_snappyHexMesh_folders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.get_snappyHexMesh_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.get_snappyHexMesh_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return sorted list of numerical folders.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.isCase">
+<code class="descname">isCase</code><a class="headerlink" href="#butterfly.case.Case.isCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>return True.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.is_polyMesh_snappyHexMesh">
+<code class="descname">is_polyMesh_snappyHexMesh</code><a class="headerlink" href="#butterfly.case.Case.is_polyMesh_snappyHexMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the mesh in polyMesh folder is snappyHexMesh.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.load_mesh">
+<code class="descname">load_mesh</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.load_mesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.load_mesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return OpenFOAM mesh as a Rhino mesh.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.load_points">
+<code class="descname">load_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.load_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.load_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return OpenFOAM mesh as a Rhino mesh.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.load_probe_values">
+<code class="descname">load_probe_values</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.load_probe_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.load_probe_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return OpenFOAM probes results for a field.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.load_probes">
+<code class="descname">load_probes</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.load_probes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.load_probes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return OpenFOAM probes locations for a field.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.log_folder">
+<code class="descname">log_folder</code><a class="headerlink" href="#butterfly.case.Case.log_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>log folder fullpath.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.polyMesh_folder">
+<code class="descname">polyMesh_folder</code><a class="headerlink" href="#butterfly.case.Case.polyMesh_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>polyMesh folder fullpath.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.postProcessing_folder">
+<code class="descname">postProcessing_folder</code><a class="headerlink" href="#butterfly.case.Case.postProcessing_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>postProcessing folder fullpath.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.probes">
+<code class="descname">probes</code><a class="headerlink" href="#butterfly.case.Case.probes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get and set Probes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.probes_folder">
+<code class="descname">probes_folder</code><a class="headerlink" href="#butterfly.case.Case.probes_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fullpath to probes folder.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.project_dir">
+<code class="descname">project_dir</code><a class="headerlink" href="#butterfly.case.Case.project_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get project directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.project_name">
+<code class="descname">project_name</code><a class="headerlink" href="#butterfly.case.Case.project_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Project name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.purge">
+<code class="descname">purge</code><span class="sig-paren">(</span><em>remove_polyMesh_content=True</em>, <em>remove_snappyHexMesh_folders=True</em>, <em>remove_result_folders=False</em>, <em>remove_postProcessing_folder=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.purge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.purge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Purge case folder.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.refinementRegions">
+<code class="descname">refinementRegions</code><a class="headerlink" href="#butterfly.case.Case.refinementRegions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get refinement regions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.remove_polyMesh_content">
+<code class="descname">remove_polyMesh_content</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.remove_polyMesh_content"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.remove_polyMesh_content" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove files inside polyMesh folder.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.remove_postProcessing_folder">
+<code class="descname">remove_postProcessing_folder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.remove_postProcessing_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.remove_postProcessing_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove post postProcessing folder.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.remove_processor_folders">
+<code class="descname">remove_processor_folders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.remove_processor_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.remove_processor_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove processor folders for parallel runs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.remove_result_folders">
+<code class="descname">remove_result_folders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.remove_result_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.remove_result_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove results folder.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.remove_snappyHexMesh_folders">
+<code class="descname">remove_snappyHexMesh_folders</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.remove_snappyHexMesh_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.remove_snappyHexMesh_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove snappyHexMesh numerical folders.</p>
+<p>Use this to clean the folder.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.rename_snappyHexMesh_folders">
+<code class="descname">rename_snappyHexMesh_folders</code><span class="sig-paren">(</span><em>add=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.rename_snappyHexMesh_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.rename_snappyHexMesh_folders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename snappyHexMesh numerical folders to name.org  and vice versa.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>add</strong> – Set to True to add .org at the end of the file. Set to False
+to rename them back to the original naming.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>name</em>, <em>points</em>, <em>field</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample the results for a certain field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> – A unique name for this sample.</li>
+<li><strong>points</strong> – List of points as (x, y, z).</li>
+<li><strong>fields</strong> – List of fields (e.g. U, p).</li>
+<li><strong>args</strong> – Command arguments.</li>
+<li><strong>wait</strong> – Wait until command execution ends.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">namedtuple(probes, values).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.save">
+<code class="descname">save</code><span class="sig-paren">(</span><em>overwrite=False</em>, <em>minimum=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save case to folder.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>overwrite</strong> – If True all the current content will be overwritten
+(default: False).</li>
+<li><strong>minimum</strong> – Write minimum necessary files for case. These files will
+be enough for meshing the case but not running any commands.
+Files are (‘fvSchemes’, ‘fvSolution’, ‘controlDict’,
+‘blockMeshDict’,’snappyHexMeshDict’). Rest of the files will be
+created from a Solution.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.snappyHexMesh">
+<code class="descname">snappyHexMesh</code><span class="sig-paren">(</span><em>args=None</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.snappyHexMesh"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.snappyHexMesh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run snappyHexMesh.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> – Command arguments.</li>
+<li><strong>wait</strong> – Wait until command execution ends.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">namedtuple(success, error, process, logfiles, errorfiles).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.surfaceFeatureExtract">
+<code class="descname">surfaceFeatureExtract</code><span class="sig-paren">(</span><em>args=None</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.surfaceFeatureExtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.surfaceFeatureExtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run surfaceFeatureExtract command.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> – Command arguments.</li>
+<li><strong>wait</strong> – Wait until command execution ends.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">namedtuple(success, error, process, logfiles, errorfiles).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.system_folder">
+<code class="descname">system_folder</code><a class="headerlink" href="#butterfly.case.Case.system_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>system folder fullpath.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.triSurface_folder">
+<code class="descname">triSurface_folder</code><a class="headerlink" href="#butterfly.case.Case.triSurface_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>triSurface folder fullpath.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.case.Case.update_bc_in_zero_folder">
+<code class="descname">update_bc_in_zero_folder</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/case.html#Case.update_bc_in_zero_folder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.case.Case.update_bc_in_zero_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update boundary conditions in files in 0 folder.</p>
+<p>Call this method if you have made any changes to boundary condition of
+any of the geometries after initiating the class.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.working_dir">
+<code class="descname">working_dir</code><a class="headerlink" href="#butterfly.case.Case.working_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change default working directory.</p>
+<p>Do not change the working dir if you are using OpenFOAM for Windows
+to run the analysis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.case.Case.zero_folder">
+<code class="descname">zero_folder</code><a class="headerlink" href="#butterfly.case.Case.zero_folder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Folder 0 fullpath.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

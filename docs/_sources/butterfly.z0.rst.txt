@@ -1,0 +1,7 @@
+butterfly.z0 module
+===================
+
+.. automodule:: butterfly.z0
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,7 @@
+butterfly.geometry module
+=========================
+
+.. automodule:: butterfly.geometry
+    :members:
+    :undoc-members:
+    :show-inheritance:

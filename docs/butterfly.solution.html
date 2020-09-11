@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.solution module &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="butterfly.surfaceFeatureExtractDict module" href="butterfly.surfaceFeatureExtractDict.html" />
+    <link rel="prev" title="butterfly.snappyHexMeshDict module" href="butterfly.snappyHexMeshDict.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="butterfly.snappyHexMeshDict.html" title="Previous Chapter: butterfly.snappyHexMeshDict module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; butterfly.sna...</span>
+    </a>
+  </li>
+  <li>
+    <a href="butterfly.surfaceFeatureExtractDict.html" title="Next Chapter: butterfly.surfaceFeatureExtractDict module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">butterfly.sur... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/butterfly.solution.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <div class="section" id="module-butterfly.solution">
+<span id="butterfly-solution-module"></span><h1>butterfly.solution module<a class="headerlink" href="#module-butterfly.solution" title="Permalink to this headline">¶</a></h1>
+<p>Butterfly Solution.</p>
+<dl class="class">
+<dt id="butterfly.solution.Solution">
+<em class="property">class </em><code class="descclassname">butterfly.solution.</code><code class="descname">Solution</code><span class="sig-paren">(</span><em>case</em>, <em>recipe</em>, <em>decomposeParDict=None</em>, <em>solution_parameter=None</em>, <em>remove_extra_foam_files=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Butterfly Solution.</p>
+<p>This class creates a solution from a recipe which is ready to run and monitor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>case</strong> – A butterfly case.</li>
+<li><strong>recipe</strong> – A butterfly recipe.</li>
+<li><strong>decomposeParDict</strong> – decomposeParDict for parallel run (default: None).</li>
+<li><strong>solution_parameter</strong> – A SolutionParameter (default: None).</li>
+<li><strong>remove_extra_foam_files</strong> – set to True if you want butterfly to remove all the
+extra files in 0 folder once you update the recipe (default: False).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="butterfly.solution.Solution.ToString">
+<code class="descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.case">
+<code class="descname">case</code><a class="headerlink" href="#butterfly.solution.Solution.case" title="Permalink to this definition">¶</a></dt>
+<dd><p>Case.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.controlDict">
+<code class="descname">controlDict</code><a class="headerlink" href="#butterfly.solution.Solution.controlDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get controlDict.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.decomposeParDict">
+<code class="descname">decomposeParDict</code><a class="headerlink" href="#butterfly.solution.Solution.decomposeParDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>DecomposeParDict.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.duplicate">
+<code class="descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.err_files">
+<code class="descname">err_files</code><a class="headerlink" href="#butterfly.solution.Solution.err_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get full path to error files.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.info">
+<code class="descname">info</code><a class="headerlink" href="#butterfly.solution.Solution.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get timestep and residual values as a tuple.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.is_running">
+<code class="descname">is_running</code><a class="headerlink" href="#butterfly.solution.Solution.is_running" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the solution is still running.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.load_probe_values">
+<code class="descname">load_probe_values</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.load_probe_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.load_probe_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return OpenFOAM probes results for a given field (e.g. U).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.load_probes">
+<code class="descname">load_probes</code><span class="sig-paren">(</span><em>field</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.load_probes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.load_probes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return OpenFOAM probes location for a given field (e.g. U).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.log">
+<code class="descname">log</code><a class="headerlink" href="#butterfly.solution.Solution.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the log report.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.log_files">
+<code class="descname">log_files</code><a class="headerlink" href="#butterfly.solution.Solution.log_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get full path to log files.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.probes">
+<code class="descname">probes</code><a class="headerlink" href="#butterfly.solution.Solution.probes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get probes if any.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.project_dir">
+<code class="descname">project_dir</code><a class="headerlink" href="#butterfly.solution.Solution.project_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get project directory.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.project_name">
+<code class="descname">project_name</code><a class="headerlink" href="#butterfly.solution.Solution.project_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get porject name.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.purge">
+<code class="descname">purge</code><span class="sig-paren">(</span><em>remove_polyMesh_content=True</em>, <em>remove_snappyHexMesh_folders=True</em>, <em>remove_result_folders=False</em>, <em>remove_postProcessing_folder=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.purge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.purge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Purge solution’s case folder.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.recipe">
+<code class="descname">recipe</code><a class="headerlink" href="#butterfly.solution.Solution.recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get recipe.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.remove_extra_foam_files">
+<code class="descname">remove_extra_foam_files</code><a class="headerlink" href="#butterfly.solution.Solution.remove_extra_foam_files" title="Permalink to this definition">¶</a></dt>
+<dd><p>If True, solution will remove extra files everytime recipe changes.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.residualControl">
+<code class="descname">residualControl</code><a class="headerlink" href="#butterfly.solution.Solution.residualControl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get residualControl values for this solution.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.residual_fields">
+<code class="descname">residual_fields</code><a class="headerlink" href="#butterfly.solution.Solution.residual_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of residuals to be watched during the run.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.residual_file">
+<code class="descname">residual_file</code><a class="headerlink" href="#butterfly.solution.Solution.residual_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return address of the residual file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.residual_values">
+<code class="descname">residual_values</code><a class="headerlink" href="#butterfly.solution.Solution.residual_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get timestep and residual values as a tuple.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.run">
+<code class="descname">run</code><span class="sig-paren">(</span><em>wait=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the solution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.sample">
+<code class="descname">sample</code><span class="sig-paren">(</span><em>name</em>, <em>points</em>, <em>field</em>, <em>wait=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.sample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample the results for a certain field.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> – A unique name for this sample.</li>
+<li><strong>points</strong> – List of points as (x, y, z).</li>
+<li><strong>fields</strong> – List of fields (e.g. U, p).</li>
+<li><strong>args</strong> – Command arguments.</li>
+<li><strong>wait</strong> – Wait until command execution ends.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">namedtuple(probes, values).</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.skipped_probes">
+<code class="descname">skipped_probes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.skipped_probes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.skipped_probes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of probes that are skipped from the solution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.terminate">
+<code class="descname">terminate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.terminate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.terminate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel the solution.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.timestep">
+<code class="descname">timestep</code><a class="headerlink" href="#butterfly.solution.Solution.timestep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get latest timestep for this solution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.update_from_recipe">
+<code class="descname">update_from_recipe</code><span class="sig-paren">(</span><em>recipe</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.update_from_recipe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.update_from_recipe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update solution from recipe inputs.</p>
+<p>This method creates a SolutionParameter from each recipe property, and
+uses updateSolutionParams to update the solution.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.Solution.update_solution_params">
+<code class="descname">update_solution_params</code><span class="sig-paren">(</span><em>sol_params</em>, <em>timestep=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#Solution.update_solution_params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.Solution.update_solution_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update parameters.</p>
+<dl class="attribute">
+<dt id="butterfly.solution.Solution.sol_params">
+<code class="descname">sol_params</code><a class="headerlink" href="#butterfly.solution.Solution.sol_params" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of solution parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="butterfly.solution.SolutionParameter">
+<em class="property">class </em><code class="descclassname">butterfly.solution.</code><code class="descname">SolutionParameter</code><span class="sig-paren">(</span><em>of_filename</em>, <em>values</em>, <em>replace=False</em>, <em>time_range=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#SolutionParameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.SolutionParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A solution parameter that can be changed during the solution.</p>
+<p>Add solution parameter to to solution settings.</p>
+<dl class="attribute">
+<dt id="butterfly.solution.SolutionParameter.filename">
+<code class="descname">filename</code><a class="headerlink" href="#butterfly.solution.SolutionParameter.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>OpenFOAM filename that the values are belong to (e.g.
+blockMeshDict, fvSchemes).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.SolutionParameter.values">
+<code class="descname">values</code><a class="headerlink" href="#butterfly.solution.SolutionParameter.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>New values as a python dictionary.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.SolutionParameter.replace">
+<code class="descname">replace</code><a class="headerlink" href="#butterfly.solution.SolutionParameter.replace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set to True if you want the original dictionary to be replaced
+by new values. Default is False which means the original dictionary
+will be only updated by new values.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.SolutionParameter.time_range">
+<code class="descname">time_range</code><a class="headerlink" href="#butterfly.solution.SolutionParameter.time_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time range that this SolutioParameter is valid as a tuple
+(default: (0, 1.0e+100)).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.SolutionParameter.ToString">
+<code class="descname">ToString</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#SolutionParameter.ToString"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.SolutionParameter.ToString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Overwrite .NET ToString method.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.SolutionParameter.duplicate">
+<code class="descname">duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#SolutionParameter.duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.SolutionParameter.duplicate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a copy of this object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">filename</code></dt>
+<dd><p>Return OpenFOAM file name.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="butterfly.solution.SolutionParameter.from_cpp_dictionary">
+<em class="property">classmethod </em><code class="descname">from_cpp_dictionary</code><span class="sig-paren">(</span><em>of_filename</em>, <em>dictionary</em>, <em>replace=False</em>, <em>time_range=None</em>, <em>header=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#SolutionParameter.from_cpp_dictionary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.SolutionParameter.from_cpp_dictionary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create from an OpenFOAM dictionary in text format.</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="butterfly.solution.SolutionParameter.from_dictionary_file">
+<em class="property">classmethod </em><code class="descname">from_dictionary_file</code><span class="sig-paren">(</span><em>of_filename</em>, <em>filepath</em>, <em>replace=False</em>, <em>time_range=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#SolutionParameter.from_dictionary_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.SolutionParameter.from_dictionary_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create from an OpenFOAM dictionary file.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.solution.SolutionParameter.isSolutionParameter">
+<code class="descname">isSolutionParameter</code><a class="headerlink" href="#butterfly.solution.SolutionParameter.isSolutionParameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.solution.SolutionParameter.is_time_in_range">
+<code class="descname">is_time_in_range</code><span class="sig-paren">(</span><em>time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/solution.html#SolutionParameter.is_time_in_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.solution.SolutionParameter.is_time_in_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if time is in this SolutionParameter time range.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">time_range</code></dt>
+<dd><p>Get time range.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">values</code></dt>
+<dd><p>Return OpenFOAM file name.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

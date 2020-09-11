@@ -1,0 +1,7 @@
+butterfly.case module
+=====================
+
+.. automodule:: butterfly.case
+    :members:
+    :undoc-members:
+    :show-inheritance:

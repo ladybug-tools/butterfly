@@ -1,0 +1,7 @@
+butterfly.meshingparameters module
+==================================
+
+.. automodule:: butterfly.meshingparameters
+    :members:
+    :undoc-members:
+    :show-inheritance:

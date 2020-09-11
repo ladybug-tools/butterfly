@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.case &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.case</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Butterfly OpenFOAM Case.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>  <span class="c1"># to check input names</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">rmtree</span>  <span class="c1"># to remove case folders if needed</span>
+<span class="kn">from</span> <span class="nn">distutils.dir_util</span> <span class="kn">import</span> <span class="n">copy_tree</span>  <span class="c1"># to copy sHM meshes over to tri</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">izip</span> <span class="k">as</span> <span class="nb">zip</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="c1"># python 3</span>
+    <span class="k">pass</span>
+<span class="kn">from</span> <span class="nn">.version</span> <span class="kn">import</span> <span class="n">Version</span>
+<span class="kn">from</span> <span class="nn">.utilities</span> <span class="kn">import</span> <span class="n">load_case_files</span><span class="p">,</span> <span class="n">load_probe_values_from_folder</span><span class="p">,</span> \
+    <span class="n">load_probes_from_postProcessing_file</span><span class="p">,</span> <span class="n">load_probes_and_values_from_sample_file</span>
+<span class="kn">from</span> <span class="nn">.geometry</span> <span class="kn">import</span> <span class="n">bf_geometry_from_stl_file</span><span class="p">,</span> <span class="n">calculate_min_max_from_bf_geometries</span>
+<span class="kn">from</span> <span class="nn">.refinementRegion</span> <span class="kn">import</span> <span class="n">refinementRegions_from_stl_file</span>
+<span class="kn">from</span> <span class="nn">.meshingparameters</span> <span class="kn">import</span> <span class="n">MeshingParameters</span>
+<span class="kn">from</span> <span class="nn">.fields</span> <span class="kn">import</span> <span class="n">Field</span>
+
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">.foamfile</span> <span class="kn">import</span> <span class="n">FoamFile</span>
+
+<span class="c1"># constant folder objects</span>
+<span class="kn">from</span> <span class="nn">.turbulenceProperties</span> <span class="kn">import</span> <span class="n">TurbulenceProperties</span>
+<span class="kn">from</span> <span class="nn">.RASProperties</span> <span class="kn">import</span> <span class="n">RASProperties</span>
+<span class="kn">from</span> <span class="nn">.transportProperties</span> <span class="kn">import</span> <span class="n">TransportProperties</span>
+<span class="kn">from</span> <span class="nn">.g</span> <span class="kn">import</span> <span class="n">G</span>
+
+<span class="c1"># 0 folder objects</span>
+<span class="kn">from</span> <span class="nn">.U</span> <span class="kn">import</span> <span class="n">U</span>
+<span class="kn">from</span> <span class="nn">.k</span> <span class="kn">import</span> <span class="n">K</span>
+<span class="kn">from</span> <span class="nn">.p</span> <span class="kn">import</span> <span class="n">P</span>
+<span class="kn">from</span> <span class="nn">.nut</span> <span class="kn">import</span> <span class="n">Nut</span>
+<span class="kn">from</span> <span class="nn">.epsilon</span> <span class="kn">import</span> <span class="n">Epsilon</span>
+<span class="kn">from</span> <span class="nn">.T</span> <span class="kn">import</span> <span class="n">T</span>
+<span class="kn">from</span> <span class="nn">.alphat</span> <span class="kn">import</span> <span class="n">Alphat</span>
+<span class="kn">from</span> <span class="nn">.p_rgh</span> <span class="kn">import</span> <span class="n">P_rgh</span>
+<span class="kn">from</span> <span class="nn">.conditions</span> <span class="kn">import</span> <span class="n">ABLConditions</span><span class="p">,</span> <span class="n">InitialConditions</span>
+
+<span class="c1"># # system folder objects</span>
+<span class="kn">from</span> <span class="nn">.blockMeshDict</span> <span class="kn">import</span> <span class="n">BlockMeshDict</span>
+<span class="kn">from</span> <span class="nn">.controlDict</span> <span class="kn">import</span> <span class="n">ControlDict</span>
+<span class="kn">from</span> <span class="nn">.snappyHexMeshDict</span> <span class="kn">import</span> <span class="n">SnappyHexMeshDict</span>
+<span class="kn">from</span> <span class="nn">.fvSchemes</span> <span class="kn">import</span> <span class="n">FvSchemes</span>
+<span class="kn">from</span> <span class="nn">.fvSolution</span> <span class="kn">import</span> <span class="n">FvSolution</span>
+<span class="kn">from</span> <span class="nn">.functions</span> <span class="kn">import</span> <span class="n">Probes</span>
+<span class="kn">from</span> <span class="nn">.decomposeParDict</span> <span class="kn">import</span> <span class="n">DecomposeParDict</span>
+<span class="kn">from</span> <span class="nn">.sampleDict</span> <span class="kn">import</span> <span class="n">SampleDict</span>
+
+<span class="kn">import</span> <span class="nn">butterfly</span>
+
+<span class="k">if</span> <span class="n">butterfly</span><span class="o">.</span><span class="n">config</span> <span class="ow">and</span> <span class="n">butterfly</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;runner&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;blueCFD&#39;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.runmanager_bluecfd</span> <span class="kn">import</span> <span class="n">RunManagerBlueCFD</span> <span class="k">as</span> <span class="n">RunManager</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.runmanager</span> <span class="kn">import</span> <span class="n">RunManager</span>
+
+
+<div class="viewcode-block" id="Case"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case">[docs]</a><span class="k">class</span> <span class="nc">Case</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Principal class for OpenFOAM Cases.</span>
+
+<span class="sd">    This class can either be instantiated directly through the __init__ constructor or</span>
+<span class="sd">    through the following classmethods:</span>
+
+<span class="sd">        1. from_folder: Create a Butterfly case from a case folder</span>
+<span class="sd">        2. from_bf_geometries: Create a case from Butterfly geometries.</span>
+<span class="sd">        3. from_wind_tunnel: Create case from wind tunnel.</span>
+
+
+<span class="sd">    Notes for beginners:</span>
+<span class="sd">        What is an OpenFOAM case?</span>
+<span class="sd">            As defined by AndRAS Horvath in &quot;OpenFOAM tutorial collection&quot;, a case is the</span>
+<span class="sd">            combination of geometry definition (the finite volume mesh), configuration</span>
+<span class="sd">            files (called dictionaries in OpenFOAM language), definition of boundary</span>
+<span class="sd">            conditions and initial conditions, custom function and results all structured</span>
+<span class="sd">            in many files and directories. The 0-directory contains the initial- and</span>
+<span class="sd">            boundary-conditions. The (initial) mesh is in constant/polyMesh. Most config</span>
+<span class="sd">            files are in system/. Material and turbulence properties are in</span>
+<span class="sd">            constant/.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">SUBFOLDERS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="s1">&#39;constant</span><span class="se">\\</span><span class="s1">polyMesh&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;constant</span><span class="se">\\</span><span class="s1">triSurface&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+    <span class="c1"># minimum list of files to be able to run blockMesh and snappyHexMesh</span>
+    <span class="n">MINFOAMFIles</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;fvSchemes&#39;</span><span class="p">,</span> <span class="s1">&#39;fvSolution&#39;</span><span class="p">,</span> <span class="s1">&#39;controlDict&#39;</span><span class="p">,</span> <span class="s1">&#39;blockMeshDict&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;snappyHexMeshDict&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">foamfiles</span><span class="p">,</span> <span class="n">geometries</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init case.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">        name: Case name as a string with no whitespace.</span>
+
+<span class="sd">        :type name: str</span>
+
+<span class="sd">        foamfiles: Collection of FoamFile objects (dictionaries) for this case.</span>
+
+<span class="sd">        :type   foamfiles: FoamFile</span>
+
+<span class="sd">        geometries: Collection of geometry-like objects. Geometries should have</span>
+<span class="sd">            a name and toStlString method. The information related to boundary</span>
+<span class="sd">            condition should already be included in related foamfiles. If you</span>
+<span class="sd">            want to initiate the class form a folder or a number of bf_geometries</span>
+<span class="sd">            use from_folder, and from_bf_geometries classmethods.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># original name is a variable to address the current limitation to change</span>
+        <span class="c1"># the name of stl file in snappyHexMeshDict. It will be removed once the</span>
+        <span class="c1"># limitation is addressed. The value wil be assigned in classmethod from_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__originalName</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__version</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Version</span><span class="o">.</span><span class="n">of_ver</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">decomposeParDict</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># optional input for changing working directory</span>
+        <span class="c1"># should not be used on OpenFOAM on Windows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;butterfly&#39;</span><span class="p">)</span>
+
+        <span class="c1"># set foamfiles dynamically. This is flexible but makes documentation</span>
+        <span class="c1"># tricky. also autocomplete won&#39;t work for this cases.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__foamfiles</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_foam_files</span><span class="p">(</span><span class="n">foamfiles</span><span class="p">)</span>
+
+        <span class="c1"># set butterfly geometries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__geometries</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_input_geometries</span><span class="p">(</span><span class="n">geometries</span><span class="p">)</span>
+
+        <span class="c1"># place holder for refinment regions</span>
+        <span class="c1"># use .add_refinementRegions to add regions to case</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__refinementRegions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">runmanager</span> <span class="o">=</span> <span class="n">RunManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Case.from_folder"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.from_folder">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_folder</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">convert_from_meters</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a Butterfly case from a case folder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            path: Full path to case folder.</span>
+<span class="sd">            name: An optional new name for this case.</span>
+<span class="sd">            convert_from_meters: A number to be multiplied to stl file vertices</span>
+<span class="sd">                to be converted to the new units if not meters. This value will</span>
+<span class="sd">                be the inverse of convertToMeters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># collect foam files</span>
+        <span class="n">__originalName</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">__originalName</span>
+
+        <span class="n">_files</span> <span class="o">=</span> <span class="n">load_case_files</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">fullpath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># convert files to butterfly objects</span>
+        <span class="n">ff</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">(</span><span class="n">_files</span><span class="o">.</span><span class="n">zero</span><span class="p">,</span> <span class="n">_files</span><span class="o">.</span><span class="n">constant</span><span class="p">,</span> <span class="n">_files</span><span class="o">.</span><span class="n">system</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">ff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="bp">cls</span><span class="o">.</span><span class="n">__create_foamfile_from_file</span><span class="p">(</span>
+                            <span class="n">p</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">convert_from_meters</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Imported </span><span class="si">{}</span><span class="s1"> from case.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to import </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+        <span class="n">s_hmd</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__get_foam_file_by_name</span><span class="p">(</span><span class="s1">&#39;snappyHexMeshDict&#39;</span><span class="p">,</span> <span class="n">ff</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">s_hmd</span><span class="p">:</span>
+            <span class="n">s_hmd</span><span class="o">.</span><span class="n">project_name</span> <span class="o">=</span> <span class="n">name</span>
+
+            <span class="n">stlfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_files</span><span class="o">.</span><span class="n">stl</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.stl&#39;</span><span class="p">))</span>
+            <span class="n">bf_geometries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="n">geo</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">stlfiles</span>
+                <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">bf_geometry_from_stl_file</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">convert_from_meters</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="n">s_hmd</span><span class="o">.</span><span class="n">stl_file_names</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bf_geometries</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">_case</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">ff</span><span class="p">,</span> <span class="n">bf_geometries</span><span class="p">)</span>
+
+        <span class="c1"># update each field of boundary condition for geometries</span>
+        <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">_case</span><span class="o">.</span><span class="n">get_foam_files_from_location</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">_case</span><span class="o">.</span><span class="n">geometries</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">get_boundary_field</span><span class="p">(</span><span class="n">geo</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">geo</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;Conditions&#39;</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># set boundary condition for the field</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="o">.</span><span class="n">boundary_condition</span><span class="p">,</span> <span class="n">ff</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="nb">setattr</span><span class="p">(</span><span class="n">geo</span><span class="o">.</span><span class="n">boundary_condition</span><span class="p">,</span> <span class="n">ff</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">Field</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">s_hmd</span><span class="p">:</span>
+            <span class="n">refinementRegions</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+                <span class="n">ref</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_files</span><span class="o">.</span><span class="n">stl</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="ow">in</span> <span class="n">s_hmd</span><span class="o">.</span><span class="n">refinementRegion_names</span>
+                <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">refinementRegions_from_stl_file</span><span class="p">(</span>
+                    <span class="n">f</span><span class="p">,</span> <span class="n">s_hmd</span><span class="o">.</span><span class="n">refinementRegion_mode</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">f</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]))</span>
+            <span class="p">)</span>
+
+            <span class="n">_case</span><span class="o">.</span><span class="n">add_refinementRegions</span><span class="p">(</span><span class="n">refinementRegions</span><span class="p">)</span>
+
+        <span class="c1"># original name is a variable to address the current limitation to change</span>
+        <span class="c1"># the name of stl file in snappyHexMeshDict. It will be removed once the</span>
+        <span class="c1"># limitation is addressed.</span>
+        <span class="n">_case</span><span class="o">.</span><span class="n">__originalName</span> <span class="o">=</span> <span class="n">__originalName</span>
+
+        <span class="k">return</span> <span class="n">_case</span></div>
+
+<div class="viewcode-block" id="Case.from_bf_geometries"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.from_bf_geometries">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_bf_geometries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">geometries</span><span class="p">,</span> <span class="n">blockMeshDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">meshing_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">make2d_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">convertToMeters</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a case from Butterfly geometries.</span>
+
+<span class="sd">        foam_files/dictionaries will be generated based on boundary condition of</span>
+<span class="sd">        geometries. fvSolution and fvSchemes will be set to default can can be</span>
+<span class="sd">        overwritten once a Solution is created from a Case and a Recipe. You can</span>
+<span class="sd">        overwrite them through the recipe.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Case name as a string with no whitespace.</span>
+<span class="sd">            geometries: Collection of bf_geometries. FoamFiles/dictionaries will</span>
+<span class="sd">                be generated based on boundary condition of geometries.</span>
+<span class="sd">            blockMeshDict: Optional input for blockMeshDict. If blockMeshDict is</span>
+<span class="sd">                not provided, it will be calculated from geometries in XY</span>
+<span class="sd">                direction and boundary condition for faces will be set to</span>
+<span class="sd">                BoundingBoxBoundaryCondition. Use BlockMeshDict to create the</span>
+<span class="sd">                blockMeshDict if your case is not aligned to XY direction or you</span>
+<span class="sd">                need to assign different boundary condition to geometries.</span>
+<span class="sd">            meshing_parameters: Optional input for MeshingParameters.</span>
+<span class="sd">            make2d_parameters: Optional input for make2d_parameters to make a 2d</span>
+<span class="sd">                case.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">geometries</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_input_geometries</span><span class="p">(</span><span class="n">geometries</span><span class="p">)</span>
+
+        <span class="c1"># update meshing_parameters</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">meshing_parameters</span><span class="p">:</span>
+            <span class="n">meshing_parameters</span> <span class="o">=</span> <span class="n">MeshingParameters</span><span class="p">()</span>
+
+        <span class="c1"># create foam files</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">blockMeshDict</span><span class="p">:</span>
+            <span class="n">min_pt</span><span class="p">,</span> <span class="n">max_pt</span> <span class="o">=</span> <span class="n">calculate_min_max_from_bf_geometries</span><span class="p">(</span><span class="n">geometries</span><span class="p">)</span>
+            <span class="n">blockMeshDict</span> <span class="o">=</span> <span class="n">BlockMeshDict</span><span class="o">.</span><span class="n">from_min_max</span><span class="p">(</span>
+                <span class="n">min_pt</span><span class="p">,</span> <span class="n">max_pt</span><span class="p">,</span> <span class="n">convertToMeters</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">make2d_parameters</span><span class="p">:</span>
+            <span class="c1"># create the 2D blockMeshDict</span>
+            <span class="n">blockMeshDict</span><span class="o">.</span><span class="n">make2d</span><span class="p">(</span>
+                <span class="n">make2d_parameters</span><span class="o">.</span><span class="n">origin</span><span class="p">,</span> <span class="n">make2d_parameters</span><span class="o">.</span><span class="n">normal</span><span class="p">,</span>
+                <span class="n">make2d_parameters</span><span class="o">.</span><span class="n">width</span><span class="p">)</span>
+
+        <span class="n">blockMeshDict</span><span class="o">.</span><span class="n">update_meshing_parameters</span><span class="p">(</span><span class="n">meshing_parameters</span><span class="p">)</span>
+
+        <span class="c1"># set the locationInMesh for snappyHexMeshDict</span>
+        <span class="k">if</span> <span class="n">make2d_parameters</span><span class="p">:</span>
+            <span class="n">meshing_parameters</span><span class="o">.</span><span class="n">locationInMesh</span> <span class="o">=</span> <span class="n">make2d_parameters</span><span class="o">.</span><span class="n">origin</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">meshing_parameters</span><span class="o">.</span><span class="n">locationInMesh</span><span class="p">:</span>
+            <span class="n">meshing_parameters</span><span class="o">.</span><span class="n">locationInMesh</span> <span class="o">=</span> <span class="n">blockMeshDict</span><span class="o">.</span><span class="n">center</span>
+
+        <span class="c1"># rename name for snappyHexMeshDict and stl file if starts with a digit</span>
+        <span class="n">normname</span> <span class="o">=</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">else</span> <span class="n">name</span>
+        <span class="n">snappyHexMeshDict</span> <span class="o">=</span> <span class="n">SnappyHexMeshDict</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span>
+            <span class="n">normname</span><span class="p">,</span> <span class="n">geometries</span><span class="p">,</span> <span class="n">meshing_parameters</span><span class="p">,</span>
+            <span class="n">convertToMeters</span><span class="o">=</span><span class="n">blockMeshDict</span><span class="o">.</span><span class="n">convertToMeters</span><span class="p">)</span>
+
+        <span class="c1"># constant folder</span>
+        <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">Version</span><span class="o">.</span><span class="n">of_ver</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">turbulenceProperties</span> <span class="o">=</span> <span class="n">RASProperties</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">turbulenceProperties</span> <span class="o">=</span> <span class="n">TurbulenceProperties</span><span class="p">()</span>
+        <span class="n">transportProperties</span> <span class="o">=</span> <span class="n">TransportProperties</span><span class="p">()</span>
+        <span class="n">g</span> <span class="o">=</span> <span class="n">G</span><span class="p">()</span>
+
+        <span class="c1"># 0 floder</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">_geometries</span> <span class="o">=</span> <span class="n">geometries</span> <span class="o">+</span> <span class="n">blockMeshDict</span><span class="o">.</span><span class="n">geometry</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="n">_geometries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">geometries</span><span class="p">)</span> <span class="o">+</span> <span class="n">blockMeshDict</span><span class="o">.</span><span class="n">geometry</span>
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">K</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">Epsilon</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+        <span class="n">nut</span> <span class="o">=</span> <span class="n">Nut</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+        <span class="n">alphat</span> <span class="o">=</span> <span class="n">Alphat</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+        <span class="n">p_rgh</span> <span class="o">=</span> <span class="n">P_rgh</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span><span class="n">_geometries</span><span class="p">)</span>
+
+        <span class="c1"># system folder</span>
+        <span class="n">fvSchemes</span> <span class="o">=</span> <span class="n">FvSchemes</span><span class="p">()</span>
+        <span class="n">fvSolution</span> <span class="o">=</span> <span class="n">FvSolution</span><span class="p">()</span>
+        <span class="n">controlDict</span> <span class="o">=</span> <span class="n">ControlDict</span><span class="p">()</span>
+        <span class="n">probes</span> <span class="o">=</span> <span class="n">Probes</span><span class="p">()</span>
+
+        <span class="n">foam_files</span> <span class="o">=</span> <span class="p">(</span><span class="n">blockMeshDict</span><span class="p">,</span> <span class="n">snappyHexMeshDict</span><span class="p">,</span> <span class="n">turbulenceProperties</span><span class="p">,</span>
+                      <span class="n">transportProperties</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="n">nut</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">alphat</span><span class="p">,</span>
+                      <span class="n">p_rgh</span><span class="p">,</span> <span class="n">fvSchemes</span><span class="p">,</span> <span class="n">fvSolution</span><span class="p">,</span> <span class="n">controlDict</span><span class="p">,</span> <span class="n">probes</span><span class="p">)</span>
+
+        <span class="c1"># create case</span>
+        <span class="n">_cls</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">foam_files</span><span class="p">,</span> <span class="n">geometries</span><span class="p">)</span>
+        <span class="n">_cls</span><span class="o">.</span><span class="n">__originalName</span> <span class="o">=</span> <span class="n">normname</span>
+        <span class="k">return</span> <span class="n">_cls</span></div>
+
+<div class="viewcode-block" id="Case.from_wind_tunnel"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.from_wind_tunnel">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_wind_tunnel</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">wind_tunnel</span><span class="p">,</span> <span class="n">make2d_parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create case from wind tunnel.&quot;&quot;&quot;</span>
+        <span class="n">_case</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_bf_geometries</span><span class="p">(</span>
+            <span class="n">wind_tunnel</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">wind_tunnel</span><span class="o">.</span><span class="n">test_geomtries</span><span class="p">,</span> <span class="n">wind_tunnel</span><span class="o">.</span><span class="n">blockMeshDict</span><span class="p">,</span>
+            <span class="n">wind_tunnel</span><span class="o">.</span><span class="n">meshing_parameters</span><span class="p">,</span> <span class="n">make2d_parameters</span><span class="p">)</span>
+
+        <span class="n">initialConditions</span> <span class="o">=</span> <span class="n">InitialConditions</span><span class="p">(</span>
+            <span class="n">Uref</span><span class="o">=</span><span class="n">wind_tunnel</span><span class="o">.</span><span class="n">flow_speed</span><span class="p">,</span> <span class="n">Zref</span><span class="o">=</span><span class="n">wind_tunnel</span><span class="o">.</span><span class="n">Zref</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="n">wind_tunnel</span><span class="o">.</span><span class="n">z0</span><span class="p">)</span>
+
+        <span class="n">abl_conditions</span> <span class="o">=</span> <span class="n">ABLConditions</span><span class="o">.</span><span class="n">from_wind_tunnel</span><span class="p">(</span><span class="n">wind_tunnel</span><span class="p">)</span>
+
+        <span class="c1"># add initialConditions and ABLConditions to _case</span>
+        <span class="n">_case</span><span class="o">.</span><span class="n">add_foam_files</span><span class="p">((</span><span class="n">initialConditions</span><span class="p">,</span> <span class="n">abl_conditions</span><span class="p">))</span>
+
+        <span class="c1"># include condition files in 0 folder files</span>
+        <span class="n">_case</span><span class="o">.</span><span class="n">U</span><span class="o">.</span><span class="n">update_values</span><span class="p">({</span><span class="s1">&#39;#include&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;initialConditions&quot;&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;internalField&#39;</span><span class="p">:</span> <span class="s1">&#39;uniform $flowVelocity&#39;</span><span class="p">},</span>
+                              <span class="n">mute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_case</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">update_values</span><span class="p">({</span><span class="s1">&#39;#include&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;initialConditions&quot;&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;internalField&#39;</span><span class="p">:</span> <span class="s1">&#39;uniform $pressure&#39;</span><span class="p">},</span>
+                              <span class="n">mute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_case</span><span class="o">.</span><span class="n">k</span><span class="o">.</span><span class="n">update_values</span><span class="p">({</span><span class="s1">&#39;#include&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;initialConditions&quot;&#39;</span><span class="p">,</span>
+                               <span class="s1">&#39;internalField&#39;</span><span class="p">:</span> <span class="s1">&#39;uniform $turbulentKE&#39;</span><span class="p">},</span>
+                              <span class="n">mute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">_case</span><span class="o">.</span><span class="n">epsilon</span><span class="o">.</span><span class="n">update_values</span><span class="p">({</span><span class="s1">&#39;#include&#39;</span><span class="p">:</span> <span class="s1">&#39;&quot;initialConditions&quot;&#39;</span><span class="p">,</span>
+                                     <span class="s1">&#39;internalField&#39;</span><span class="p">:</span> <span class="s1">&#39;uniform $turbulentEpsilon&#39;</span><span class="p">},</span>
+                                    <span class="n">mute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">wind_tunnel</span><span class="o">.</span><span class="n">refinementRegions</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="n">wind_tunnel</span><span class="o">.</span><span class="n">refinementRegions</span><span class="p">:</span>
+                <span class="n">_case</span><span class="o">.</span><span class="n">add_refinementRegion</span><span class="p">(</span><span class="n">region</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_case</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isCase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return True.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">project_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Project name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__project_name</span>
+
+    <span class="nd">@project_name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">project_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s2">&quot;^[a-zA-Z0-9_]*$&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> \
+            <span class="s1">&#39;Invalid project name: &quot;</span><span class="si">{}</span><span class="s1">&quot;.</span><span class="se">\n</span><span class="s1">&#39;</span> \
+            <span class="s1">&#39;Do not use whitespace or special charecters.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__project_name</span> <span class="o">=</span> <span class="n">name</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">geometries</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Butterfly geometries.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;blockMeshDict&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometries</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockMeshDict</span><span class="o">.</span><span class="n">geometry</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__geometries</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">blockMeshDict</span><span class="o">.</span><span class="n">geometry</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometries</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">working_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change default working directory.</span>
+
+<span class="sd">        Do not change the working dir if you are using OpenFOAM for Windows</span>
+<span class="sd">        to run the analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__workingDir</span>
+
+    <span class="nd">@working_dir</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">working_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__workingDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">project_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get project directory.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">zero_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Folder 0 fullpath.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constant_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;constant folder fullpath.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">system_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;system folder fullpath.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;log folder fullpath.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">polyMesh_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;polyMesh folder fullpath.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;constant</span><span class="se">\\</span><span class="s1">polyMesh&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">triSurface_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;triSurface folder fullpath.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;constant</span><span class="se">\\</span><span class="s1">triSurface&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">postProcessing_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;postProcessing folder fullpath.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;postProcessing&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">probes_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fullpath to probes folder.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">postProcessing_folder</span><span class="p">,</span> <span class="s1">&#39;probes&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">foam_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get all the foam_files.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__foamfiles</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">refinementRegions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get refinement regions.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__refinementRegions</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_polyMesh_snappyHexMesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the mesh in polyMesh folder is snappyHexMesh.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polyMesh_folder</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">5</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">probes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get and set Probes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__probes</span>
+
+    <span class="nd">@probes</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">probes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">inp</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="s1">&#39;probeLocations&#39;</span><span class="p">),</span> \
+            <span class="s2">&quot;Expected Probes not </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">inp</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__probes</span> <span class="o">=</span> <span class="n">inp</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">probes_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># include probes in controlDict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controlDict</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">filename</span>
+
+<div class="viewcode-block" id="Case.get_foam_file_by_name"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.get_foam_file_by_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_foam_file_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a foamfile by name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_foam_file_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">foam_files</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.get_snappyHexMesh_folders"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.get_snappyHexMesh_folders">[docs]</a>    <span class="k">def</span> <span class="nf">get_snappyHexMesh_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return sorted list of numerical folders.&quot;&quot;&quot;</span>
+        <span class="n">_f</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span>
+                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span>
+                                                    <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;polyMesh&#39;</span><span class="p">))</span>
+                         <span class="p">)])</span>
+
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.get_result_folders"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.get_result_folders">[docs]</a>    <span class="k">def</span> <span class="nf">get_result_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return sorted list of numerical folders.&quot;&quot;&quot;</span>
+        <span class="n">_f</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="p">(</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span> <span class="ow">and</span> <span class="n">name</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="ow">and</span>
+                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span> <span class="ow">and</span>
+                         <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span>
+                         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span>
+                             <span class="n">name</span><span class="p">,</span>
+                             <span class="s1">&#39;polyMesh&#39;</span><span class="p">))</span>
+                         <span class="p">)])</span>
+
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.get_foam_files_from_location"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.get_foam_files_from_location">[docs]</a>    <span class="k">def</span> <span class="nf">get_foam_files_from_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get foam_files in a specific location (0, constant, system).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">location</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__foamfiles</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__foamfiles</span>
+                         <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">location</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.add_foam_files"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.add_foam_files">[docs]</a>    <span class="k">def</span> <span class="nf">add_foam_files</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foamfiles</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add foamfiles to the Case.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="n">foamfiles</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_foam_file</span><span class="p">(</span><span class="n">ff</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.add_foam_file"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.add_foam_file">[docs]</a>    <span class="k">def</span> <span class="nf">add_foam_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foamfile</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a foamfile to the case.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">foamfile</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">foamfile</span><span class="p">,</span> <span class="s1">&#39;isFoamFile&#39;</span><span class="p">),</span> \
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a FoamFile&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">foamfile</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foamfile</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">foamfile</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__foamfiles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">foamfile</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to add </span><span class="si">{}</span><span class="s1">.</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">foamfile</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.add_refinementRegions"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.add_refinementRegions">[docs]</a>    <span class="k">def</span> <span class="nf">add_refinementRegions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refinementRegions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a collections of refinement regions.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">refinementRegion</span> <span class="ow">in</span> <span class="n">refinementRegions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_refinementRegion</span><span class="p">(</span><span class="n">refinementRegion</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.add_refinementRegion"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.add_refinementRegion">[docs]</a>    <span class="k">def</span> <span class="nf">add_refinementRegion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refinementRegion</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a refinement region.&quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">refinementRegion</span><span class="p">,</span> <span class="s1">&#39;isRefinementRegion&#39;</span><span class="p">),</span> \
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> is not a refinement region.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refinementRegion</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__refinementRegions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">refinementRegion</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;snappyHexMeshDict&#39;</span><span class="p">),</span> \
+            <span class="s1">&#39;You can</span><span class="se">\&#39;</span><span class="s1">t add a refinementRegion to a case with no snappyHexMeshDict.&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">snappyHexMeshDict</span><span class="o">.</span><span class="n">add_refinementRegion</span><span class="p">(</span><span class="n">refinementRegion</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.copy_snappyHexMesh"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.copy_snappyHexMesh">[docs]</a>    <span class="k">def</span> <span class="nf">copy_snappyHexMesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Copy the results of snappyHexMesh to constant/polyMesh.&quot;&quot;&quot;</span>
+        <span class="c1"># pick the last numerical folder</span>
+        <span class="k">if</span> <span class="n">folder_number</span><span class="p">:</span>
+            <span class="n">_s</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">folder_number</span><span class="p">),</span> <span class="s1">&#39;polyMesh&#39;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">_s</span><span class="p">),</span> <span class="s2">&quot;Can&#39;t find </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_s</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_folders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_snappyHexMesh_folders</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_folders</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">_s</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">_folders</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;polyMesh&#39;</span><span class="p">)</span>
+
+        <span class="c1"># copy files to constant/polyMesh</span>
+        <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_polyMesh_content</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">copy_tree</span><span class="p">(</span><span class="n">_s</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">polyMesh_folder</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to copy snappyHexMesh folder: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.rename_snappyHexMesh_folders"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.rename_snappyHexMesh_folders">[docs]</a>    <span class="k">def</span> <span class="nf">rename_snappyHexMesh_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rename snappyHexMesh numerical folders to name.org  and vice versa.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            add: Set to True to add .org at the end of the file. Set to False</span>
+<span class="sd">                to rename them back to the original naming.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># find list of folders in project and collect the numbers</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">add</span><span class="p">:</span>
+            <span class="n">_folders</span> <span class="o">=</span> <span class="p">(</span><span class="n">name</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.org&#39;</span><span class="p">)</span> <span class="ow">and</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span>
+                                                       <span class="s1">&#39;polyMesh&#39;</span><span class="p">))))</span>
+
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_folders</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span>
+                          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.org&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_folders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_snappyHexMesh_folders</span><span class="p">()</span>
+
+            <span class="c1"># rename them starting from 1</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_folders</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">f</span><span class="p">),</span>
+                              <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.org&#39;</span> <span class="o">%</span> <span class="n">f</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Failed to rename snappyHexMesh folders: </span><span class="si">{}</span><span class="s1">&#39;</span>
+                                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.remove_snappyHexMesh_folders"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.remove_snappyHexMesh_folders">[docs]</a>    <span class="k">def</span> <span class="nf">remove_snappyHexMesh_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove snappyHexMesh numerical folders.</span>
+
+<span class="sd">        Use this to clean the folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rename_snappyHexMesh_folders</span><span class="p">(</span><span class="n">add</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">_folders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_snappyHexMesh_folders</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">_folders</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to remove </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.remove_result_folders"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.remove_result_folders">[docs]</a>    <span class="k">def</span> <span class="nf">remove_result_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove results folder.&quot;&quot;&quot;</span>
+        <span class="n">_folders</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_result_folders</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">_f</span> <span class="ow">in</span> <span class="n">_folders</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rmtree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">_f</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to remove </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_f</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.remove_postProcessing_folder"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.remove_postProcessing_folder">[docs]</a>    <span class="k">def</span> <span class="nf">remove_postProcessing_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove post postProcessing folder.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">postProcessing_folder</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">postProcessing_folder</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to remove postProcessing folder:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.remove_polyMesh_content"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.remove_polyMesh_content">[docs]</a>    <span class="k">def</span> <span class="nf">remove_polyMesh_content</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove files inside polyMesh folder.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">_f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polyMesh_folder</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">_f</span> <span class="o">!=</span> <span class="s1">&#39;blockMeshDict&#39;</span><span class="p">:</span>
+                <span class="n">_fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">polyMesh_folder</span><span class="p">,</span> <span class="n">_f</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">_fp</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">_fp</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">_fp</span><span class="p">):</span>
+                    <span class="n">rmtree</span><span class="p">(</span><span class="n">_fp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.remove_processor_folders"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.remove_processor_folders">[docs]</a>    <span class="k">def</span> <span class="nf">remove_processor_folders</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove processor folders for parallel runs.&quot;&quot;&quot;</span>
+
+        <span class="n">ff</span> <span class="o">=</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+              <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;processor&#39;</span><span class="p">)</span> <span class="ow">and</span>
+              <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">d</span><span class="p">)))</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">ff</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rmtree</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to remove processor folder:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.purge"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.purge">[docs]</a>    <span class="k">def</span> <span class="nf">purge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">remove_polyMesh_content</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">remove_snappyHexMesh_folders</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+              <span class="n">remove_result_folders</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+              <span class="n">remove_postProcessing_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Purge case folder.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">remove_polyMesh_content</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_polyMesh_content</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">remove_snappyHexMesh_folders</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_snappyHexMesh_folders</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">remove_result_folders</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_result_folders</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">remove_postProcessing_folder</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_postProcessing_folder</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Case.update_bc_in_zero_folder"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.update_bc_in_zero_folder">[docs]</a>    <span class="k">def</span> <span class="nf">update_bc_in_zero_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update boundary conditions in files in 0 folder.</span>
+
+<span class="sd">        Call this method if you have made any changes to boundary condition of</span>
+<span class="sd">        any of the geometries after initiating the class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Case.save"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save case to folder.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            overwrite: If True all the current content will be overwritten</span>
+<span class="sd">                (default: False).</span>
+<span class="sd">            minimum: Write minimum necessary files for case. These files will</span>
+<span class="sd">                be enough for meshing the case but not running any commands.</span>
+<span class="sd">                Files are (&#39;fvSchemes&#39;, &#39;fvSolution&#39;, &#39;controlDict&#39;,</span>
+<span class="sd">                &#39;blockMeshDict&#39;,&#39;snappyHexMeshDict&#39;). Rest of the files will be</span>
+<span class="sd">                created from a Solution.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create folder and subfolders if they are not already created</span>
+        <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">):</span>
+            <span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">SUBFOLDERS</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Butterfly failed to create </span><span class="si">{}</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;[Error 183]&#39;</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># save foamfiles</span>
+        <span class="k">if</span> <span class="n">minimum</span><span class="p">:</span>
+            <span class="n">foam_files</span> <span class="o">=</span> <span class="p">(</span><span class="n">ff</span> <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">foam_files</span>
+                          <span class="k">if</span> <span class="n">ff</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">MINFOAMFIles</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">foam_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foam_files</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">foam_files</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="c1"># find blockMeshDict and convertToMeters so I can scale stl files to meters.</span>
+        <span class="n">bmds</span> <span class="o">=</span> <span class="p">(</span><span class="n">ff</span> <span class="k">for</span> <span class="n">ff</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">foam_files</span> <span class="k">if</span> <span class="n">ff</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;blockMeshDict&#39;</span><span class="p">)</span>
+        <span class="n">bmd</span> <span class="o">=</span> <span class="n">bmds</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="n">convertToMeters</span> <span class="o">=</span> <span class="n">bmd</span><span class="o">.</span><span class="n">convertToMeters</span>
+
+        <span class="c1"># write bfgeometries to stl file. __geometries is geometries without</span>
+        <span class="c1"># blockMesh geometry</span>
+        <span class="n">stl_str</span> <span class="o">=</span> <span class="p">(</span><span class="n">geo</span><span class="o">.</span><span class="n">to_stl</span><span class="p">(</span><span class="n">convertToMeters</span><span class="p">)</span> <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__geometries</span><span class="p">)</span>
+        <span class="n">stl_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__originalName</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triSurface_folder</span><span class="p">,</span>
+                               <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.stl&#39;</span> <span class="o">%</span> <span class="n">stl_name</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">stlf</span><span class="p">:</span>
+            <span class="n">stlf</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">stl_str</span><span class="p">)</span>
+
+        <span class="c1"># write refinementRegions to stl files</span>
+        <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">refinementRegions</span><span class="p">:</span>
+            <span class="n">ref</span><span class="o">.</span><span class="n">write_to_stl</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">triSurface_folder</span><span class="p">,</span> <span class="n">convertToMeters</span><span class="p">)</span>
+
+        <span class="c1"># add .foam file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span> <span class="o">+</span> <span class="s1">&#39;.foam&#39;</span><span class="p">),</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ffile</span><span class="p">:</span>
+            <span class="n">ffile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is saved to: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Case.command"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.command">[docs]</a>    <span class="k">def</span> <span class="nf">command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Run an OpenFOAM command for this case.</span>
+<span class="sd">        This method creates a log and err file under logFolder for each command.</span>
+<span class="sd">        The output will be logged as {cmd}.log and {cmd}.err.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            cmd: OpenFOAM command.</span>
+<span class="sd">            args: Command arguments.</span>
+<span class="sd">            decomposeParDict: Optional input for decomposeParDict to run analysis</span>
+<span class="sd">                in parallel if desired.</span>
+<span class="sd">            run: Run the command in shell.</span>
+<span class="sd">            wait: Wait until the command is over.</span>
+<span class="sd">        returns:</span>
+<span class="sd">            If run is True returns a namedtuple for</span>
+<span class="sd">                (success, error, process, logfiles, errorfiles).</span>
+<span class="sd">                success: as a boolen.</span>
+<span class="sd">                error: None in case of success otherwise the error message as</span>
+<span class="sd">                    a string.</span>
+<span class="sd">                process: Popen process.</span>
+<span class="sd">                logfiles: List of fullpath to log files.</span>
+<span class="sd">                errorfiles: List of fullpath to error files.</span>
+<span class="sd">            else return a namedtuple for</span>
+<span class="sd">                (cmd, logfiles, errorfiles)</span>
+<span class="sd">                cmd: command lines.</span>
+<span class="sd">                logfiles: A tuple for log files.</span>
+<span class="sd">                errorfiles: A tuple for error files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">run</span><span class="p">:</span>
+            <span class="n">cmdlog</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">cmdlog</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">,</span> <span class="s1">&#39;success error process logfiles errorfiles&#39;</span><span class="p">)</span>
+
+            <span class="n">p</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errfiles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span>
+                                                        <span class="n">decomposeParDict</span><span class="p">,</span> <span class="n">wait</span><span class="p">)</span>
+
+            <span class="n">logfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">logfiles</span><span class="p">)</span>
+
+            <span class="n">errfiles</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                             <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">errfiles</span><span class="p">)</span>
+
+            <span class="c1"># check error files and raise and error</span>
+            <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">check_file_contents</span><span class="p">(</span><span class="n">logfiles</span><span class="p">,</span> <span class="n">mute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">hascontent</span><span class="p">,</span> <span class="n">content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">runmanager</span><span class="o">.</span><span class="n">check_file_contents</span><span class="p">(</span><span class="n">errfiles</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">log</span><span class="p">(</span><span class="ow">not</span> <span class="n">hascontent</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errfiles</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># return a namedtuple assuming that the command is running fine.</span>
+                <span class="k">return</span> <span class="n">log</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">logfiles</span><span class="p">,</span> <span class="n">errfiles</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.blockMesh"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.blockMesh">[docs]</a>    <span class="k">def</span> <span class="nf">blockMesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,):</span>
+        <span class="sd">&quot;&quot;&quot;Run blockMesh.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            args: Command arguments.</span>
+<span class="sd">            wait: Wait until command execution ends.</span>
+<span class="sd">            overwrite: Overwrite current content of the folder.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple(success, error, process, logfiles, errorfiles).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_polyMesh_content</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;blockMesh&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.surfaceFeatureExtract"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.surfaceFeatureExtract">[docs]</a>    <span class="k">def</span> <span class="nf">surfaceFeatureExtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run surfaceFeatureExtract command.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            args: Command arguments.</span>
+<span class="sd">            wait: Wait until command execution ends.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple(success, error, process, logfiles, errorfiles).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># create surfaceFeatureExtractDict if it&#39;s not created</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;surfaceFeatureExtract&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                            <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span></div>
+
+    <span class="c1"># TODO(Mostapha): Sample for multiple fields.</span>
+    <span class="c1"># The reason we don&#39;t have it now is that I don&#39;t have the methods in place</span>
+    <span class="c1"># for dealing with lists of lists in GRASshopper.</span>
+<div class="viewcode-block" id="Case.sample"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample the results for a certain field.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: A unique name for this sample.</span>
+<span class="sd">            points: List of points as (x, y, z).</span>
+<span class="sd">            fields: List of fields (e.g. U, p).</span>
+<span class="sd">            args: Command arguments.</span>
+<span class="sd">            wait: Wait until command execution ends.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple(probes, values).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sd</span> <span class="o">=</span> <span class="n">SampleDict</span><span class="o">.</span><span class="n">from_points</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="p">(</span><span class="n">field</span><span class="p">,))</span>
+        <span class="n">sd</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_dir</span><span class="p">)</span>
+
+        <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span>
+            <span class="s1">&#39;postProcess&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;-func&#39;</span><span class="p">,</span> <span class="s1">&#39;sampleDict&#39;</span><span class="p">,</span> <span class="s1">&#39;-latestTime&#39;</span><span class="p">),</span>
+            <span class="n">decomposeParDict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">log</span><span class="o">.</span><span class="n">success</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to sample the case:</span><span class="se">\n\t</span><span class="si">%s</span><span class="s2">&quot;</span>
+                            <span class="o">%</span> <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">)</span>
+
+        <span class="n">rf</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_result_folders</span><span class="p">())</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">rf</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> \
+            <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Found no results folder. Either you have not run the &#39;</span>
+                    <span class="s1">&#39;analysis or the run has faild. Check inside &quot;log&quot; folder.&#39;</span><span class="p">)</span>
+
+        <span class="n">fp</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">postProcessing_folder</span><span class="p">,</span> <span class="s1">&#39;sampleDict&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">rf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span>
+                                <span class="n">f</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">sd</span><span class="o">.</span><span class="n">output_filenames</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fp</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">load_probes_and_values_from_sample_file</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">pts</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">))</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Results&#39;</span><span class="p">,</span> <span class="s1">&#39;probes values&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">res</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.snappyHexMesh"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.snappyHexMesh">[docs]</a>    <span class="k">def</span> <span class="nf">snappyHexMesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run snappyHexMesh.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            args: Command arguments.</span>
+<span class="sd">            wait: Wait until command execution ends.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple(success, error, process, logfiles, errorfiles).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;snappyHexMesh&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decomposeParDict</span><span class="p">,</span>
+                            <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.check_mesh"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.check_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">check_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Run checkMesh.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            args: Command arguments.</span>
+<span class="sd">            wait: Wait until command execution ends.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            namedtuple(success, error, process, logfiles, errorfiles).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">&#39;checkMesh&#39;</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">decomposeParDict</span><span class="p">,</span>
+                            <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.calculate_mesh_orthogonality"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.calculate_mesh_orthogonality">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_mesh_orthogonality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_currnt_check_mesh_log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate max and average mesh orthogonality.</span>
+
+<span class="sd">        If average values is more than 80, try to generate a better mesh.</span>
+<span class="sd">        You can use this values to set discretization schemes.</span>
+<span class="sd">        try case.setFvSchemes(average_orthogonality)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">use_currnt_check_mesh_log</span><span class="p">:</span>
+            <span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_mesh</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;-latestTime&#39;</span><span class="p">,))</span>
+            <span class="k">assert</span> <span class="n">log</span><span class="o">.</span><span class="n">success</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">error</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log_folder</span><span class="p">,</span> <span class="s1">&#39;checkMesh.log&#39;</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="p">),</span> <span class="s1">&#39;Failed to find </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">inf</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">inf</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+            <span class="n">maximum</span><span class="p">,</span> <span class="n">average</span> <span class="o">=</span> <span class="n">results</span> \
+                <span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;Mesh non-orthogonality Max:&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> \
+                <span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;average:&#39;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
+
+            <span class="n">average</span> <span class="o">=</span> <span class="n">average</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">maximum</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">average</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get_foam_file_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">foamfiles</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a foamfile by name.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">foamfiles</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__create_foamfile_from_file</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">convertToMeters</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a foamfile object from an OpenFOAM foamfile.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            p: Fullpath to file.</span>
+<span class="sd">        Return:</span>
+<span class="sd">            A Butterfly foam file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Butterfly FoamFiles. This dictionary should be expanded.</span>
+        <span class="n">__foamfilescollection</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;turbulenceProperties&#39;</span><span class="p">:</span> <span class="n">TurbulenceProperties</span><span class="p">,</span>
+            <span class="s1">&#39;RASProperties&#39;</span><span class="p">:</span> <span class="n">RASProperties</span><span class="p">,</span>
+            <span class="s1">&#39;transportProperties&#39;</span><span class="p">:</span> <span class="n">TransportProperties</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span><span class="p">:</span> <span class="n">G</span><span class="p">,</span>
+            <span class="s1">&#39;U&#39;</span><span class="p">:</span> <span class="n">U</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">:</span> <span class="n">K</span><span class="p">,</span> <span class="s1">&#39;p&#39;</span><span class="p">:</span> <span class="n">P</span><span class="p">,</span> <span class="s1">&#39;nut&#39;</span><span class="p">:</span> <span class="n">Nut</span><span class="p">,</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span> <span class="n">Epsilon</span><span class="p">,</span> <span class="s1">&#39;T&#39;</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span>
+            <span class="s1">&#39;alphat&#39;</span><span class="p">:</span> <span class="n">Alphat</span><span class="p">,</span> <span class="s1">&#39;p_rgh&#39;</span><span class="p">:</span> <span class="n">P_rgh</span><span class="p">,</span> <span class="s1">&#39;ABLConditions&#39;</span><span class="p">:</span> <span class="n">ABLConditions</span><span class="p">,</span>
+            <span class="s1">&#39;initialConditions&#39;</span><span class="p">:</span> <span class="n">InitialConditions</span><span class="p">,</span>
+            <span class="s1">&#39;blockMeshDict&#39;</span><span class="p">:</span> <span class="n">BlockMeshDict</span><span class="p">,</span> <span class="s1">&#39;snappyHexMeshDict&#39;</span><span class="p">:</span> <span class="n">SnappyHexMeshDict</span><span class="p">,</span>
+            <span class="s1">&#39;controlDict&#39;</span><span class="p">:</span> <span class="n">ControlDict</span><span class="p">,</span> <span class="s1">&#39;fvSchemes&#39;</span><span class="p">:</span> <span class="n">FvSchemes</span><span class="p">,</span>
+            <span class="s1">&#39;fvSolution&#39;</span><span class="p">:</span> <span class="n">FvSolution</span><span class="p">,</span> <span class="s1">&#39;probes&#39;</span><span class="p">:</span> <span class="n">Probes</span><span class="p">,</span>
+            <span class="s1">&#39;decomposeParDict&#39;</span><span class="p">:</span> <span class="n">DecomposeParDict</span>
+        <span class="p">}</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;blockMeshDict&#39;</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">BlockMeshDict</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">convertToMeters</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to import </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">__foamfilescollection</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">__foamfilescollection</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to import </span><span class="si">{}</span><span class="s1">:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">FoamFile</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_check_input_geometries</span><span class="p">(</span><span class="n">geos</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">geos</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="s1">&#39;isBFMesh&#39;</span><span class="p">),</span> \
+                <span class="s1">&#39;Expected butterfly.Mesh not </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">geo</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">geos</span>
+
+<div class="viewcode-block" id="Case.load_mesh"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.load_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">load_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM mesh as a Rhino mesh.&quot;&quot;&quot;</span>
+        <span class="c1"># This is a abstract property which should be implemented in subclasses</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Case.load_points"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.load_points">[docs]</a>    <span class="k">def</span> <span class="nf">load_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM mesh as a Rhino mesh.&quot;&quot;&quot;</span>
+        <span class="c1"># This is a abstract property which should be implemented in subclasses</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Case.load_probe_values"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.load_probe_values">[docs]</a>    <span class="k">def</span> <span class="nf">load_probe_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM probes results for a field.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">probes_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">field</span><span class="p">,</span>
+                                                           <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">fields</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">load_probe_values_from_folder</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.load_probes"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.load_probes">[docs]</a>    <span class="k">def</span> <span class="nf">load_probes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM probes locations for a field.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">probes_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">field</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">fields</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Can&#39;t find </span><span class="si">{}</span><span class="s2"> in </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">field</span><span class="p">,</span>
+                                                           <span class="bp">self</span><span class="o">.</span><span class="n">probes</span><span class="o">.</span><span class="n">fields</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">load_probes_from_postProcessing_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">probes_folder</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.duplicate"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Case.ToString"><a class="viewcode-back" href="../../butterfly.case.html#butterfly.case.Case.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;OpenFOAM CASE.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;OpenFOAM CASE: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

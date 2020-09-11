@@ -1,0 +1,7 @@
+butterfly.grading module
+========================
+
+.. automodule:: butterfly.grading
+    :members:
+    :undoc-members:
+    :show-inheritance:

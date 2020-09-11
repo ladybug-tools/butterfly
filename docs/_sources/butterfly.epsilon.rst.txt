@@ -1,0 +1,7 @@
+butterfly.epsilon module
+========================
+
+.. automodule:: butterfly.epsilon
+    :members:
+    :undoc-members:
+    :show-inheritance:

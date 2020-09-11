@@ -1,0 +1,7 @@
+butterfly.alphat module
+=======================
+
+.. automodule:: butterfly.alphat
+    :members:
+    :undoc-members:
+    :show-inheritance:

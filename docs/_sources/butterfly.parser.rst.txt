@@ -1,0 +1,7 @@
+butterfly.parser module
+=======================
+
+.. automodule:: butterfly.parser
+    :members:
+    :undoc-members:
+    :show-inheritance:

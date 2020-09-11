@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.foamfile &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.foamfile</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;Foam File Class.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.version</span> <span class="kn">import</span> <span class="n">Version</span><span class="p">,</span> <span class="n">Header</span>
+<span class="kn">from</span> <span class="nn">.utilities</span> <span class="kn">import</span> <span class="n">get_boundary_field_from_geometries</span>
+<span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="n">CppDictParser</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+
+<div class="viewcode-block" id="FoamFile"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile">[docs]</a><span class="k">class</span> <span class="nc">FoamFile</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;FoamFile base class for OpenFOAM dictionaries.</span>
+
+<span class="sd">    Read (http://cfd.direct/openfoam/user-guide/basic-file-format/) for</span>
+<span class="sd">    more information about FoamFile</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Filename (e.g. controlDict)</span>
+<span class="sd">        cls: OpenFOAM class constructed from the data file</span>
+<span class="sd">            concerned. Typically  dictionary  or a field, e.g. volVectorField</span>
+<span class="sd">        location: Folder name (0, constant or system)</span>
+<span class="sd">        file_format: File format (ascii / binary) (default: ascii)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__locations</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;constant&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">file_format</span><span class="o">=</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span>
+                 <span class="n">default_values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init foam file.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;is</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Version</span><span class="o">.</span><span class="n">of_ver</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">file_format</span><span class="p">)</span>  <span class="c1"># ascii / binary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cls</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>  <span class="c1"># dictionary or field</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">location</span>  <span class="c1"># location is optional</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locations</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&quot;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid OpenFOAM location: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locations</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Initiate values</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">default_values</span><span class="p">:</span>
+            <span class="n">default_values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__values</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">default_values</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_values</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">mute</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FoamFile.from_file"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.from_file">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a FoamFile from a file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filepath: Full file path to dictionary.</span>
+<span class="sd">            location: Optional folder name for location (0, constant or system)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">_try_get_foam_file_value</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Get values for FoamFile header.&quot;&quot;&quot;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_values</span><span class="p">[</span><span class="s1">&#39;FoamFile&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;failed to find &quot;&quot;</span><span class="si">{}</span><span class="s1">&quot;&quot; in </span><span class="si">{}</span><span class="s1"> header.</span><span class="se">\n</span><span class="s1">Default value: </span><span class="si">{}</span><span class="s1">&#39;</span> \
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">default</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">default</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="k">assert</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;blockMeshDict&#39;</span><span class="p">),</span> \
+            <span class="s1">&#39;To parse blockMeshDict from file use BlockMeshDict.from_file()&#39;</span>
+
+        <span class="n">_values</span> <span class="o">=</span> <span class="n">CppDictParser</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="n">default</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;object&#39;</span><span class="p">:</span> <span class="n">_name</span><span class="p">,</span>
+            <span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;dictionary&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;location&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s1">&#39;format&#39;</span><span class="p">:</span> <span class="s1">&#39;ascii&#39;</span>
+        <span class="p">}</span>
+
+        <span class="c1"># set up FoamFile dictionary</span>
+        <span class="n">_name</span> <span class="o">=</span> <span class="n">_try_get_foam_file_value</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+        <span class="n">_cls</span> <span class="o">=</span> <span class="n">_try_get_foam_file_value</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">)</span>
+        <span class="n">_location</span> <span class="o">=</span> <span class="n">_try_get_foam_file_value</span><span class="p">(</span><span class="s1">&#39;location&#39;</span><span class="p">)</span>
+        <span class="n">_file_format</span> <span class="o">=</span> <span class="n">_try_get_foam_file_value</span><span class="p">(</span><span class="s1">&#39;format&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;FoamFile&#39;</span> <span class="ow">in</span> <span class="n">_values</span><span class="p">:</span>
+            <span class="k">del</span><span class="p">(</span><span class="n">_values</span><span class="p">[</span><span class="s1">&#39;FoamFile&#39;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="n">_cls</span><span class="p">,</span> <span class="n">_location</span><span class="p">,</span> <span class="n">_file_format</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">_values</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isFoamFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True for FoamFile.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_zero_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the file location is folder 0.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="s2">&quot;0&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_constant_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the file location is &#39;constant&#39; folder.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="s2">&quot;constant&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_system_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the file location is &#39;system&#39; folder.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">==</span> <span class="s2">&quot;system&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return values as a dictionary.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__values</span>
+
+    <span class="c1"># TODO(Mostapha): replace log changes with update_dict from utilities</span>
+<div class="viewcode-block" id="FoamFile.update_values"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.update_values">[docs]</a>    <span class="k">def</span> <span class="nf">update_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update current values from dictionary v.</span>
+
+<span class="sd">        if key is not available in current values it will be added, if the key</span>
+<span class="sd">        already exists it will be updated.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True is the dictionary is updated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">log_changes</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;compare this dictionary with the current values.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">original</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">original</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">original</span><span class="p">:</span>
+                    <span class="c1"># there is a new key so dictionary has changed.</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">mute</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> :: New values are added for </span><span class="si">{}</span><span class="s1">.&#39;</span> \
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__parents</span><span class="p">),</span> <span class="n">key</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__hasChanged</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">return</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__parents</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">log_changes</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                    <span class="c1"># there is a change in value</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">mute</span><span class="p">:</span>
+                        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.</span><span class="si">{}</span><span class="s1"> is changed from &quot;</span><span class="si">{}</span><span class="s1">&quot; to &quot;</span><span class="si">{}</span><span class="s1">&quot;.&#39;</span>\
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__parents</span><span class="p">),</span> <span class="n">key</span><span class="p">,</span>
+                                    <span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span> <span class="o">&lt;</span> <span class="mi">100</span>
+                                    <span class="k">else</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">...&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">])[:</span><span class="mi">100</span><span class="p">],</span>
+                                    <span class="n">value</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">100</span>
+                                    <span class="k">else</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">...&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)[:</span><span class="mi">100</span><span class="p">])</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__hasChanged</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">return</span>
+
+        <span class="k">def</span> <span class="nf">modify_dict</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Modify a dictionary based on a new dictionary.&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">new</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">original</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="n">modify_dict</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># the value was not a dict, replce them with the new one</span>
+                        <span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">original</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="k">return</span> <span class="n">original</span>
+
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span> <span class="s1">&#39;Expected dictionary not </span><span class="si">{}</span><span class="s1">!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parents</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__hasChanged</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">log_changes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__values</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__hasChanged</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">replace</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__values</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__values</span> <span class="o">=</span> <span class="n">modify_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__values</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get list of parameters.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FoamFile.get_value_by_parameter"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.get_value_by_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_by_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get values for a given parameter by parameter name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parameter: Name of a parameter as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not available in </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">parameter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="p">))</span></div>
+
+<div class="viewcode-block" id="FoamFile.set_value_by_parameter"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.set_value_by_parameter">[docs]</a>    <span class="k">def</span> <span class="nf">set_value_by_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value for a parameter.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parameter: Name of a parameter as a string.</span>
+<span class="sd">            value: Parameter value as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">parameter</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="FoamFile.header"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return open foam style string.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Header</span><span class="o">.</span><span class="n">header</span><span class="p">()</span> <span class="o">+</span> \
+                <span class="s2">&quot;FoamFile</span><span class="se">\n</span><span class="s2">{</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">version</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">format</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">class</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">location</span><span class="se">\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">object</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+                         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Header</span><span class="o">.</span><span class="n">header</span><span class="p">()</span> <span class="o">+</span> \
+                <span class="s2">&quot;FoamFile</span><span class="se">\n</span><span class="s2">{</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">version</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">format</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">class</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">object</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">;</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;}</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_split_line</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Split lines which ends with { to two lines.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> \
+            <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="s1">&#39;{&#39;</span>
+
+<div class="viewcode-block" id="FoamFile.body"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.body">[docs]</a>    <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return body string.&quot;&quot;&quot;</span>
+        <span class="c1"># remove None values</span>
+        <span class="k">def</span> <span class="nf">remove_none</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">remove_none</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">v</span> <span class="o">==</span> <span class="p">{}</span> <span class="ow">or</span> <span class="p">(</span><span class="n">v</span> <span class="ow">and</span> <span class="n">remove_none</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">remove_none</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">and</span> <span class="n">remove_none</span><span class="p">(</span><span class="n">v</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">d</span>
+            <span class="k">return</span> <span class="n">remove_none</span>
+
+        <span class="n">_values</span> <span class="o">=</span> <span class="n">remove_none</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># make python dictionary look like c++ dictionary!!</span>
+        <span class="n">of</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_values</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">&quot;</span><span class="p">))</span> \
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;@&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s2">&quot;;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> \
+            <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;};&#39;</span><span class="p">,</span> <span class="s1">&#39;}&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">{&#39;</span><span class="p">,</span> <span class="s1">&#39;{&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;@&#39;</span><span class="p">,</span> <span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+
+        <span class="c1"># remove first and last {} and prettify[!] the file</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_line</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">of</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">content</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FoamFile.convert_bool_value"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.convert_bool_value">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">convert_bool_value</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert Boolean values to on/off string.&quot;&quot;&quot;</span>
+        <span class="n">_v</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">,</span> <span class="s1">&#39;on&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+
+        <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;on&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s1">&#39;off&#39;</span></div>
+
+<div class="viewcode-block" id="FoamFile.to_openfoam"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.to_openfoam">[docs]</a>    <span class="k">def</span> <span class="nf">to_openfoam</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return OpenFOAM string.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">()))</span></div>
+
+<div class="viewcode-block" id="FoamFile.save"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_folder</span><span class="p">,</span> <span class="n">sub_folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save to file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            project_folder: Path to project folder as a string.</span>
+<span class="sd">            sub_folder: Optional input for sub_folder (default: self.location).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sub_folder</span> <span class="o">=</span> <span class="n">sub_folder</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_folder</span><span class="p">,</span> <span class="n">sub_folder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fp</span><span class="p">):</span>
+            <span class="k">return</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
+            <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_openfoam</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">fp</span></div>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check equality.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">values</span>
+
+<div class="viewcode-block" id="FoamFile.duplicate"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FoamFile.ToString"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFile.ToString">[docs]</a>    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_openfoam</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="FoamFileZeroFolder"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFileZeroFolder">[docs]</a><span class="k">class</span> <span class="nc">FoamFileZeroFolder</span><span class="p">(</span><span class="n">FoamFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;FoamFiles under 0 folder.</span>
+
+<span class="sd">    The main difference between FoamFileZeroFolder and FoamFile is that</span>
+<span class="sd">    FoamFileZeroFolder has a method to set boundary fields based on input</span>
+<span class="sd">    geometry (e.g. Butterfly objects).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="FoamFileZeroFolder.from_bf_geometries"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFileZeroFolder.from_bf_geometries">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_bf_geometries</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">bf_geometries</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init class by bf_geometries.&quot;&quot;&quot;</span>
+        <span class="n">_cls</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">_cls</span><span class="o">.</span><span class="n">set_boundary_field</span><span class="p">(</span><span class="n">bf_geometries</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_cls</span></div>
+
+<div class="viewcode-block" id="FoamFileZeroFolder.set_boundary_field"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFileZeroFolder.set_boundary_field">[docs]</a>    <span class="k">def</span> <span class="nf">set_boundary_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bf_geometries</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set FoamFile boundaryField values from bf_geometries.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bf_geometries: List of Butterfly geometries.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;boundaryField&#39;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="n">get_boundary_field_from_geometries</span><span class="p">(</span><span class="n">bf_geometries</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FoamFileZeroFolder.get_boundary_field"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.FoamFileZeroFolder.get_boundary_field">[docs]</a>    <span class="k">def</span> <span class="nf">get_boundary_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Try to get boundaryField value for a geometry by name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: Geometry name.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            An OpenFOAM field if name is in boundaryFields.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;boundaryField&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s1">&#39;boundaryField&#39;</span><span class="p">][</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to find boundaryField values for </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Condition"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.Condition">[docs]</a><span class="k">class</span> <span class="nc">Condition</span><span class="p">(</span><span class="n">FoamFile</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;OpenFOAM conditions object.</span>
+
+<span class="sd">    Use this class to create conditions such as initialConditions and ABLConditions.</span>
+<span class="sd">    Conditions don&#39;t have OpenFOAM header. It&#39;s only values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Condition.header"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.Condition.header">[docs]</a>    <span class="k">def</span> <span class="nf">header</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return conditions header.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Header</span><span class="o">.</span><span class="n">header</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="foam_file_from_file"><a class="viewcode-back" href="../../butterfly.foamfile.html#butterfly.foamfile.foam_file_from_file">[docs]</a><span class="k">def</span> <span class="nf">foam_file_from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Load values from foamfile.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filepath: Full file path to dictionary.</span>
+<span class="sd">        name: An optional name for foamfile to double check.</span>
+<span class="sd">        header: Set to True to get FoamFile data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> \
+            <span class="s1">&#39;Illegal file input </span><span class="si">{}</span><span class="s1"> for creating </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+    <span class="n">_values</span> <span class="o">=</span> <span class="n">CppDictParser</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">header</span> <span class="ow">and</span> <span class="s1">&#39;FoamFile&#39;</span> <span class="ow">in</span> <span class="n">_values</span><span class="p">:</span>
+        <span class="k">del</span><span class="p">(</span><span class="n">_values</span><span class="p">[</span><span class="s1">&#39;FoamFile&#39;</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">_values</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

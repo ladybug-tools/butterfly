@@ -1,0 +1,7 @@
+butterfly.vectormath module
+===========================
+
+.. automodule:: butterfly.vectormath
+    :members:
+    :undoc-members:
+    :show-inheritance:

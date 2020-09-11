@@ -1,0 +1,7 @@
+butterfly.snappyHexMeshDict module
+==================================
+
+.. automodule:: butterfly.snappyHexMeshDict
+    :members:
+    :undoc-members:
+    :show-inheritance:

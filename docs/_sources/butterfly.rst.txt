@@ -1,0 +1,67 @@
+butterfly package
+=================
+
+Subpackages
+-----------
+
+.. toctree::
+
+    butterfly.stl
+
+Submodules
+----------
+
+.. toctree::
+
+   butterfly.RASProperties
+   butterfly.T
+   butterfly.U
+   butterfly.alphat
+   butterfly.blockMeshDict
+   butterfly.boundarycondition
+   butterfly.case
+   butterfly.conditions
+   butterfly.controlDict
+   butterfly.decomposeParDict
+   butterfly.epsilon
+   butterfly.exception
+   butterfly.fields
+   butterfly.foamfile
+   butterfly.functions
+   butterfly.fvSchemes
+   butterfly.fvSolution
+   butterfly.g
+   butterfly.geometry
+   butterfly.grading
+   butterfly.gradingutil
+   butterfly.k
+   butterfly.make2dparameters
+   butterfly.meshingparameters
+   butterfly.nut
+   butterfly.p
+   butterfly.p_rgh
+   butterfly.parser
+   butterfly.recipe
+   butterfly.refinementRegion
+   butterfly.runmanager
+   butterfly.runmanager_bluecfd
+   butterfly.runmanagerenv
+   butterfly.sampleDict
+   butterfly.snappyHexMeshDict
+   butterfly.solution
+   butterfly.surfaceFeatureExtractDict
+   butterfly.transportProperties
+   butterfly.turbulenceProperties
+   butterfly.utilities
+   butterfly.vectormath
+   butterfly.version
+   butterfly.windtunnel
+   butterfly.z0
+
+Module contents
+---------------
+
+.. automodule:: butterfly
+    :members:
+    :undoc-members:
+    :show-inheritance:

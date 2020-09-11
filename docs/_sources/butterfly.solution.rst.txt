@@ -1,0 +1,7 @@
+butterfly.solution module
+=========================
+
+.. automodule:: butterfly.solution
+    :members:
+    :undoc-members:
+    :show-inheritance:

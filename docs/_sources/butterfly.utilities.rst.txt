@@ -1,0 +1,7 @@
+butterfly.utilities module
+==========================
+
+.. automodule:: butterfly.utilities
+    :members:
+    :undoc-members:
+    :show-inheritance:

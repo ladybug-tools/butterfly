@@ -1,0 +1,7 @@
+butterfly.fields module
+=======================
+
+.. automodule:: butterfly.fields
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.stl.types module &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="butterfly.RASProperties module" href="butterfly.RASProperties.html" />
+    <link rel="prev" title="butterfly.stl.binary module" href="butterfly.stl.binary.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="butterfly.stl.html">butterfly.stl package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="butterfly.stl.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="butterfly.stl.html">butterfly.stl package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="butterfly.stl.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+  <li>
+    <a href="butterfly.stl.binary.html" title="Previous Chapter: butterfly.stl.binary module"><span class="glyphicon glyphicon-chevron-left visible-sm"></span><span class="hidden-sm hidden-tablet">&laquo; butterfly.stl...</span>
+    </a>
+  </li>
+  <li>
+    <a href="butterfly.RASProperties.html" title="Next Chapter: butterfly.RASProperties module"><span class="glyphicon glyphicon-chevron-right visible-sm"></span><span class="hidden-sm hidden-tablet">butterfly.RAS... &raquo;</span>
+    </a>
+  </li>
+              
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/butterfly.stl.types.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="butterfly.html">butterfly package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="butterfly.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="butterfly.stl.html">butterfly.stl package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="butterfly.stl.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <div class="section" id="module-butterfly.stl.types">
+<span id="butterfly-stl-types-module"></span><h1>butterfly.stl.types module<a class="headerlink" href="#module-butterfly.stl.types" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="butterfly.stl.types.Facet">
+<em class="property">class </em><code class="descclassname">butterfly.stl.types.</code><code class="descname">Facet</code><span class="sig-paren">(</span><em>normal</em>, <em>vertices</em>, <em>attributes=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/stl/types.html#Facet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.stl.types.Facet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A facet (triangle) from a <code class="xref py py-class docutils literal notranslate"><span class="pre">stl.Solid</span></code>.</p>
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.a">
+<code class="descname">a</code><a class="headerlink" href="#butterfly.stl.types.Facet.a" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length the side of the facet between vertices[0] and vertices[1].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.area">
+<code class="descname">area</code><a class="headerlink" href="#butterfly.stl.types.Facet.area" title="Permalink to this definition">¶</a></dt>
+<dd><p>The surface area of the facet, as computed by Heron’s Formula.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.attributes">
+<code class="descname">attributes</code><em class="property"> = None</em><a class="headerlink" href="#butterfly.stl.types.Facet.attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raw binary attribute bytes. According to the STL spec these are unused
+and thus this should always be empty, but some modeling software
+encodes non-standard data in here which callers may wish to access.</p>
+<p>At present these attribute bytes are populated only when reading binary
+STL files (since ASCII STL files have no place for this data) <em>and</em>
+they are ignored when <em>writing</em> a binary STL file, so round-tripping
+a file through this library will lose the non-standard attribute data.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.b">
+<code class="descname">b</code><a class="headerlink" href="#butterfly.stl.types.Facet.b" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of the side of the facet between vertices[0] and vertices[2].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.c">
+<code class="descname">c</code><a class="headerlink" href="#butterfly.stl.types.Facet.c" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of the side of the facet between vertices[1] and vertices[2].</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.normal">
+<code class="descname">normal</code><em class="property"> = None</em><a class="headerlink" href="#butterfly.stl.types.Facet.normal" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ‘normal’ vector of the facet, as a <code class="xref py py-class docutils literal notranslate"><span class="pre">stl.Vector3d</span></code>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.perimeter">
+<code class="descname">perimeter</code><a class="headerlink" href="#butterfly.stl.types.Facet.perimeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of the perimeter of the facet.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Facet.vertices">
+<code class="descname">vertices</code><em class="property"> = None</em><a class="headerlink" href="#butterfly.stl.types.Facet.vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>3-element sequence of <code class="xref py py-class docutils literal notranslate"><span class="pre">stl.Vector3d</span></code> representing the
+facet’s three vertices, in order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="butterfly.stl.types.Solid">
+<em class="property">class </em><code class="descclassname">butterfly.stl.types.</code><code class="descname">Solid</code><span class="sig-paren">(</span><em>name=None</em>, <em>facets=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/stl/types.html#Solid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.stl.types.Solid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A solid object; the root element of an STL file.</p>
+<dl class="method">
+<dt id="butterfly.stl.types.Solid.add_facet">
+<code class="descname">add_facet</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/stl/types.html#Solid.add_facet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.stl.types.Solid.add_facet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append a new facet to the object.</p>
+<p>Takes the same arguments as the <code class="xref py py-class docutils literal notranslate"><span class="pre">stl.Facet</span></code> type.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Solid.facets">
+<code class="descname">facets</code><em class="property"> = []</em><a class="headerlink" href="#butterfly.stl.types.Solid.facets" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code> of <code class="xref py py-class docutils literal notranslate"><span class="pre">stl.Facet</span></code> objects representing the
+facets (triangles) that make up the exterior surface of this object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Solid.name">
+<code class="descname">name</code><em class="property"> = None</em><a class="headerlink" href="#butterfly.stl.types.Solid.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name given to the object by the STL file header.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Solid.normals">
+<code class="descname">normals</code><a class="headerlink" href="#butterfly.stl.types.Solid.normals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get facet normals.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Solid.surface_area">
+<code class="descname">surface_area</code><a class="headerlink" href="#butterfly.stl.types.Solid.surface_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>The sum of the areas of all facets in the object.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Solid.vertices">
+<code class="descname">vertices</code><a class="headerlink" href="#butterfly.stl.types.Solid.vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique vertices for all facets.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.stl.types.Solid.write_ascii">
+<code class="descname">write_ascii</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/stl/types.html#Solid.write_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.stl.types.Solid.write_ascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write this object to a file in STL <em>ascii</em> format.</p>
+<p><code class="docutils literal notranslate"><span class="pre">file</span></code> must be a file-like object (supporting a <code class="docutils literal notranslate"><span class="pre">write</span></code> method),
+to which the data will be written.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="butterfly.stl.types.Solid.write_binary">
+<code class="descname">write_binary</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/stl/types.html#Solid.write_binary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.stl.types.Solid.write_binary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write this object to a file in STL <em>binary</em> format.</p>
+<p><code class="docutils literal notranslate"><span class="pre">file</span></code> must be a file-like object (supporting a <code class="docutils literal notranslate"><span class="pre">write</span></code> method),
+to which the data will be written.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="butterfly.stl.types.Vector3d">
+<em class="property">class </em><code class="descclassname">butterfly.stl.types.</code><code class="descname">Vector3d</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/butterfly/stl/types.html#Vector3d"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#butterfly.stl.types.Vector3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Three-dimensional vector.</p>
+<p>Used to represent both normals and vertices of <code class="xref py py-class docutils literal notranslate"><span class="pre">stl.Facet</span></code>
+objects.</p>
+<p>This is a subtype of <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>, so can also be treated like a
+three-element tuple in (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code>) order.</p>
+<dl class="attribute">
+<dt id="butterfly.stl.types.Vector3d.x">
+<code class="descname">x</code><a class="headerlink" href="#butterfly.stl.types.Vector3d.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>The X value of the vector.</p>
+<p>which most applications interpret as the left-right axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Vector3d.y">
+<code class="descname">y</code><a class="headerlink" href="#butterfly.stl.types.Vector3d.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Y value of the vector.</p>
+<p>which most applications interpret as the in-out axis.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="butterfly.stl.types.Vector3d.z">
+<code class="descname">z</code><a class="headerlink" href="#butterfly.stl.types.Vector3d.z" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Z value of the vector.</p>
+<p>which most applications interpret as the up-down axis.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

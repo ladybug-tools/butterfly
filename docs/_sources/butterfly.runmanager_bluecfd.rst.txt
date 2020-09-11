@@ -1,0 +1,7 @@
+butterfly.runmanager\_bluecfd module
+====================================
+
+.. automodule:: butterfly.runmanager_bluecfd
+    :members:
+    :undoc-members:
+    :show-inheritance:

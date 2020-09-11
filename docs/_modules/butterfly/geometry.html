@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>butterfly.geometry &#8212; butterfly  documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-inverse navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          butterfly</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.stl.html">butterfly.stl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.ascii.html">butterfly.stl.ascii module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.binary.html">butterfly.stl.binary module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../butterfly.stl.types.html">butterfly.stl.types module</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../butterfly.stl.html#module-butterfly.stl">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.RASProperties.html">butterfly.RASProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.T.html">butterfly.T module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.U.html">butterfly.U module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.alphat.html">butterfly.alphat module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.blockMeshDict.html">butterfly.blockMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.boundarycondition.html">butterfly.boundarycondition module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.case.html">butterfly.case module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.conditions.html">butterfly.conditions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.controlDict.html">butterfly.controlDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.decomposeParDict.html">butterfly.decomposeParDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.epsilon.html">butterfly.epsilon module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.exception.html">butterfly.exception module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fields.html">butterfly.fields module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.foamfile.html">butterfly.foamfile module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.functions.html">butterfly.functions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSchemes.html">butterfly.fvSchemes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.fvSolution.html">butterfly.fvSolution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.g.html">butterfly.g module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.geometry.html">butterfly.geometry module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.grading.html">butterfly.grading module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.gradingutil.html">butterfly.gradingutil module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.k.html">butterfly.k module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.make2dparameters.html">butterfly.make2dparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.meshingparameters.html">butterfly.meshingparameters module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.nut.html">butterfly.nut module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p.html">butterfly.p module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.p_rgh.html">butterfly.p_rgh module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.parser.html">butterfly.parser module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.recipe.html">butterfly.recipe module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.refinementRegion.html">butterfly.refinementRegion module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager.html">butterfly.runmanager module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanager_bluecfd.html">butterfly.runmanager_bluecfd module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.runmanagerenv.html">butterfly.runmanagerenv module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.sampleDict.html">butterfly.sampleDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.snappyHexMeshDict.html">butterfly.snappyHexMeshDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.solution.html">butterfly.solution module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.surfaceFeatureExtractDict.html">butterfly.surfaceFeatureExtractDict module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.transportProperties.html">butterfly.transportProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.turbulenceProperties.html">butterfly.turbulenceProperties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.utilities.html">butterfly.utilities module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.vectormath.html">butterfly.vectormath module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.version.html">butterfly.version module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.windtunnel.html">butterfly.windtunnel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../butterfly.z0.html">butterfly.z0 module</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../butterfly.html#module-butterfly">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-4">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../butterfly.html">butterfly package</a></li>
+</ul>
+
+        </div>
+      </div>
+    <div class="body col-md-8 content" role="main">
+      
+  <h1>Source code for butterfly.geometry</h1><div class="highlight"><pre>
+<span></span><span class="c1"># coding=utf-8</span>
+<span class="sd">&quot;&quot;&quot;BF geometry library.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">.boundarycondition</span> <span class="kn">import</span> <span class="n">IndoorWallBoundaryCondition</span>
+<span class="kn">from</span> <span class="nn">.stl</span> <span class="kn">import</span> <span class="n">read_ascii_string</span>
+<span class="kn">from</span> <span class="nn">.vectormath</span> <span class="kn">import</span> <span class="n">cross_product</span><span class="p">,</span> <span class="n">rotate</span><span class="p">,</span> <span class="n">angle_anitclockwise</span>
+
+
+<span class="k">class</span> <span class="nc">_BFMesh</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base mesh geometry.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Name as a string (A-Z a-z 0-9 _).</span>
+<span class="sd">        vertices: A flatten list of (x, y, z) for vertices.</span>
+<span class="sd">        face_indices: A flatten list of (a, b, c) for indices for each face.</span>
+<span class="sd">        normals: A flatten list of (x, y, z) for face normals.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">face_indices</span><span class="p">,</span> <span class="n">normals</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init Butterfly mesh.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span> <span class="o">=</span> <span class="n">vertices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__face_indices</span> <span class="o">=</span> <span class="n">face_indices</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">normals</span><span class="p">:</span>
+            <span class="n">normals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__calculate_normals</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__normals</span> <span class="o">=</span> <span class="n">normals</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__face_indices</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__normals</span><span class="p">),</span> \
+            <span class="s2">&quot;Length of face_indices (</span><span class="si">%d</span><span class="s2">) &quot;</span> \
+            <span class="s2">&quot;should be equal to Length of normals (</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__face_indices</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__normals</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__calculate_min_max</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Butterfly geometry name.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__name</span>
+
+    <span class="nd">@name</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">n</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isalnum</span><span class="p">(),</span> \
+            <span class="s2">&quot;Name can only be alphabet, numerical values or underscore.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__name</span> <span class="o">=</span> <span class="n">n</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isBFMesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True for Butterfly meshes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A flatten list of (x, y, z) for vertices.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">face_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A flatten list of (a, b, c) for indices for each face.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__face_indices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">normals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A flatten list of (x, y, z) for normals.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__normals</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__min</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__max</span>
+
+    <span class="k">def</span> <span class="nf">__calculate_normals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate normals from vertices.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__calculate_normal_from_points</span><span class="p">(</span>
+            <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ind</span><span class="p">))</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">face_indices</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__calculate_normal_from_points</span><span class="p">(</span><span class="n">pts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate normal for three points.&quot;&quot;&quot;</span>
+        <span class="c1"># vector between first point and the second point on the list</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span><span class="p">,</span> <span class="n">pt3</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Failed to calculate normal:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span><span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># vector between first point and the last point in the list</span>
+        <span class="n">v2</span> <span class="o">=</span> <span class="p">(</span><span class="n">pt3</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt3</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt3</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">pt1</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">cross_product</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__calculate_min_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate maximum and minimum x, y, z for this geometry.&quot;&quot;&quot;</span>
+        <span class="n">min_pt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">max_pt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__min</span> <span class="o">=</span> <span class="n">min_pt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__max</span> <span class="o">=</span> <span class="n">max_pt</span>
+
+    <span class="k">def</span> <span class="nf">to_stl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">convertToMeters</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get STL definition for this geometry as a string.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            convertToMeters: A value to scale the geometry to meters. For isinstance</span>
+<span class="sd">                if the mesh is in mm the value should be 0.001 (default: 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_hea</span> <span class="o">=</span> <span class="s2">&quot;solid </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">_tale</span> <span class="o">=</span> <span class="s2">&quot;endsolid </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">_body</span> <span class="o">=</span> <span class="s2">&quot;   facet normal </span><span class="si">{0}</span><span class="s2"> </span><span class="si">{1}</span><span class="s2"> </span><span class="si">{2}</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;     outer loop</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;       vertex </span><span class="si">{3}</span><span class="s2"> </span><span class="si">{4}</span><span class="s2"> </span><span class="si">{5}</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;       vertex </span><span class="si">{6}</span><span class="s2"> </span><span class="si">{7}</span><span class="s2"> </span><span class="si">{8}</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;       vertex </span><span class="si">{9}</span><span class="s2"> </span><span class="si">{10}</span><span class="s2"> </span><span class="si">{11}</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;     endloop</span><span class="se">\n</span><span class="s2">&quot;</span> \
+                <span class="s2">&quot;   endfacet&quot;</span>
+
+        <span class="n">_bodyCollector</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_body</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__normals</span><span class="p">[</span><span class="n">count</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__normals</span><span class="p">[</span><span class="n">count</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__normals</span><span class="p">[</span><span class="n">count</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__vertices</span><span class="p">[</span><span class="n">faceInd</span><span class="p">[</span><span class="mi">2</span><span class="p">]][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">convertToMeters</span>
+        <span class="p">)</span> <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="n">faceInd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__face_indices</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">_hea</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_bodyCollector</span><span class="p">),</span> <span class="n">_tale</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_to_stl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">convertToMeters</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Save BFFace to a stl file. File name will be self.name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            convertToMeters: A value to scale the geometry to meters. For isinstance</span>
+<span class="sd">                if the mesh is in mm the value should be 0.001 (default: 1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.stl&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outf</span><span class="p">:</span>
+            <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_stl</span><span class="p">(</span><span class="n">convertToMeters</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">duplicate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a copy of this object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">ToString</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwrite .NET ToString method.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Butterfly mesh representation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BFGeometry"><a class="viewcode-back" href="../../butterfly.geometry.html#butterfly.geometry.BFGeometry">[docs]</a><span class="k">class</span> <span class="nc">BFGeometry</span><span class="p">(</span><span class="n">_BFMesh</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Butterfly geometry.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Name as a string (A-Z a-z 0-9 _).</span>
+<span class="sd">        vertices: A flatten list of (x, y, z) for vertices.</span>
+<span class="sd">        face_indices: A flatten list of (a, b, c) for indices for each face.</span>
+<span class="sd">        normals: A flatten list of (x, y, z) for face normals.</span>
+<span class="sd">        boundary_condition: Boundary condition for this geometry.</span>
+
+<span class="sd">    Usage:</span>
+
+<span class="sd">        vertices = ((0, 0, 0), (10, 0, 0), (10, 10, 0), (0, 10, 0))</span>
+
+<span class="sd">        geo = BFGeometry(name=&#39;square&#39;, vertices=vertices,</span>
+<span class="sd">                         face_indices=((0, 1, 2), (0, 2, 3)),</span>
+<span class="sd">                         normals=((0, 0, 1), (0, 0, 1)))</span>
+
+<span class="sd">        print(geo.to_stl(convertToMeters=1))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">face_indices</span><span class="p">,</span> <span class="n">normals</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">boundary_condition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">refinementLevels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">nSurfaceLayers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Init Butterfly geometry.&quot;&quot;&quot;</span>
+        <span class="n">_BFMesh</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">face_indices</span><span class="p">,</span> <span class="n">normals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boundary_condition</span> <span class="o">=</span> <span class="n">boundary_condition</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refinementLevels</span> <span class="o">=</span> <span class="n">refinementLevels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nSurfaceLayers</span> <span class="o">=</span> <span class="n">nSurfaceLayers</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isBFGeometry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True for Butterfly geometries.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">boundary_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Boundary condition.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bc</span>
+
+    <span class="nd">@boundary_condition</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">boundary_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bc</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">bc</span><span class="p">:</span>
+            <span class="n">bc</span> <span class="o">=</span> <span class="n">IndoorWallBoundaryCondition</span><span class="p">()</span>
+
+        <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">bc</span><span class="p">,</span> <span class="s1">&#39;isBoundaryCondition&#39;</span><span class="p">),</span> \
+            <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a Butterfly boundary condition.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bc</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bc</span> <span class="o">=</span> <span class="n">bc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_boundary_and_layers</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">refinementLevels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;refinementLevels for snappyHexMeshDict as (min, max).&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__refinementLevels</span>
+
+    <span class="nd">@refinementLevels</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">refinementLevels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__refinementLevels</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__refinementLevels</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nSurfaceLayers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Number of surface layers for snappyHexMeshDict addLayers.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__nSurfaceLayers</span>
+
+    <span class="nd">@nSurfaceLayers</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">nSurfaceLayers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nSurfaceLayers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__nSurfaceLayers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_boundary_and_layers</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_check_boundary_and_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">nSurfaceLayers</span><span class="p">:</span>
+                <span class="k">return</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="c1"># not initiated yet</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_condition</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">boundary_condition</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;patch&#39;</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Warning: You are adding layers to a geometry of type &quot;patch&quot;.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                      <span class="s1">&#39;Layers are normally used only for &quot;wall&quot; boundaries.&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BFBlockGeometry"><a class="viewcode-back" href="../../butterfly.geometry.html#butterfly.geometry.BFBlockGeometry">[docs]</a><span class="k">class</span> <span class="nc">BFBlockGeometry</span><span class="p">(</span><span class="n">BFGeometry</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Butterfly block geometry.</span>
+
+<span class="sd">    Use this geometry to create geometries for blockMeshDict.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: Name as a string (A-Z a-z 0-9 _).</span>
+<span class="sd">        vertices: A flatten list of (x, y, z) for vertices.</span>
+<span class="sd">        face_indices: A flatten list of (a, b, c) for indices for each face.</span>
+<span class="sd">        boundary_condition: Boundary condition for this geometry.</span>
+<span class="sd">        border_vertices: List of lists of (x, y, z) values for each quad face of</span>
+<span class="sd">            the geometry.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">face_indices</span><span class="p">,</span> <span class="n">border_vertices</span><span class="p">,</span>
+                 <span class="n">boundary_condition</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create Block Geometry.&quot;&quot;&quot;</span>
+        <span class="n">BFGeometry</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">face_indices</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">boundary_condition</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__border_vertices</span> <span class="o">=</span> <span class="n">border_vertices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">isBFBlockGeometry</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return True for Butterfly block geometries.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">border_vertices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return list of border vertices.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__border_vertices</span></div>
+
+
+<div class="viewcode-block" id="bf_geometry_from_stl_block"><a class="viewcode-back" href="../../butterfly.geometry.html#butterfly.geometry.bf_geometry_from_stl_block">[docs]</a><span class="k">def</span> <span class="nf">bf_geometry_from_stl_block</span><span class="p">(</span><span class="n">stl_block</span><span class="p">,</span> <span class="n">convert_from_meters</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create BFGeometry from an stl block as a string.&quot;&quot;&quot;</span>
+    <span class="n">solid</span> <span class="o">=</span> <span class="n">read_ascii_string</span><span class="p">(</span><span class="n">stl_block</span><span class="p">)</span>
+
+    <span class="n">vertices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">convert_from_meters</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ver</span><span class="p">)</span>
+                     <span class="k">for</span> <span class="n">ver</span> <span class="ow">in</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">solid</span><span class="o">.</span><span class="n">vertices</span><span class="p">))</span>
+
+    <span class="n">origi_ver</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">solid</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+
+    <span class="n">indices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">origi_ver</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ver</span><span class="p">)</span> <span class="k">for</span> <span class="n">ver</span> <span class="ow">in</span> <span class="n">facet</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">solid</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
+    <span class="n">normals</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">facet</span><span class="o">.</span><span class="n">normal</span> <span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">solid</span><span class="o">.</span><span class="n">facets</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">BFGeometry</span><span class="p">(</span><span class="n">solid</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">normals</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="bf_geometry_from_stl_file"><a class="viewcode-back" href="../../butterfly.geometry.html#butterfly.geometry.bf_geometry_from_stl_file">[docs]</a><span class="k">def</span> <span class="nf">bf_geometry_from_stl_file</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">convert_from_meters</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a tuple of BFGeometry from an stl file.&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">())</span>
+
+    <span class="n">blocks</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">solid</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;solid&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">solid&#39;</span><span class="p">))</span>
+    <span class="k">del</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">bf_geometry_from_stl_block</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">convert_from_meters</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">blocks</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_min_max_from_bf_geometries"><a class="viewcode-back" href="../../butterfly.geometry.html#butterfly.geometry.calculate_min_max_from_bf_geometries">[docs]</a><span class="k">def</span> <span class="nf">calculate_min_max_from_bf_geometries</span><span class="p">(</span><span class="n">geometries</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate maximum and minimum x, y, z for this geometry.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (min_pt, max_pt)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">x_axis</span> <span class="ow">or</span> <span class="n">x_axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">x_axis</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">min_pt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">geometries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">)</span>
+        <span class="n">max_pt</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">geometries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">geometries</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">geo</span><span class="o">.</span><span class="n">min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">min</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">geo</span><span class="o">.</span><span class="n">max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">geo</span><span class="o">.</span><span class="n">max</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">min_pt</span><span class="p">,</span> <span class="n">max_pt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># calculate min and max for each geometry in new coordinates</span>
+        <span class="n">inf_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;+inf&#39;</span><span class="p">)</span>
+        <span class="n">inf_n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">)</span>
+        <span class="n">min_pt</span> <span class="o">=</span> <span class="p">[</span><span class="n">inf_p</span><span class="p">,</span> <span class="n">inf_p</span><span class="p">,</span> <span class="n">inf_p</span><span class="p">]</span>
+        <span class="n">max_pt</span> <span class="o">=</span> <span class="p">[</span><span class="n">inf_n</span><span class="p">,</span> <span class="n">inf_n</span><span class="p">,</span> <span class="n">inf_n</span><span class="p">]</span>
+
+        <span class="n">angle</span> <span class="o">=</span> <span class="n">angle_anitclockwise</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">x_axis</span><span class="p">)</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">pts</span> <span class="k">for</span> <span class="n">geo</span> <span class="ow">in</span> <span class="n">geometries</span>
+                         <span class="k">for</span> <span class="n">pts</span> <span class="ow">in</span> <span class="n">calculate_min_max</span><span class="p">(</span><span class="n">geo</span><span class="p">,</span> <span class="n">angle</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vertices</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">elif</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">rotate</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">min_pt</span><span class="p">,</span> <span class="n">angle</span><span class="p">),</span> <span class="n">rotate</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">max_pt</span><span class="p">,</span> <span class="n">angle</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_min_max"><a class="viewcode-back" href="../../butterfly.geometry.html#butterfly.geometry.calculate_min_max">[docs]</a><span class="k">def</span> <span class="nf">calculate_min_max</span><span class="p">(</span><span class="n">geometry</span><span class="p">,</span> <span class="n">angle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate maximum and minimum x, y, z for input geometry.</span>
+
+<span class="sd">    angle: Anticlockwise rotation angle of the new coordinates system.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get list of vertices in the new coordinates system</span>
+    <span class="n">vertices</span> <span class="o">=</span> <span class="p">(</span><span class="n">rotate</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="n">angle</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">geometry</span><span class="o">.</span><span class="n">vertices</span><span class="p">)</span>
+
+    <span class="n">inf_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;+inf&#39;</span><span class="p">)</span>
+    <span class="n">inf_n</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">)</span>
+    <span class="n">min_pt</span> <span class="o">=</span> <span class="p">[</span><span class="n">inf_p</span><span class="p">,</span> <span class="n">inf_p</span><span class="p">,</span> <span class="n">inf_p</span><span class="p">]</span>
+    <span class="n">max_pt</span> <span class="o">=</span> <span class="p">[</span><span class="n">inf_n</span><span class="p">,</span> <span class="n">inf_n</span><span class="p">,</span> <span class="n">inf_n</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vertices</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">min_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">max_pt</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># rotate them back to XY coordinates</span>
+    <span class="k">return</span> <span class="n">min_pt</span><span class="p">,</span> <span class="n">max_pt</span></div>
+
+
+<div class="viewcode-block" id="dimensions_from_min_max"><a class="viewcode-back" href="../../butterfly.geometry.html#butterfly.geometry.dimensions_from_min_max">[docs]</a><span class="k">def</span> <span class="nf">dimensions_from_min_max</span><span class="p">(</span><span class="n">min_pt</span><span class="p">,</span> <span class="n">max_pt</span><span class="p">,</span> <span class="n">x_axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate width, length and height for input x_axis.&quot;&quot;&quot;</span>
+    <span class="n">x_axis</span> <span class="o">=</span> <span class="n">x_axis</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">angle</span> <span class="o">=</span> <span class="n">angle_anitclockwise</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">x_axis</span><span class="p">)</span>
+    <span class="n">min_pt</span> <span class="o">=</span> <span class="n">rotate</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">min_pt</span><span class="p">,</span> <span class="o">-</span><span class="n">angle</span><span class="p">)</span>
+    <span class="n">max_pt</span> <span class="o">=</span> <span class="n">rotate</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">max_pt</span><span class="p">,</span> <span class="o">-</span><span class="n">angle</span><span class="p">)</span>
+
+    <span class="n">width</span> <span class="o">=</span> <span class="n">max_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">min_pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="n">max_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">min_pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">height</span> <span class="o">=</span> <span class="n">max_pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">min_pt</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">width</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">height</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2019, Ladybug Tools.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
