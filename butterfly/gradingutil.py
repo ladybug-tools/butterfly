@@ -1,4 +1,8 @@
 from collections import namedtuple
+try:
+    xrange(10)
+except:
+    xrange = range
 
 
 def secant(f, x0, x1, eps, ds, ln, n):

@@ -50,7 +50,7 @@ from .sampleDict import SampleDict
 
 import butterfly
 
-if butterfly.config['runner'] == 'blueCFD':
+if butterfly.config and butterfly.config['runner'] == 'blueCFD':
     from .runmanager_bluecfd import RunManagerBlueCFD as RunManager
 else:
     from .runmanager import RunManager
