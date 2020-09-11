@@ -2,3 +2,17 @@
 test.py
 plugin/grasshopper/samplefiles/importBFFromGithub.gh
 venv
+.pytest_cache
+*/__pycache__
+.coverage
+.ipynb_checkpoints
+*.ipynb
+.tox
+*.egg-info
+.eggs/*
+tox.ini
+build
+dist
+venv
+/.cache
+/.vscode
