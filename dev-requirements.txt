@@ -12,6 +12,6 @@ sphinxcontrib-websupport==1.1.2;python_version<'3.0'
 sphinxcontrib-websupport==1.2.4;python_version>='3.6'
 twine==1.13.0;python_version<'3.0'
 twine==3.2.0;python_version>='3.6'
-wheel==0.35.1
+wheel==0.38.1
 setuptools==44.1.0;python_version<'3.0'
 setuptools==50.3.0;python_version>='3.6'
