@@ -14,4 +14,4 @@ twine==1.13.0;python_version<'3.0'
 twine==3.2.0;python_version>='3.6'
 wheel==0.35.1
 setuptools==44.1.0;python_version<'3.0'
-setuptools==50.3.0;python_version>='3.6'
+setuptools==65.5.1;python_version>='3.6'
